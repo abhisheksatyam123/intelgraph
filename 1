@@ -1,0 +1,7 @@
+$ bun build ./src/index.ts --outdir ./dist --target node --format esm && bun build ./src/bridge.ts --outdir ./dist --target node --format esm "2"
+Bundled 236 modules in 447ms
+
+  index.js  0.87 MB  (entry point)
+
+error: ModuleNotFound resolving "2" (entry point)
+error: script "build" exited with code 1
