@@ -212,20 +212,36 @@ export async function startStdioProxy(httpUrl: string): Promise<void> {
   const server = new McpServer({ name: "clangd-mcp", version: "0.1.0" })
 
   for (const tool of remoteTools) {
-    // Do NOT pass inputSchema to registerTool in the proxy.
-    //
-    // tool.inputSchema from listTools() is a plain JSON Schema object, not a
-    // Zod schema. MCP SDK 1.x calls schema.safeParseAsync() on whatever is
-    // stored as inputSchema — that method does not exist on a plain object,
-    // causing "schema.safeParseAsync is not a function".
-    //
-    // The proxy forwards args verbatim to the HTTP daemon which owns the real
-    // Zod schemas and performs validation there. Local re-validation in the
-    // proxy is redundant and broken. Omitting inputSchema here causes the SDK
-    // to skip validation entirely for this proxy layer, which is correct.
-    server.registerTool(
+    // Convert JSON Schema to Zod shape for MCP SDK compatibility.
+    // The inputSchema from listTools() is a JSON Schema object with a "properties" field.
+    // We need to convert it to a Zod shape (Record<string, ZodTypeAny>) for server.tool().
+    let shape: Record<string, z.ZodTypeAny> = {}
+    
+    if (tool.inputSchema && typeof tool.inputSchema === 'object' && 'properties' in tool.inputSchema) {
+      const properties = (tool.inputSchema as any).properties
+      if (properties && typeof properties === 'object') {
+        // Convert each JSON Schema property to a Zod schema
+        for (const [key, propSchema] of Object.entries(properties)) {
+          const prop = propSchema as any
+          // Create a basic Zod schema based on the JSON Schema type
+          if (prop.type === 'string') {
+            shape[key] = z.string().describe(prop.description || '')
+          } else if (prop.type === 'number' || prop.type === 'integer') {
+            shape[key] = z.number().describe(prop.description || '')
+          } else if (prop.type === 'boolean') {
+            shape[key] = z.boolean().describe(prop.description || '')
+          } else {
+            // Fallback: accept any type
+            shape[key] = z.any().describe(prop.description || '')
+          }
+        }
+      }
+    }
+
+    server.tool(
       tool.name,
-      { description: tool.description ?? "" },
+      tool.description ?? "",
+      shape,
       async (args: any) => {
         log("DEBUG", "Proxy forwarding tool call", { tool: tool.name, httpUrl })
         try {

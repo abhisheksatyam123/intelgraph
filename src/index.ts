@@ -213,6 +213,12 @@ Examples:
 const RECONNECT_BASE_DELAY_MS = 2_000
 const RECONNECT_MAX_DELAY_MS = 30_000
 const RECONNECT_MAX_ATTEMPTS = 0 // 0 = retry forever
+// Minimum delay before scheduling a reconnect after a connection drop.
+// This prevents a reconnect storm: when the bridge destroys the old socket
+// upon receiving a new connection, the onClose fires on the old client and
+// would immediately trigger another connectToClangd — which in turn causes
+// the bridge to destroy the current socket, and so on infinitely.
+const RECONNECT_DEBOUNCE_MS = 1_000
 
 async function retryWithBackoff<T>(
   label: string,
@@ -327,7 +333,20 @@ async function main(): Promise<void> {
       return reconnectPromise
     }
     if (currentClient) return Promise.resolve(currentClient)
-    return Promise.reject(new Error("clangd client is not initialized"))
+    
+    // Lazy initialization: if client is null (HTTP daemon mode), connect now
+    log("INFO", "Lazy-initializing clangd client (first tool call in HTTP daemon mode)")
+    reconnectPromise = connectToClangd()
+      .then((c) => {
+        currentClient = c
+        reconnectPromise = null
+        return c
+      })
+      .catch((err) => {
+        reconnectPromise = null
+        throw err
+      })
+    return reconnectPromise
   }
 
   // ── Daemon management ───────────────────────────────────────────────────────
@@ -402,14 +421,21 @@ async function main(): Promise<void> {
     }
     log("INFO", "Connected to clangd daemon successfully", { daemonPort, isNew })
 
-    // Watch for connection drops — reconnect automatically with backoff
+    // Watch for connection drops — reconnect automatically with backoff.
+    // IMPORTANT: debounce the reconnect by RECONNECT_DEBOUNCE_MS.
+    // Without this, a reconnect storm occurs: the bridge destroys the old
+    // socket when a new connection arrives, which fires onClose on the old
+    // client, which immediately triggers another connectToClangd, which
+    // causes the bridge to destroy the current socket, and so on infinitely.
     ;(client as any)._conn.onClose(() => {
-      if (currentClient !== client) return // already superseded
+      if (currentClient !== client) return // already superseded by a newer client
+      if (reconnectPromise) return         // reconnect already in flight — don't stack
       log("WARN", "Connection to clangd daemon dropped — scheduling reconnect", { daemonPort })
       currentClient = null
 
-      // Retry forever with exponential backoff — never exit the daemon
-      reconnectPromise = retryWithBackoff("connectToClangd", connectToClangd)
+      // Debounce: wait before reconnecting so the bridge has time to settle
+      reconnectPromise = new Promise<void>((r) => setTimeout(r, RECONNECT_DEBOUNCE_MS))
+        .then(() => retryWithBackoff("connectToClangd", connectToClangd))
         .then((c) => {
           log("INFO", "Reconnected to clangd daemon successfully after drop")
           currentClient = c
