@@ -47,8 +47,13 @@ export function log(level: LogLevel, message: string, extra?: Record<string, unk
   const extraStr = extra ? " " + JSON.stringify(extra) : ""
   const line = `${ts} [${level.padEnd(5)}] ${message}${extraStr}\n`
 
-  // Always write to stderr (captured by parent process if it wants)
-  process.stderr.write(`[clangd-mcp] ${message}${extraStr}\n`)
+  // Try to write to stderr (captured by parent process if it wants)
+  // Wrap in try-catch to handle EPIPE when process is detached
+  try {
+    process.stderr.write(`[clangd-mcp] ${message}${extraStr}\n`)
+  } catch {
+    // Ignore EPIPE errors when stderr is closed (detached process)
+  }
 
   // Write to log file if initialized
   if (_initialized) {

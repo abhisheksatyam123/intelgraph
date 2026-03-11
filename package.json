@@ -10,9 +10,15 @@
     "clangd-mcp": "./dist/index.js"
   },
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir ./dist --target node --format esm && bun build ./src/bridge.ts --outdir ./dist --target node --format esm",
-    "dev": "bun run ./src/index.ts",
-    "test": "node test-clangd-mcp.mjs",
+    "build": "/usr2/adagur/.bun/bin/bun build ./src/index.ts --outdir ./dist --target node --format esm && /usr2/adagur/.bun/bin/bun build ./src/bridge.ts --outdir ./dist --target node --format esm",
+    "dev": "/usr2/adagur/.bun/bin/bun run ./src/index.ts",
+    "test": "vitest run",
+    "test:unit": "vitest run test/unit/",
+    "test:integration": "vitest run test/integration/",
+    "test:e2e": "vitest run test/e2e/",
+    "test:watch": "vitest",
+    "test:legacy": "node test-clangd-mcp.mjs",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -22,6 +28,8 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
+    "@vitest/coverage-v8": "^2.1.9",
+    "typescript": "^5.0.0",
+    "vitest": "^2.1.9"
   }
 }

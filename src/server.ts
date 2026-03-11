@@ -11,6 +11,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js"
+import { Client } from "@modelcontextprotocol/sdk/client/index.js"
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js"
 import { createServer, type IncomingMessage, type ServerResponse } from "http"
 import { randomUUID } from "crypto"
 import { TOOLS } from "./tools.js"
@@ -45,7 +47,7 @@ export async function createMcpServer(
       shape,
       async (args: any) => {
         const start = Date.now()
-        log("DEBUG", `Tool call: ${tool.name}`, { file: args.file ? require("path").basename(args.file) : undefined, line: args.line, character: args.character })
+        log("DEBUG", `Tool call: ${tool.name}`, args)
         try {
           const client = await getClient()
           const text = await tool.execute(args, client, tracker)
@@ -75,18 +77,19 @@ export async function createMcpServer(
 // ── Stdio transport (single session) ─────────────────────────────────────────
 
 export async function startStdio(getClient: () => Promise<LspClient>, tracker: IndexTracker): Promise<void> {
+  log("INFO", "Creating stdio MCP server", { pid: process.pid })
   const server = await createMcpServer(getClient, tracker)
   const transport = new StdioServerTransport()
 
   transport.onclose = () => {
-    log("WARN", "Stdio MCP transport closed (client disconnected)")
+    log("WARN", "Stdio MCP transport closed (client disconnected)", { pid: process.pid })
   }
   ;(transport as any).onerror = (err: Error) => {
     logError("Stdio MCP transport error", err)
   }
 
   await server.connect(transport)
-  log("INFO", "Listening on stdio")
+  log("INFO", "Stdio MCP server connected and listening", { pid: process.pid })
   process.stderr.write("[clangd-mcp] Listening on stdio\n")
 }
 
@@ -101,6 +104,7 @@ export async function startHttp(
   tracker: IndexTracker,
   port: number,
 ): Promise<void> {
+  log("INFO", "Creating HTTP MCP server", { port, pid: process.pid })
   // Map of sessionId → transport (for DELETE / cleanup)
   const sessions = new Map<string, StreamableHTTPServerTransport>()
 
@@ -118,10 +122,11 @@ export async function startHttp(
 
       let transport = sessions.get(sessionId)
       if (!transport) {
+        log("INFO", "Creating new HTTP MCP session", { sessionId, port })
         transport = new StreamableHTTPServerTransport({
           sessionIdGenerator: () => sessionId,
           onsessioninitialized: (id) => {
-            log("INFO", `HTTP session initialized: ${id}`)
+            log("INFO", "HTTP session initialized", { sessionId: id, port })
             process.stderr.write(`[clangd-mcp] Session initialized: ${id}\n`)
           },
         })
@@ -132,7 +137,7 @@ export async function startHttp(
 
         transport.onclose = () => {
           sessions.delete(sessionId)
-          log("INFO", `HTTP session closed: ${sessionId}`)
+          log("INFO", "HTTP session closed", { sessionId, port, remainingSessions: sessions.size })
           process.stderr.write(`[clangd-mcp] Session closed: ${sessionId}\n`)
         }
       }
@@ -146,6 +151,7 @@ export async function startHttp(
       const sessionId = req.headers["mcp-session-id"] as string
       const transport = sessionId ? sessions.get(sessionId) : undefined
       if (!transport) {
+        log("WARN", "GET request for unknown session", { sessionId, port })
         res.writeHead(404).end("Session not found")
         return
       }
@@ -157,9 +163,11 @@ export async function startHttp(
       const sessionId = req.headers["mcp-session-id"] as string
       const transport = sessionId ? sessions.get(sessionId) : undefined
       if (transport) {
+        log("INFO", "DELETE session request", { sessionId, port })
         await transport.handleRequest(req, res)
         sessions.delete(sessionId)
       } else {
+        log("WARN", "DELETE request for unknown session", { sessionId, port })
         res.writeHead(404).end("Session not found")
       }
       return
@@ -169,6 +177,78 @@ export async function startHttp(
   })
 
   await new Promise<void>((resolve) => httpServer.listen(port, resolve))
-  log("INFO", `HTTP MCP server listening on http://localhost:${port}/mcp`)
+  log("INFO", "HTTP MCP server listening", { url: `http://localhost:${port}/mcp`, port, pid: process.pid })
   process.stderr.write(`[clangd-mcp] HTTP MCP server listening on http://localhost:${port}/mcp\n`)
+}
+
+// ── Stdio → HTTP proxy (for --http-daemon-mode) ───────────────────────────────
+//
+// Creates a stdio MCP server that forwards every tool call to the persistent
+// HTTP MCP daemon. The user's OpenCode session talks to this proxy over stdio;
+// the proxy forwards to the long-lived daemon that holds the warm clangd index.
+//
+// This means:
+//   - clangd background index stays warm across all OpenCode restarts
+//   - Multiple OpenCode sessions share the same warm clangd instance
+//   - Each workspace gets its own daemon on an OS-assigned free port (no config needed)
+
+export async function startStdioProxy(httpUrl: string): Promise<void> {
+  log("INFO", "Creating stdio proxy MCP client", { httpUrl, pid: process.pid })
+  // Connect to the HTTP daemon as an MCP client
+  const client = new Client({ name: "clangd-mcp-proxy", version: "0.1.0" })
+  const transport = new StreamableHTTPClientTransport(new URL(httpUrl))
+
+  await client.connect(transport)
+  log("INFO", "Proxy connected to HTTP daemon", { httpUrl })
+
+  // Discover the tools the daemon exposes
+  const { tools: remoteTools } = await client.listTools()
+  log("INFO", "Proxy discovered tools from daemon", { toolCount: remoteTools.length, httpUrl })
+
+  // Build a local stdio MCP server that forwards each tool call to the daemon.
+  // We register each tool with _meta containing the JSON schema so OpenCode
+  // can see the schema, but we don't use inputSchema (which requires Zod)
+  // to avoid validation that would strip parameters.
+  const server = new McpServer({ name: "clangd-mcp", version: "0.1.0" })
+
+  for (const tool of remoteTools) {
+    // Do NOT pass inputSchema to registerTool in the proxy.
+    //
+    // tool.inputSchema from listTools() is a plain JSON Schema object, not a
+    // Zod schema. MCP SDK 1.x calls schema.safeParseAsync() on whatever is
+    // stored as inputSchema — that method does not exist on a plain object,
+    // causing "schema.safeParseAsync is not a function".
+    //
+    // The proxy forwards args verbatim to the HTTP daemon which owns the real
+    // Zod schemas and performs validation there. Local re-validation in the
+    // proxy is redundant and broken. Omitting inputSchema here causes the SDK
+    // to skip validation entirely for this proxy layer, which is correct.
+    server.registerTool(
+      tool.name,
+      { description: tool.description ?? "" },
+      async (args: any) => {
+        log("DEBUG", "Proxy forwarding tool call", { tool: tool.name, httpUrl })
+        try {
+          const result = await client.callTool({ name: tool.name, arguments: args })
+          log("DEBUG", "Proxy tool call succeeded", { tool: tool.name })
+          return result as any
+        } catch (err: any) {
+          logError(`Proxy tool error: ${tool.name}`, err)
+          return {
+            content: [{ type: "text" as const, text: `Proxy error: ${err?.message ?? String(err)}` }],
+            isError: true,
+          }
+        }
+      },
+    )
+  }
+
+  const stdioTransport = new StdioServerTransport()
+  stdioTransport.onclose = () => {
+    log("WARN", "Stdio proxy transport closed (client disconnected)", { httpUrl, pid: process.pid })
+  }
+
+  await server.connect(stdioTransport)
+  log("INFO", "Stdio proxy MCP server listening", { httpUrl, pid: process.pid })
+  process.stderr.write("[clangd-mcp] Stdio proxy ready\n")
 }

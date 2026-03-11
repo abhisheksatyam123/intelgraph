@@ -27,7 +27,7 @@ import path from "path"
 
 // ── Argument parsing ──────────────────────────────────────────────────────────
 
-function parseArgs(argv: string[]): {
+export function parseArgs(argv: string[]): {
   port: number
   root: string
   clangdBin: string
@@ -59,20 +59,39 @@ function parseArgs(argv: string[]): {
   return { port, root, clangdBin, clangdArgs, logFile }
 }
 
-// ── Logger ────────────────────────────────────────────────────────────────────
+// ── JSON Logger ───────────────────────────────────────────────────────────────
 
 let _logFile = "/tmp/clangd-mcp-bridge.log"
 
 function initLog(file: string): void {
   _logFile = file
-  writeLine(`${"=".repeat(60)}`)
-  writeLine(`clangd-mcp bridge starting — PID ${process.pid}`)
+  logJson("INFO", "Bridge starting", { pid: process.pid, logFile: file })
 }
 
-function writeLine(msg: string): void {
-  const line = `${new Date().toISOString()} [BRIDGE] ${msg}\n`
-  try { appendFileSync(_logFile, line) } catch { /* ignore */ }
-  process.stderr.write(line)
+function logJson(level: string, message: string, data?: Record<string, any>): void {
+  const entry = {
+    timestamp: new Date().toISOString(),
+    level,
+    component: "BRIDGE",
+    message,
+    pid: process.pid,
+    ...data,
+  }
+  const line = JSON.stringify(entry) + "\n"
+  try {
+    appendFileSync(_logFile, line)
+  } catch {
+    // ignore write errors
+  }
+  // Also write human-readable to stderr for debugging
+  process.stderr.write(`${entry.timestamp} [${level}] [BRIDGE] ${message}\n`)
+}
+
+function logError(message: string, err: any): void {
+  logJson("ERROR", message, {
+    error: err?.message ?? String(err),
+    stack: err?.stack,
+  })
 }
 
 // ── State file update ─────────────────────────────────────────────────────────
@@ -86,9 +105,9 @@ function updateStateClangdPid(root: string, clangdPid: number): void {
     const state = JSON.parse(text)
     state.clangdPid = clangdPid
     writeFileSync(stateFile, JSON.stringify(state, null, 2), "utf8")
-    writeLine(`Updated state file with clangd PID ${clangdPid}`)
+    logJson("INFO", "Updated state file with clangd PID", { stateFile, clangdPid })
   } catch (err) {
-    writeLine(`Warning: could not update state file: ${err}`)
+    logError("Failed to update state file", err)
   }
 }
 
@@ -107,8 +126,11 @@ async function main(): Promise<void> {
   ]
   const finalArgs = clangdArgs.length > 0 ? clangdArgs : defaultArgs
 
-  writeLine(`Spawning clangd: ${clangdBin} ${finalArgs.join(" ")}`)
-  writeLine(`Working directory: ${root}`)
+  logJson("INFO", "Spawning clangd process", {
+    clangdBin,
+    clangdArgs: finalArgs,
+    cwd: root,
+  })
 
   // ── Spawn clangd ────────────────────────────────────────────────────────────
   const clangd = spawn(clangdBin, finalArgs, {
@@ -117,11 +139,11 @@ async function main(): Promise<void> {
   })
 
   if (!clangd.pid) {
-    writeLine("ERROR: Failed to spawn clangd (no PID)")
+    logError("Failed to spawn clangd (no PID)", new Error("No PID assigned"))
     process.exit(1)
   }
 
-  writeLine(`clangd spawned with PID ${clangd.pid}`)
+  logJson("INFO", "clangd spawned", { clangdPid: clangd.pid })
 
   // Update state file with clangd PID so MCP server can track it
   updateStateClangdPid(root, clangd.pid)
@@ -129,15 +151,15 @@ async function main(): Promise<void> {
   // Forward clangd stderr to our log
   clangd.stderr?.on("data", (chunk: Buffer) => {
     const text = chunk.toString().trimEnd()
-    try { appendFileSync(_logFile, `${new Date().toISOString()} [CLANGD] ${text}\n`) } catch { /* ignore */ }
+    logJson("DEBUG", "clangd stderr", { text })
   })
 
   clangd.on("error", (err) => {
-    writeLine(`clangd process error: ${err.message}`)
+    logError("clangd process error", err)
   })
 
   clangd.on("exit", (code, signal) => {
-    writeLine(`clangd exited (code=${code}, signal=${signal}) — bridge shutting down`)
+    logJson("WARN", "clangd exited — bridge shutting down", { code, signal })
     tcpServer.close()
     process.exit(0)
   })
@@ -149,35 +171,40 @@ async function main(): Promise<void> {
   // allow one active connection at a time. A new connection replaces the old one.
 
   let activeSocket: Socket | null = null
+  let connectionCount = 0
 
   const tcpServer = createServer((socket: Socket) => {
+    connectionCount++
+    const connId = connectionCount
     const remote = `${socket.remoteAddress}:${socket.remotePort}`
-    writeLine(`New TCP connection from ${remote}`)
+    logJson("INFO", "New TCP connection", { connId, remote })
 
     // If there's an existing connection, destroy it (MCP server reconnected)
     if (activeSocket && !activeSocket.destroyed) {
-      writeLine("Replacing previous TCP connection")
+      logJson("INFO", "Replacing previous TCP connection", { connId })
       activeSocket.destroy()
     }
     activeSocket = socket
 
     socket.on("error", (err) => {
-      writeLine(`TCP socket error: ${err.message}`)
+      logJson("WARN", "TCP socket error", { connId, remote, error: err.message })
     })
 
     socket.on("close", () => {
-      writeLine(`TCP connection closed (${remote})`)
+      logJson("INFO", "TCP connection closed", { connId, remote })
       if (activeSocket === socket) activeSocket = null
     })
 
     // Pipe: TCP socket → clangd stdin
     socket.on("data", (chunk: Buffer) => {
       if (!clangd.stdin?.writable) {
-        writeLine("Warning: clangd stdin not writable, dropping data")
+        logJson("WARN", "clangd stdin not writable — dropping data", { connId, bytes: chunk.length })
         return
       }
       clangd.stdin.write(chunk, (err) => {
-        if (err) writeLine(`stdin write error: ${err.message}`)
+        if (err) {
+          logJson("ERROR", "stdin write error", { connId, error: err.message })
+        }
       })
     })
 
@@ -185,7 +212,9 @@ async function main(): Promise<void> {
     const onStdout = (chunk: Buffer) => {
       if (!socket.destroyed) {
         socket.write(chunk, (err) => {
-          if (err) writeLine(`socket write error: ${err.message}`)
+          if (err) {
+            logJson("ERROR", "socket write error", { connId, error: err.message })
+          }
         })
       }
     }
@@ -197,27 +226,27 @@ async function main(): Promise<void> {
   })
 
   tcpServer.on("error", (err) => {
-    writeLine(`TCP server error: ${err.message}`)
+    logError("TCP server error", err)
     process.exit(1)
   })
 
   await new Promise<void>((resolve) => {
     tcpServer.listen(port, "127.0.0.1", () => {
-      writeLine(`TCP bridge listening on 127.0.0.1:${port}`)
+      logJson("INFO", "TCP bridge listening", { host: "127.0.0.1", port })
       resolve()
     })
   })
 
   // Keep the process alive
   process.on("SIGINT", () => {
-    writeLine("SIGINT received — shutting down bridge")
+    logJson("INFO", "SIGINT received — shutting down bridge", { port })
     tcpServer.close()
     clangd.kill()
     process.exit(0)
   })
 
   process.on("SIGTERM", () => {
-    writeLine("SIGTERM received — shutting down bridge")
+    logJson("INFO", "SIGTERM received — shutting down bridge", { port })
     tcpServer.close()
     clangd.kill()
     process.exit(0)
