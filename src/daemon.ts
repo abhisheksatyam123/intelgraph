@@ -16,11 +16,41 @@
  */
 
 import { createServer, createConnection } from "net"
-import { readFileSync, writeFileSync, unlinkSync, openSync, closeSync, constants } from "fs"
+import { readFileSync, writeFileSync, unlinkSync, openSync, closeSync, constants, statSync } from "fs"
 import { spawn } from "child_process"
 import path from "path"
 import { fileURLToPath } from "url"
 import { log, logError } from "./logger.js"
+
+// ── Root normalisation ────────────────────────────────────────────────────────
+
+/**
+ * Normalise a workspace root path.
+ *
+ * Guards against callers passing a VCS marker directory (e.g. `.git`) instead
+ * of the actual project root.  When the path ends with a known marker directory
+ * name AND that path is a directory on disk, return its parent.
+ *
+ * This is the single source of truth for root normalisation inside clangd-mcp.
+ * All state file, lock file, and daemon spawn paths go through this function.
+ */
+export function normaliseRoot(rawRoot: string): string {
+  const resolved = path.resolve(rawRoot)
+  const name = path.basename(resolved)
+  const markerDirs = new Set([".git", ".hg", ".svn"])
+  if (markerDirs.has(name)) {
+    try {
+      const st = statSync(resolved)
+      if (st.isDirectory()) {
+        log("WARN", "Root points inside a VCS marker dir — using parent", { rawRoot, resolved })
+        return path.dirname(resolved)
+      }
+    } catch {
+      // stat failed — leave as-is
+    }
+  }
+  return resolved
+}
 
 // ── State file schema ─────────────────────────────────────────────────────────
 
@@ -50,7 +80,7 @@ const STATE_FILE = ".clangd-mcp-state.json"
 const STATE_VERSION = 1
 
 export function stateFilePath(root: string): string {
-  return path.join(root, STATE_FILE)
+  return path.join(normaliseRoot(root), STATE_FILE)
 }
 
 export function readState(root: string): DaemonState | null {
@@ -106,7 +136,7 @@ export function clearState(root: string): void {
 const SPAWN_LOCK_FILE = ".clangd-mcp-spawn.lock"
 
 function spawnLockPath(root: string): string {
-  return path.join(root, SPAWN_LOCK_FILE)
+  return path.join(normaliseRoot(root), SPAWN_LOCK_FILE)
 }
 
 /**
@@ -220,6 +250,12 @@ export async function checkDaemonAlive(state: DaemonState, expectedRoot?: string
     log("WARN", "Daemon root mismatch — respawning", { stateRoot: state.root, expectedRoot })
     return false
   }
+  // If bridgePid is 0, the bridge hasn't been spawned yet (HTTP daemon wrote state first).
+  // This is OK — we'll spawn the bridge and it will update the state.
+  if (state.bridgePid === 0) {
+    log("INFO", "Bridge not yet spawned (bridgePid=0) — will spawn now", { httpPort: state.httpPort, httpPid: state.httpPid })
+    return false
+  }
   if (!isProcessAlive(state.bridgePid)) {
     log("WARN", "Bridge process is not alive", { bridgePid: state.bridgePid })
     return false
@@ -269,6 +305,12 @@ export interface SpawnDaemonOptions {
  * The bridge process is detached and unref'd so it outlives the MCP server.
  */
 export async function spawnDaemon(opts: SpawnDaemonOptions): Promise<DaemonState> {
+  // Normalise root first — guards against .git being passed as root
+  const root = normaliseRoot(opts.root)
+  if (root !== opts.root) {
+    log("WARN", "spawnDaemon: root normalised", { original: opts.root, normalised: root })
+  }
+
   const port = await findFreePort()
 
   log("INFO", "Spawning clangd bridge daemon", {
@@ -276,16 +318,16 @@ export async function spawnDaemon(opts: SpawnDaemonOptions): Promise<DaemonState
     bridgeScript: opts.bridgeScript,
     clangdBin: opts.clangdBin,
     clangdArgs: opts.clangdArgs,
-    root: opts.root,
+    root,
   })
 
   // Bridge log file alongside the state file
-  const bridgeLog = path.join(opts.root, "clangd-mcp-bridge.log")
+  const bridgeLog = path.join(root, "clangd-mcp-bridge.log")
 
   const bridgeArgs = [
     opts.bridgeScript,
     "--port", String(port),
-    "--root", opts.root,
+    "--root", root,
     "--clangd", opts.clangdBin,
     "--clangd-args", opts.clangdArgs.join(","),
     "--log", bridgeLog,
@@ -296,7 +338,7 @@ export async function spawnDaemon(opts: SpawnDaemonOptions): Promise<DaemonState
   const bridge = spawn(process.execPath, bridgeArgs, {
     detached: true,
     stdio: "ignore",
-    cwd: opts.root,
+    cwd: root,
   })
 
   if (!bridge.pid) {
@@ -324,22 +366,32 @@ export async function spawnDaemon(opts: SpawnDaemonOptions): Promise<DaemonState
   // We don't know clangd's PID from here (it's a grandchild), so we store 0.
   // The bridge writes its own PID to the state file once clangd is up.
   // We read it back after the bridge is ready.
-  const stateAfter = readState(opts.root)
+  // IMPORTANT: Also preserve httpPort/httpPid if they exist (HTTP daemon may have written them first).
+  const stateAfter = readState(root)
   const clangdPid = stateAfter?.clangdPid ?? 0
+  
+  log("DEBUG", "spawnDaemon: read existing state before writing", {
+    stateAfter,
+    httpPortFromState: stateAfter?.httpPort,
+    httpPidFromState: stateAfter?.httpPid,
+  })
 
   const state: DaemonState = {
     version: STATE_VERSION,
     bridgePid: bridge.pid,
     clangdPid,
     port,
-    root: opts.root,
+    root,
     clangdBin: opts.clangdBin,
     clangdArgs: opts.clangdArgs,
     startedAt: new Date().toISOString(),
+    // Preserve httpPort and httpPid if they were written by the HTTP daemon
+    httpPort: stateAfter?.httpPort,
+    httpPid: stateAfter?.httpPid,
   }
 
-  writeState(opts.root, state)
-  log("INFO", "Daemon state written", { port, bridgePid: bridge.pid, clangdPid })
+  writeState(root, state)
+  log("INFO", "Daemon state written", { port, bridgePid: bridge.pid, clangdPid, httpPort: state.httpPort, httpPid: state.httpPid })
   return state
 }
 
@@ -395,24 +447,30 @@ export interface SpawnHttpDaemonOptions {
 export async function spawnHttpDaemon(
   opts: SpawnHttpDaemonOptions,
 ): Promise<{ httpPort: number; httpPid: number }> {
-  log("INFO", "spawnHttpDaemon: attempting to acquire spawn lock", { root: opts.root })
+  // Normalise root first — guards against .git being passed as root
+  const root = normaliseRoot(opts.root)
+  if (root !== opts.root) {
+    log("WARN", "spawnHttpDaemon: root normalised", { original: opts.root, normalised: root })
+  }
+
+  log("INFO", "spawnHttpDaemon: attempting to acquire spawn lock", { root })
 
   // Try to acquire spawn lock
-  if (!tryAcquireSpawnLock(opts.root)) {
-    log("INFO", "Another process is spawning HTTP daemon — waiting for lock release", { root: opts.root })
-    const released = await waitForSpawnLockRelease(opts.root, 30_000)
+  if (!tryAcquireSpawnLock(root)) {
+    log("INFO", "Another process is spawning HTTP daemon — waiting for lock release", { root })
+    const released = await waitForSpawnLockRelease(root, 30_000)
 
     if (!released) {
       // Lock holder may have crashed — force-remove stale lock and try again
-      log("WARN", "Spawn lock timed out — removing stale lock and retrying", { root: opts.root })
-      releaseSpawnLock(opts.root)
+      log("WARN", "Spawn lock timed out — removing stale lock and retrying", { root })
+      releaseSpawnLock(root)
 
-      if (!tryAcquireSpawnLock(opts.root)) {
+      if (!tryAcquireSpawnLock(root)) {
         throw new Error("Failed to acquire spawn lock after stale lock removal")
       }
     } else {
       // Lock was released — check if daemon is now running
-      const state = readState(opts.root)
+      const state = readState(root)
       if (state?.httpPort && state.httpPid && await isTcpPortOpen(state.httpPort)) {
         log("INFO", "HTTP daemon was spawned by another process — reusing", {
           httpPort: state.httpPort,
@@ -422,7 +480,7 @@ export async function spawnHttpDaemon(
       }
 
       // Daemon not running — acquire lock and spawn
-      if (!tryAcquireSpawnLock(opts.root)) {
+      if (!tryAcquireSpawnLock(root)) {
         throw new Error("Failed to acquire spawn lock after wait")
       }
     }
@@ -441,7 +499,7 @@ export async function spawnHttpDaemon(
       indexScript,
       "--http-daemon",
       "--http-port", String(httpPort),
-      "--root", opts.root,
+      "--root", root,
       "--clangd", opts.clangdBin,
     ]
     if (opts.clangdArgs.length) {
@@ -453,13 +511,13 @@ export async function spawnHttpDaemon(
       indexScript,
       clangdBin: opts.clangdBin,
       clangdArgs: opts.clangdArgs,
-      root: opts.root,
+      root,
     })
 
     const daemon = spawn(process.execPath, args, {
       detached: true,
       stdio: "ignore",
-      cwd: opts.root,
+      cwd: root,
     })
 
     if (!daemon.pid) throw new Error("Failed to spawn HTTP MCP daemon (no PID)")
@@ -475,6 +533,6 @@ export async function spawnHttpDaemon(
     return { httpPort, httpPid: daemon.pid }
   } finally {
     // Always release lock when done (success or failure)
-    releaseSpawnLock(opts.root)
+    releaseSpawnLock(root)
   }
 }

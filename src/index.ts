@@ -72,6 +72,7 @@ import {
   spawnHttpDaemon,
   isTcpPortOpen,
   resolveBridgeScript,
+  normaliseRoot,
   type DaemonState,
 } from "./daemon.js"
 
@@ -264,7 +265,9 @@ async function main(): Promise<void> {
   }
 
   // Merge precedence: CLI flag > .clangd-mcp.json > default (cwd / system clangd)
-  const root = cli.root || ws.root || cwd
+  // normaliseRoot strips VCS marker dirs (.git etc.) so state files always land
+  // in the real project root, not inside .git/.
+  const root = normaliseRoot(cli.root || ws.root || cwd)
   const clangdPath = cli.clangdPath || ws.clangd || "clangd"
   const clangdArgs = cli.clangdArgs || ws.args || []
   const port = cli.port
@@ -368,6 +371,8 @@ async function main(): Promise<void> {
         port: state.port,
         bridgePid: state.bridgePid,
         clangdPid: state.clangdPid,
+        httpPort: state.httpPort,
+        httpPid: state.httpPid,
         startedAt: state.startedAt,
       })
       const alive = await checkDaemonAlive(state, root)
@@ -375,11 +380,19 @@ async function main(): Promise<void> {
         log("INFO", "Reusing existing clangd daemon", { port: state.port, bridgePid: state.bridgePid })
         return { port: state.port, isNew: false }
       }
-      log("WARN", "Daemon is stale — clearing state and respawning", {
-        staleBridgePid: state.bridgePid,
-        stalePort: state.port,
-      })
-      clearState(root)
+      // Only clear state if httpPort is not present (otherwise we'd lose the HTTP daemon info)
+      if (!state.httpPort) {
+        log("WARN", "Daemon is stale — clearing state and respawning", {
+          staleBridgePid: state.bridgePid,
+          stalePort: state.port,
+        })
+        clearState(root)
+      } else {
+        log("INFO", "Bridge is stale but HTTP daemon is alive — preserving httpPort and spawning new bridge", {
+          httpPort: state.httpPort,
+          httpPid: state.httpPid,
+        })
+      }
     } else {
       log("INFO", "No existing daemon state — spawning fresh clangd daemon", { root })
     }
@@ -398,6 +411,8 @@ async function main(): Promise<void> {
       port: newState.port,
       bridgePid: newState.bridgePid,
       clangdPid: newState.clangdPid,
+      httpPort: newState.httpPort,
+      httpPid: newState.httpPid,
       startedAt: newState.startedAt,
     })
     return { port: newState.port, isNew: true }
@@ -495,6 +510,24 @@ async function main(): Promise<void> {
     // Serve MCP over HTTP and stay alive indefinitely (HTTP server holds event loop).
     const httpPort = cli.httpPort ?? 7777
     log("INFO", "Starting HTTP MCP daemon", { httpPort, root, pid: process.pid })
+
+    // Write (or update) the state file so other processes can discover this daemon.
+    // Merge with any existing state to preserve bridgePid/clangdPid if present.
+    const existingState = readState(root)
+    writeState(root, {
+      version: 1,
+      bridgePid: existingState?.bridgePid ?? 0,
+      clangdPid: existingState?.clangdPid ?? 0,
+      port: existingState?.port ?? 0,
+      root,
+      clangdBin: clangdPath,
+      clangdArgs,
+      startedAt: existingState?.startedAt ?? new Date().toISOString(),
+      httpPort,
+      httpPid: process.pid,
+    })
+    log("INFO", "State file written for HTTP daemon", { httpPort, httpPid: process.pid, root })
+
     await startHttp(getClient, tracker, httpPort)
     log("INFO", "HTTP MCP daemon ready", { url: `http://127.0.0.1:${httpPort}/mcp`, httpPort })
 
