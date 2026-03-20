@@ -25,6 +25,7 @@ const MCP_URL   = urlArgEq
 const REPO  = "/local/mnt/workspace/code/WLAN.HL.3.4.3-00886-QCAHLSWMTPL-2"
 const BPF_C = `${REPO}/wlan_proc/wlan/fw/target/protocol/src/offloads/src/l2/bpf/bpf_offload.c`
 const BPF_H = `${REPO}/wlan_proc/wlan/fw/target/protocol/src/offloads/src/l2/bpf/bpf_offload_int.h`
+const INDIRECT_C = `${REPO}/wlan_proc/wlan/halphy_tools/host/bdfUtil/qca6290.c`
 
 // Known positions in bpf_offload.c (1-based, verified against source)
 const POS = {
@@ -36,6 +37,8 @@ const POS = {
   CALL_SITE:{ line: 66, character: 14 },
   // Line 66 inside the argument list — for signature help
   SIG_HELP: { line: 66, character: 45 },
+  // qca6290_BDF_Read_Addr(...)
+  INDIRECT_FN: { line: 1248, character: 6 },
 }
 
 // ── Colours ───────────────────────────────────────────────────────────────────
@@ -169,6 +172,7 @@ async function main() {
     "lsp_references", "lsp_implementation", "lsp_document_highlight",
     "lsp_document_symbol", "lsp_workspace_symbol", "lsp_folding_range",
     "lsp_signature_help", "lsp_incoming_calls", "lsp_outgoing_calls",
+    "lsp_indirect_callers",
     "lsp_supertypes", "lsp_subtypes", "lsp_rename", "lsp_format",
     "lsp_inlay_hints", "lsp_diagnostics", "lsp_code_action",
     "lsp_file_status", "lsp_index_status",
@@ -375,6 +379,20 @@ async function main() {
     if (out.includes("<-")) {
       assertContains(out, "[Function]", "caller kind tag")
       assertMatches(out, /at .+:\d+:\d+/, "caller location format")
+    }
+    return out.split("\n")[0]
+  })
+
+  await test("lsp_indirect_callers — returns stable call-shape output", async () => {
+    const out = await callTool(sid, "lsp_indirect_callers", { file: INDIRECT_C, ...POS.INDIRECT_FN })
+    assertNotError(out, "lsp_indirect_callers")
+    assert(
+      out.includes("No indirect callers") || out.includes("indirect") || out.includes("[Index:"),
+      `Unexpected format: ${out.slice(0, 160)}`
+    )
+    if (!out.includes("No indirect callers") && !out.includes("[Index:")) {
+      assertMatches(out, /registration|assign|callback|dispatch/i, "indirect relationship markers")
+      assertMatches(out, /line\s+\d+|:\d+:\d+/, "registration line metadata")
     }
     return out.split("\n")[0]
   })

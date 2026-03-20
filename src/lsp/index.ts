@@ -15,8 +15,8 @@ import {
   SocketMessageWriter,
   type MessageConnection,
 } from "vscode-jsonrpc/node.js"
-import { IndexTracker } from "./index-tracker.js"
-import { log, logError } from "./logger.js"
+import { IndexTracker } from "../tracking/index.js"
+import { log, logError } from "../logger.js"
 
 // ── Language extension → LSP languageId map ──────────────────────────────────
 const LANGUAGE_EXTENSIONS: Record<string, string> = {
@@ -99,7 +99,7 @@ export class LspClient {
       // Write clangd's own stderr to our log file
       try {
         const { appendFileSync } = require("fs") as typeof import("fs")
-        const { getLogFile } = require("./logger.js") as typeof import("./logger.js")
+        const { getLogFile } = require("../logger.js") as typeof import("./logger.js")
         appendFileSync(getLogFile(), `${new Date().toISOString()} [CLANGD] ${text}\n`)
       } catch { /* ignore */ }
       process.stderr.write(`[clangd] ${text}\n`)
@@ -622,31 +622,98 @@ export class LspClient {
   }
 
   async prepareCallHierarchy(filePath: string, line: number, character: number): Promise<any[]> {
+    const startedAt = Date.now()
+    log("INFO", "call-hierarchy prepare start", { filePath, line, character })
     return this._conn
       .sendRequest("textDocument/prepareCallHierarchy", {
         textDocument: { uri: this._uri(filePath) },
         position: this._pos(line, character),
       })
-      .then((r: any) => (Array.isArray(r) ? r : []))
-      .catch(() => [])
+      .then((r: any) => {
+        const items = Array.isArray(r) ? r : []
+        const first = items[0]?.name ?? null
+        log("INFO", "call-hierarchy prepare result", {
+          filePath,
+          line,
+          character,
+          count: items.length,
+          first,
+          durationMs: Date.now() - startedAt,
+        })
+        return items
+      })
+      .catch((err: any) => {
+        logError("call-hierarchy prepare failed", err)
+        return []
+      })
   }
 
   async incomingCalls(filePath: string, line: number, character: number): Promise<any[]> {
+    const startedAt = Date.now()
+    log("INFO", "call-hierarchy incoming start", { filePath, line, character })
     const items = await this.prepareCallHierarchy(filePath, line, character)
-    if (!items.length) return []
+    if (!items.length) {
+      log("WARN", "call-hierarchy incoming skipped: no prepare item", {
+        filePath,
+        line,
+        character,
+        durationMs: Date.now() - startedAt,
+      })
+      return []
+    }
+    const seed = items[0]?.name ?? null
     return this._conn
       .sendRequest("callHierarchy/incomingCalls", { item: items[0] })
-      .then((r: any) => (Array.isArray(r) ? r : []))
-      .catch(() => [])
+      .then((r: any) => {
+        const calls = Array.isArray(r) ? r : []
+        log("INFO", "call-hierarchy incoming result", {
+          filePath,
+          line,
+          character,
+          seed,
+          count: calls.length,
+          durationMs: Date.now() - startedAt,
+        })
+        return calls
+      })
+      .catch((err: any) => {
+        logError("call-hierarchy incoming failed", err)
+        return []
+      })
   }
 
   async outgoingCalls(filePath: string, line: number, character: number): Promise<any[]> {
+    const startedAt = Date.now()
+    log("INFO", "call-hierarchy outgoing start", { filePath, line, character })
     const items = await this.prepareCallHierarchy(filePath, line, character)
-    if (!items.length) return []
+    if (!items.length) {
+      log("WARN", "call-hierarchy outgoing skipped: no prepare item", {
+        filePath,
+        line,
+        character,
+        durationMs: Date.now() - startedAt,
+      })
+      return []
+    }
+    const seed = items[0]?.name ?? null
     return this._conn
       .sendRequest("callHierarchy/outgoingCalls", { item: items[0] })
-      .then((r: any) => (Array.isArray(r) ? r : []))
-      .catch(() => [])
+      .then((r: any) => {
+        const calls = Array.isArray(r) ? r : []
+        log("INFO", "call-hierarchy outgoing result", {
+          filePath,
+          line,
+          character,
+          seed,
+          count: calls.length,
+          durationMs: Date.now() - startedAt,
+        })
+        return calls
+      })
+      .catch((err: any) => {
+        logError("call-hierarchy outgoing failed", err)
+        return []
+      })
   }
 
   async prepareTypeHierarchy(filePath: string, line: number, character: number): Promise<any[]> {

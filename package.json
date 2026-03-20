@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@opencode-ai/clangd-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Standalone MCP server bridging clangd LSP to OpenCode agents",
   "type": "module",
   "license": "MIT",
@@ -10,7 +10,7 @@
     "clangd-mcp": "./dist/index.js"
   },
   "scripts": {
-    "build": "/usr2/adagur/.bun/bin/bun build ./src/index.ts --outdir ./dist --target node --format esm && /usr2/adagur/.bun/bin/bun build ./src/bridge.ts --outdir ./dist --target node --format esm",
+    "build": "/usr2/adagur/.bun/bin/bun build ./src/index.ts --outfile ./dist/index.js --target node --format esm && /usr2/adagur/.bun/bin/bun build ./src/bridge/index.ts --outfile ./dist/bridge.js --target node --format esm",
     "dev": "/usr2/adagur/.bun/bin/bun run ./src/index.ts",
     "test": "vitest run",
     "test:unit": "vitest run test/unit/",

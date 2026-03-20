@@ -20,7 +20,7 @@ import { readFileSync, writeFileSync, unlinkSync, openSync, closeSync, constants
 import { spawn } from "child_process"
 import path from "path"
 import { fileURLToPath } from "url"
-import { log, logError } from "./logger.js"
+import { log, logError } from "../logger.js"
 
 // ── Root normalisation ────────────────────────────────────────────────────────
 
@@ -420,7 +420,7 @@ export function resolveBridgeScript(): string {
     return distBridge
   } catch {
     // Fall back to src/bridge.ts (dev mode with Bun)
-    return path.join(thisDir, "bridge.ts")
+    return path.join(thisDir, "../bridge/index.ts")
   }
 }
 

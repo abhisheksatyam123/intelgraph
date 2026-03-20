@@ -8,9 +8,10 @@
 import { z } from "zod"
 import path from "path"
 import { fileURLToPath } from "url"
-import type { LspClient } from "./lsp-client.js"
-import type { IndexTracker } from "./index-tracker.js"
+import type { LspClient } from "../lsp/index.js"
+import type { IndexTracker } from "../tracking/index.js"
 import { readFileSync } from "fs"
+import { classifyIncomingCalls, collectIndirectCallers, formatIndirectCallerTree } from "./indirect-callers.js"
 
 // ── Symbol kind number → readable name ───────────────────────────────────────
 const SYMBOL_KIND: Record<number, string> = {
@@ -103,12 +104,13 @@ export function formatWorkspaceSymbol(results: any[], root: string): string {
 
 export function formatIncomingCalls(results: any[], root: string): string {
   if (!results.length) return "No incoming calls."
-  return results
+  return classifyIncomingCalls(results)
     .map((call: any) => {
       const from = call.from ?? call.caller
       const kind = SYMBOL_KIND[from?.kind] ?? "?"
       const loc  = fmtLocation({ uri: from?.uri, range: from?.selectionRange ?? from?.range }, root)
-      return `  <- [${kind}] ${from?.name ?? "(unknown)"}  at ${loc}`
+      const tags = Array.isArray(call.tags) && call.tags.length ? ` [${call.tags.join(",")}]` : ""
+      return `  <- [${kind}]${tags} ${from?.name ?? "(unknown)"}  at ${loc}`
     })
     .join("\n")
 }
@@ -300,6 +302,8 @@ const fileOnlySchema = z.object({
   file: z.string().describe("Absolute path to the C/C++ source file"),
 })
 
+const incomingCallSchema = positionSchema
+
 // Helper: open file before position-based queries
 async function withFile(
   client: LspClient,
@@ -471,12 +475,33 @@ export const TOOLS: ToolDef[] = [
   // ── lsp_incoming_calls ────────────────────────────────────────────────────
   {
     name: "lsp_incoming_calls",
-    description: "Find all callers of the function at the given position (who calls this?).",
-    inputSchema: positionSchema,
+    description: "Find all callers of the function at the given position (who calls this?). " +
+      "Each caller is tagged as [direct], [dispatch-table], [reg-call], or [struct-reg].",
+    inputSchema: incomingCallSchema,
     execute: async (args, client, tracker) =>
       withFile(client, args.file, async () => {
         const results = await client.incomingCalls(args.file, args.line - 1, args.character - 1)
-        return formatIncomingCalls(results, client.root) + tracker.statusSuffix()
+        return formatIncomingCalls(classifyIncomingCalls(results), client.root) + tracker.statusSuffix()
+      }),
+  },
+
+  {
+    name: "lsp_indirect_callers",
+    description:
+      "Find all direct callers and registration endpoints of the function at the given position. " +
+      "Registration endpoints (dispatch-table entries, callback registrations, timer callbacks) " +
+      "are shown as terminal nodes — they represent the event source that will invoke the function " +
+      "at runtime. No recursion into who calls the registrar. " +
+      "Groups results by: Direct callers / Dispatch-table registrations / " +
+      "Registration-call registrations / Struct registrations / Signal-based registrations.",
+    inputSchema: positionSchema.extend({
+      maxNodes: z.number().int().min(1).max(500).default(15).optional()
+                .describe("Maximum callers to return (default: 15)"),
+    }),
+    execute: async (args, client, tracker) =>
+      withFile(client, args.file, async () => {
+        const graph = await collectIndirectCallers(client, args)
+        return formatIndirectCallerTree(graph, client.root) + tracker.statusSuffix()
       }),
   },
 

@@ -1,25 +1,57 @@
 # clangd-mcp
 
-A standalone MCP (Model Context Protocol) server that bridges `clangd` to OpenCode agents.
+`clangd-mcp` is a standalone MCP (Model Context Protocol) server that exposes
+clangd navigation and analysis tools to OpenCode.
 
-Unlike the built-in LSP tool, this server **owns the clangd process** and keeps it alive across
-OpenCode restarts — preserving the background index that can take minutes to build on large C/C++
-codebases. Multiple OpenCode sessions can share the same warm clangd instance via the HTTP transport.
+Its main advantage over a short-lived built-in LSP process is persistence:
+clangd can stay alive across OpenCode restarts, keep its background index warm,
+and serve multiple MCP sessions for the same workspace.
 
----
+## What it does
 
-## Quick Start
+- starts or reuses a workspace-scoped clangd service
+- exposes clangd capabilities as MCP tools
+- keeps background indexing alive across short-lived frontend processes
+- supports direct stdio mode, standalone HTTP mode, and the default stdio proxy
+  to a detached HTTP daemon
 
-### 1. Build the server
+## Runtime modes
+
+### Default: stdio proxy to detached HTTP daemon
+
+With no transport flags, `clangd-mcp` starts as a short-lived stdio MCP server
+that first ensures a detached HTTP daemon is already running for the workspace,
+then forwards all tool calls to it.
+
+This is the recommended mode for OpenCode because:
+
+- the warm clangd index survives OpenCode restarts
+- multiple OpenCode sessions can share one workspace daemon
+- you usually do not need to manage ports manually
+
+### Direct stdio mode
+
+Use `--stdio` when you want a single-process, single-session debug setup.
+
+### Standalone HTTP mode
+
+Use `--port <n>` when you want a long-lived HTTP MCP endpoint and prefer to
+manage the process yourself.
+
+## Quick start
+
+### 1. Build
 
 ```bash
 bun install
-bun run build   # produces dist/index.js
+bun run build
 ```
+
+This produces `dist/index.js` and `dist/bridge.js`.
 
 ### 2. Configure OpenCode
 
-Add to your `opencode.json`:
+Minimal recommended setup:
 
 ```json
 {
@@ -33,7 +65,6 @@ Add to your `opencode.json`:
       "command": [
         "bun",
         "/path/to/clangd-mcp/dist/index.js",
-        "--stdio",
         "--root",
         "/path/to/your/workspace",
         "--clangd",
@@ -47,130 +78,162 @@ Add to your `opencode.json`:
 }
 ```
 
-Replace:
-- `/path/to/clangd-mcp/dist/index.js` with the actual path to this built server
-- `/path/to/your/workspace` with your project root (where `compile_commands.json` lives)
-- `/usr/local/bin/clangd-20` with your clangd binary path (or just `clangd` if it's in PATH)
+Notes:
+
+- omitting transport flags uses the default stdio-proxy mode
+- `--root` should point at the workspace that contains `compile_commands.json`
+- `--clangd` is optional if `clangd` is already on `PATH`
 
 ### 3. Start OpenCode
 
-The clangd-mcp server will start automatically when OpenCode launches.
+OpenCode will launch `clangd-mcp` automatically when the MCP entry is enabled.
 
----
+## Tool surface
 
-## Tools exposed
+The authoritative tool registry lives in `src/tools.ts`. The current source
+defines 22 MCP tools with `lsp_` names:
 
-| Tool | Description |
-|------|-------------|
-| `clangd_lsp_hover` | Type info, docs, and signature for a symbol |
-| `clangd_lsp_definition` | Jump to definition |
-| `clangd_lsp_declaration` | Jump to declaration (header file) |
-| `clangd_lsp_type_definition` | Jump to type definition |
-| `clangd_lsp_references` | Find all references |
-| `clangd_lsp_implementation` | Find virtual/interface implementations |
-| `clangd_lsp_document_symbol` | List all symbols in a file |
-| `clangd_lsp_workspace_symbol` | Search symbols across the whole workspace |
-| `clangd_lsp_incoming_calls` | Who calls this function? |
-| `clangd_lsp_outgoing_calls` | What does this function call? |
-| `clangd_lsp_supertypes` | Find base types/parent classes |
-| `clangd_lsp_subtypes` | Find derived types/child classes |
-| `clangd_lsp_diagnostics` | Compiler errors and warnings |
-| `clangd_lsp_code_action` | Quick fixes and refactors at a position |
-| `clangd_lsp_format` | Format code with clang-format |
-| `clangd_lsp_rename` | Preview rename refactoring |
-| `clangd_lsp_inlay_hints` | Show inferred types and parameter names |
-| `clangd_lsp_index_status` | Current clangd background index status |
+- `lsp_hover`
+- `lsp_definition`
+- `lsp_declaration`
+- `lsp_type_definition`
+- `lsp_references`
+- `lsp_implementation`
+- `lsp_document_highlight`
+- `lsp_document_symbol`
+- `lsp_workspace_symbol`
+- `lsp_folding_range`
+- `lsp_signature_help`
+- `lsp_incoming_calls`
+- `lsp_outgoing_calls`
+- `lsp_supertypes`
+- `lsp_subtypes`
+- `lsp_rename`
+- `lsp_format`
+- `lsp_inlay_hints`
+- `lsp_diagnostics`
+- `lsp_code_action`
+- `lsp_file_status`
+- `lsp_index_status`
 
-All tools append an index-status suffix when the background index is still building, so the agent
-knows whether cross-file results (references, callers, etc.) are complete.
+These tools return readable plain text rather than raw JSON. Many of them also
+append readiness hints while background indexing is still in progress.
 
----
+## Configuration
 
-## Configuration Examples
+### CLI options
 
-### Minimal stdio setup (single OpenCode session)
+```text
+--root <path>         Workspace root. Defaults to .clangd-mcp.json, then cwd.
+--stdio               Direct stdio MCP mode.
+--port <number>       Standalone HTTP MCP mode on this port.
+--http-daemon         Detached HTTP daemon mode (normally spawned internally).
+--http-port <number>  Port for detached HTTP daemon mode.
+--clangd <path>       Path to clangd binary. Defaults to "clangd".
+--clangd-args <args>  Extra clangd args, comma-separated.
+```
+
+### Workspace config file
+
+You can commit a `.clangd-mcp.json` file at the workspace root:
 
 ```json
 {
-  "$schema": "https://opencode.ai/config.json",
-  "mcp": {
-    "clangd": {
-      "type": "local",
-      "command": [
-        "bun",
-        "/local/mnt/workspace/qprojects/clangd-mcp/dist/index.js",
-        "--stdio",
-        "--root",
-        "/path/to/your/workspace"
-      ],
-      "enabled": true
-    }
-  }
+  "clangd": "/usr/local/bin/clangd-20",
+  "args": [
+    "--background-index",
+    "--enable-config",
+    "--log=error"
+  ],
+  "enabled": true
 }
 ```
 
-### Full configuration with custom clangd args
+Precedence is:
 
-```json
-{
-  "$schema": "https://opencode.ai/config.json",
-  "permission": {
-    "lsp": "allow"
-  },
-  "lsp": {
-    "clangd": {
-      "command": [
-        "/usr/local/bin/clangd-20",
-        "--background-index",
-        "--enable-config",
-        "--compile-commands-dir=/local/mnt/workspace/code1/WLAN.CNG.1.0-01880.3-QCACNGSWPL_V1_V2_SILICON-1",
-        "--log=error",
-        "--clang-tidy=false"
-      ]
-    }
-  },
-  "mcp": {
-    "clangd": {
-      "type": "local",
-      "command": [
-        "bun",
-        "/local/mnt/workspace/qprojects/clangd-mcp/dist/index.js",
-        "--stdio",
-        "--root",
-        "/local/mnt/workspace/code1/WLAN.CNG.1.0-01880.3-QCACNGSWPL_V1_V2_SILICON-1",
-        "--clangd",
-        "/usr/local/bin/clangd-20",
-        "--clangd-args",
-        "--background-index,--enable-config,--compile-commands-dir=/local/mnt/workspace/code1/WLAN.CNG.1.0-01880.3-QCACNGSWPL_V1_V2_SILICON-1,--log=error,--clang-tidy=false,--completion-style=detailed,--header-insertion=never"
-      ],
-      "enabled": true
-    }
-  }
-}
+1. CLI flags
+2. `.clangd-mcp.json`
+3. built-in defaults
+
+### Example `.clangd` file
+
+You can still use clangd's own `.clangd` configuration in the target workspace:
+
+```yaml
+CompileFlags:
+  Add:
+    - -ferror-limit=0
+  Remove:
+    - -m*
+    - -f*san
+
+Index:
+  Background: Build
+
+Diagnostics:
+  ClangTidy:
+    Add: []
+    Remove: ['*']
+
+InlayHints:
+  Enabled: Yes
+  ParameterNames: Yes
+  DeducedTypes: Yes
 ```
 
-**Key configuration options:**
-- `--background-index` — Build index in background for cross-file navigation
-- `--enable-config` — Read `.clangd` configuration files
-- `--compile-commands-dir` — Path to directory containing `compile_commands.json`
-- `--log=error` — Reduce log verbosity
-- `--clang-tidy=false` — Disable clang-tidy for faster indexing
-- `--completion-style=detailed` — More detailed completions for agents
-- `--header-insertion=never` — Don't auto-insert headers
+## Architecture at a glance
 
-### HTTP mode (persistent clangd, survives OpenCode restarts)
+```text
+OpenCode / MCP client
+        |
+        | stdio MCP or HTTP MCP
+        v
+clangd-mcp frontend
+        |
+        | shared LSP client
+        v
+bridge socket or direct stdio
+        |
+        v
+clangd
+        |
+        v
+workspace source tree + background index
+```
 
-Start the server once in a terminal (or as a systemd/tmux service):
+Important detail: the HTTP daemon layer supports multiple MCP sessions, but the
+raw bridge layer itself keeps one active TCP socket at a time and relies on
+higher-level reconnect logic.
+
+## Persistence model
+
+Per-workspace runtime state is stored under the workspace root:
+
+- `.clangd-mcp-state.json` — saved bridge/HTTP daemon metadata
+- `.clangd-mcp-spawn.lock` — coordination file to avoid duplicate daemon spawn
+- `clangd-mcp.log` — main server log
+- `clangd-mcp-bridge.log` — detached bridge log
+
+This is what allows later OpenCode sessions to reconnect to a warm daemon.
+
+## Manual operation examples
+
+### Direct stdio debug mode
 
 ```bash
-bun /local/mnt/workspace/qprojects/clangd-mcp/dist/index.js \
-  --root /local/mnt/workspace/code1/WLAN.CNG.1.0-01880.3-QCACNGSWPL_V1_V2_SILICON-1 \
-  --port 7777 \
-  --clangd /usr/local/bin/clangd-20 \
-  --clangd-args="--background-index,--enable-config,--log=error,--clang-tidy=false"
+bun dist/index.js --stdio --root /path/to/workspace
 ```
 
-Then in `opencode.json`:
+### Standalone HTTP mode
+
+```bash
+bun dist/index.js \
+  --port 7777 \
+  --root /path/to/workspace \
+  --clangd /usr/local/bin/clangd-20
+```
+
+Then configure OpenCode as a remote MCP server:
 
 ```json
 {
@@ -185,120 +248,64 @@ Then in `opencode.json`:
 }
 ```
 
----
+### Keep a server alive with tmux
 
-## CLI Options
-
-```
---root <path>         Workspace root (where compile_commands.json lives). Required.
---stdio               Use stdio transport (default if --port not given).
---port <number>       Use HTTP/StreamableHTTP transport on this port.
---clangd <path>       Path to clangd binary (default: "clangd" from PATH).
---clangd-args <args>  Extra args for clangd, comma-separated.
-```
-
----
-
-## Project-specific clangd configuration
-
-Create a `.clangd` file in your workspace root to customize clangd behavior:
-
-```yaml
-CompileFlags:
-  Add:
-    - -ferror-limit=0
-  Remove:
-    - -m*
-    - -f*san
-    
-Index:
-  Background: Build
-  
-Diagnostics:
-  ClangTidy:
-    Add: []
-    Remove: ['*']
-  UnusedIncludes: None
-  
-InlayHints:
-  Enabled: Yes
-  ParameterNames: Yes
-  DeducedTypes: Yes
-```
-
----
-
-## Keeping clangd alive with tmux (recommended for large repos)
-
-For large repos where the index takes 5–15 minutes to build, run clangd-mcp
-in a persistent tmux session so it survives terminal disconnects:
+For large codebases you may still prefer to keep a manually launched server in
+`tmux`:
 
 ```bash
 tmux new-session -d -s clangd-mcp \
-  "bun /local/mnt/workspace/qprojects/clangd-mcp/dist/index.js \
-    --root /local/mnt/workspace/code1/WLAN.CNG.1.0-01880.3-QCACNGSWPL_V1_V2_SILICON-1 \
-    --port 7777 \
-    --clangd /usr/local/bin/clangd-20 \
-    --clangd-args='--background-index,--enable-config,--log=error,--clang-tidy=false'"
+  "bun /path/to/clangd-mcp/dist/index.js --port 7777 --root /path/to/workspace"
 ```
 
-Check status:
+## Development
+
+Useful commands:
+
 ```bash
-tmux attach -t clangd-mcp
+bun run build
+bun run test
+bun run test:unit
+bun run test:integration
+bun run test:e2e
+bun run typecheck
 ```
 
----
-
-## Architecture
-
-```
-OpenCode agent
-     │  MCP tool calls (JSON-RPC over stdio or HTTP)
-     ▼
-clangd-mcp (this server)
-     │  LSP JSON-RPC over stdio
-     ▼
-clangd process
-     │  reads compile_commands.json, builds background index
-     ▼
-Source files + index cache (~/.cache/clangd/)
-```
-
----
+The test suite documentation lives in `test/README.md`.
 
 ## Troubleshooting
 
-### Index not building
+### `compile_commands.json` is missing
 
-Check that `compile_commands.json` exists in your workspace root:
-```bash
-ls -la /path/to/workspace/compile_commands.json
-```
+Make sure the workspace root contains a compilation database clangd can use.
 
-### clangd not found
+### `clangd` cannot be found
 
-Specify the full path to clangd:
-```bash
-which clangd-20  # or: which clangd
-```
+Pass `--clangd /full/path/to/clangd-20` or add clangd to `PATH`.
 
-Then use that path in `--clangd` argument.
+### Initial indexing is slow
 
-### Slow indexing
+That is expected on large C/C++ repositories. The point of the detached daemon
+mode is to pay that cost once, then reuse the warm index.
 
-For large codebases, the initial index build can take 5-15 minutes. Use HTTP mode with tmux
-to keep the index warm across OpenCode restarts.
+### Existing daemon seems stale
 
-### Check clangd logs
+Delete the workspace-local `.clangd-mcp-state.json` and restart.
 
-Logs are written to:
-- `clangd-mcp.log` — MCP server logs
-- `clangd-mcp-bridge.log` — clangd process logs
+### Need logs
 
----
+Check:
+
+- `<workspace>/clangd-mcp.log`
+- `<workspace>/clangd-mcp-bridge.log`
+- `CLANGD_MCP_LOG` if you overrode the default log path
+
+## More docs
+
+- `docs/architecture.md` — repo-facing architecture summary
+- `docs/components/daemon-manager.md` — daemon lifecycle reference
+- `docs/LOG_ANALYSIS.md` — current log-analysis notes (may lag active logger implementation)
 
 ## License
 
 MIT
-EOFREADME
-cat /tmp/readme_new.md

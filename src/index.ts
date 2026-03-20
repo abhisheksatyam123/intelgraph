@@ -59,10 +59,10 @@
 
 import { readFileSync } from "fs"
 import path from "path"
-import { LspClient } from "./lsp-client.js"
-import { startStdio, startHttp, startStdioProxy } from "./server.js"
+import { LspClient } from "./lsp/index.js"
+import { startStdio, startHttp, startStdioProxy } from "./core/server.js"
 import { initLogger, log, logError, getLogFile } from "./logger.js"
-import { IndexTracker } from "./index-tracker.js"
+import { IndexTracker } from "./tracking/index.js"
 import {
   readState,
   writeState,
@@ -74,7 +74,7 @@ import {
   resolveBridgeScript,
   normaliseRoot,
   type DaemonState,
-} from "./daemon.js"
+} from "./daemon/index.js"
 
 // ── Workspace config (.clangd-mcp.json) ──────────────────────────────────────
 

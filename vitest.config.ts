@@ -5,6 +5,7 @@ export default defineConfig({
     globals: true,
     environment: "node",
     include: ["test/**/*.test.ts"],
+    exclude: ["test/e2e/**/*", "test/manual/**/*"],
     testTimeout: 30_000,
     hookTimeout: 60_000,
     pool: "forks",
@@ -18,7 +19,12 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "json", "html"],
       include: ["src/**/*.ts"],
-      exclude: ["src/**/*.d.ts"],
+      exclude: [
+        "src/**/*.d.ts",
+        "src/config/**/*",
+        "src/logging/**/*",
+        "src/errors/**/*",
+      ],
     },
   },
 })
