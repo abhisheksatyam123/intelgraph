@@ -20,7 +20,8 @@ import { readFileSync, writeFileSync, unlinkSync, openSync, closeSync, constants
 import { spawn } from "child_process"
 import path from "path"
 import { fileURLToPath } from "url"
-import { log, logError } from "../logger.js"
+import { createHash } from "crypto"
+import { log, logError } from "../logging/logger.js"
 
 // ── Root normalisation ────────────────────────────────────────────────────────
 
@@ -74,6 +75,21 @@ export interface DaemonState {
   httpPort?: number
   /** PID of the HTTP MCP daemon process (absent = not running) */
   httpPid?: number
+  /** Stable workspace identity derived from normalized root */
+  workspaceId?: string
+  /** compile_commands preflight status mirrored from cleaner */
+  compileCommandsPreflight?: {
+    ranAt?: string
+    patchEntries?: number
+    mappedPatchCount?: number
+    unmatchedPatchCount?: number
+    requireZeroUnmatched?: boolean
+    preflightPolicy?: "reject" | "fix" | "remap"
+    externalEntryCount?: number
+    remappedExternalCount?: number
+    removedExternalCount?: number
+    preflightOk?: boolean
+  }
 }
 
 const STATE_FILE = ".clangd-mcp-state.json"
@@ -81,6 +97,11 @@ const STATE_VERSION = 1
 
 export function stateFilePath(root: string): string {
   return path.join(normaliseRoot(root), STATE_FILE)
+}
+
+export function computeWorkspaceId(root: string): string {
+  const normalized = normaliseRoot(root)
+  return createHash("sha256").update(normalized).digest("hex").slice(0, 12)
 }
 
 export function readState(root: string): DaemonState | null {
@@ -139,6 +160,18 @@ function spawnLockPath(root: string): string {
   return path.join(normaliseRoot(root), SPAWN_LOCK_FILE)
 }
 
+function readSpawnLockOwnerPid(root: string): number | null {
+  const lp = spawnLockPath(root)
+  try {
+    const txt = readFileSync(lp, "utf8")
+    const first = txt.split(/\r?\n/)[0]?.trim()
+    const pid = first ? Number(first) : NaN
+    return Number.isFinite(pid) && pid > 0 ? pid : null
+  } catch {
+    return null
+  }
+}
+
 /**
  * Acquire spawn lock using atomic O_CREAT | O_EXCL.
  * Returns true if lock acquired, false if another process holds it.
@@ -167,6 +200,15 @@ export function tryAcquireSpawnLock(root: string): boolean {
 export function releaseSpawnLock(root: string): void {
   const lp = spawnLockPath(root)
   try {
+    const ownerPid = readSpawnLockOwnerPid(root)
+    if (ownerPid && ownerPid !== process.pid) {
+      log("WARN", "Refusing to release spawn lock owned by another PID", {
+        path: lp,
+        ownerPid,
+        pid: process.pid,
+      })
+      return
+    }
     unlinkSync(lp)
     log("INFO", "Spawn lock released", { path: lp, pid: process.pid })
   } catch (err: any) {
@@ -190,6 +232,22 @@ export async function waitForSpawnLockRelease(root: string, timeoutMs = 30_000):
     polls++
     try {
       readFileSync(lp, "utf8")
+
+      // Detect and clean stale lock if owner process is gone.
+      const ownerPid = readSpawnLockOwnerPid(root)
+      if (ownerPid && !isProcessAlive(ownerPid)) {
+        log("WARN", "Detected stale spawn lock owner; removing stale lock", {
+          path: lp,
+          ownerPid,
+        })
+        try {
+          unlinkSync(lp)
+          return true
+        } catch {
+          // another process may have raced; continue polling
+        }
+      }
+
       // Lock file still exists — wait
       await new Promise(r => setTimeout(r, delay))
       delay = Math.min(delay * 1.5, 2000)

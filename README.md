@@ -90,8 +90,8 @@ OpenCode will launch `clangd-mcp` automatically when the MCP entry is enabled.
 
 ## Tool surface
 
-The authoritative tool registry lives in `src/tools.ts`. The current source
-defines 22 MCP tools with `lsp_` names:
+The authoritative tool registry lives in `src/tools/index.ts`. The current source
+defines 23 MCP tools with `lsp_` names:
 
 - `lsp_hover`
 - `lsp_definition`
@@ -105,6 +105,7 @@ defines 22 MCP tools with `lsp_` names:
 - `lsp_folding_range`
 - `lsp_signature_help`
 - `lsp_incoming_calls`
+- `lsp_indirect_callers`
 - `lsp_outgoing_calls`
 - `lsp_supertypes`
 - `lsp_subtypes`
@@ -211,10 +212,11 @@ Per-workspace runtime state is stored under the workspace root:
 
 - `.clangd-mcp-state.json` — saved bridge/HTTP daemon metadata
 - `.clangd-mcp-spawn.lock` — coordination file to avoid duplicate daemon spawn
-- `clangd-mcp.log` — main server log
-- `clangd-mcp-bridge.log` — detached bridge log
 
-This is what allows later OpenCode sessions to reconnect to a warm daemon.
+Log files are written to `~/.local/share/clangd-mcp/logs/`:
+
+- `clangd-mcp.log` — main server log (override with `CLANGD_MCP_LOG_DIR`)
+- `clangd-mcp-bridge.log` — detached bridge log (written to workspace root)
 
 ## Manual operation examples
 
@@ -296,15 +298,32 @@ Delete the workspace-local `.clangd-mcp-state.json` and restart.
 
 Check:
 
-- `<workspace>/clangd-mcp.log`
-- `<workspace>/clangd-mcp-bridge.log`
-- `CLANGD_MCP_LOG` if you overrode the default log path
+- `~/.local/share/clangd-mcp/logs/clangd-mcp.log` — main server log
+- `<workspace>/clangd-mcp-bridge.log` — detached bridge log
+- Set `CLANGD_MCP_LOG_DIR` to override the log directory
 
 ## More docs
 
 - `docs/architecture.md` — repo-facing architecture summary
+- `docs/WLAN_ANALYSIS_ARCHITECTURE.md` — **WLAN code analysis pipeline + PostgreSQL schema design**
+- `docs/diagrams/clangd-mcp-architecture.puml` — PlantUML component diagram (basic runtime)
+- `docs/diagrams/clangd-mcp-complete-architecture.puml` — **PlantUML complete architecture (multi-client + PostgreSQL)**
 - `docs/components/daemon-manager.md` — daemon lifecycle reference
-- `docs/LOG_ANALYSIS.md` — current log-analysis notes (may lag active logger implementation)
+- `docs/LOG_ANALYSIS.md` — logging subsystem reference
+
+### Render the PlantUML diagrams
+
+If you have PlantUML installed locally:
+
+```bash
+# Basic runtime architecture
+plantuml docs/diagrams/clangd-mcp-architecture.puml
+
+# Complete architecture with PostgreSQL intelligence store
+plantuml docs/diagrams/clangd-mcp-complete-architecture.puml
+```
+
+This generates diagram images next to the `.puml` source files.
 
 ## License
 

@@ -1,0 +1,12 @@
+[
+  {
+    "directory": "/local/mnt/workspace/qprojects/clangd-mcp/test/fixtures/indirect-callers",
+    "command": "cc -std=c11 -Wall -I. -c handlers.c -o handlers.o",
+    "file": "/local/mnt/workspace/qprojects/clangd-mcp/test/fixtures/indirect-callers/handlers.c"
+  },
+  {
+    "directory": "/local/mnt/workspace/qprojects/clangd-mcp/test/fixtures/indirect-callers",
+    "command": "cc -std=c11 -Wall -I. -c registrations.c -o registrations.o",
+    "file": "/local/mnt/workspace/qprojects/clangd-mcp/test/fixtures/indirect-callers/registrations.c"
+  }
+]

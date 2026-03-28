@@ -1,0 +1,8 @@
+{
+  "compileCommandsCleaning": {
+    "preflight": {
+      "requireZeroUnmatched": false,
+      "preflightOk": true
+    }
+  }
+}

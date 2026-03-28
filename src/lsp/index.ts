@@ -16,7 +16,7 @@ import {
   type MessageConnection,
 } from "vscode-jsonrpc/node.js"
 import { IndexTracker } from "../tracking/index.js"
-import { log, logError } from "../logger.js"
+import { log, logError } from "../logging/logger.js"
 
 // ── Language extension → LSP languageId map ──────────────────────────────────
 const LANGUAGE_EXTENSIONS: Record<string, string> = {
@@ -53,6 +53,8 @@ export class LspClient {
   private _openFiles = new Map<string, number>()   // path → version
   private _diagnostics = new Map<string, any[]>()  // path → diagnostics
   private _shuttingDown = false                     // prevents onExit from firing during clean shutdown
+  private _socketTraceId: string | null = null
+  private _inflightRequests = 0
   readonly indexTracker: IndexTracker
   readonly root: string
 
@@ -99,7 +101,7 @@ export class LspClient {
       // Write clangd's own stderr to our log file
       try {
         const { appendFileSync } = require("fs") as typeof import("fs")
-        const { getLogFile } = require("../logger.js") as typeof import("./logger.js")
+        const { getLogFile } = require("../logging/logger.js") as typeof import("../logging/logger.js")
         appendFileSync(getLogFile(), `${new Date().toISOString()} [CLANGD] ${text}\n`)
       } catch { /* ignore */ }
       process.stderr.write(`[clangd] ${text}\n`)
@@ -277,16 +279,44 @@ export class LspClient {
     indexTracker?: IndexTracker,
     skipInit = false,
   ): Promise<LspClient> {
+    const traceId = `sock-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
     log("INFO", `Connecting to clangd bridge on 127.0.0.1:${port} (skipInit=${skipInit})`)
 
     const socket = createConnection({ port, host: "127.0.0.1" })
+
+    socket.on("end", () => {
+      log("WARN", "clangd bridge socket ended", {
+        traceId,
+        localPort: socket.localPort,
+        remotePort: socket.remotePort,
+      })
+    })
+    socket.on("close", (hadError) => {
+      log("WARN", "clangd bridge socket closed", {
+        traceId,
+        hadError,
+        localPort: socket.localPort,
+        remotePort: socket.remotePort,
+      })
+    })
+    socket.on("error", (err: any) => {
+      log("WARN", "clangd bridge socket error", {
+        traceId,
+        message: String(err?.message ?? err),
+        code: err?.code,
+      })
+    })
 
     await new Promise<void>((resolve, reject) => {
       socket.once("connect", resolve)
       socket.once("error", reject)
     })
 
-    log("INFO", `TCP connection established to port ${port}`)
+    log("INFO", `TCP connection established to port ${port}`, {
+      traceId,
+      localPort: socket.localPort,
+      remotePort: socket.remotePort,
+    })
 
     const conn = createMessageConnection(
       new SocketMessageReader(socket),
@@ -294,7 +324,10 @@ export class LspClient {
     )
 
     conn.onClose(() => {
-      log("WARN", "JSON-RPC connection to clangd bridge closed")
+      log("WARN", "JSON-RPC connection to clangd bridge closed", {
+        traceId,
+        inflightAtClose: "unavailable-pre-client-init",
+      })
     })
     conn.onError((err) => {
       const [error, code, count] = err as [Error, number | undefined, number | undefined]
@@ -402,6 +435,7 @@ export class LspClient {
     // createFromSocket has no ChildProcess — pass a dummy proc object
     const dummyProc = { pid: undefined, kill: () => {}, stdin: null, stdout: null, stderr: null } as unknown as ChildProcess
     const client = new LspClient(dummyProc, conn, root, tracker)
+    client._socketTraceId = traceId
 
     conn.onNotification("textDocument/publishDiagnostics", (params: any) => {
       try {
@@ -420,6 +454,30 @@ export class LspClient {
   }
 
   // ── File management ────────────────────────────────────────────────────────
+
+  private _traceCtx(extra?: Record<string, unknown>): Record<string, unknown> {
+    return {
+      traceId: this._socketTraceId,
+      inflight: this._inflightRequests,
+      ...(extra ?? {}),
+    }
+  }
+
+  private async _trackedRequest<T>(label: string, fn: () => Promise<T>): Promise<T> {
+    this._inflightRequests += 1
+    const started = Date.now()
+    log("DEBUG", `${label}:start`, this._traceCtx())
+    try {
+      const out = await fn()
+      log("DEBUG", `${label}:done`, this._traceCtx({ durationMs: Date.now() - started }))
+      return out
+    } catch (err: any) {
+      log("WARN", `${label}:error`, this._traceCtx({ durationMs: Date.now() - started, message: String(err?.message ?? err) }))
+      throw err
+    } finally {
+      this._inflightRequests = Math.max(0, this._inflightRequests - 1)
+    }
+  }
 
   async openFile(filePath: string, text: string): Promise<boolean> {
     const uri = pathToFileURL(filePath).href
@@ -624,11 +682,11 @@ export class LspClient {
   async prepareCallHierarchy(filePath: string, line: number, character: number): Promise<any[]> {
     const startedAt = Date.now()
     log("INFO", "call-hierarchy prepare start", { filePath, line, character })
-    return this._conn
+    return this._trackedRequest("lsp.prepareCallHierarchy", () => this._conn
       .sendRequest("textDocument/prepareCallHierarchy", {
         textDocument: { uri: this._uri(filePath) },
         position: this._pos(line, character),
-      })
+      }))
       .then((r: any) => {
         const items = Array.isArray(r) ? r : []
         const first = items[0]?.name ?? null
@@ -662,8 +720,8 @@ export class LspClient {
       return []
     }
     const seed = items[0]?.name ?? null
-    return this._conn
-      .sendRequest("callHierarchy/incomingCalls", { item: items[0] })
+    return this._trackedRequest("lsp.incomingCalls", () => this._conn
+      .sendRequest("callHierarchy/incomingCalls", { item: items[0] }))
       .then((r: any) => {
         const calls = Array.isArray(r) ? r : []
         log("INFO", "call-hierarchy incoming result", {

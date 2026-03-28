@@ -4,6 +4,8 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "node",
+    globalSetup: ["./test/test-setup.ts"],
+    setupFiles: ["./test/test-setup-per-worker.ts"],
     include: ["test/**/*.test.ts"],
     exclude: ["test/e2e/**/*", "test/manual/**/*"],
     testTimeout: 30_000,
@@ -22,7 +24,6 @@ export default defineConfig({
       exclude: [
         "src/**/*.d.ts",
         "src/config/**/*",
-        "src/logging/**/*",
         "src/errors/**/*",
       ],
     },

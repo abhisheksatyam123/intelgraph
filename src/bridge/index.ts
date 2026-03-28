@@ -177,7 +177,8 @@ async function main(): Promise<void> {
     connectionCount++
     const connId = connectionCount
     const remote = `${socket.remoteAddress}:${socket.remotePort}`
-    logJson("INFO", "New TCP connection", { connId, remote })
+    const local = `${socket.localAddress}:${socket.localPort}`
+    logJson("INFO", "New TCP connection", { connId, remote, local })
 
     // If there's an existing connection, destroy it (MCP server reconnected)
     if (activeSocket && !activeSocket.destroyed) {
@@ -190,8 +191,8 @@ async function main(): Promise<void> {
       logJson("WARN", "TCP socket error", { connId, remote, error: err.message })
     })
 
-    socket.on("close", () => {
-      logJson("INFO", "TCP connection closed", { connId, remote })
+    socket.on("close", (hadError) => {
+      logJson("INFO", "TCP connection closed", { connId, remote, local, hadError })
       if (activeSocket === socket) activeSocket = null
     })
 

@@ -61,7 +61,8 @@ import { readFileSync } from "fs"
 import path from "path"
 import { LspClient } from "./lsp/index.js"
 import { startStdio, startHttp, startStdioProxy } from "./core/server.js"
-import { initLogger, log, logError, getLogFile } from "./logger.js"
+import { initLogger, log, logError, getLogFile } from "./logging/logger.js"
+import { initIntelligenceBackend } from "./intelligence-init.js"
 import { IndexTracker } from "./tracking/index.js"
 import {
   readState,
@@ -73,8 +74,14 @@ import {
   isTcpPortOpen,
   resolveBridgeScript,
   normaliseRoot,
+  computeWorkspaceId,
   type DaemonState,
 } from "./daemon/index.js"
+import {
+  cleanCompileCommands,
+  readCleaningConfig,
+  updateCleaningConfig,
+} from "./utils/compile-commands-cleaner.js"
 
 // ── Workspace config (.clangd-mcp.json) ──────────────────────────────────────
 
@@ -83,6 +90,9 @@ interface WorkspaceConfig {
   clangd?: string
   args?: string[]
   enabled?: boolean
+  compileCommandsCleaning?: {
+    preflightPolicy?: "reject" | "fix" | "remap"
+  }
 }
 
 function readWorkspaceConfig(dir: string): WorkspaceConfig {
@@ -268,6 +278,7 @@ async function main(): Promise<void> {
   // normaliseRoot strips VCS marker dirs (.git etc.) so state files always land
   // in the real project root, not inside .git/.
   const root = normaliseRoot(cli.root || ws.root || cwd)
+  const workspaceId = computeWorkspaceId(root)
   const clangdPath = cli.clangdPath || ws.clangd || "clangd"
   const clangdArgs = cli.clangdArgs || ws.args || []
   const port = cli.port
@@ -284,7 +295,12 @@ async function main(): Promise<void> {
       : cli.httpDaemonMode
 
   // ── Initialize logger FIRST so all subsequent messages go to the log file ──
-  initLogger(root)
+  initLogger({ component: "clangd-mcp" })
+
+  // ── Intelligence backend auto-init (no-op when env vars not set) ────────────
+  initIntelligenceBackend().catch((err) =>
+    log("WARN", "intelligence backend init failed — continuing without it", { err: String(err) }),
+  )
 
   const resolvedMode = cli.httpDaemon
     ? `http-daemon (port ${cli.httpPort ?? "auto"})`
@@ -298,6 +314,7 @@ async function main(): Promise<void> {
     pid: process.pid,
     cwd,
     root,
+    workspaceId,
     mode: resolvedMode,
     clangdBin: clangdPath,
     clangdArgs,
@@ -396,6 +413,87 @@ async function main(): Promise<void> {
     } else {
       log("INFO", "No existing daemon state — spawning fresh clangd daemon", { root })
     }
+
+    // ── Clean compile_commands.json before spawning ──────────────────────────
+    const cleaningConfig = readCleaningConfig(root)
+    if (cleaningConfig.enabled !== false) {
+      // Default: enabled unless explicitly disabled
+      try {
+        const result = await cleanCompileCommands(root, {
+          enabled: true,
+          removeTests: cleaningConfig.removeTests ?? false,
+          cleanFlags: cleaningConfig.cleanFlags ?? true,
+          requireZeroUnmatched: cleaningConfig.requireZeroUnmatched ?? false,
+          preflightPolicy: cleaningConfig.preflightPolicy ?? ws.compileCommandsCleaning?.preflightPolicy ?? "remap",
+          lastCleanedHash: cleaningConfig.lastCleanedHash,
+          lastCleanedAt: cleaningConfig.lastCleanedAt,
+          preflight: cleaningConfig.preflight,
+        })
+
+        // Persist preflight state regardless of whether cleaning was needed.
+        updateCleaningConfig(root, {
+          preflight: {
+            ranAt: result.stats.ranAt,
+            patchEntries: result.stats.patchEntries,
+            mappedPatchCount: result.stats.mappedPatchCount,
+            unmatchedPatchCount: result.stats.unmatchedPatchCount,
+            requireZeroUnmatched: cleaningConfig.requireZeroUnmatched ?? false,
+            preflightPolicy: result.stats.preflightPolicy,
+            externalEntryCount: result.stats.externalEntryCount,
+            remappedExternalCount: result.stats.remappedExternalCount,
+            removedExternalCount: result.stats.removedExternalCount,
+            preflightOk: result.preflightOk,
+          },
+        })
+
+        // Mirror preflight status into daemon state for runtime visibility.
+        const stateForPreflight = readState(root)
+        if (stateForPreflight) {
+          writeState(root, {
+            ...stateForPreflight,
+            workspaceId,
+            compileCommandsPreflight: {
+              ranAt: result.stats.ranAt,
+              patchEntries: result.stats.patchEntries,
+              mappedPatchCount: result.stats.mappedPatchCount,
+              unmatchedPatchCount: result.stats.unmatchedPatchCount,
+              requireZeroUnmatched: cleaningConfig.requireZeroUnmatched ?? false,
+              preflightPolicy: result.stats.preflightPolicy,
+              externalEntryCount: result.stats.externalEntryCount,
+              remappedExternalCount: result.stats.remappedExternalCount,
+              removedExternalCount: result.stats.removedExternalCount,
+              preflightOk: result.preflightOk,
+            } as any,
+          } as any)
+        }
+
+        if (!result.preflightOk) {
+          log("ERROR", "compile_commands preflight failed: unmatched patch files remain", {
+            unmatchedPatchCount: result.stats.unmatchedPatchCount,
+            externalEntryCount: result.stats.externalEntryCount,
+            preflightPolicy: result.stats.preflightPolicy,
+            report: `${root}/patch_unmatched.txt`,
+          })
+          throw new Error("compile_commands preflight failed (unmatched patch files)")
+        }
+
+        if (result.cleaned) {
+          log("INFO", "compile_commands.json cleaned successfully", result.stats)
+          // Update config with new hash
+          updateCleaningConfig(root, {
+            lastCleanedHash: result.stats.newHash,
+            lastCleanedAt: result.stats.cleanedAt,
+          })
+        }
+      } catch (err) {
+        logError("Failed to clean compile_commands.json", err)
+        throw err
+      }
+    } else {
+      log("INFO", "compile_commands.json cleaning disabled in config", { root })
+    }
+
+    // ── Spawn new daemon ─────────────────────────────────────────────────────
 
     const bridgeScript = resolveBridgeScript()
     log("INFO", "Resolved bridge script", { bridgeScript })
@@ -520,11 +618,13 @@ async function main(): Promise<void> {
       clangdPid: existingState?.clangdPid ?? 0,
       port: existingState?.port ?? 0,
       root,
+      workspaceId,
       clangdBin: clangdPath,
       clangdArgs,
       startedAt: existingState?.startedAt ?? new Date().toISOString(),
       httpPort,
       httpPid: process.pid,
+      compileCommandsPreflight: existingState?.compileCommandsPreflight,
     })
     log("INFO", "State file written for HTTP daemon", { httpPort, httpPid: process.pid, root })
 
@@ -601,7 +701,12 @@ async function main(): Promise<void> {
       // Persist httpPort + httpPid into the state file alongside the bridge state
       const freshState = readState(root)
       if (freshState) {
-        writeState(root, { ...freshState, httpPort: spawnResult.httpPort, httpPid: spawnResult.httpPid })
+        writeState(root, {
+          ...freshState,
+          workspaceId,
+          httpPort: spawnResult.httpPort,
+          httpPid: spawnResult.httpPid,
+        })
         log("INFO", "Persisted HTTP daemon info to state file", {
           httpPort: spawnResult.httpPort,
           httpPid: spawnResult.httpPid,

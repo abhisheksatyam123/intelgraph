@@ -11,7 +11,19 @@ import { fileURLToPath } from "url"
 import type { LspClient } from "../lsp/index.js"
 import type { IndexTracker } from "../tracking/index.js"
 import { readFileSync } from "fs"
-import { classifyIncomingCalls, collectIndirectCallers, formatIndirectCallerTree } from "./indirect-callers.js"
+import { getLogger } from "../logging/logger.js"
+import type { UnifiedBackend } from "../backend/unified-backend.js"
+import { readState, computeWorkspaceId } from "../daemon/index.js"
+import { readCleaningConfig } from "../utils/compile-commands-cleaner.js"
+import { formatReasonChainText } from "./reason-engine/format-reason-chain.js"
+import { prepareReasonQuery } from "./reason-engine/reason-query.js"
+import { buildRuntimeFlowPayload } from "./reason-engine/runtime-flow-output.js"
+import { readReasoningConfig } from "./reason-engine/reason-config.js"
+import { QUERY_INTENTS, validateQueryRequest, executeOrchestratedQuery } from "../intelligence/index.js"
+import type { OrchestratorRunnerDeps } from "../intelligence/orchestrator-runner.js"
+import { snapshotInputSchema, executeSnapshotTool, setDbFoundation } from "./intelligence-snapshot-tool.js"
+import { ingestInputSchema, executeIngestTool, setIngestDeps } from "./intelligence-ingest-tool.js"
+export { setDbFoundation, setIngestDeps }
 
 // ── Symbol kind number → readable name ───────────────────────────────────────
 const SYMBOL_KIND: Record<number, string> = {
@@ -104,13 +116,12 @@ export function formatWorkspaceSymbol(results: any[], root: string): string {
 
 export function formatIncomingCalls(results: any[], root: string): string {
   if (!results.length) return "No incoming calls."
-  return classifyIncomingCalls(results)
+  return results
     .map((call: any) => {
       const from = call.from ?? call.caller
       const kind = SYMBOL_KIND[from?.kind] ?? "?"
       const loc  = fmtLocation({ uri: from?.uri, range: from?.selectionRange ?? from?.range }, root)
-      const tags = Array.isArray(call.tags) && call.tags.length ? ` [${call.tags.join(",")}]` : ""
-      return `  <- [${kind}]${tags} ${from?.name ?? "(unknown)"}  at ${loc}`
+      return `  <- [${kind}] ${from?.name ?? "(unknown)"}  at ${loc}`
     })
     .join("\n")
 }
@@ -282,13 +293,57 @@ export function formatInlayHints(hints: any[], filePath: string, root: string): 
     .join("\n")
 }
 
-// ── Tool registry ─────────────────────────────────────────────────────────────
+export function formatReasonChain(
+  result: {
+    reasonPaths: import("./reason-engine/contracts.js").ReasonPath[]
+    usedLlm: boolean
+    rejected: number
+    cacheHit: boolean
+    cacheMismatchedFiles: string[]
+  },
+  symbol: string,
+  filePath: string,
+  root: string,
+): string {
+  return formatReasonChainText(result, symbol, filePath, (p) => displayPath(p, root))
+}
+
+
 
 export interface ToolDef {
   name: string
   description: string
   inputSchema: z.ZodTypeAny
   execute: (args: any, client: LspClient, tracker: IndexTracker) => Promise<string>
+}
+
+let UNIFIED_BACKEND: UnifiedBackend | null = null
+const INFLIGHT_INDIRECT_CALLERS = new Map<string, Promise<any>>()
+const INDIRECT_CALLER_TELEMETRY = {
+  cacheHits: 0,
+  inflightDedupReuses: 0,
+  freshComputes: 0,
+}
+
+let INTELLIGENCE_DEPS: OrchestratorRunnerDeps | null = null
+
+export function setUnifiedBackend(backend: UnifiedBackend): void {
+  UNIFIED_BACKEND = backend
+}
+
+export function setIntelligenceDeps(deps: OrchestratorRunnerDeps): void {
+  INTELLIGENCE_DEPS = deps
+}
+
+function unifiedBackendOrThrow(): UnifiedBackend {
+  if (!UNIFIED_BACKEND) {
+    throw new Error("Unified backend not initialized")
+  }
+  return UNIFIED_BACKEND
+}
+
+function inflightIndirectCallerKey(workspaceRoot: string, cacheKey: string): string {
+  return `${workspaceRoot}::${cacheKey}`
 }
 
 // Shared schemas
@@ -320,7 +375,84 @@ async function withFile(
   return fn()
 }
 
+function formatIntelligenceResponse(res: import("../intelligence/index.js").NormalizedQueryResponse): string {
+  const lines: string[] = []
+  lines.push(`Intent:    ${res.intent}`)
+  lines.push(`Status:    ${res.status}`)
+  lines.push(`Provenance: ${res.provenance.path}`)
+  if (res.provenance.deterministicAttempts.length > 0) {
+    lines.push(`Enrichers: ${res.provenance.deterministicAttempts.join(", ")}`)
+  }
+  if (res.provenance.llmUsed) lines.push("LLM:       used (last resort)")
+  lines.push("")
+
+  if (res.status === "error" || res.status === "not_found") {
+    if (res.errors?.length) lines.push(`Errors: ${res.errors.join("; ")}`)
+    else lines.push("No results found.")
+    return lines.join("\n")
+  }
+
+  const nodes = res.data.nodes
+  if (nodes.length === 0) {
+    lines.push("No results found.")
+    return lines.join("\n")
+  }
+
+  lines.push(`Results (${nodes.length}):`)
+  for (const node of nodes.slice(0, 50)) {
+    const parts: string[] = []
+    for (const [k, v] of Object.entries(node)) {
+      if (v != null && v !== "") parts.push(`${k}=${JSON.stringify(v)}`)
+    }
+    lines.push(`  ${parts.join("  ")}`)
+  }
+  if (nodes.length > 50) lines.push(`  ... and ${nodes.length - 50} more`)
+
+  if (res.data.edges.length > 0) {
+    lines.push("", `Edges (${res.data.edges.length}):`)
+    for (const e of res.data.edges.slice(0, 20)) {
+      lines.push(`  ${JSON.stringify(e)}`)
+    }
+  }
+
+  return lines.join("\n")
+}
+
 export const TOOLS: ToolDef[] = [
+  {
+    name: "backend_health",
+    description:
+      "Return unified backend health/status for this workspace: daemon state, preflight policy/result, and index readiness.",
+    inputSchema: z.object({}),
+    execute: async (_args, client, tracker) => {
+      const state = readState(client.root)
+      const clean = readCleaningConfig(client.root)
+      const workspaceId = computeWorkspaceId(client.root)
+      const preflight = state?.compileCommandsPreflight ?? clean.preflight ?? {}
+
+      const lines = [
+        `workspace: ${client.root}`,
+        `workspaceId: ${workspaceId}`,
+        `indexReady: ${tracker.state.isReady}`,
+        `daemonBridgePid: ${state?.bridgePid ?? "unknown"}`,
+        `daemonPort: ${state?.port ?? "unknown"}`,
+        `httpPid: ${state?.httpPid ?? "unknown"}`,
+        `httpPort: ${state?.httpPort ?? "unknown"}`,
+        `preflightOk: ${preflight.preflightOk ?? "unknown"}`,
+        `unmatchedPatchCount: ${preflight.unmatchedPatchCount ?? "unknown"}`,
+        `requireZeroUnmatched: ${preflight.requireZeroUnmatched ?? "unknown"}`,
+        `preflightPolicy: ${preflight.preflightPolicy ?? "unknown"}`,
+        `externalEntryCount: ${preflight.externalEntryCount ?? "unknown"}`,
+        `remappedExternalCount: ${preflight.remappedExternalCount ?? "unknown"}`,
+        `removedExternalCount: ${preflight.removedExternalCount ?? "unknown"}`,
+        `preflightRanAt: ${preflight.ranAt ?? "unknown"}`,
+        `indirectCallerCacheHits: ${INDIRECT_CALLER_TELEMETRY.cacheHits}`,
+        `indirectCallerInflightDedupReuses: ${INDIRECT_CALLER_TELEMETRY.inflightDedupReuses}`,
+        `indirectCallerFreshComputes: ${INDIRECT_CALLER_TELEMETRY.freshComputes}`,
+      ]
+      return lines.join("\n")
+    },
+  },
 
   // ── lsp_hover ──────────────────────────────────────────────────────────────
   {
@@ -475,33 +607,161 @@ export const TOOLS: ToolDef[] = [
   // ── lsp_incoming_calls ────────────────────────────────────────────────────
   {
     name: "lsp_incoming_calls",
-    description: "Find all callers of the function at the given position (who calls this?). " +
-      "Each caller is tagged as [direct], [dispatch-table], [reg-call], or [struct-reg].",
+    description: "Find all direct callers of the function at the given position (who calls this?).",
     inputSchema: incomingCallSchema,
     execute: async (args, client, tracker) =>
       withFile(client, args.file, async () => {
         const results = await client.incomingCalls(args.file, args.line - 1, args.character - 1)
-        return formatIncomingCalls(classifyIncomingCalls(results), client.root) + tracker.statusSuffix()
+        return formatIncomingCalls(results, client.root) + tracker.statusSuffix()
       }),
   },
 
   {
     name: "lsp_indirect_callers",
     description:
-      "Find all direct callers and registration endpoints of the function at the given position. " +
-      "Registration endpoints (dispatch-table entries, callback registrations, timer callbacks) " +
-      "are shown as terminal nodes — they represent the event source that will invoke the function " +
-      "at runtime. No recursion into who calls the registrar. " +
-      "Groups results by: Direct callers / Dispatch-table registrations / " +
-      "Registration-call registrations / Struct registrations / Signal-based registrations.",
+      "Collect raw LSP evidence for indirect callers of the function at the given position. " +
+      "Uses incomingCalls first; falls back to references+prepareCallHierarchy for fn-ptr callbacks. " +
+      "Returns the enclosing functions at all reference sites. " +
+      "For the full invocation reason (WHY it is called), use lsp_reason_chain instead.",
     inputSchema: positionSchema.extend({
-      maxNodes: z.number().int().min(1).max(500).default(15).optional()
-                .describe("Maximum callers to return (default: 15)"),
+      maxNodes: z.number().int().min(1).max(500).default(50).optional()
+                .describe("Maximum reference sites to return (default: 50)"),
+      resolve: z.boolean().default(false).optional()
+               .describe("If true, resolve full registration→store→dispatch→trigger chain using clangd (slower, more precise)"),
     }),
     execute: async (args, client, tracker) =>
       withFile(client, args.file, async () => {
-        const graph = await collectIndirectCallers(client, args)
-        return formatIndirectCallerTree(graph, client.root) + tracker.statusSuffix()
+        const backend = unifiedBackendOrThrow()
+        // Check cache first
+        const cacheKey = backend.indirectCallerCache.computeKey(args.file, args.line, args.character)
+        const cached = backend.indirectCallerCache.read(client.root, cacheKey, [args.file])
+        if (cached) {
+          INDIRECT_CALLER_TELEMETRY.cacheHits += 1
+          const graph = cached.result
+          return backend.patterns.formatIndirectCallerTree(graph, client.root) + tracker.statusSuffix() +
+            `\n\n[cache: hit — cached at ${cached.cachedAt}]`
+        }
+
+        const inflightKey = inflightIndirectCallerKey(client.root, cacheKey)
+        const existingInflight = INFLIGHT_INDIRECT_CALLERS.get(inflightKey)
+        if (existingInflight) {
+          INDIRECT_CALLER_TELEMETRY.inflightDedupReuses += 1
+          const graph = await existingInflight
+          return backend.patterns.formatIndirectCallerTree(graph, client.root) + tracker.statusSuffix() +
+            `\n\n[dedup: shared in-flight result]`
+        }
+
+        // Cache miss — compute fresh
+        const computePromise = backend.patterns.collectIndirectCallers(client, args)
+        INFLIGHT_INDIRECT_CALLERS.set(inflightKey, computePromise)
+        try {
+          INDIRECT_CALLER_TELEMETRY.freshComputes += 1
+          const graph = await computePromise
+
+          // Store in cache (best-effort, don't fail the tool if cache write fails)
+          try {
+            backend.indirectCallerCache.write(client.root, cacheKey, graph, [args.file])
+          } catch { /* ignore cache write errors */ }
+
+          return backend.patterns.formatIndirectCallerTree(graph, client.root) + tracker.statusSuffix()
+        } finally {
+          INFLIGHT_INDIRECT_CALLERS.delete(inflightKey)
+        }
+      }),
+  },
+
+  {
+    name: "lsp_reason_chain",
+    description:
+      "Answer 'Why is this function invoked at runtime?' for the API at a given position. " +
+      "Returns the full invocation reason: the external event (Layer C), the dispatch chain " +
+      "from that event to the target (Layer B), and the registration gate that wired it in (Layer A). " +
+      "Uses a cache+LLM pipeline: cache hit returns instantly; cache miss triggers LLM reasoning " +
+      "with tool-calling (read_file, search_code, lsp_incoming_calls) guided by reasoning rules. " +
+      "Requires llmReasoning to be enabled in .clangd-mcp.json.",
+    inputSchema: positionSchema.extend({
+      targetSymbol: z.string().optional().describe("Optional override target symbol name"),
+      suspectedPatterns: z.array(z.string()).optional().describe("Optional pattern hints for difficult indirect flows"),
+      workspaceRoot: z.string().optional().describe("Optional workspace root override for LLM tools and DB cache"),
+    }),
+    execute: async (args, client, tracker) =>
+      withFile(client, args.file, async () => {
+        const backend = unifiedBackendOrThrow()
+        const log = getLogger()
+        const reasoningConfig = readReasoningConfig(client.root)
+        const prepared = await prepareReasonQuery(backend, client, args)
+        const symbol = prepared.symbol
+
+        log.info("lsp_reason_chain: prepared target", {
+          file: args.file,
+          line: args.line,
+          character: args.character,
+          argTargetSymbol: args.targetSymbol,
+          seedSymbol: prepared.graph.seed?.name,
+          resolvedSymbol: symbol,
+          evidenceNodes: prepared.graph.nodes.length,
+        })
+
+        const result = await backend.reasonEngine.run(
+          client,
+          {
+            targetSymbol: symbol,
+            targetFile: args.file,
+            targetLine: args.line,
+            knownEvidence: prepared.knownEvidence,
+            suspectedPatterns: args.suspectedPatterns ?? [],
+            workspaceRoot: args.workspaceRoot,
+          },
+          reasoningConfig,
+        )
+
+        log.info("lsp_reason_chain: reason engine result", {
+          symbol,
+          cacheHit: result.cacheHit,
+          usedLlm: result.usedLlm,
+          reasonPaths: result.reasonPaths.length,
+          rejected: result.rejected,
+          staleFiles: result.cacheMismatchedFiles.length,
+        })
+
+        return formatReasonChain(result, symbol, args.file, client.root) + "\n" + tracker.statusSuffix()
+      }),
+  },
+
+  {
+    name: "lsp_runtime_flow",
+    description:
+      "Return structured invoker-centric runtime flow JSON for the API at a given position. " +
+      "Primary fields: targetApi, runtimeTrigger, dispatchChain, dispatchSite, immediateInvoker. " +
+      "Registration fields are supporting context only.",
+    inputSchema: positionSchema.extend({
+      targetSymbol: z.string().optional().describe("Optional override target symbol name"),
+      suspectedPatterns: z.array(z.string()).optional().describe("Optional pattern hints for difficult indirect flows"),
+      workspaceRoot: z.string().optional().describe("Optional workspace root override for DB cache"),
+    }),
+    execute: async (args, client, tracker) =>
+      withFile(client, args.file, async () => {
+        const backend = unifiedBackendOrThrow()
+        const reasoningConfig = readReasoningConfig(client.root)
+        const prepared = await prepareReasonQuery(backend, client, args)
+        const symbol = prepared.symbol
+
+        const result = await backend.reasonEngine.run(
+          client,
+          {
+            targetSymbol: symbol,
+            targetFile: args.file,
+            targetLine: args.line,
+            knownEvidence: prepared.knownEvidence,
+            suspectedPatterns: args.suspectedPatterns ?? [],
+            workspaceRoot: args.workspaceRoot,
+          },
+          reasoningConfig,
+        )
+
+        const payload = buildRuntimeFlowPayload(symbol, result)
+
+        return JSON.stringify(payload, null, 2) + tracker.statusSuffix()
       }),
   },
 
@@ -690,7 +950,7 @@ export const TOOLS: ToolDef[] = [
           lines.push("", "Background index stats:")
           lines.push(`  Completed: ${bg.completed ?? "?"}`)
           lines.push(`  Total:     ${bg.total     ?? "?"}`)
-          lines.push(`  Queue:     ${bg.queue_size ?? bg.queued ?? "?"}`)
+           lines.push(`  Queue:     ${bg.queue_size ?? bg.queued ?? "?"}`)
         }
         const mem = info.memory_usage
         if (mem) {
@@ -702,6 +962,66 @@ export const TOOLS: ToolDef[] = [
       }
 
       return lines.join("\n")
+    },
+  },
+
+  // ── Intelligence ingest tool ───────────────────────────────────────────────
+  {
+    name: "intelligence_ingest",
+    description:
+      "Trigger full extraction + ingest pipeline for a workspace root. " +
+      "Extracts symbols, types, and call edges via clangd, persists to Postgres, " +
+      "commits the snapshot, and optionally syncs the Neo4j projection. " +
+      "Returns snapshotId, inserted counts, and any warnings. " +
+      "Requires INTELLIGENCE_POSTGRES_URL to be set.",
+    inputSchema: ingestInputSchema,
+    execute: async (args, _client, _tracker) => executeIngestTool(args),
+  },
+
+  // ── Intelligence snapshot tool ─────────────────────────────────────────────
+  {
+    name: "intelligence_snapshot",
+    description:
+      "Manage intelligence snapshot lifecycle. " +
+      "Use action=begin to create a new snapshot (returns snapshotId). " +
+      "Use action=commit to mark a snapshot ready after ingestion. " +
+      "Use action=fail to mark a snapshot failed with a reason. " +
+      "Requires INTELLIGENCE_POSTGRES_URL to be set.",
+    inputSchema: snapshotInputSchema,
+    execute: async (args, _client, _tracker) => executeSnapshotTool(args),
+  },
+
+  // ── Intelligence query tool ────────────────────────────────────────────────
+  {
+    name: "intelligence_query",
+    description:
+      "Query the intelligence backend for code relationships, call chains, struct ownership, " +
+      "runtime flows, and log patterns. Uses a DB-first approach: returns cached results instantly, " +
+      "falls back to deterministic enrichment (clangd, c_parser), then LLM as last resort. " +
+      "Supported intents: " + QUERY_INTENTS.join(", "),
+    inputSchema: z.object({
+      intent: z.enum(QUERY_INTENTS).describe("Query intent"),
+      snapshotId: z.number().int().positive().describe("Snapshot ID to query against"),
+      apiName: z.string().optional().describe("API/function name (required for caller/callee/dispatch intents)"),
+      structName: z.string().optional().describe("Struct name (required for struct ownership intents)"),
+      fieldName: z.string().optional().describe("Field name (required for find_field_access_path)"),
+      traceId: z.string().optional().describe("Trace ID (required for show_runtime_flow_for_trace)"),
+      pattern: z.string().optional().describe("Log pattern (required for find_api_by_log_pattern)"),
+      srcApi: z.string().optional().describe("Source API (required for show_cross_module_path)"),
+      dstApi: z.string().optional().describe("Destination API (required for show_cross_module_path)"),
+      depth: z.number().int().positive().optional().describe("Traversal depth limit"),
+      limit: z.number().int().positive().optional().describe("Result row limit"),
+    }),
+    execute: async (args, _client, _tracker) => {
+      if (!INTELLIGENCE_DEPS) {
+        return "intelligence_query: backend not initialized. Set INTELLIGENCE_POSTGRES_URL and INTELLIGENCE_NEO4J_URL to enable."
+      }
+      const validated = validateQueryRequest(args)
+      if (!validated.ok) {
+        return `intelligence_query: invalid request — ${validated.errors.join("; ")}`
+      }
+      const res = await executeOrchestratedQuery(args, INTELLIGENCE_DEPS)
+      return formatIntelligenceResponse(res)
     },
   },
 ]

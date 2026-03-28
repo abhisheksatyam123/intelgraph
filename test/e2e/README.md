@@ -6,6 +6,7 @@ These tests verify the full clangd-mcp stack against a real workspace.
 
 - `full-suite.test.mjs` - Comprehensive functional test suite with content validation
 - `http-daemon.test.js` - HTTP daemon mode with tool parameter passing
+- `http-daemon-alt.test.js` - Alternative HTTP daemon mode tests
 - `stdio-proxy.test.js` - Default stdio proxy mode (simulates OpenCode)
 
 ## Running E2E Tests

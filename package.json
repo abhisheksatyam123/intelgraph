@@ -19,11 +19,25 @@
     "test:watch": "vitest",
     "test:legacy": "node test-clangd-mcp.mjs",
     "test:coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "validate:unit": "npm run test:unit -- test/unit/pattern-resolver.test.ts",
+    "validate:01880": "env CLANGD_TCP_BRIDGE_PORT=35101 CHAIN_TEST_TIMEOUT_01880_MS=60000 CHAIN_RETRY_TIMEOUT_01880=1 CHAIN_RESOLVE_TIMEOUT_MS=20000 npx vitest run test/integration/chain-resolver-ground-truth.test.ts",
+    "validate:01968:shallow": "env WLAN_WORKSPACE_ROOT=/local/mnt/workspace/code1/WLAN.CNG.1.0-01968.1-QCACNGSWPL_V1_V2_SILICON-1 CLANGD_TCP_BRIDGE_PORT=44403 CHAIN_SHALLOW_01968=1 CHAIN_RESOLVE_TIMEOUT_MS=7000 npx vitest run test/integration/chain-resolver-ground-truth.test.ts -t bpf-notify-handler",
+    "validate:01968:full-liveness": "env WLAN_WORKSPACE_ROOT=/local/mnt/workspace/code1/WLAN.CNG.1.0-01968.1-QCACNGSWPL_V1_V2_SILICON-1 CLANGD_TCP_BRIDGE_PORT=44403 CHAIN_SINGLE_SOCKET_MODE=1 CHAIN_RESOLVE_TIMEOUT_MS=15000 CHAIN_LIVE_TIMEOUT_MS=3000 npx vitest run test/integration/chain-resolver-ground-truth.test.ts -t bpf-notify-handler",
+    "validate:matrix:conditional-go": "npm run validate:unit && npm run typecheck && npm run validate:01880 && npm run validate:01968:shallow"
   },
   "dependencies": {
+    "2": "^3.0.0",
+    "@ai-sdk/openai-compatible": "^0.2.14",
     "@modelcontextprotocol/sdk": "1.25.2",
+    "@types/pg": "^8.20.0",
+    "ai": "^4.3.16",
+    "neo4j-driver": "^6.0.1",
+    "pg": "^8.20.0",
+    "tree-sitter": "^0.25.0",
+    "tree-sitter-c": "^0.24.1",
     "vscode-jsonrpc": "8.2.1",
+    "web-tree-sitter": "^0.26.7",
     "zod": "^3.22.4"
   },
   "devDependencies": {

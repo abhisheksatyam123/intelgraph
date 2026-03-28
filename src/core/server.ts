@@ -16,10 +16,12 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import { createServer, type IncomingMessage, type ServerResponse } from "http"
 import { randomUUID } from "crypto"
 import { TOOLS } from "../tools/index.js"
+import { setUnifiedBackend } from "../tools/index.js"
 import type { LspClient } from "../lsp/index.js"
 import type { IndexTracker } from "../tracking/index.js"
-import { log, logError } from "../logger.js"
+import { log, logError } from "../logging/logger.js"
 import { z } from "zod"
+import { createUnifiedBackend } from "../backend/unified-backend.js"
 
 // ── Build a fresh McpServer with all tools registered ─────────────────────────
 
@@ -27,6 +29,8 @@ export async function createMcpServer(
   getClient: () => Promise<LspClient>,
   tracker: IndexTracker,
 ): Promise<McpServer> {
+  setUnifiedBackend(createUnifiedBackend(getClient, tracker))
+
   const server = new McpServer({
     name: "clangd-mcp",
     version: "0.1.0",

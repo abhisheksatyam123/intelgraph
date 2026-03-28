@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "task_notes": {
+    "ses_2cf8dd3ceffe2SrgqvWgxK3FLb": "doc/task/todo-make-todo-loop-nonstop",
+    "ses_2cefa96f4ffebBLRyyYiCqFWhB": "doc/task/todo-frontend-intelligence-integration"
+  },
+  "task_note": {
+    "path": "doc/task/todo-frontend-intelligence-integration"
+  }
+}

@@ -9,14 +9,16 @@ test/
 ├── unit/              # Fast isolated tests for individual modules
 │   ├── daemon.test.ts
 │   ├── index-tracker.test.ts
+│   ├── indirect-callers.test.ts
+│   ├── indirect-callers-tooling.test.ts
 │   ├── log-formatter.test.ts
 │   └── log-levels.test.ts
 ├── integration/       # Tests that verify module interactions
-│   ├── daemon-lifecycle.test.ts
-│   └── mux-bridge.test.ts
+│   └── daemon-lifecycle.test.ts
 ├── e2e/              # Full-stack tests against real workspace
 │   ├── full-suite.test.mjs
 │   ├── http-daemon.test.js
+│   ├── http-daemon-alt.test.js
 │   └── stdio-proxy.test.js
 ├── manual/           # Ad-hoc scripts for manual testing
 │   ├── workspace-tools.js
@@ -178,3 +180,23 @@ When adding new features:
 3. Update e2e tests if tool surface changes
 4. Ensure `bun test` passes before committing
 5. Keep coverage >90%
+## WLAN workspace-centered testing
+
+Integration tests that assert real WLAN behavior use a central workspace root.
+
+Set environment variable before running integration tests:
+
+```bash
+export WLAN_WORKSPACE_ROOT="/local/mnt/workspace/code1/WLAN.CNG.1.0-01880.3-QCACNGSWPL_V1_V2_SILICON-1"
+
+# or generic config name
+export CLANGD_MCP_WORKSPACE_ROOT="/local/mnt/workspace/code1/WLAN.CNG.1.0-01880.3-QCACNGSWPL_V1_V2_SILICON-1"
+```
+
+Then run:
+
+```bash
+npm run test:integration
+```
+
+If not set, tests fall back to the default path above.
