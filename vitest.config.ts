@@ -12,7 +12,7 @@ export default defineConfig({
     hookTimeout: 60_000,
     pool: "forks",
     poolOptions: {
-      forks: { singleFork: false },
+      forks: { singleFork: false, isolate: true },
     },
     typecheck: {
       tsconfig: "./tsconfig.test.json",

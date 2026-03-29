@@ -56,10 +56,11 @@ describe("intelligence_query MCP tool", () => {
       { caller: "wlan_bpf_enable_data_path", callee: "wlan_bpf_filter_offload_handler", edge_kind: "registers_callback", confidence: 1.0, derivation: "clangd" },
     ]))
     const res = await tool.execute({ intent: "who_calls_api", snapshotId: 1, apiName: "wlan_bpf_filter_offload_handler" }, mockClient, mockTracker)
-    expect(res).toContain("Intent:    who_calls_api")
-    expect(res).toContain("Status:    hit")
-    expect(res).toContain("db_hit")
-    expect(res).toContain("wlan_bpf_enable_data_path")
+    const parsed = JSON.parse(res)
+    expect(parsed.intent).toBe("who_calls_api")
+    expect(parsed.status).toBe("hit")
+    expect(parsed.provenance.path).toBe("db_hit")
+    expect(JSON.stringify(parsed)).toContain("wlan_bpf_enable_data_path")
   })
 
   it("returns no-results message when no rows and enrichers fail", async () => {
@@ -69,12 +70,17 @@ describe("intelligence_query MCP tool", () => {
     expect(res).toMatch(/not_found|error|No results/)
   })
 
-  it("input schema includes all 20 intents (18 original + 2 log intents)", () => {
+  it("input schema includes all 25 intents (20 original + 4 structure-centric runtime intents + find_api_timer_triggers)", () => {
     const schema = tool.inputSchema as import("zod").ZodObject<Record<string, import("zod").ZodTypeAny>>
     const intentField = schema.shape.intent as import("zod").ZodEnum<[string, ...string[]]>
-    expect(intentField._def.values).toHaveLength(20)
+    expect(intentField._def.values).toHaveLength(25)
     expect(intentField._def.values).toContain("find_api_logs")
     expect(intentField._def.values).toContain("find_api_logs_by_level")
+    expect(intentField._def.values).toContain("current_structure_runtime_writers_of_structure")
+    expect(intentField._def.values).toContain("current_structure_runtime_readers_of_structure")
+    expect(intentField._def.values).toContain("current_structure_runtime_initializers_of_structure")
+    expect(intentField._def.values).toContain("current_structure_runtime_mutators_of_structure")
+    expect(intentField._def.values).toContain("find_api_timer_triggers")
   })
 
   it("input schema has all optional params", () => {
@@ -99,6 +105,7 @@ describe("intelligence_query MCP tool", () => {
     const res = await tool.execute({ intent: "who_calls_api", snapshotId: 1, apiName: "wlan_bpf_filter_offload_handler" }, mockClient, mockTracker)
     expect(res).toContain("wlan_bpf_enable_data_path")
     expect(res).toContain("wlan_bpf_offload_test_route_uc_active")
-    expect(res).toContain("Results (2)")
+    const parsed = JSON.parse(res)
+    expect(parsed.data.nodes).toHaveLength(2)
   })
 })

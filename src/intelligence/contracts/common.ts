@@ -90,6 +90,10 @@ export interface EdgeRow {
   derivation: "clangd" | "llm" | "runtime" | "hybrid"
   evidence?: EvidenceRef
   metadata?: Record<string, unknown>
+  /** Struct field access path expression, e.g. "bpf_vdev_t.state.filter_enabled". Stored in metadata JSONB as access_path. */
+  accessPath?: string
+  /** Source location of the struct access/operation. Stored in metadata JSONB as source_location. */
+  sourceLocation?: { sourceFilePath: string; sourceLineNumber: number }
 }
 
 export interface RuntimeCallerRow {
@@ -102,6 +106,21 @@ export interface RuntimeCallerRow {
   evidence?: EvidenceRef
 }
 
+export interface TimerTriggerRow {
+  /** API/function that is triggered by the timer. */
+  apiName: string
+  /** Identifier name of the timer (e.g. qdf_timer, os_timer, wlan_scan_timer). */
+  timerIdentifierName: string
+  /** Human-readable description of the condition that fires the timer. */
+  timerTriggerConditionDescription?: string
+  /** Confidence score that this timer triggers the API. */
+  timerTriggerConfidenceScore: number
+  /** How this relation was derived. */
+  derivation: "clangd" | "llm" | "runtime" | "hybrid"
+  /** Optional evidence reference. */
+  evidence?: EvidenceRef
+}
+
 export interface IngestReport {
   snapshotId: number
   inserted: {
@@ -111,6 +130,7 @@ export interface IngestReport {
     edges: number
     runtimeCallers: number
     logs: number
+    timerTriggers: number
   }
   warnings: string[]
 }

@@ -106,3 +106,55 @@ CREATE TABLE IF NOT EXISTS api_log (
 );
 CREATE INDEX IF NOT EXISTS api_log_snapshot_api ON api_log(snapshot_id, api_name);
 CREATE INDEX IF NOT EXISTS api_log_snapshot_level ON api_log(snapshot_id, level);
+
+-- Additive: normalized_level column for api_log (idempotent)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'api_log' AND column_name = 'normalized_level'
+  ) THEN
+    ALTER TABLE api_log ADD COLUMN normalized_level TEXT CHECK (normalized_level IN (
+      'runtime_log_error',
+      'runtime_log_warn',
+      'runtime_log_info',
+      'runtime_log_debug',
+      'runtime_log_trace',
+      'runtime_log_unknown'
+    ));
+  END IF;
+END$$;
+CREATE INDEX IF NOT EXISTS api_log_snapshot_api_normalized_level ON api_log(snapshot_id, api_name, normalized_level);
+
+CREATE TABLE IF NOT EXISTS schema_migration_version (
+  id             SERIAL PRIMARY KEY,
+  migration_name TEXT NOT NULL UNIQUE,
+  applied_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS api_timer_trigger (
+  id                                    BIGSERIAL PRIMARY KEY,
+  snapshot_id                           BIGINT NOT NULL REFERENCES snapshot(id) ON DELETE CASCADE,
+  api_name                              TEXT NOT NULL,
+  timer_identifier_name                 TEXT NOT NULL,
+  timer_trigger_condition_description   TEXT,
+  timer_trigger_confidence_score        REAL NOT NULL DEFAULT 1.0,
+  derivation                            TEXT NOT NULL,
+  evidence                              JSONB
+);
+CREATE INDEX IF NOT EXISTS api_timer_trigger_snapshot_api ON api_timer_trigger(snapshot_id, api_name);
+
+CREATE TABLE IF NOT EXISTS structure_runtime_relation (
+  id                         BIGSERIAL PRIMARY KEY,
+  snapshot_id                BIGINT NOT NULL REFERENCES snapshot(id) ON DELETE CASCADE,
+  target_structure_name      TEXT NOT NULL,
+  structure_runtime_role     TEXT NOT NULL,
+  related_api_name           TEXT NOT NULL,
+  confidence                 REAL NOT NULL DEFAULT 1.0,
+  derivation                 TEXT NOT NULL,
+  runtime_structure_evidence JSONB
+);
+CREATE INDEX IF NOT EXISTS structure_runtime_relation_snapshot_target_role
+  ON structure_runtime_relation(snapshot_id, target_structure_name, structure_runtime_role);
+CREATE INDEX IF NOT EXISTS structure_runtime_relation_snapshot_related_api
+  ON structure_runtime_relation(snapshot_id, related_api_name, structure_runtime_role);

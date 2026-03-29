@@ -290,6 +290,163 @@ describe("E2E orchestration with concrete services", () => {
     )
 
     expect(res.status).toBe("hit")
-    expect(res.data.nodes[0]!.runtime_trigger).toContain("RX data packet")
+    expect(res.data.nodes[0]!.runtime_trigger_event_description).toContain("RX data packet")
+  })
+})
+
+// ---------------------------------------------------------------------------
+// WLAN-grounded: structure-centric and timer runtime intents
+// ---------------------------------------------------------------------------
+
+describe("WLAN-grounded: structure-centric and timer runtime intents", () => {
+  it("current_structure_runtime_writers_of_structure for bpf_vdev_t returns writer with long-name fields", async () => {
+    // DB row: writer column (from COALESCE(srr.api_name, se.src_symbol_name)), target column
+    const pool = mkPool([
+      { writer: "wlan_bpf_enable_data_path", target: "bpf_vdev_t", edge_kind: "writes_field", confidence: 1.0, derivation: "clangd", runtime_structure_evidence: null },
+    ])
+    const driver = mkDriver()
+    const { clangdEnricher, cParserEnricher } = mkEnrichers()
+
+    const deps: OrchestratorRunnerDeps = {
+      persistence: {
+        dbLookup: new PostgresDbLookupService(pool),
+        authoritativeStore: new PostgresAuthoritativeStore(pool),
+        graphProjection: new Neo4jGraphProjectionService(driver, pool),
+      },
+      clangdEnricher,
+      cParserEnricher,
+    }
+
+    const res = await executeOrchestratedQuery(
+      { intent: "current_structure_runtime_writers_of_structure", snapshotId: 42, structName: "bpf_vdev_t" },
+      deps,
+    )
+
+    expect(res.status).toBe("hit")
+    expect(res.data.nodes).toHaveLength(1)
+    const node = res.data.nodes[0]!
+    expect(node.current_structure_runtime_writer_api_name).toBe("wlan_bpf_enable_data_path")
+    expect(node.current_structure_runtime_target_structure_name).toBe("bpf_vdev_t")
+  })
+
+  it("current_structure_runtime_readers_of_structure for bpf_vdev_t returns reader with long-name fields", async () => {
+    const pool = mkPool([
+      { reader: "wlan_bpf_traffic_timer_handler", target: "bpf_vdev_t", edge_kind: "reads_field", confidence: 1.0, derivation: "clangd", runtime_structure_evidence: null },
+    ])
+    const driver = mkDriver()
+    const { clangdEnricher, cParserEnricher } = mkEnrichers()
+
+    const deps: OrchestratorRunnerDeps = {
+      persistence: {
+        dbLookup: new PostgresDbLookupService(pool),
+        authoritativeStore: new PostgresAuthoritativeStore(pool),
+        graphProjection: new Neo4jGraphProjectionService(driver, pool),
+      },
+      clangdEnricher,
+      cParserEnricher,
+    }
+
+    const res = await executeOrchestratedQuery(
+      { intent: "current_structure_runtime_readers_of_structure", snapshotId: 42, structName: "bpf_vdev_t" },
+      deps,
+    )
+
+    expect(res.status).toBe("hit")
+    expect(res.data.nodes).toHaveLength(1)
+    const node = res.data.nodes[0]!
+    expect(node.current_structure_runtime_reader_api_name).toBe("wlan_bpf_traffic_timer_handler")
+    expect(node.current_structure_runtime_target_structure_name).toBe("bpf_vdev_t")
+  })
+
+  it("current_structure_runtime_initializers_of_structure for bpf_vdev_t returns initializer with long-name fields", async () => {
+    const pool = mkPool([
+      { initializer: "wlan_bpf_offload_vdev_init", target: "bpf_vdev_t", edge_kind: "operates_on_struct", confidence: 1.0, derivation: "clangd", runtime_structure_evidence: null },
+    ])
+    const driver = mkDriver()
+    const { clangdEnricher, cParserEnricher } = mkEnrichers()
+
+    const deps: OrchestratorRunnerDeps = {
+      persistence: {
+        dbLookup: new PostgresDbLookupService(pool),
+        authoritativeStore: new PostgresAuthoritativeStore(pool),
+        graphProjection: new Neo4jGraphProjectionService(driver, pool),
+      },
+      clangdEnricher,
+      cParserEnricher,
+    }
+
+    const res = await executeOrchestratedQuery(
+      { intent: "current_structure_runtime_initializers_of_structure", snapshotId: 42, structName: "bpf_vdev_t" },
+      deps,
+    )
+
+    expect(res.status).toBe("hit")
+    expect(res.data.nodes).toHaveLength(1)
+    const node = res.data.nodes[0]!
+    expect(node.current_structure_runtime_initializer_api_name).toBe("wlan_bpf_offload_vdev_init")
+    expect(node.current_structure_runtime_target_structure_name).toBe("bpf_vdev_t")
+  })
+
+  it("current_structure_runtime_mutators_of_structure for bpf_vdev_t returns mutator with long-name fields", async () => {
+    const pool = mkPool([
+      { mutator: "wlan_bpf_update_filter_state", target: "bpf_vdev_t", edge_kind: "writes_field", confidence: 1.0, derivation: "clangd", runtime_structure_evidence: null },
+    ])
+    const driver = mkDriver()
+    const { clangdEnricher, cParserEnricher } = mkEnrichers()
+
+    const deps: OrchestratorRunnerDeps = {
+      persistence: {
+        dbLookup: new PostgresDbLookupService(pool),
+        authoritativeStore: new PostgresAuthoritativeStore(pool),
+        graphProjection: new Neo4jGraphProjectionService(driver, pool),
+      },
+      clangdEnricher,
+      cParserEnricher,
+    }
+
+    const res = await executeOrchestratedQuery(
+      { intent: "current_structure_runtime_mutators_of_structure", snapshotId: 42, structName: "bpf_vdev_t" },
+      deps,
+    )
+
+    expect(res.status).toBe("hit")
+    expect(res.data.nodes).toHaveLength(1)
+    const node = res.data.nodes[0]!
+    expect(node.current_structure_runtime_mutator_api_name).toBe("wlan_bpf_update_filter_state")
+    expect(node.current_structure_runtime_target_structure_name).toBe("bpf_vdev_t")
+  })
+
+  it("find_api_timer_triggers for wlan_bpf_traffic_timer_handler returns timer with long-name fields", async () => {
+    const pool = mkPool([
+      {
+        api_name: "wlan_bpf_traffic_timer_handler",
+        timer_identifier_name: "bpf_traffic_watchdog_timer",
+        timer_trigger_condition_description: "Periodic watchdog fires every 100ms to check BPF traffic state",
+        timer_trigger_confidence_score: 1.0,
+        derivation: "clangd",
+      },
+    ])
+    const driver = mkDriver()
+    const { clangdEnricher, cParserEnricher } = mkEnrichers()
+
+    const deps: OrchestratorRunnerDeps = {
+      persistence: {
+        dbLookup: new PostgresDbLookupService(pool),
+        authoritativeStore: new PostgresAuthoritativeStore(pool),
+        graphProjection: new Neo4jGraphProjectionService(driver, pool),
+      },
+      clangdEnricher,
+      cParserEnricher,
+    }
+
+    const res = await executeOrchestratedQuery(
+      { intent: "find_api_timer_triggers", snapshotId: 42, apiName: "wlan_bpf_traffic_timer_handler" },
+      deps,
+    )
+
+    expect(res.status).toBe("hit")
+    expect(res.data.nodes).toHaveLength(1)
+    const node = res.data.nodes[0]!
+    expect(node.current_api_runtime_timer_identifier_name).toBe("bpf_traffic_watchdog_timer")
   })
 })

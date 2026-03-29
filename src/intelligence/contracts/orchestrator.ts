@@ -1,3 +1,23 @@
+export const enum RuntimeInvocationType {
+  RUNTIME_DIRECT_CALL = "runtime_direct_call",
+  RUNTIME_CALLBACK_REGISTRATION_CALL = "runtime_callback_registration_call",
+  RUNTIME_FUNCTION_POINTER_CALL = "runtime_function_pointer_call",
+  RUNTIME_DISPATCH_TABLE_CALL = "runtime_dispatch_table_call",
+  RUNTIME_UNKNOWN_CALL_PATH = "runtime_unknown_call_path",
+}
+
+export const enum RuntimeStructureOperationType {
+  RUNTIME_READ_FIELD_ACCESS = "runtime_read_field_access",
+  RUNTIME_WRITE_FIELD_ASSIGNMENT = "runtime_write_field_assignment",
+  RUNTIME_STRUCT_INITIALIZATION = "runtime_struct_initialization",
+  RUNTIME_STRUCT_MUTATION = "runtime_struct_mutation",
+  RUNTIME_STRUCT_OPERATION_UNKNOWN = "runtime_struct_operation_unknown",
+}
+
+export const RUNTIME_CONFIDENCE_DETERMINISTIC = 1.0
+export const RUNTIME_CONFIDENCE_INFERRED = 0.7
+export const RUNTIME_CONFIDENCE_FALLBACK = 0.4
+
 export const QUERY_INTENTS = [
   "who_calls_api",
   "who_calls_api_at_runtime",
@@ -11,6 +31,10 @@ export const QUERY_INTENTS = [
   "find_struct_owners",
   "find_struct_readers",
   "find_struct_writers",
+  "current_structure_runtime_writers_of_structure",
+  "current_structure_runtime_readers_of_structure",
+  "current_structure_runtime_initializers_of_structure",
+  "current_structure_runtime_mutators_of_structure",
   "find_field_access_path",
   "find_api_by_log_pattern",
   "show_runtime_flow_for_trace",
@@ -19,6 +43,7 @@ export const QUERY_INTENTS = [
   "show_hot_call_paths",
   "find_api_logs",
   "find_api_logs_by_level",
+  "find_api_timer_triggers",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
@@ -38,6 +63,19 @@ export interface QueryRequest {
   timeRange?: { from?: string; to?: string }
 }
 
+export type RuntimeFacetCompletenessStatus =
+  | "runtime_facet_data_fully_available"
+  | "runtime_facet_data_partially_available"
+  | "runtime_facet_data_not_yet_ingested"
+
+export interface RuntimeFacetCompletenessStatusMap {
+  runtime_callers_facet_completeness_status: RuntimeFacetCompletenessStatus
+  runtime_callees_facet_completeness_status: RuntimeFacetCompletenessStatus
+  runtime_structure_access_facet_completeness_status: RuntimeFacetCompletenessStatus
+  runtime_logs_facet_completeness_status: RuntimeFacetCompletenessStatus
+  runtime_timers_facet_completeness_status: RuntimeFacetCompletenessStatus
+}
+
 export interface NormalizedQueryResponse {
   snapshotId: number
   intent: QueryIntent
@@ -53,6 +91,7 @@ export interface NormalizedQueryResponse {
     deterministicAttempts: string[]
     llmUsed: boolean
   }
+  runtime_facet_completeness_status_map?: RuntimeFacetCompletenessStatusMap
   errors?: string[]
 }
 
@@ -218,6 +257,7 @@ const INTENTS_REQUIRING_API = new Set<QueryIntent>([
   "find_callback_registrars",
   "show_api_runtime_observations",
   "show_hot_call_paths",
+  "find_api_timer_triggers",
 ])
 
 const INTENTS_REQUIRING_STRUCT = new Set<QueryIntent>([
@@ -226,6 +266,10 @@ const INTENTS_REQUIRING_STRUCT = new Set<QueryIntent>([
   "find_struct_owners",
   "find_struct_readers",
   "find_struct_writers",
+  "current_structure_runtime_writers_of_structure",
+  "current_structure_runtime_readers_of_structure",
+  "current_structure_runtime_initializers_of_structure",
+  "current_structure_runtime_mutators_of_structure",
   "find_field_access_path",
 ])
 

@@ -3,6 +3,11 @@ import {
   decideOrchestrationAction,
   DEFAULT_FALLBACK_POLICY,
   QUERY_INTENTS,
+  RUNTIME_CONFIDENCE_DETERMINISTIC,
+  RUNTIME_CONFIDENCE_FALLBACK,
+  RUNTIME_CONFIDENCE_INFERRED,
+  RuntimeInvocationType,
+  RuntimeStructureOperationType,
   parseQueryIntent,
   shouldRunLlmFallback,
   validateQueryRequest,
@@ -19,6 +24,7 @@ describe("orchestrator contracts", () => {
     expect(QUERY_INTENTS).toContain("where_struct_initialized")
     expect(QUERY_INTENTS).toContain("where_struct_modified")
     expect(QUERY_INTENTS).toContain("show_runtime_flow_for_trace")
+    expect(QUERY_INTENTS).toContain("find_api_timer_triggers")
   })
 
   it("parses normalized and alias intents", () => {
@@ -36,6 +42,21 @@ describe("orchestrator contracts", () => {
       depth: 3,
     })
     expect(ok.ok).toBe(true)
+  })
+
+  it("validates find_api_timer_triggers requires apiName", () => {
+    const missing = validateQueryRequest({ intent: "find_api_timer_triggers", snapshotId: 1 })
+    expect(missing.ok).toBe(false)
+    if (!missing.ok) {
+      expect(missing.errors.join(" ")).toContain("apiName")
+    }
+
+    const valid = validateQueryRequest({
+      intent: "find_api_timer_triggers",
+      snapshotId: 42,
+      apiName: "wlan_bpf_traffic_timer_handler",
+    })
+    expect(valid.ok).toBe(true)
   })
 
   it("rejects missing required fields by intent", () => {
@@ -190,5 +211,73 @@ describe("orchestrator contracts", () => {
       ],
     })
     expect(terminal).toEqual({ type: "return_not_found" })
+  })
+
+  describe("RuntimeInvocationType enum", () => {
+    it("exports all 5 invocation type values as >=3-word snake_case strings", () => {
+      expect(RuntimeInvocationType.RUNTIME_DIRECT_CALL).toBe("runtime_direct_call")
+      expect(RuntimeInvocationType.RUNTIME_CALLBACK_REGISTRATION_CALL).toBe("runtime_callback_registration_call")
+      expect(RuntimeInvocationType.RUNTIME_FUNCTION_POINTER_CALL).toBe("runtime_function_pointer_call")
+      expect(RuntimeInvocationType.RUNTIME_DISPATCH_TABLE_CALL).toBe("runtime_dispatch_table_call")
+      expect(RuntimeInvocationType.RUNTIME_UNKNOWN_CALL_PATH).toBe("runtime_unknown_call_path")
+    })
+
+    it("all RuntimeInvocationType values match >=3-word snake_case regex", () => {
+      const THREE_WORD_SNAKE_CASE = /^[a-z0-9]+(?:_[a-z0-9]+){2,}$/
+      const values = [
+        RuntimeInvocationType.RUNTIME_DIRECT_CALL,
+        RuntimeInvocationType.RUNTIME_CALLBACK_REGISTRATION_CALL,
+        RuntimeInvocationType.RUNTIME_FUNCTION_POINTER_CALL,
+        RuntimeInvocationType.RUNTIME_DISPATCH_TABLE_CALL,
+        RuntimeInvocationType.RUNTIME_UNKNOWN_CALL_PATH,
+      ]
+      for (const v of values) {
+        expect(v, `RuntimeInvocationType value "${v}" must be >=3-word snake_case`).toMatch(THREE_WORD_SNAKE_CASE)
+      }
+    })
+  })
+
+  describe("RuntimeStructureOperationType enum", () => {
+    it("exports all 5 structure operation type values as >=3-word snake_case strings", () => {
+      expect(RuntimeStructureOperationType.RUNTIME_READ_FIELD_ACCESS).toBe("runtime_read_field_access")
+      expect(RuntimeStructureOperationType.RUNTIME_WRITE_FIELD_ASSIGNMENT).toBe("runtime_write_field_assignment")
+      expect(RuntimeStructureOperationType.RUNTIME_STRUCT_INITIALIZATION).toBe("runtime_struct_initialization")
+      expect(RuntimeStructureOperationType.RUNTIME_STRUCT_MUTATION).toBe("runtime_struct_mutation")
+      expect(RuntimeStructureOperationType.RUNTIME_STRUCT_OPERATION_UNKNOWN).toBe("runtime_struct_operation_unknown")
+    })
+
+    it("all RuntimeStructureOperationType values match >=3-word snake_case regex", () => {
+      const THREE_WORD_SNAKE_CASE = /^[a-z0-9]+(?:_[a-z0-9]+){2,}$/
+      const values = [
+        RuntimeStructureOperationType.RUNTIME_READ_FIELD_ACCESS,
+        RuntimeStructureOperationType.RUNTIME_WRITE_FIELD_ASSIGNMENT,
+        RuntimeStructureOperationType.RUNTIME_STRUCT_INITIALIZATION,
+        RuntimeStructureOperationType.RUNTIME_STRUCT_MUTATION,
+        RuntimeStructureOperationType.RUNTIME_STRUCT_OPERATION_UNKNOWN,
+      ]
+      for (const v of values) {
+        expect(v, `RuntimeStructureOperationType value "${v}" must be >=3-word snake_case`).toMatch(THREE_WORD_SNAKE_CASE)
+      }
+    })
+  })
+
+  describe("runtime confidence scale constants", () => {
+    it("RUNTIME_CONFIDENCE_DETERMINISTIC is 1.0", () => {
+      expect(RUNTIME_CONFIDENCE_DETERMINISTIC).toBe(1.0)
+    })
+
+    it("RUNTIME_CONFIDENCE_INFERRED is 0.7", () => {
+      expect(RUNTIME_CONFIDENCE_INFERRED).toBe(0.7)
+    })
+
+    it("RUNTIME_CONFIDENCE_FALLBACK is 0.4", () => {
+      expect(RUNTIME_CONFIDENCE_FALLBACK).toBe(0.4)
+    })
+
+    it("confidence scale is ordered: DETERMINISTIC > INFERRED > FALLBACK", () => {
+      expect(RUNTIME_CONFIDENCE_DETERMINISTIC).toBeGreaterThan(RUNTIME_CONFIDENCE_INFERRED)
+      expect(RUNTIME_CONFIDENCE_INFERRED).toBeGreaterThan(RUNTIME_CONFIDENCE_FALLBACK)
+      expect(RUNTIME_CONFIDENCE_FALLBACK).toBeGreaterThan(0)
+    })
   })
 })

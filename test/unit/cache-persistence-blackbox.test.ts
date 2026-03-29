@@ -21,6 +21,8 @@
 import { describe, it, expect, vi, beforeAll, afterAll, beforeEach } from "vitest"
 import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from "fs"
 import path from "path"
+import os from "os"
+import { randomUUID } from "crypto"
 import { Client } from "@modelcontextprotocol/sdk/client/index.js"
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js"
 import { createMcpServer } from "../../src/core/server.js"
@@ -29,7 +31,7 @@ import { IndexTracker } from "../../src/tracking/index.js"
 import { clearCache } from "../../src/tools/indirect-caller-cache.js"
 
 // ---------------------------------------------------------------------------
-// Fixture paths
+// Fixture paths (read-only source files — never written by this test)
 // ---------------------------------------------------------------------------
 
 const FIXTURE_DIR = path.resolve(__dirname, "../fixtures/indirect-callers")
@@ -37,10 +39,12 @@ const HANDLERS_FILE = path.join(FIXTURE_DIR, "handlers.c")
 const REGISTRATIONS_FILE = path.join(FIXTURE_DIR, "registrations.c")
 
 // ---------------------------------------------------------------------------
-// Temp workspace for cache testing (we need writable workspace root)
+// Isolated temp workspace for cache testing.
+// Each test run gets a unique directory so parallel test workers cannot
+// interfere with each other's cache state via clearCache().
 // ---------------------------------------------------------------------------
 
-const TEMP_WORKSPACE = path.resolve(__dirname, "../fixtures/cache-test-workspace")
+const TEMP_WORKSPACE = path.join(os.tmpdir(), `clangd-mcp-cache-test-${randomUUID()}`)
 
 // ---------------------------------------------------------------------------
 // Mock LSP client with call counter
@@ -96,7 +100,7 @@ function createMockLspClient() {
     rangeFormatting: vi.fn().mockResolvedValue([]),
     diagnostics: vi.fn().mockResolvedValue(null),
     codeAction: vi.fn().mockResolvedValue([]),
-    root: FIXTURE_DIR,
+    root: TEMP_WORKSPACE,
   }
 }
 
@@ -110,8 +114,9 @@ let port: number
 let mockLsp: ReturnType<typeof createMockLspClient>
 
 beforeAll(async () => {
-  // Clean any existing cache
-  clearCache(FIXTURE_DIR)
+  // Create isolated temp workspace and ensure it is clean
+  mkdirSync(TEMP_WORKSPACE, { recursive: true })
+  clearCache(TEMP_WORKSPACE)
 
   mockLsp = createMockLspClient()
   const tracker = new IndexTracker()
@@ -120,7 +125,6 @@ beforeAll(async () => {
   const { StreamableHTTPServerTransport } = await import(
     "@modelcontextprotocol/sdk/server/streamableHttp.js"
   )
-  const { randomUUID } = await import("crypto")
 
   const sessions = new Map<string, any>()
 
@@ -161,7 +165,9 @@ beforeAll(async () => {
 afterAll(async () => {
   await client?.close()
   httpServer?.close()
-  clearCache(FIXTURE_DIR)
+  // Clean up the isolated temp workspace
+  clearCache(TEMP_WORKSPACE)
+  rmSync(TEMP_WORKSPACE, { recursive: true, force: true })
 })
 
 // ---------------------------------------------------------------------------
@@ -170,7 +176,7 @@ afterAll(async () => {
 
 describe("lsp_indirect_callers — Layer 3 black-box: cache persistence", () => {
   beforeEach(() => {
-    clearCache(FIXTURE_DIR)
+    clearCache(TEMP_WORKSPACE)
     // Reset mock call counters
     mockLsp.prepareCallHierarchy.mockClear()
     mockLsp.references.mockClear()
@@ -246,7 +252,7 @@ describe("lsp_indirect_callers — Layer 3 black-box: cache persistence", () => 
     })
 
     // Clear the cache
-    clearCache(FIXTURE_DIR)
+    clearCache(TEMP_WORKSPACE)
 
     // Next call should compute fresh
     const result = await client.callTool({

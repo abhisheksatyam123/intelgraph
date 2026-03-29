@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from "vitest"
 import { PostgresDbFoundation } from "../../../src/intelligence/db/postgres/client.js"
-import { PostgresSnapshotIngestWriter } from "../../../src/intelligence/db/postgres/ingest-writer.js"
+import { PostgresSnapshotIngestWriter, classifyAndStoreInvocationType } from "../../../src/intelligence/db/postgres/ingest-writer.js"
 import type { SnapshotMeta } from "../../../src/intelligence/contracts/common.js"
 
 // ---------------------------------------------------------------------------
@@ -22,6 +22,7 @@ function mkPool(overrides: Record<string, unknown> = {}) {
       }
       if (sql.includes("INSERT INTO semantic_edge")) return { rows: [] }
       if (sql.includes("INSERT INTO runtime_observation")) return { rows: [] }
+      if (sql.includes("INSERT INTO api_timer_trigger")) return { rows: [] }
       if (sql.includes("UPDATE snapshot")) return { rows: [] }
       if (sql.includes("BEGIN") || sql.includes("COMMIT") || sql.includes("ROLLBACK")) return { rows: [] }
       return { rows: [] }
@@ -193,5 +194,286 @@ describe("PostgresSnapshotIngestWriter", () => {
     expect(report.inserted.symbols).toBe(0)
     expect(report.inserted.edges).toBe(0)
     expect(report.warnings).toHaveLength(0)
+  })
+
+  it("writes timer trigger rows and returns correct inserted count", async () => {
+    const pool = mkPool()
+    const writer = new PostgresSnapshotIngestWriter(pool)
+    const report = await writer.writeSnapshotBatch(42, {
+      timerTriggers: [
+        {
+          apiName: "wlan_bpf_traffic_timer_handler",
+          timerIdentifierName: "bpf_traffic_watchdog_timer",
+          timerTriggerConditionDescription: "Periodic traffic watchdog timer expiry every 500ms",
+          timerTriggerConfidenceScore: 0.99,
+          derivation: "runtime",
+          evidence: { sourceKind: "file_line", location: { filePath: "bpf_traffic.c", line: 139 } },
+        },
+        {
+          apiName: "wlan_scan_timer_handler",
+          timerIdentifierName: "wlan_scan_periodic_timer",
+          timerTriggerConfidenceScore: 0.95,
+          derivation: "clangd",
+        },
+      ],
+    })
+    expect(report.snapshotId).toBe(42)
+    expect(report.inserted.timerTriggers).toBe(2)
+    expect(report.inserted.symbols).toBe(0)
+    expect(report.warnings).toHaveLength(0)
+
+    const client = await (pool.connect as ReturnType<typeof import("vitest").vi.fn>).mock.results[0]?.value
+    const timerCalls = (client.query as ReturnType<typeof import("vitest").vi.fn>).mock.calls.filter(
+      (call: unknown[]) => typeof call[0] === "string" && (call[0] as string).includes("INSERT INTO api_timer_trigger"),
+    )
+    expect(timerCalls).toHaveLength(2)
+    expect(timerCalls[0]![1]).toEqual([
+      42,
+      "wlan_bpf_traffic_timer_handler",
+      "bpf_traffic_watchdog_timer",
+      "Periodic traffic watchdog timer expiry every 500ms",
+      0.99,
+      "runtime",
+      expect.stringContaining("bpf_traffic.c"),
+    ])
+    expect(timerCalls[1]![1]).toEqual([
+      42,
+      "wlan_scan_timer_handler",
+      "wlan_scan_periodic_timer",
+      null,
+      0.95,
+      "clangd",
+      null,
+    ])
+  })
+})
+
+// ---------------------------------------------------------------------------
+// classifyAndStoreInvocationType helper tests
+// ---------------------------------------------------------------------------
+
+describe("classifyAndStoreInvocationType", () => {
+  it("maps 'calls' edge_kind to runtime_direct_call", () => {
+    expect(classifyAndStoreInvocationType("calls")).toBe("runtime_direct_call")
+  })
+
+  it("maps 'registers_callback' edge_kind to runtime_callback_registration_call", () => {
+    expect(classifyAndStoreInvocationType("registers_callback")).toBe("runtime_callback_registration_call")
+  })
+
+  it("maps 'indirect_calls' edge_kind to runtime_function_pointer_call", () => {
+    expect(classifyAndStoreInvocationType("indirect_calls")).toBe("runtime_function_pointer_call")
+  })
+
+  it("maps 'dispatches_to' edge_kind to runtime_dispatch_table_call", () => {
+    expect(classifyAndStoreInvocationType("dispatches_to")).toBe("runtime_dispatch_table_call")
+  })
+
+  it("maps unknown edge_kind to runtime_unknown_call_path", () => {
+    expect(classifyAndStoreInvocationType("reads_field")).toBe("runtime_unknown_call_path")
+    expect(classifyAndStoreInvocationType("writes_field")).toBe("runtime_unknown_call_path")
+    expect(classifyAndStoreInvocationType("operates_on_struct")).toBe("runtime_unknown_call_path")
+    expect(classifyAndStoreInvocationType("")).toBe("runtime_unknown_call_path")
+    expect(classifyAndStoreInvocationType("unknown_edge_kind")).toBe("runtime_unknown_call_path")
+  })
+})
+
+// ---------------------------------------------------------------------------
+// invocation_type_classification stored in metadata JSONB during edge ingest
+// ---------------------------------------------------------------------------
+
+describe("PostgresSnapshotIngestWriter — invocation type in metadata", () => {
+  function mkPoolCapturingEdgeCalls() {
+    const edgeCalls: unknown[][] = []
+    const client = {
+      query: vi.fn(async (sql: string, params?: unknown[]) => {
+        if (sql.includes("INSERT INTO evidence") && sql.includes("RETURNING")) {
+          return { rows: [{ id: "1" }] }
+        }
+        if (sql.includes("INSERT INTO semantic_edge")) {
+          edgeCalls.push(params ?? [])
+          return { rows: [] }
+        }
+        return { rows: [] }
+      }),
+      release: vi.fn(),
+    }
+    const pool = {
+      connect: vi.fn(async () => client),
+    } as unknown as import("pg").Pool
+    return { pool, edgeCalls, client }
+  }
+
+  it("stores runtime_direct_call in metadata for 'calls' edge", async () => {
+    const { pool, edgeCalls } = mkPoolCapturingEdgeCalls()
+    const writer = new PostgresSnapshotIngestWriter(pool)
+    await writer.writeSnapshotBatch(1, {
+      edges: [{ edgeKind: "calls", srcSymbolName: "foo", dstSymbolName: "bar", confidence: 1.0, derivation: "clangd" }],
+    })
+    expect(edgeCalls).toHaveLength(1)
+    const metadata = JSON.parse(edgeCalls[0]![7] as string)
+    expect(metadata.invocation_type_classification).toBe("runtime_direct_call")
+  })
+
+  it("stores runtime_callback_registration_call in metadata for 'registers_callback' edge", async () => {
+    const { pool, edgeCalls } = mkPoolCapturingEdgeCalls()
+    const writer = new PostgresSnapshotIngestWriter(pool)
+    await writer.writeSnapshotBatch(1, {
+      edges: [{ edgeKind: "registers_callback", srcSymbolName: "foo", dstSymbolName: "bar", confidence: 0.9, derivation: "clangd" }],
+    })
+    const metadata = JSON.parse(edgeCalls[0]![7] as string)
+    expect(metadata.invocation_type_classification).toBe("runtime_callback_registration_call")
+  })
+
+  it("stores runtime_function_pointer_call in metadata for 'indirect_calls' edge", async () => {
+    const { pool, edgeCalls } = mkPoolCapturingEdgeCalls()
+    const writer = new PostgresSnapshotIngestWriter(pool)
+    await writer.writeSnapshotBatch(1, {
+      edges: [{ edgeKind: "indirect_calls", srcSymbolName: "foo", dstSymbolName: "bar", confidence: 0.7, derivation: "clangd" }],
+    })
+    const metadata = JSON.parse(edgeCalls[0]![7] as string)
+    expect(metadata.invocation_type_classification).toBe("runtime_function_pointer_call")
+  })
+
+  it("stores runtime_dispatch_table_call in metadata for 'dispatches_to' edge", async () => {
+    const { pool, edgeCalls } = mkPoolCapturingEdgeCalls()
+    const writer = new PostgresSnapshotIngestWriter(pool)
+    await writer.writeSnapshotBatch(1, {
+      edges: [{ edgeKind: "dispatches_to", srcSymbolName: "foo", dstSymbolName: "bar", confidence: 0.8, derivation: "clangd" }],
+    })
+    const metadata = JSON.parse(edgeCalls[0]![7] as string)
+    expect(metadata.invocation_type_classification).toBe("runtime_dispatch_table_call")
+  })
+
+  it("stores runtime_unknown_call_path in metadata for unknown edge_kind", async () => {
+    const { pool, edgeCalls } = mkPoolCapturingEdgeCalls()
+    const writer = new PostgresSnapshotIngestWriter(pool)
+    await writer.writeSnapshotBatch(1, {
+      edges: [{ edgeKind: "reads_field", srcSymbolName: "foo", dstSymbolName: "bar", confidence: 0.5, derivation: "clangd" }],
+    })
+    const metadata = JSON.parse(edgeCalls[0]![7] as string)
+    expect(metadata.invocation_type_classification).toBe("runtime_unknown_call_path")
+  })
+
+  it("preserves existing metadata fields when adding invocation_type_classification", async () => {
+    const { pool, edgeCalls } = mkPoolCapturingEdgeCalls()
+    const writer = new PostgresSnapshotIngestWriter(pool)
+    await writer.writeSnapshotBatch(1, {
+      edges: [{
+        edgeKind: "calls",
+        srcSymbolName: "foo",
+        dstSymbolName: "bar",
+        confidence: 1.0,
+        derivation: "clangd",
+        metadata: { custom_field: "custom_value", priority: 42 },
+      }],
+    })
+    const metadata = JSON.parse(edgeCalls[0]![7] as string)
+    expect(metadata.invocation_type_classification).toBe("runtime_direct_call")
+    expect(metadata.custom_field).toBe("custom_value")
+    expect(metadata.priority).toBe(42)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// access_path and source_location stored in metadata JSONB during edge ingest
+// ---------------------------------------------------------------------------
+
+describe("PostgresSnapshotIngestWriter — struct evidence parity fields in metadata", () => {
+  function mkPoolCapturingEdgeCalls() {
+    const edgeCalls: unknown[][] = []
+    const client = {
+      query: vi.fn(async (sql: string, params?: unknown[]) => {
+        if (sql.includes("INSERT INTO evidence") && sql.includes("RETURNING")) {
+          return { rows: [{ id: "1" }] }
+        }
+        if (sql.includes("INSERT INTO semantic_edge")) {
+          edgeCalls.push(params ?? [])
+          return { rows: [] }
+        }
+        return { rows: [] }
+      }),
+      release: vi.fn(),
+    }
+    const pool = {
+      connect: vi.fn(async () => client),
+    } as unknown as import("pg").Pool
+    return { pool, edgeCalls, client }
+  }
+
+  it("stores access_path in metadata JSONB when EdgeRow provides accessPath", async () => {
+    const { pool, edgeCalls } = mkPoolCapturingEdgeCalls()
+    const writer = new PostgresSnapshotIngestWriter(pool)
+    await writer.writeSnapshotBatch(1, {
+      edges: [{
+        edgeKind: "writes_field",
+        srcSymbolName: "wlan_bpf_enable_filter",
+        dstSymbolName: "bpf_vdev_t",
+        confidence: 0.9,
+        derivation: "clangd",
+        accessPath: "bpf_vdev_t.state.filter_enabled",
+      }],
+    })
+    expect(edgeCalls).toHaveLength(1)
+    const metadata = JSON.parse(edgeCalls[0]![7] as string)
+    expect(metadata.access_path).toBe("bpf_vdev_t.state.filter_enabled")
+  })
+
+  it("stores source_location in metadata JSONB when EdgeRow provides sourceLocation", async () => {
+    const { pool, edgeCalls } = mkPoolCapturingEdgeCalls()
+    const writer = new PostgresSnapshotIngestWriter(pool)
+    await writer.writeSnapshotBatch(1, {
+      edges: [{
+        edgeKind: "reads_field",
+        srcSymbolName: "wlan_bpf_check_filter_state",
+        dstSymbolName: "bpf_vdev_t",
+        confidence: 0.85,
+        derivation: "clangd",
+        sourceLocation: { sourceFilePath: "bpf_filter_offload.c", sourceLineNumber: 221 },
+      }],
+    })
+    expect(edgeCalls).toHaveLength(1)
+    const metadata = JSON.parse(edgeCalls[0]![7] as string)
+    expect(metadata.source_location).toEqual({ sourceFilePath: "bpf_filter_offload.c", sourceLineNumber: 221 })
+  })
+
+  it("stores both access_path and source_location when EdgeRow provides both", async () => {
+    const { pool, edgeCalls } = mkPoolCapturingEdgeCalls()
+    const writer = new PostgresSnapshotIngestWriter(pool)
+    await writer.writeSnapshotBatch(1, {
+      edges: [{
+        edgeKind: "operates_on_struct",
+        srcSymbolName: "wlan_bpf_init_vdev_state",
+        dstSymbolName: "bpf_vdev_t",
+        confidence: 1.0,
+        derivation: "clangd",
+        accessPath: "bpf_vdev_t.state",
+        sourceLocation: { sourceFilePath: "bpf_vdev_init.c", sourceLineNumber: 83 },
+      }],
+    })
+    expect(edgeCalls).toHaveLength(1)
+    const metadata = JSON.parse(edgeCalls[0]![7] as string)
+    expect(metadata.access_path).toBe("bpf_vdev_t.state")
+    expect(metadata.source_location).toEqual({ sourceFilePath: "bpf_vdev_init.c", sourceLineNumber: 83 })
+    expect(metadata.invocation_type_classification).toBe("runtime_unknown_call_path")
+  })
+
+  it("does not include access_path or source_location keys when EdgeRow omits them", async () => {
+    const { pool, edgeCalls } = mkPoolCapturingEdgeCalls()
+    const writer = new PostgresSnapshotIngestWriter(pool)
+    await writer.writeSnapshotBatch(1, {
+      edges: [{
+        edgeKind: "calls",
+        srcSymbolName: "foo",
+        dstSymbolName: "bar",
+        confidence: 1.0,
+        derivation: "clangd",
+      }],
+    })
+    expect(edgeCalls).toHaveLength(1)
+    const metadata = JSON.parse(edgeCalls[0]![7] as string)
+    expect(metadata).not.toHaveProperty("access_path")
+    expect(metadata).not.toHaveProperty("source_location")
+    expect(metadata.invocation_type_classification).toBe("runtime_direct_call")
   })
 })

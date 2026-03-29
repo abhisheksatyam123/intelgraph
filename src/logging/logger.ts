@@ -9,7 +9,8 @@ import { LogEntry } from "./log-formatter.js"
 import { FileLogger } from "./file-logger.js"
 import { ConsoleLogger } from "./console-logger.js"
 
-export { LogLevel, LogLevelName } from "./log-levels.js"
+export { LogLevel } from "./log-levels.js"
+export type { LogLevelName } from "./log-levels.js"
 
 export interface LoggerOptions {
   component: string

@@ -157,7 +157,7 @@ export class ClangdExtractionAdapter implements IExtractionAdapter {
     if (!this.pgPool) {
       return {
         snapshotId,
-        inserted: { symbols: 0, types: 0, fields: 0, edges: 0, runtimeCallers: 0, logs: 0 },
+        inserted: { symbols: 0, types: 0, fields: 0, edges: 0, runtimeCallers: 0, logs: 0, timerTriggers: 0 },
         warnings: ["no pgPool configured — dry run only"],
       }
     }

@@ -8,7 +8,23 @@ import type {
   EdgeRow,
   RuntimeCallerRow,
   LogRow,
+  TimerTriggerRow,
 } from "../../contracts/common.js"
+import { RuntimeInvocationType } from "../../contracts/orchestrator.js"
+
+/**
+ * Maps an edge_kind string to a RuntimeInvocationType enum value string.
+ * Returns the string value suitable for storage in metadata JSONB.
+ */
+export function classifyAndStoreInvocationType(edgeKind: string): string {
+  switch (edgeKind) {
+    case "calls": return RuntimeInvocationType.RUNTIME_DIRECT_CALL
+    case "registers_callback": return RuntimeInvocationType.RUNTIME_CALLBACK_REGISTRATION_CALL
+    case "indirect_calls": return RuntimeInvocationType.RUNTIME_FUNCTION_POINTER_CALL
+    case "dispatches_to": return RuntimeInvocationType.RUNTIME_DISPATCH_TABLE_CALL
+    default: return RuntimeInvocationType.RUNTIME_UNKNOWN_CALL_PATH
+  }
+}
 
 const { Pool } = pg
 
@@ -24,11 +40,12 @@ export class PostgresSnapshotIngestWriter implements ISnapshotIngestWriter {
       edges?: unknown[]
       runtimeCallers?: unknown[]
       logs?: unknown[]
+      timerTriggers?: unknown[]
     },
   ): Promise<IngestReport> {
     const report: IngestReport = {
       snapshotId,
-      inserted: { symbols: 0, types: 0, fields: 0, edges: 0, runtimeCallers: 0, logs: 0 },
+      inserted: { symbols: 0, types: 0, fields: 0, edges: 0, runtimeCallers: 0, logs: 0, timerTriggers: 0 },
       warnings: [],
     }
 
@@ -85,12 +102,19 @@ export class PostgresSnapshotIngestWriter implements ISnapshotIngestWriter {
           )
           evidenceId = Number(ev.rows[0]!.id)
         }
+        const invocationType = classifyAndStoreInvocationType(e.edgeKind)
+        const metadata: Record<string, unknown> = {
+          ...(e.metadata ?? {}),
+          invocation_type_classification: invocationType,
+          ...(e.accessPath !== undefined ? { access_path: e.accessPath } : {}),
+          ...(e.sourceLocation !== undefined ? { source_location: e.sourceLocation } : {}),
+        }
         await client.query(
           `INSERT INTO semantic_edge (snapshot_id, edge_kind, src_symbol_name, dst_symbol_name, confidence, derivation, evidence_id, metadata)
            VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
            ON CONFLICT DO NOTHING`,
           [snapshotId, e.edgeKind, e.srcSymbolName ?? null, e.dstSymbolName ?? null,
-           e.confidence, e.derivation, evidenceId, e.metadata ?? null],
+           e.confidence, e.derivation, evidenceId, JSON.stringify(metadata)],
         )
         report.inserted.edges++
       }
@@ -117,6 +141,19 @@ export class PostgresSnapshotIngestWriter implements ISnapshotIngestWriter {
            l.confidence, l.evidence ? JSON.stringify(l.evidence) : null],
         )
         report.inserted.logs++
+      }
+
+      for (const raw of batch.timerTriggers ?? []) {
+        const t = raw as TimerTriggerRow
+        await client.query(
+          `INSERT INTO api_timer_trigger (snapshot_id, api_name, timer_identifier_name, timer_trigger_condition_description, timer_trigger_confidence_score, derivation, evidence)
+           VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+          [snapshotId, t.apiName, t.timerIdentifierName,
+           t.timerTriggerConditionDescription ?? null,
+           t.timerTriggerConfidenceScore, t.derivation,
+           t.evidence ? JSON.stringify(t.evidence) : null],
+        )
+        report.inserted.timerTriggers++
       }
 
       await client.query("COMMIT")

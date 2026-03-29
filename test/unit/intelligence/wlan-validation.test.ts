@@ -221,7 +221,7 @@ describe("WLAN validation: 01880.3 — why_api_invoked", () => {
       deps,
     )
     expect(res.status).toBe("hit")
-    expect(res.data.nodes[0]!.runtime_trigger).toContain("RX data packet")
+    expect(res.data.nodes[0]!.runtime_trigger_event_description).toContain("RX data packet")
   })
 
   it("bpf-traffic-timer-handler: returns timer-based runtime trigger", async () => {
@@ -230,7 +230,7 @@ describe("WLAN validation: 01880.3 — why_api_invoked", () => {
       deps,
     )
     expect(res.status).toBe("hit")
-    expect(res.data.nodes[0]!.runtime_trigger).toContain("timer")
+    expect(res.data.nodes[0]!.runtime_trigger_event_description).toContain("timer")
   })
 
   it("wmi-phyerr-cmd-handler: returns WMI command runtime trigger", async () => {
@@ -239,7 +239,7 @@ describe("WLAN validation: 01880.3 — why_api_invoked", () => {
       deps,
     )
     expect(res.status).toBe("hit")
-    expect(res.data.nodes[0]!.runtime_trigger).toContain("WMI")
+    expect(res.data.nodes[0]!.runtime_trigger_event_description).toContain("WMI")
   })
 })
 

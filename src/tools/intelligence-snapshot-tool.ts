@@ -31,17 +31,22 @@ export async function executeSnapshotTool(args: z.infer<typeof snapshotInputSche
       if (!args.workspaceRoot || !args.compileDbHash) {
         return "intelligence_snapshot begin: workspaceRoot and compileDbHash are required."
       }
-      const ref = await DB_FOUNDATION.beginSnapshot({
-        workspaceRoot: args.workspaceRoot,
-        compileDbHash: args.compileDbHash,
-        parserVersion: args.parserVersion ?? "1.0.0",
-      })
-      return [
-        `Snapshot started:`,
-        `  snapshotId:  ${ref.snapshotId}`,
-        `  status:      ${ref.status}`,
-        `  createdAt:   ${ref.createdAt}`,
-      ].join("\n")
+      try {
+        const ref = await DB_FOUNDATION.beginSnapshot({
+          workspaceRoot: args.workspaceRoot,
+          compileDbHash: args.compileDbHash,
+          parserVersion: args.parserVersion ?? "1.0.0",
+        })
+        return [
+          `Snapshot started:`,
+          `  snapshotId:  ${ref.snapshotId}`,
+          `  status:      ${ref.status}`,
+          `  createdAt:   ${ref.createdAt}`,
+        ].join("\n")
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err)
+        return `intelligence_snapshot: DB error during begin — ${msg}`
+      }
     }
 
     case "commit": {

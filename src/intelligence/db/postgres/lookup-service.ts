@@ -134,6 +134,98 @@ function planQuery(req: QueryRequest): IntentQuery | null {
         params: [sid, req.structName, req.limit ?? 50],
       }
 
+    case "current_structure_runtime_writers_of_structure":
+      return {
+        sql: `SELECT COALESCE(srr.api_name, se.src_symbol_name) AS writer,
+                     COALESCE(srr.target_structure_name, se.dst_symbol_name) AS target,
+                     COALESCE(srr.edge_kind, se.edge_kind) AS edge_kind,
+                     COALESCE(srr.confidence, se.confidence) AS confidence,
+                     COALESCE(srr.derivation, se.derivation) AS derivation,
+                     srr.runtime_structure_evidence
+              FROM (
+                SELECT api_name, target_structure_name, edge_kind, confidence, derivation, runtime_structure_evidence
+                FROM structure_runtime_relation
+                WHERE snapshot_id = $1 AND target_structure_name = $2 AND role = 'writer'
+              ) srr
+              FULL OUTER JOIN (
+                SELECT src_symbol_name, dst_symbol_name, edge_kind, confidence, derivation
+                FROM semantic_edge
+                WHERE snapshot_id = $1 AND dst_symbol_name = $2 AND edge_kind = 'writes_field'
+              ) se ON srr.api_name = se.src_symbol_name
+              ORDER BY COALESCE(srr.confidence, se.confidence) DESC
+              LIMIT $3`,
+        params: [sid, req.structName, req.limit ?? 50],
+      }
+
+    case "current_structure_runtime_readers_of_structure":
+      return {
+        sql: `SELECT COALESCE(srr.api_name, se.src_symbol_name) AS reader,
+                     COALESCE(srr.target_structure_name, se.dst_symbol_name) AS target,
+                     COALESCE(srr.edge_kind, se.edge_kind) AS edge_kind,
+                     COALESCE(srr.confidence, se.confidence) AS confidence,
+                     COALESCE(srr.derivation, se.derivation) AS derivation,
+                     srr.runtime_structure_evidence
+              FROM (
+                SELECT api_name, target_structure_name, edge_kind, confidence, derivation, runtime_structure_evidence
+                FROM structure_runtime_relation
+                WHERE snapshot_id = $1 AND target_structure_name = $2 AND role = 'reader'
+              ) srr
+              FULL OUTER JOIN (
+                SELECT src_symbol_name, dst_symbol_name, edge_kind, confidence, derivation
+                FROM semantic_edge
+                WHERE snapshot_id = $1 AND dst_symbol_name = $2 AND edge_kind = 'reads_field'
+              ) se ON srr.api_name = se.src_symbol_name
+              ORDER BY COALESCE(srr.confidence, se.confidence) DESC
+              LIMIT $3`,
+        params: [sid, req.structName, req.limit ?? 50],
+      }
+
+    case "current_structure_runtime_initializers_of_structure":
+      return {
+        sql: `SELECT COALESCE(srr.api_name, se.src_symbol_name) AS initializer,
+                     COALESCE(srr.target_structure_name, se.dst_symbol_name) AS target,
+                     COALESCE(srr.edge_kind, se.edge_kind) AS edge_kind,
+                     COALESCE(srr.confidence, se.confidence) AS confidence,
+                     COALESCE(srr.derivation, se.derivation) AS derivation,
+                     srr.runtime_structure_evidence
+              FROM (
+                SELECT api_name, target_structure_name, edge_kind, confidence, derivation, runtime_structure_evidence
+                FROM structure_runtime_relation
+                WHERE snapshot_id = $1 AND target_structure_name = $2 AND role = 'initializer'
+              ) srr
+              FULL OUTER JOIN (
+                SELECT src_symbol_name, dst_symbol_name, edge_kind, confidence, derivation
+                FROM semantic_edge
+                WHERE snapshot_id = $1 AND dst_symbol_name = $2 AND edge_kind = 'operates_on_struct'
+              ) se ON srr.api_name = se.src_symbol_name
+              ORDER BY COALESCE(srr.confidence, se.confidence) DESC
+              LIMIT $3`,
+        params: [sid, req.structName, req.limit ?? 50],
+      }
+
+    case "current_structure_runtime_mutators_of_structure":
+      return {
+        sql: `SELECT COALESCE(srr.api_name, se.src_symbol_name) AS mutator,
+                     COALESCE(srr.target_structure_name, se.dst_symbol_name) AS target,
+                     COALESCE(srr.edge_kind, se.edge_kind) AS edge_kind,
+                     COALESCE(srr.confidence, se.confidence) AS confidence,
+                     COALESCE(srr.derivation, se.derivation) AS derivation,
+                     srr.runtime_structure_evidence
+              FROM (
+                SELECT api_name, target_structure_name, edge_kind, confidence, derivation, runtime_structure_evidence
+                FROM structure_runtime_relation
+                WHERE snapshot_id = $1 AND target_structure_name = $2 AND role = 'mutator'
+              ) srr
+              FULL OUTER JOIN (
+                SELECT src_symbol_name, dst_symbol_name, edge_kind, confidence, derivation
+                FROM semantic_edge
+                WHERE snapshot_id = $1 AND dst_symbol_name = $2 AND edge_kind = 'writes_field'
+              ) se ON srr.api_name = se.src_symbol_name
+              ORDER BY COALESCE(srr.confidence, se.confidence) DESC
+              LIMIT $3`,
+        params: [sid, req.structName, req.limit ?? 50],
+      }
+
     case "find_field_access_path":
       return {
         sql: `SELECT src_symbol_name AS accessor, dst_symbol_name AS field,
@@ -217,6 +309,18 @@ function planQuery(req: QueryRequest): IntentQuery | null {
               ORDER BY confidence DESC, line ASC
               LIMIT $4`,
         params: [sid, req.apiName, (req as QueryRequest & { logLevel?: string }).logLevel ?? "INFO", req.limit ?? 100],
+      }
+
+    case "find_api_timer_triggers":
+      return {
+        sql: `SELECT api_name, timer_identifier_name, timer_trigger_condition_description,
+                     timer_trigger_confidence_score, derivation
+              FROM api_timer_trigger
+              WHERE snapshot_id = $1
+                AND api_name = $2
+              ORDER BY timer_trigger_confidence_score DESC
+              LIMIT $3`,
+        params: [sid, req.apiName, req.limit ?? 50],
       }
 
     default:

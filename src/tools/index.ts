@@ -1021,7 +1021,7 @@ export const TOOLS: ToolDef[] = [
         return `intelligence_query: invalid request — ${validated.errors.join("; ")}`
       }
       const res = await executeOrchestratedQuery(args, INTELLIGENCE_DEPS)
-      return formatIntelligenceResponse(res)
+      return JSON.stringify(res)
     },
   },
 ]

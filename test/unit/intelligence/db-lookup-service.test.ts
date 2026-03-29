@@ -232,4 +232,48 @@ describe("PostgresDbLookupService", () => {
     expect(res.hit).toBe(false)
     expect(pool.query).not.toHaveBeenCalled()
   })
+
+  it("find_api_timer_triggers queries api_timer_trigger table by apiName", async () => {
+    const pool = mkPool([
+      {
+        api_name: "wlan_bpf_traffic_timer_handler",
+        timer_identifier_name: "bpf_traffic_monitor_timer",
+        timer_trigger_condition_description: "Periodic BPF traffic monitoring interval elapsed",
+        timer_trigger_confidence_score: 0.95,
+        derivation: "clangd",
+      },
+    ])
+    const svc = new PostgresDbLookupService(pool)
+    const res = await svc.lookup(req({ intent: "find_api_timer_triggers" }))
+    expect(res.hit).toBe(true)
+    expect(res.rows).toHaveLength(1)
+    expect(pool.query).toHaveBeenCalledWith(
+      expect.stringContaining("api_timer_trigger"),
+      expect.arrayContaining([BASE_SNAP, "wlan_bpf_filter_offload_handler"]),
+    )
+  })
+
+  it("find_api_timer_triggers SQL orders by timer_trigger_confidence_score DESC", async () => {
+    const pool = mkPool([])
+    const svc = new PostgresDbLookupService(pool)
+    await svc.lookup(req({ intent: "find_api_timer_triggers" }))
+    expect(pool.query).toHaveBeenCalledWith(
+      expect.stringContaining("timer_trigger_confidence_score DESC"),
+      expect.anything(),
+    )
+  })
+
+  it("find_api_timer_triggers SQL selects timer_identifier_name and timer_trigger_condition_description", async () => {
+    const pool = mkPool([])
+    const svc = new PostgresDbLookupService(pool)
+    await svc.lookup(req({ intent: "find_api_timer_triggers" }))
+    expect(pool.query).toHaveBeenCalledWith(
+      expect.stringContaining("timer_identifier_name"),
+      expect.anything(),
+    )
+    expect(pool.query).toHaveBeenCalledWith(
+      expect.stringContaining("timer_trigger_condition_description"),
+      expect.anything(),
+    )
+  })
 })
