@@ -90,10 +90,10 @@ describe("runtime-only projection", () => {
       runtime_trigger_event_description: "Incoming RX data packet",
       runtime_execution_path_from_entrypoint_to_target_api: [
         "offloadif_data_ind",
-        "_offldmgr_enhanced_data_handler",
+        "offldmgr_enhanced_data_handler",
         "wlan_bpf_filter_offload_handler",
       ],
-      runtime_immediate_caller_api_name: "_offldmgr_enhanced_data_handler",
+      runtime_immediate_caller_api_name: "offldmgr_enhanced_data_handler",
       runtime_dispatch_source_location: { filePath: "offload_mgr_ext.c", line: 1107 },
       runtime_confidence_score: 1,
     })
@@ -110,10 +110,10 @@ describe("runtime-only projection", () => {
       runtime_trigger_event_description: "Incoming RX data packet",
       runtime_execution_path_from_entrypoint_to_target_api: [
         "offloadif_data_ind",
-        "_offldmgr_enhanced_data_handler",
+        "offldmgr_enhanced_data_handler",
         "wlan_bpf_filter_offload_handler",
       ],
-      runtime_immediate_caller_api_name: "_offldmgr_enhanced_data_handler",
+      runtime_immediate_caller_api_name: "offldmgr_enhanced_data_handler",
       runtime_dispatch_source_location: { filePath: "offload_mgr_ext.c", line: 1107 },
       runtime_confidence_score: 1,
       current_api_runtime_callee_api_name: "dbglog_printf",
@@ -236,7 +236,7 @@ describe("runtime-only projection", () => {
     expect(res.status).toBe("hit")
     const row = res.data.nodes[0] as Record<string, unknown>
     expect(row.runtime_trigger_event_description).toBeTruthy()
-    expect(row.runtime_immediate_caller_api_name).toBe("_offldmgr_enhanced_data_handler")
+    expect(row.runtime_immediate_caller_api_name).toBe("offldmgr_enhanced_data_handler")
     expect(row.runtime_execution_path_from_entrypoint_to_target_api).toBeTruthy()
     expect(row.registrar).toBeUndefined()
     expect(row.registration_api).toBeUndefined()

@@ -34,6 +34,10 @@ clangd-mcp-bridge.log
 # Testing
 coverage/
 .nyc_output/
+# clangd index caches generated during test runs
+test/fixtures/**/.cache/
+# indirect-caller runtime caches generated during test runs
+test/fixtures/**/.clangd-mcp-indirect-caller-cache/
 
 # Turbo
 .turbo/
@@ -48,4 +52,9 @@ Thumbs.db
 
 # OpenCode
 .opencode/
-EOF
+opencode.json
+
+# Accidental shell redirect artifacts (e.g. "=3-word", "=0:", "1" from bad redirects)
+=*
+/[0-9]
+/[0-9][0-9]

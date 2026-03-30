@@ -16,7 +16,7 @@ const tool = TOOLS.find((t) => t.name === "intelligence_query")!
 function mkDeps(rows: Record<string, unknown>[] = []): OrchestratorRunnerDeps {
   return {
     persistence: {
-      dbLookup: { lookup: vi.fn(async () => ({ hit: rows.length > 0, intent: "who_calls_api", snapshotId: 1, rows })) },
+      dbLookup: { lookup: vi.fn(async () => ({ hit: rows.length > 0, intent: "who_calls_api" as const, snapshotId: 1, rows })) },
       authoritativeStore: { persistEnrichment: vi.fn(async () => 0) },
       graphProjection: { syncFromAuthoritative: vi.fn(async () => ({ synced: true, nodesUpserted: 0, edgesUpserted: 0 })) },
     },
@@ -42,13 +42,17 @@ describe("intelligence_query MCP tool", () => {
   it("returns not-initialized message when deps not set", async () => {
     setIntelligenceDeps(null as never)
     const res = await tool.execute({ intent: "who_calls_api", snapshotId: 1, apiName: "fn" }, mockClient, mockTracker)
-    expect(res).toContain("not initialized")
+    const parsed = JSON.parse(res)
+    expect(parsed.status).toBe("error")
+    expect(parsed.errors.join(" ")).toContain("not initialized")
   })
 
   it("returns validation error for invalid request", async () => {
     setIntelligenceDeps(mkDeps())
     const res = await tool.execute({ intent: "who_calls_api", snapshotId: -1, apiName: "fn" }, mockClient, mockTracker)
-    expect(res).toContain("invalid request")
+    const parsed = JSON.parse(res)
+    expect(parsed.status).toBe("error")
+    expect(parsed.errors.join(" ")).toContain("snapshotId")
   })
 
   it("returns formatted hit response with nodes", async () => {

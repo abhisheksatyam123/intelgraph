@@ -25,6 +25,7 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import { createMcpServer } from "../../src/core/server.js"
 import { createServer } from "http"
 import { IndexTracker } from "../../src/tracking/index.js"
+import { createUnifiedBackend } from "../../src/backend/unified-backend.js"
 
 // ---------------------------------------------------------------------------
 // Fixture paths
@@ -104,7 +105,8 @@ beforeAll(async () => {
   tracker.markReady()
 
   // Create MCP server
-  const mcpServer = await createMcpServer(() => Promise.resolve(mockLsp as any), tracker)
+  const getClient = () => Promise.resolve(mockLsp as any)
+  const mcpServer = await createMcpServer({ getClient, tracker, backend: createUnifiedBackend(getClient, tracker) })
 
   // Create HTTP transport
   const { StreamableHTTPServerTransport } = await import(
@@ -130,7 +132,7 @@ beforeAll(async () => {
           sessions.set(id, transport)
         },
       })
-      const server = await createMcpServer(() => Promise.resolve(mockLsp as any), tracker)
+      const server = await createMcpServer({ getClient, tracker, backend: createUnifiedBackend(getClient, tracker) })
       await server.connect(transport)
       sessions.set(sessionId, transport)
     }

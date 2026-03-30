@@ -9,6 +9,7 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js"
 import { createMcpServer } from "../../src/core/server.js"
 import { IndexTracker } from "../../src/tracking/index.js"
+import { createUnifiedBackend } from "../../src/backend/unified-backend.js"
 
 const FIXTURE_DIR = path.resolve(__dirname, "../fixtures/indirect-callers")
 
@@ -149,7 +150,8 @@ beforeAll(async () => {
         sessionIdGenerator: () => sessionId,
         onsessioninitialized: (id) => sessions.set(id, transport!),
       })
-      const server = await createMcpServer(() => Promise.resolve(mockLsp as any), tracker)
+      const getClient = () => Promise.resolve(mockLsp as any)
+      const server = await createMcpServer({ getClient, tracker, backend: createUnifiedBackend(getClient, tracker) })
       await server.connect(transport)
       sessions.set(sessionId, transport)
     }

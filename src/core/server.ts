@@ -17,19 +17,16 @@ import { createServer, type IncomingMessage, type ServerResponse } from "http"
 import { randomUUID } from "crypto"
 import { TOOLS } from "../tools/index.js"
 import { setUnifiedBackend } from "../tools/index.js"
-import type { LspClient } from "../lsp/index.js"
-import type { IndexTracker } from "../tracking/index.js"
 import { log, logError } from "../logging/logger.js"
 import { z } from "zod"
-import { createUnifiedBackend } from "../backend/unified-backend.js"
+import type { BackendDeps } from "./types.js"
 
 // ── Build a fresh McpServer with all tools registered ─────────────────────────
 
 export async function createMcpServer(
-  getClient: () => Promise<LspClient>,
-  tracker: IndexTracker,
+  deps: BackendDeps,
 ): Promise<McpServer> {
-  setUnifiedBackend(createUnifiedBackend(getClient, tracker))
+  setUnifiedBackend(deps.backend)
 
   const server = new McpServer({
     name: "clangd-mcp",
@@ -53,8 +50,8 @@ export async function createMcpServer(
         const start = Date.now()
         log("DEBUG", `Tool call: ${tool.name}`, args)
         try {
-          const client = await getClient()
-          const text = await tool.execute(args, client, tracker)
+          const client = await deps.getClient()
+          const text = await tool.execute(args, client, deps.tracker)
           log("DEBUG", `Tool done: ${tool.name} (${Date.now() - start}ms)`)
           return {
             content: [{ type: "text" as const, text }],
@@ -80,9 +77,9 @@ export async function createMcpServer(
 
 // ── Stdio transport (single session) ─────────────────────────────────────────
 
-export async function startStdio(getClient: () => Promise<LspClient>, tracker: IndexTracker): Promise<void> {
+export async function startStdio(deps: BackendDeps): Promise<void> {
   log("INFO", "Creating stdio MCP server", { pid: process.pid })
-  const server = await createMcpServer(getClient, tracker)
+  const server = await createMcpServer(deps)
   const transport = new StdioServerTransport()
 
   transport.onclose = () => {
@@ -104,8 +101,7 @@ export async function startStdio(getClient: () => Promise<LspClient>, tracker: I
 //   { "url": "http://localhost:<port>/mcp" }
 
 export async function startHttp(
-  getClient: () => Promise<LspClient>,
-  tracker: IndexTracker,
+  deps: BackendDeps,
   port: number,
 ): Promise<void> {
   log("INFO", "Creating HTTP MCP server", { port, pid: process.pid })
@@ -136,7 +132,7 @@ export async function startHttp(
         })
         sessions.set(sessionId, transport)
 
-        const server = await createMcpServer(getClient, tracker)
+        const server = await createMcpServer(deps)
         await server.connect(transport)
 
         transport.onclose = () => {

@@ -1,10 +1,10 @@
 /**
- * intelligence-snapshot-tool.ts
- * Standalone snapshot lifecycle tool — begin/commit/fail via IDbFoundation.
- * Registered into TOOLS array from tools/index.ts.
+ * snapshot-tool.ts
+ * Standalone snapshot lifecycle tool — begin/check/commit/fail via IDbFoundation.
+ * Registered into TOOLS array from intelligence/tools/index.ts.
  */
 import { z } from "zod"
-import type { IDbFoundation } from "../intelligence/contracts/db-foundation.js"
+import type { IDbFoundation } from "../contracts/db-foundation.js"
 
 let DB_FOUNDATION: IDbFoundation | null = null
 
@@ -13,8 +13,14 @@ export function setDbFoundation(db: IDbFoundation): void {
 }
 
 export const snapshotInputSchema = z.object({
-  action: z.enum(["begin", "commit", "fail"]).describe("Snapshot lifecycle action"),
-  workspaceRoot: z.string().optional().describe("Workspace root path (required for begin)"),
+  action: z.enum(["begin", "check", "commit", "fail"]).describe(
+    "Snapshot lifecycle action: " +
+    "begin=create new snapshot, " +
+    "check=find latest ready snapshot for workspaceRoot, " +
+    "commit=mark snapshot ready, " +
+    "fail=mark snapshot failed",
+  ),
+  workspaceRoot: z.string().optional().describe("Workspace root path (required for begin and check)"),
   compileDbHash: z.string().optional().describe("Hash of compile_commands.json (required for begin)"),
   parserVersion: z.string().optional().describe("Parser version string (required for begin)"),
   snapshotId: z.number().int().positive().optional().describe("Snapshot ID (required for commit/fail)"),
@@ -46,6 +52,20 @@ export async function executeSnapshotTool(args: z.infer<typeof snapshotInputSche
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err)
         return `intelligence_snapshot: DB error during begin — ${msg}`
+      }
+    }
+
+    case "check": {
+      if (!args.workspaceRoot) return "intelligence_snapshot check: workspaceRoot is required."
+      try {
+        const ref = await DB_FOUNDATION.getLatestReadySnapshot(args.workspaceRoot)
+        if (!ref) {
+          return `No ready snapshot found for workspaceRoot=${args.workspaceRoot}`
+        }
+        return `Snapshot ready: snapshotId=${ref.snapshotId} workspaceRoot=${args.workspaceRoot} status=${ref.status}`
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err)
+        return `intelligence_snapshot: DB error during check — ${msg}`
       }
     }
 

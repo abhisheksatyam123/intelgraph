@@ -36,13 +36,20 @@ vi.mock("../../../src/tools/index.js", () => ({
   TOOLS: [],
 }))
 
+vi.mock("../../../src/intelligence/tools/index.js", () => ({
+  setDbFoundation: vi.fn(),
+  setIngestDeps: vi.fn(),
+  INTELLIGENCE_TOOLS: [],
+}))
+
 vi.mock("../../../src/logging/logger.js", () => ({
   getLogger: () => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn() }),
 }))
 
 import { initIntelligenceBackend } from "../../../src/intelligence-init.js"
 import { createIntelligenceBackend } from "../../../src/intelligence/backend-factory.js"
-import { setIntelligenceDeps, setDbFoundation } from "../../../src/tools/index.js"
+import { setIntelligenceDeps } from "../../../src/tools/index.js"
+import { setDbFoundation } from "../../../src/intelligence/tools/index.js"
 
 // ---------------------------------------------------------------------------
 // Tests

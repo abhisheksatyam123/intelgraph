@@ -10,6 +10,7 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import { createMcpServer } from "../../src/core/server.js"
 import { IndexTracker } from "../../src/tracking/index.js"
 import { writeLlmDbEntry, computeFileHash } from "../../src/tools/reason-engine/db.js"
+import { createUnifiedBackend } from "../../src/backend/unified-backend.js"
 
 let tmpRoot = ""
 let targetFile = ""
@@ -142,7 +143,8 @@ beforeAll(async () => {
           sessions.set(id, transport!)
         },
       })
-      const server = await createMcpServer(() => Promise.resolve(mockLsp), tracker)
+      const getClient = () => Promise.resolve(mockLsp)
+      const server = await createMcpServer({ getClient, tracker, backend: createUnifiedBackend(getClient, tracker) })
       await server.connect(transport)
       sessions.set(sessionId, transport)
     }

@@ -1,0 +1,432 @@
+/**
+ * lifecycle.ts — Daemon management and clangd connection lifecycle.
+ * Extracted from src/index.ts — pure orchestration, no side effects at import time.
+ */
+
+import { LspClient } from "../lsp/index.js"
+import {
+  readState,
+  writeState,
+  clearState,
+  checkDaemonAlive,
+  spawnDaemon,
+  spawnHttpDaemon,
+  isTcpPortOpen,
+  resolveBridgeScript,
+  type DaemonState,
+} from "../daemon/index.js"
+import {
+  cleanCompileCommands,
+  readCleaningConfig,
+  updateCleaningConfig,
+} from "../utils/compile-commands-cleaner.js"
+import { IndexTracker } from "../tracking/index.js"
+import { log, logError } from "../logging/logger.js"
+import {
+  retryWithBackoff,
+  RECONNECT_DEBOUNCE_MS,
+} from "../config/bootstrap.js"
+import { startHttp, startStdio, startStdioProxy } from "./server.js"
+import type { BackendDeps } from "./types.js"
+import { createUnifiedBackend } from "../backend/unified-backend.js"
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+export interface LifecycleConfig {
+  root: string
+  workspaceId: string
+  clangdPath: string
+  clangdArgs: string[]
+  wsCompileCommandsPolicy?: "reject" | "fix" | "remap"
+}
+
+// ── Daemon management ─────────────────────────────────────────────────────────
+
+/**
+ * Ensure the clangd daemon is running and return the TCP port.
+ * - If a valid state file exists and the daemon is alive → reuse it.
+ * - Otherwise → spawn a new daemon and write a fresh state file.
+ *
+ * Returns { port, isNew } where isNew=true means we just spawned clangd
+ * (needs initialize handshake) and isNew=false means we're reconnecting
+ * to an already-initialized clangd (skip initialize).
+ */
+export async function getOrStartDaemon(
+  config: LifecycleConfig,
+): Promise<{ port: number; isNew: boolean }> {
+  const { root, workspaceId, clangdPath, clangdArgs, wsCompileCommandsPolicy } = config
+  const state = readState(root)
+
+  if (state) {
+    log("INFO", "Found existing daemon state — checking liveness", {
+      port: state.port,
+      bridgePid: state.bridgePid,
+      clangdPid: state.clangdPid,
+      httpPort: state.httpPort,
+      httpPid: state.httpPid,
+      startedAt: state.startedAt,
+    })
+    const alive = await checkDaemonAlive(state, root)
+    if (alive) {
+      log("INFO", "Reusing existing clangd daemon", { port: state.port, bridgePid: state.bridgePid })
+      return { port: state.port, isNew: false }
+    }
+    // Only clear state if httpPort is not present (otherwise we'd lose the HTTP daemon info)
+    if (!state.httpPort) {
+      log("WARN", "Daemon is stale — clearing state and respawning", {
+        staleBridgePid: state.bridgePid,
+        stalePort: state.port,
+      })
+      clearState(root)
+    } else {
+      log("INFO", "Bridge is stale but HTTP daemon is alive — preserving httpPort and spawning new bridge", {
+        httpPort: state.httpPort,
+        httpPid: state.httpPid,
+      })
+    }
+  } else {
+    log("INFO", "No existing daemon state — spawning fresh clangd daemon", { root })
+  }
+
+  // ── Clean compile_commands.json before spawning ──────────────────────────
+  const cleaningConfig = readCleaningConfig(root)
+  if (cleaningConfig.enabled !== false) {
+    // Default: enabled unless explicitly disabled
+    try {
+      const result = await cleanCompileCommands(root, {
+        enabled: true,
+        removeTests: cleaningConfig.removeTests ?? false,
+        cleanFlags: cleaningConfig.cleanFlags ?? true,
+        requireZeroUnmatched: cleaningConfig.requireZeroUnmatched ?? false,
+        preflightPolicy: cleaningConfig.preflightPolicy ?? wsCompileCommandsPolicy ?? "remap",
+        lastCleanedHash: cleaningConfig.lastCleanedHash,
+        lastCleanedAt: cleaningConfig.lastCleanedAt,
+        preflight: cleaningConfig.preflight,
+      })
+
+      // Persist preflight state regardless of whether cleaning was needed.
+      updateCleaningConfig(root, {
+        preflight: {
+          ranAt: result.stats.ranAt,
+          patchEntries: result.stats.patchEntries,
+          mappedPatchCount: result.stats.mappedPatchCount,
+          unmatchedPatchCount: result.stats.unmatchedPatchCount,
+          requireZeroUnmatched: cleaningConfig.requireZeroUnmatched ?? false,
+          preflightPolicy: result.stats.preflightPolicy,
+          externalEntryCount: result.stats.externalEntryCount,
+          remappedExternalCount: result.stats.remappedExternalCount,
+          removedExternalCount: result.stats.removedExternalCount,
+          preflightOk: result.preflightOk,
+        },
+      })
+
+      // Mirror preflight status into daemon state for runtime visibility.
+      const stateForPreflight = readState(root)
+      if (stateForPreflight) {
+        writeState(root, {
+          ...stateForPreflight,
+          workspaceId,
+          compileCommandsPreflight: {
+            ranAt: result.stats.ranAt,
+            patchEntries: result.stats.patchEntries,
+            mappedPatchCount: result.stats.mappedPatchCount,
+            unmatchedPatchCount: result.stats.unmatchedPatchCount,
+            requireZeroUnmatched: cleaningConfig.requireZeroUnmatched ?? false,
+            preflightPolicy: result.stats.preflightPolicy,
+            externalEntryCount: result.stats.externalEntryCount,
+            remappedExternalCount: result.stats.remappedExternalCount,
+            removedExternalCount: result.stats.removedExternalCount,
+            preflightOk: result.preflightOk,
+          } as any,
+        } as any)
+      }
+
+      if (!result.preflightOk) {
+        log("ERROR", "compile_commands preflight failed: unmatched patch files remain", {
+          unmatchedPatchCount: result.stats.unmatchedPatchCount,
+          externalEntryCount: result.stats.externalEntryCount,
+          preflightPolicy: result.stats.preflightPolicy,
+          report: `${root}/patch_unmatched.txt`,
+        })
+        throw new Error("compile_commands preflight failed (unmatched patch files)")
+      }
+
+      if (result.cleaned) {
+        log("INFO", "compile_commands.json cleaned successfully", result.stats)
+        // Update config with new hash
+        updateCleaningConfig(root, {
+          lastCleanedHash: result.stats.newHash,
+          lastCleanedAt: result.stats.cleanedAt,
+        })
+      }
+    } catch (err) {
+      logError("Failed to clean compile_commands.json", err)
+      throw err
+    }
+  } else {
+    log("INFO", "compile_commands.json cleaning disabled in config", { root })
+  }
+
+  // ── Spawn new daemon ─────────────────────────────────────────────────────
+
+  const bridgeScript = resolveBridgeScript()
+  log("INFO", "Resolved bridge script", { bridgeScript })
+
+  const newState: DaemonState = await spawnDaemon({
+    root,
+    clangdBin: clangdPath,
+    clangdArgs,
+    bridgeScript,
+  })
+
+  log("INFO", "New daemon started", {
+    port: newState.port,
+    bridgePid: newState.bridgePid,
+    clangdPid: newState.clangdPid,
+    httpPort: newState.httpPort,
+    httpPid: newState.httpPid,
+    startedAt: newState.startedAt,
+  })
+  return { port: newState.port, isNew: true }
+}
+
+// ── Connection management ─────────────────────────────────────────────────────
+
+/**
+ * Connect (or reconnect) to the clangd daemon.
+ * Handles the case where the TCP connection drops (e.g. bridge restarted).
+ *
+ * @param config       Lifecycle config (root, clangd path/args, etc.)
+ * @param tracker      Index readiness tracker
+ * @param onReconnect  Called when a new client is established after a drop
+ * @param retryFn      Retry-with-backoff function (injected for testability)
+ */
+export async function connectToClangd(
+  config: LifecycleConfig,
+  tracker: IndexTracker,
+  onReconnect: (newClient: LspClient) => void,
+  retryFn: typeof retryWithBackoff,
+): Promise<LspClient> {
+  const { root } = config
+  const { port: daemonPort, isNew } = await getOrStartDaemon(config)
+
+  log("INFO", "Connecting to clangd daemon via TCP", { daemonPort, isNew, root })
+  // skipInit=true when reconnecting to an already-initialized clangd instance
+  const client = await LspClient.createFromSocket(daemonPort, root, tracker, !isNew)
+  if (!isNew) {
+    tracker.markReady()
+    log("INFO", "Marked index as ready (reconnected to warm daemon)", { daemonPort })
+  } else {
+    log("INFO", "LSP initialize handshake sent to fresh daemon", { daemonPort })
+  }
+  log("INFO", "Connected to clangd daemon successfully", { daemonPort, isNew })
+
+  // Watch for connection drops — reconnect automatically with backoff.
+  // IMPORTANT: debounce the reconnect by RECONNECT_DEBOUNCE_MS.
+  // Without this, a reconnect storm occurs: the bridge destroys the old
+  // socket when a new connection arrives, which fires onClose on the old
+  // client, which immediately triggers another connectToClangd, which
+  // causes the bridge to destroy the current socket, and so on infinitely.
+  ;(client as any)._conn.onClose(() => {
+    log("WARN", "Connection to clangd daemon dropped — scheduling reconnect", { daemonPort })
+
+    // Debounce: wait before reconnecting so the bridge has time to settle
+    const reconnectP = new Promise<void>((r) => setTimeout(r, RECONNECT_DEBOUNCE_MS))
+      .then(() => retryFn("connectToClangd", () => connectToClangd(config, tracker, onReconnect, retryFn)))
+      .then((c) => {
+        log("INFO", "Reconnected to clangd daemon successfully after drop")
+        onReconnect(c)
+        return c
+      })
+      .catch((err) => {
+        // retryWithBackoff with maxAttempts=0 never rejects, but guard anyway
+        logError("Reconnect loop exited unexpectedly — this should not happen", err)
+        throw err
+      })
+
+    // Suppress unhandled rejection — caller manages state via onReconnect
+    reconnectP.catch(() => {})
+  })
+
+  return client
+}
+
+// ── Lazy client factory ───────────────────────────────────────────────────────
+
+/**
+ * Build a getClient() function that lazily connects on first call and
+ * waits for any in-flight reconnect before returning.
+ *
+ * @param getState   Returns current { currentClient, reconnectPromise }
+ * @param connectFn  Called to establish a new connection
+ * @param setState   Patches { currentClient, reconnectPromise }
+ */
+export function makeGetClient(
+  getState: () => { currentClient: LspClient | null; reconnectPromise: Promise<LspClient> | null },
+  connectFn: () => Promise<LspClient>,
+  setState: (patch: { currentClient?: LspClient | null; reconnectPromise?: Promise<LspClient> | null }) => void,
+): () => Promise<LspClient> {
+  return (): Promise<LspClient> => {
+    const { currentClient, reconnectPromise } = getState()
+
+    if (reconnectPromise) {
+      log("DEBUG", "getClient: reconnect in progress — waiting for it")
+      return reconnectPromise
+    }
+    if (currentClient) return Promise.resolve(currentClient)
+
+    // Lazy initialization: if client is null (HTTP daemon mode), connect now
+    log("INFO", "Lazy-initializing clangd client (first tool call in HTTP daemon mode)")
+    const p = connectFn()
+      .then((c) => {
+        setState({ currentClient: c, reconnectPromise: null })
+        return c
+      })
+      .catch((err) => {
+        setState({ reconnectPromise: null })
+        throw err
+      })
+    setState({ reconnectPromise: p })
+    return p
+  }
+}
+
+// ── Transport startup helpers ─────────────────────────────────────────────────
+
+/**
+ * Register this process as the HTTP MCP daemon in the state file, then start
+ * the HTTP server. Called when --http-daemon flag is set.
+ */
+export async function startAsHttpDaemon(
+  getClient: () => Promise<LspClient>,
+  tracker: IndexTracker,
+  httpPort: number,
+  root: string,
+  workspaceId: string,
+  clangdPath: string,
+  clangdArgs: string[],
+): Promise<void> {
+  log("INFO", "Starting HTTP MCP daemon", { httpPort, root, pid: process.pid })
+
+  // Write (or update) the state file so other processes can discover this daemon.
+  // Merge with any existing state to preserve bridgePid/clangdPid if present.
+  const existingState = readState(root)
+  writeState(root, {
+    version: 1,
+    bridgePid: existingState?.bridgePid ?? 0,
+    clangdPid: existingState?.clangdPid ?? 0,
+    port: existingState?.port ?? 0,
+    root,
+    workspaceId,
+    clangdBin: clangdPath,
+    clangdArgs,
+    startedAt: existingState?.startedAt ?? new Date().toISOString(),
+    httpPort,
+    httpPid: process.pid,
+    compileCommandsPreflight: existingState?.compileCommandsPreflight,
+  })
+  log("INFO", "State file written for HTTP daemon", { httpPort, httpPid: process.pid, root })
+
+  const backend = createUnifiedBackend(getClient, tracker)
+  const deps: BackendDeps = { getClient, tracker, backend }
+  await startHttp(deps, httpPort)
+  log("INFO", "HTTP MCP daemon ready", { url: `http://127.0.0.1:${httpPort}/mcp`, httpPort })
+}
+
+/**
+ * Ensure the HTTP MCP daemon is running for this workspace, then proxy
+ * stdio → HTTP daemon. Called in default multi-client mode.
+ */
+export async function startAsStdioProxy(
+  root: string,
+  workspaceId: string,
+  clangdPath: string,
+  clangdArgs: string[],
+): Promise<void> {
+  log("INFO", "Starting stdio proxy mode", { root, pid: process.pid })
+
+  // Check if HTTP daemon is already alive via the state file
+  const state = readState(root)
+  let httpPort: number | undefined
+  let daemonAlive = false
+
+  if (state?.httpPort && state.httpPid) {
+    log("INFO", "Checking existing HTTP daemon liveness", {
+      httpPort: state.httpPort,
+      httpPid: state.httpPid,
+    })
+    const portOpen = await isTcpPortOpen(state.httpPort)
+    if (portOpen) {
+      httpPort = state.httpPort
+      daemonAlive = true
+      log("INFO", "HTTP daemon is alive — reusing", { httpPort, httpPid: state.httpPid })
+    } else {
+      log("WARN", "HTTP daemon port not responding — will respawn", {
+        httpPort: state.httpPort,
+        httpPid: state.httpPid,
+      })
+    }
+  } else {
+    log("INFO", "No HTTP daemon in state file — will spawn one", { stateExists: !!state })
+  }
+
+  if (!daemonAlive) {
+    log("INFO", "Spawning HTTP MCP daemon for this workspace", { root })
+    const bridgeScript = resolveBridgeScript()
+    let spawnResult: { httpPort: number; httpPid: number }
+    try {
+      spawnResult = await spawnHttpDaemon({
+        root,
+        clangdBin: clangdPath,
+        clangdArgs,
+        bridgeScript,
+      })
+      log("INFO", "HTTP daemon spawned successfully", {
+        httpPort: spawnResult.httpPort,
+        httpPid: spawnResult.httpPid,
+      })
+    } catch (err) {
+      // Race: another proxy may have spawned the daemon between our check and spawn.
+      // Re-read state and try to use whatever port is now open.
+      log("WARN", "spawnHttpDaemon threw — checking for race-spawned daemon", {
+        error: (err as any)?.message,
+      })
+      const retryState = readState(root)
+      if (retryState?.httpPort && (await isTcpPortOpen(retryState.httpPort))) {
+        log("INFO", "Race resolved — another proxy spawned the daemon", {
+          httpPort: retryState.httpPort,
+          httpPid: retryState.httpPid,
+        })
+        spawnResult = { httpPort: retryState.httpPort, httpPid: retryState.httpPid ?? 0 }
+      } else {
+        logError("Failed to spawn or find HTTP daemon", err as Error)
+        throw err
+      }
+    }
+    httpPort = spawnResult.httpPort
+
+    // Persist httpPort + httpPid into the state file alongside the bridge state
+    const freshState = readState(root)
+    if (freshState) {
+      writeState(root, {
+        ...freshState,
+        workspaceId,
+        httpPort: spawnResult.httpPort,
+        httpPid: spawnResult.httpPid,
+      })
+      log("INFO", "Persisted HTTP daemon info to state file", {
+        httpPort: spawnResult.httpPort,
+        httpPid: spawnResult.httpPid,
+      })
+    }
+  }
+
+  // Brief pause to let the HTTP server finish registering routes after port opens
+  await new Promise((r) => setTimeout(r, 200))
+
+  // Proxy stdio MCP → HTTP daemon
+  const httpUrl = `http://127.0.0.1:${httpPort}/mcp`
+  log("INFO", "Connecting stdio proxy to HTTP daemon", { httpUrl })
+  await startStdioProxy(httpUrl)
+  log("INFO", "Stdio MCP proxy ready", { httpUrl, pid: process.pid })
+}

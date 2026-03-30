@@ -41,7 +41,7 @@ function mkDb(overrides: Partial<IDbFoundation> = {}): IDbFoundation {
     beginSnapshot: vi.fn(async () => ({ snapshotId: 42, status: "building" as const, createdAt: "2026-01-01T00:00:00Z" })),
     commitSnapshot: vi.fn(async () => {}),
     failSnapshot: vi.fn(async () => {}),
-    getSnapshot: vi.fn(async (id: number) => ({ snapshotId: id, status: "ready" as const, createdAt: "2026-01-01T00:00:00Z" })),
+    getLatestReadySnapshot: vi.fn(async (_root: string) => ({ snapshotId: 42, status: "ready" as const, createdAt: "2026-01-01T00:00:00Z" })),
     withTransaction: vi.fn(async (fn) => fn({ query: vi.fn(async () => []) })),
     ...overrides,
   }
@@ -57,7 +57,7 @@ function mkExtractor(counts = { symbols: 5, types: 2, edges: 8 }): IExtractionAd
   }))
   const report: IngestReport = {
     snapshotId: 42,
-    inserted: { symbols: counts.symbols, types: counts.types, fields: 0, edges: counts.edges, runtimeCallers: 0, logs: 0 },
+    inserted: { symbols: counts.symbols, types: counts.types, fields: 0, edges: counts.edges, runtimeCallers: 0, logs: 0, timerTriggers: 0 },
     warnings: [],
   }
   return {
@@ -341,7 +341,9 @@ describe("Fault-injection: intelligence backend tools", () => {
       )
 
       expect(typeof res).toBe("string")
-      expect(res).toContain("invalid request")
+      const parsed = JSON.parse(res)
+      expect(parsed.status).toBe("error")
+      expect(parsed.errors.join(" ")).toContain("snapshotId")
     })
 
     it("FAIL-BEFORE: zero snapshotId → returns deterministic validation error (no throw)", async () => {
@@ -354,7 +356,9 @@ describe("Fault-injection: intelligence backend tools", () => {
       )
 
       expect(typeof res).toBe("string")
-      expect(res).toContain("invalid request")
+      const parsed = JSON.parse(res)
+      expect(parsed.status).toBe("error")
+      expect(parsed.errors.join(" ")).toContain("snapshotId")
     })
 
     it("FAIL-BEFORE: missing required apiName for who_calls_api → returns deterministic validation error", async () => {
@@ -368,8 +372,9 @@ describe("Fault-injection: intelligence backend tools", () => {
       )
 
       expect(typeof res).toBe("string")
-      expect(res).toContain("invalid request")
-      expect(res).toContain("apiName")
+      const parsed = JSON.parse(res)
+      expect(parsed.status).toBe("error")
+      expect(parsed.errors.join(" ")).toContain("apiName")
     })
 
     it("FAIL-BEFORE: missing required structName for where_struct_initialized → returns deterministic validation error", async () => {
@@ -382,8 +387,9 @@ describe("Fault-injection: intelligence backend tools", () => {
       )
 
       expect(typeof res).toBe("string")
-      expect(res).toContain("invalid request")
-      expect(res).toContain("structName")
+      const parsed = JSON.parse(res)
+      expect(parsed.status).toBe("error")
+      expect(parsed.errors.join(" ")).toContain("structName")
     })
 
     it("PASS-AFTER: valid request with DB hit → returns formatted result (no throw)", async () => {

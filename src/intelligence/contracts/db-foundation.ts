@@ -10,6 +10,8 @@ export interface IDbFoundation {
   beginSnapshot(meta: SnapshotMeta): Promise<SnapshotRef>
   commitSnapshot(snapshotId: number): Promise<void>
   failSnapshot(snapshotId: number, reason: string): Promise<void>
+  /** Returns the latest ready snapshot for the given workspace root, or null if none exists. */
+  getLatestReadySnapshot(workspaceRoot: string): Promise<SnapshotRef | null>
   withTransaction<T>(fn: (tx: DbTxContext) => Promise<T>): Promise<T>
 }
 

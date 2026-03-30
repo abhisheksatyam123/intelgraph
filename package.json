@@ -24,6 +24,7 @@
     "validate:01880": "env CLANGD_TCP_BRIDGE_PORT=35101 CHAIN_TEST_TIMEOUT_01880_MS=60000 CHAIN_RETRY_TIMEOUT_01880=1 CHAIN_RESOLVE_TIMEOUT_MS=20000 npx vitest run test/integration/chain-resolver-ground-truth.test.ts",
     "validate:01968:shallow": "env WLAN_WORKSPACE_ROOT=/local/mnt/workspace/code1/WLAN.CNG.1.0-01968.1-QCACNGSWPL_V1_V2_SILICON-1 CLANGD_TCP_BRIDGE_PORT=44403 CHAIN_SHALLOW_01968=1 CHAIN_RESOLVE_TIMEOUT_MS=7000 npx vitest run test/integration/chain-resolver-ground-truth.test.ts -t bpf-notify-handler",
     "validate:01968:full-liveness": "env WLAN_WORKSPACE_ROOT=/local/mnt/workspace/code1/WLAN.CNG.1.0-01968.1-QCACNGSWPL_V1_V2_SILICON-1 CLANGD_TCP_BRIDGE_PORT=44403 CHAIN_SINGLE_SOCKET_MODE=1 CHAIN_RESOLVE_TIMEOUT_MS=15000 CHAIN_LIVE_TIMEOUT_MS=3000 npx vitest run test/integration/chain-resolver-ground-truth.test.ts -t bpf-notify-handler",
+    "lint": "eslint src/ --ext .ts",
     "validate:matrix:conditional-go": "npm run validate:unit && npm run typecheck && npm run validate:01880 && npm run validate:01968:shallow"
   },
   "dependencies": {
@@ -42,7 +43,10 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.57.2",
+    "@typescript-eslint/parser": "^8.57.2",
     "@vitest/coverage-v8": "^2.1.9",
+    "eslint": "^10.1.0",
     "typescript": "^5.0.0",
     "vitest": "^2.1.9"
   }

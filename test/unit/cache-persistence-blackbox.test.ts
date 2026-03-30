@@ -29,6 +29,7 @@ import { createMcpServer } from "../../src/core/server.js"
 import { createServer } from "http"
 import { IndexTracker } from "../../src/tracking/index.js"
 import { clearCache } from "../../src/tools/indirect-caller-cache.js"
+import { createUnifiedBackend } from "../../src/backend/unified-backend.js"
 
 // ---------------------------------------------------------------------------
 // Fixture paths (read-only source files — never written by this test)
@@ -144,7 +145,8 @@ beforeAll(async () => {
           sessions.set(id, transport)
         },
       })
-      const server = await createMcpServer(() => Promise.resolve(mockLsp as any), tracker)
+      const getClient = () => Promise.resolve(mockLsp as any)
+      const server = await createMcpServer({ getClient, tracker, backend: createUnifiedBackend(getClient, tracker) })
       await server.connect(transport)
       sessions.set(sessionId, transport)
     }

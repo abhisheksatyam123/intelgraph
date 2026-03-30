@@ -44,6 +44,10 @@ export const QUERY_INTENTS = [
   "find_api_logs",
   "find_api_logs_by_level",
   "find_api_timer_triggers",
+  /** What structs does this API write? (API-centric, src_symbol_name = apiName) */
+  "find_api_struct_writes",
+  /** What structs does this API read? (API-centric, src_symbol_name = apiName) */
+  "find_api_struct_reads",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
@@ -52,10 +56,19 @@ export interface QueryRequest {
   intent: QueryIntent
   snapshotId: number
   apiName?: string
+  /**
+   * All alias variants of apiName to match in DB queries.
+   * When set, the DB uses `= ANY(ARRAY[...])` instead of `= $n`.
+   * Populated automatically by the orchestrator from canonicalizeSymbol().
+   * Example: ["wlan_bpf_filter_offload_handler", "_wlan_bpf_filter_offload_handler",
+   *           "wlan_bpf_filter_offload_handler___RAM", "_wlan_bpf_filter_offload_handler___RAM"]
+   */
+  apiNameAliases?: string[]
   structName?: string
   fieldName?: string
   traceId?: string
   pattern?: string
+  logLevel?: "ERROR" | "WARN" | "INFO" | "DEBUG" | "VERBOSE" | "TRACE"
   srcApi?: string
   dstApi?: string
   depth?: number
@@ -258,6 +271,10 @@ const INTENTS_REQUIRING_API = new Set<QueryIntent>([
   "show_api_runtime_observations",
   "show_hot_call_paths",
   "find_api_timer_triggers",
+  "find_api_logs",
+  "find_api_logs_by_level",
+  "find_api_struct_writes",
+  "find_api_struct_reads",
 ])
 
 const INTENTS_REQUIRING_STRUCT = new Set<QueryIntent>([
@@ -315,6 +332,9 @@ export function validateQueryRequest(input: unknown):
   }
   if (intent === "find_api_by_log_pattern" && !req.pattern) {
     errors.push("pattern is required for intent 'find_api_by_log_pattern'")
+  }
+  if (intent === "find_api_logs_by_level" && !req.logLevel) {
+    errors.push("logLevel is required for intent 'find_api_logs_by_level' (one of ERROR, WARN, INFO, DEBUG, VERBOSE, TRACE)")
   }
   if (intent === "show_cross_module_path" && (!req.srcApi || !req.dstApi)) {
     errors.push("srcApi and dstApi are required for intent 'show_cross_module_path'")

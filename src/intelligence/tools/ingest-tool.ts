@@ -1,13 +1,13 @@
 /**
- * intelligence-ingest-tool.ts
+ * ingest-tool.ts
  * MCP tool that triggers the full extraction + ingest pipeline for a workspace.
  * Flow: beginSnapshot → extractSymbols/Types/Edges → materializeSnapshot → commitSnapshot
  *       → syncFromAuthoritative → return report
  */
 import { z } from "zod"
-import type { IDbFoundation } from "../intelligence/contracts/db-foundation.js"
-import type { IExtractionAdapter } from "../intelligence/contracts/extraction-adapter.js"
-import type { GraphProjectionRepository } from "../intelligence/contracts/orchestrator.js"
+import type { IDbFoundation } from "../contracts/db-foundation.js"
+import type { IExtractionAdapter } from "../contracts/extraction-adapter.js"
+import type { GraphProjectionRepository } from "../contracts/orchestrator.js"
 
 let DB_FOUNDATION: IDbFoundation | null = null
 let EXTRACTION_ADAPTER: IExtractionAdapter | null = null

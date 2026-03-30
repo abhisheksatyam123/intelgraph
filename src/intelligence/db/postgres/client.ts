@@ -52,12 +52,25 @@ export class PostgresDbFoundation implements IDbFoundation {
     )
   }
 
+  async getLatestReadySnapshot(workspaceRoot: string): Promise<import("../../contracts/common.js").SnapshotRef | null> {
+    const res = await this.pool.query<{ id: string; created_at: string; status: string }>(
+      `SELECT id, created_at, status
+       FROM snapshot
+       WHERE workspace_root = $1 AND status = 'ready'
+       ORDER BY id DESC
+       LIMIT 1`,
+      [workspaceRoot],
+    )
+    if (res.rows.length === 0) return null
+    const row = res.rows[0]!
+    return { snapshotId: Number(row.id), createdAt: row.created_at, status: "ready" }
+  }
+
   async withTransaction<T>(fn: (tx: DbTxContext) => Promise<T>): Promise<T> {
     const client = await this.pool.connect()
     try {
       await client.query("BEGIN")
       const ctx: DbTxContext = {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         query: (sql: string, params?: unknown[]) =>
           client.query(sql, params).then((r) => r.rows) as Promise<any[]>,
       }
