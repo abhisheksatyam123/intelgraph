@@ -1,422 +1,58 @@
 /**
- * tools.ts — MCP tool definitions and human-readable formatters.
+ * tools/index.ts — MCP tool definitions.
  *
  * Each tool maps to one or more LSP operations on the shared LspClient.
  * Outputs are plain text (not raw JSON) so agents can read them directly.
+ *
+ * Schemas, formatters, and dispatch state live in separate modules:
+ *   ./schemas.ts    — Zod schemas, lookup tables, path helpers
+ *   ./formatters.ts — All format* functions
+ *   ./dispatch.ts   — ToolDef, singletons, set* functions, withFile
  */
 
 import { z } from "zod"
-import path from "path"
-import { fileURLToPath } from "url"
-import type { LspClient } from "../lsp/index.js"
-import type { IndexTracker } from "../tracking/index.js"
-import { readFileSync } from "fs"
 import { getLogger } from "../logging/logger.js"
-import type { UnifiedBackend } from "../backend/unified-backend.js"
-import { readState, computeWorkspaceId } from "../daemon/index.js"
+import { computeWorkspaceId } from "../daemon/index.js"
+import {
+  getDaemonBridgePid, getDaemonPort, getHttpDaemonPid, getHttpDaemonPort, getPreflightResult,
+} from "../daemon/state.js"
 import { readCleaningConfig } from "../utils/compile-commands-cleaner.js"
-import { formatReasonChainText } from "./reason-engine/format-reason-chain.js"
 import { prepareReasonQuery } from "./reason-engine/reason-query.js"
 import { buildRuntimeFlowPayload } from "./reason-engine/runtime-flow-output.js"
 import { readReasoningConfig } from "./reason-engine/reason-config.js"
 import { QUERY_INTENTS, validateQueryRequest, executeOrchestratedQuery } from "../intelligence/index.js"
-import type { OrchestratorRunnerDeps } from "../intelligence/orchestrator-runner.js"
-import { snapshotInputSchema, executeSnapshotTool, setDbFoundation } from "./intelligence-snapshot-tool.js"
-import { ingestInputSchema, executeIngestTool, setIngestDeps } from "./intelligence-ingest-tool.js"
-export { setDbFoundation, setIngestDeps }
+import { INTELLIGENCE_TOOLS } from "../intelligence/tools/index.js"
+import { resolveCallers } from "./get-callers.js"
 
-// ── Symbol kind number → readable name ───────────────────────────────────────
-const SYMBOL_KIND: Record<number, string> = {
-  1: "File", 2: "Module", 3: "Namespace", 4: "Package",
-  5: "Class", 6: "Method", 7: "Property", 8: "Field",
-  9: "Constructor", 10: "Enum", 11: "Interface", 12: "Function",
-  13: "Variable", 14: "Constant", 15: "String", 16: "Number",
-  17: "Boolean", 18: "Array", 19: "Object", 20: "Key",
-  21: "Null", 22: "EnumMember", 23: "Struct", 24: "Event",
-  25: "Operator", 26: "TypeParameter",
-}
+import { positionSchema, fileOnlySchema, incomingCallSchema } from "./schemas.js"
+import {
+  formatHover, formatDefinition, formatReferences, formatDocumentSymbol,
+  formatWorkspaceSymbol, formatIncomingCalls, formatOutgoingCalls,
+  formatTypeHierarchy, formatDiagnostics, formatCodeAction,
+  formatDocumentHighlight, formatFoldingRange, formatSignatureHelp,
+  formatRename, formatFormat, formatInlayHints, formatReasonChain,
+  formatIntelligenceResponse,
+} from "./formatters.js"
+import {
+  ToolDef,
+  INFLIGHT_INDIRECT_CALLERS, INDIRECT_CALLER_TELEMETRY,
+  unifiedBackendOrThrow, inflightIndirectCallerKey, withFile,
+  getIntelligenceDeps,
+} from "./dispatch.js"
 
-// Highlight kind: 1=Text, 2=Read, 3=Write
-const HIGHLIGHT_KIND: Record<number, string> = { 1: "text", 2: "read", 3: "write" }
+export { setDbFoundation, setIngestDeps } from "../intelligence/tools/index.js"
+export { setUnifiedBackend, setIntelligenceDeps } from "./dispatch.js"
+export type { ToolDef }
 
-// Folding range kind
-const FOLD_KIND: Record<string, string> = {
-  comment: "comment", imports: "imports", region: "region",
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function displayPath(uriOrPath: string, root: string): string {
-  try {
-    const abs = uriOrPath.startsWith("file://") ? fileURLToPath(uriOrPath) : uriOrPath
-    return path.relative(root, abs)
-  } catch {
-    return uriOrPath
-  }
-}
-
-function fmtLocation(loc: any, root: string): string {
-  if (!loc) return "(unknown location)"
-  const uri = loc.uri ?? loc.targetUri ?? ""
-  const range = loc.range ?? loc.targetSelectionRange ?? loc.targetRange
-  const line = range?.start?.line != null ? range.start.line + 1 : "?"
-  const col  = range?.start?.character != null ? range.start.character + 1 : "?"
-  return `${displayPath(uri, root)}:${line}:${col}`
-}
-
-// ── Formatters ────────────────────────────────────────────────────────────────
-
-export function formatHover(result: any): string {
-  if (!result) return "No hover information available."
-  const content = result.contents
-  if (typeof content === "string") return content
-  if (content?.value) return content.value
-  if (Array.isArray(content)) {
-    return content.map((c: any) => (typeof c === "string" ? c : c?.value ?? "")).join("\n")
-  }
-  return "No hover information available."
-}
-
-export function formatDefinition(results: any[], root: string, label = "Definition"): string {
-  if (!results.length) return `No ${label.toLowerCase()} found.`
-  return results.map((r: any) => `${label}: ${fmtLocation(r, root)}`).join("\n")
-}
-
-export function formatReferences(results: any[], root: string): string {
-  if (!results.length) return "No references found."
-  const lines = results.map((r: any) => `  ${fmtLocation(r, root)}`)
-  return `References (${results.length}):\n${lines.join("\n")}`
-}
-
-export function formatDocumentSymbol(results: any[]): string {
-  if (!results.length) return "No symbols found."
-  function renderSymbol(sym: any, indent = 0): string {
-    const prefix = "  ".repeat(indent)
-    const kind   = SYMBOL_KIND[sym.kind] ?? `Kind(${sym.kind})`
-    const detail = sym.detail ? ` — ${sym.detail}` : ""
-    const line   = sym.range?.start?.line != null ? `:${sym.range.start.line + 1}` : ""
-    let out = `${prefix}[${kind}] ${sym.name}${detail}${line}`
-    if (sym.children?.length) {
-      out += "\n" + sym.children.map((c: any) => renderSymbol(c, indent + 1)).join("\n")
-    }
-    return out
-  }
-  return results.map((s: any) => renderSymbol(s)).join("\n")
-}
-
-export function formatWorkspaceSymbol(results: any[], root: string): string {
-  if (!results.length) return "No symbols found."
-  return results
-    .map((s: any) => {
-      const kind = SYMBOL_KIND[s.kind] ?? `Kind(${s.kind})`
-      return `[${kind}] ${s.name}  ${fmtLocation(s.location, root)}`
-    })
-    .join("\n")
-}
-
-export function formatIncomingCalls(results: any[], root: string): string {
-  if (!results.length) return "No incoming calls."
-  return results
-    .map((call: any) => {
-      const from = call.from ?? call.caller
-      const kind = SYMBOL_KIND[from?.kind] ?? "?"
-      const loc  = fmtLocation({ uri: from?.uri, range: from?.selectionRange ?? from?.range }, root)
-      return `  <- [${kind}] ${from?.name ?? "(unknown)"}  at ${loc}`
-    })
-    .join("\n")
-}
-
-export function formatOutgoingCalls(results: any[], root: string): string {
-  if (!results.length) return "No outgoing calls."
-  return results
-    .map((call: any) => {
-      const to   = call.to ?? call.callee
-      const kind = SYMBOL_KIND[to?.kind] ?? "?"
-      const loc  = fmtLocation({ uri: to?.uri, range: to?.selectionRange ?? to?.range }, root)
-      return `  -> [${kind}] ${to?.name ?? "(unknown)"}  at ${loc}`
-    })
-    .join("\n")
-}
-
-export function formatTypeHierarchy(results: any[], root: string, arrow: string): string {
-  if (!results.length) return `No ${arrow === "↑" ? "supertypes" : "subtypes"} found.`
-  return results
-    .map((item: any) => {
-      const kind = SYMBOL_KIND[item.kind] ?? "?"
-      const loc  = fmtLocation({ uri: item.uri, range: item.selectionRange ?? item.range }, root)
-      return `  ${arrow} [${kind}] ${item.name}  at ${loc}`
-    })
-    .join("\n")
-}
-
-export function formatDiagnostics(diagMap: Map<string, any[]>, root: string): string {
-  const lines: string[] = []
-  for (const [filePath, diags] of diagMap.entries()) {
-    if (!diags.length) continue
-    lines.push(`${displayPath(filePath, root)}:`)
-    for (const d of diags) {
-      const severityMap: Record<number, string> = { 1: "ERROR", 2: "WARN", 3: "INFO", 4: "HINT" }
-      const sev  = severityMap[d.severity ?? 1] ?? "ERROR"
-      const line = d.range?.start?.line      != null ? d.range.start.line + 1      : "?"
-      const col  = d.range?.start?.character != null ? d.range.start.character + 1 : "?"
-      lines.push(`  ${sev} [${line}:${col}] ${d.message}`)
-    }
-  }
-  return lines.length ? lines.join("\n") : "No diagnostics."
-}
-
-export function formatCodeAction(results: any[]): string {
-  if (!results.length) return "No code actions available."
-  return results
-    .map((action: any) => {
-      const kind     = action.kind     ? ` [${action.kind}]`                    : ""
-      const disabled = action.disabled ? ` (disabled: ${action.disabled.reason})` : ""
-      return `* ${action.title}${kind}${disabled}`
-    })
-    .join("\n")
-}
-
-export function formatDocumentHighlight(results: any[], filePath: string, root: string): string {
-  if (!results.length) return "No highlights found."
-  const rel = displayPath(filePath, root)
-  return results
-    .map((h: any) => {
-      const kind  = HIGHLIGHT_KIND[h.kind ?? 1] ?? "text"
-      const line  = h.range?.start?.line      != null ? h.range.start.line + 1      : "?"
-      const col   = h.range?.start?.character != null ? h.range.start.character + 1 : "?"
-      const eline = h.range?.end?.line        != null ? h.range.end.line + 1        : "?"
-      const ecol  = h.range?.end?.character   != null ? h.range.end.character + 1   : "?"
-      return `  [${kind}] ${rel}:${line}:${col} – ${eline}:${ecol}`
-    })
-    .join("\n")
-}
-
-export function formatFoldingRange(results: any[], filePath: string, root: string): string {
-  if (!results.length) return "No folding ranges found."
-  const rel = displayPath(filePath, root)
-  return results
-    .map((r: any) => {
-      const kind  = r.kind ? ` (${FOLD_KIND[r.kind] ?? r.kind})` : ""
-      const start = (r.startLine ?? 0) + 1
-      const end   = (r.endLine   ?? 0) + 1
-      return `  ${rel}:${start}–${end}${kind}`
-    })
-    .join("\n")
-}
-
-export function formatSignatureHelp(result: any): string {
-  if (!result?.signatures?.length) return "No signature help available."
-  const active = result.activeSignature ?? 0
-  const lines: string[] = []
-  result.signatures.forEach((sig: any, i: number) => {
-    const marker = i === active ? "▶" : " "
-    lines.push(`${marker} ${sig.label}`)
-    if (sig.documentation) {
-      const doc = typeof sig.documentation === "string"
-        ? sig.documentation
-        : sig.documentation?.value ?? ""
-      if (doc) lines.push(`  ${doc}`)
-    }
-    if (sig.parameters?.length) {
-      const activeParam = result.activeParameter ?? sig.activeParameter ?? 0
-      sig.parameters.forEach((p: any, pi: number) => {
-        const pmarker = pi === activeParam && i === active ? "  → " : "    "
-        const label   = typeof p.label === "string" ? p.label
-          : Array.isArray(p.label) ? sig.label.slice(p.label[0], p.label[1]) : ""
-        const pdoc    = typeof p.documentation === "string" ? p.documentation
-          : p.documentation?.value ?? ""
-        lines.push(`${pmarker}param[${pi}]: ${label}${pdoc ? ` — ${pdoc}` : ""}`)
-      })
-    }
-  })
-  return lines.join("\n")
-}
-
-export function formatRename(workspaceEdit: any, root: string): string {
-  if (!workspaceEdit) return "Rename not possible at this position."
-  const lines: string[] = ["Rename would change:"]
-  // documentChanges (preferred)
-  if (workspaceEdit.documentChanges?.length) {
-    for (const change of workspaceEdit.documentChanges) {
-      const file = displayPath(change.textDocument?.uri ?? "", root)
-      const edits = change.edits ?? []
-      lines.push(`  ${file}: ${edits.length} edit(s)`)
-      for (const e of edits) {
-        const line = e.range?.start?.line != null ? e.range.start.line + 1 : "?"
-        const col  = e.range?.start?.character != null ? e.range.start.character + 1 : "?"
-        lines.push(`    line ${line}:${col} → "${e.newText}"`)
-      }
-    }
-  } else if (workspaceEdit.changes) {
-    // flat changes map
-    for (const [uri, edits] of Object.entries(workspaceEdit.changes as Record<string, any[]>)) {
-      const file = displayPath(uri, root)
-      lines.push(`  ${file}: ${edits.length} edit(s)`)
-      for (const e of edits) {
-        const line = e.range?.start?.line != null ? e.range.start.line + 1 : "?"
-        const col  = e.range?.start?.character != null ? e.range.start.character + 1 : "?"
-        lines.push(`    line ${line}:${col} → "${e.newText}"`)
-      }
-    }
-  } else {
-    lines.push("  (no changes)")
-  }
-  return lines.join("\n")
-}
-
-export function formatFormat(edits: any[], filePath: string, root: string): string {
-  if (!edits.length) return "No formatting changes needed."
-  const rel = displayPath(filePath, root)
-  return `${rel}: ${edits.length} formatting edit(s)\n` +
-    edits.slice(0, 10).map((e: any) => {
-      const sl = e.range?.start?.line != null ? e.range.start.line + 1 : "?"
-      const el = e.range?.end?.line   != null ? e.range.end.line + 1   : "?"
-      const preview = e.newText.slice(0, 60).replace(/\n/g, "↵")
-      return `  lines ${sl}–${el}: "${preview}${e.newText.length > 60 ? "…" : ""}"`
-    }).join("\n") +
-    (edits.length > 10 ? `\n  … and ${edits.length - 10} more` : "")
-}
-
-export function formatInlayHints(hints: any[], filePath: string, root: string): string {
-  if (!hints.length) return "No inlay hints in this range."
-  const rel = displayPath(filePath, root)
-  return hints
-    .map((h: any) => {
-      const line  = h.position?.line      != null ? h.position.line + 1      : "?"
-      const col   = h.position?.character != null ? h.position.character + 1 : "?"
-      const label = Array.isArray(h.label)
-        ? h.label.map((p: any) => (typeof p === "string" ? p : p.value ?? "")).join("")
-        : String(h.label ?? "")
-      const kind  = h.kind === 1 ? "type" : h.kind === 2 ? "param" : "hint"
-      return `  [${kind}] ${rel}:${line}:${col}  ${label}`
-    })
-    .join("\n")
-}
-
-export function formatReasonChain(
-  result: {
-    reasonPaths: import("./reason-engine/contracts.js").ReasonPath[]
-    usedLlm: boolean
-    rejected: number
-    cacheHit: boolean
-    cacheMismatchedFiles: string[]
-  },
-  symbol: string,
-  filePath: string,
-  root: string,
-): string {
-  return formatReasonChainText(result, symbol, filePath, (p) => displayPath(p, root))
-}
-
-
-
-export interface ToolDef {
-  name: string
-  description: string
-  inputSchema: z.ZodTypeAny
-  execute: (args: any, client: LspClient, tracker: IndexTracker) => Promise<string>
-}
-
-let UNIFIED_BACKEND: UnifiedBackend | null = null
-const INFLIGHT_INDIRECT_CALLERS = new Map<string, Promise<any>>()
-const INDIRECT_CALLER_TELEMETRY = {
-  cacheHits: 0,
-  inflightDedupReuses: 0,
-  freshComputes: 0,
-}
-
-let INTELLIGENCE_DEPS: OrchestratorRunnerDeps | null = null
-
-export function setUnifiedBackend(backend: UnifiedBackend): void {
-  UNIFIED_BACKEND = backend
-}
-
-export function setIntelligenceDeps(deps: OrchestratorRunnerDeps): void {
-  INTELLIGENCE_DEPS = deps
-}
-
-function unifiedBackendOrThrow(): UnifiedBackend {
-  if (!UNIFIED_BACKEND) {
-    throw new Error("Unified backend not initialized")
-  }
-  return UNIFIED_BACKEND
-}
-
-function inflightIndirectCallerKey(workspaceRoot: string, cacheKey: string): string {
-  return `${workspaceRoot}::${cacheKey}`
-}
-
-// Shared schemas
-const positionSchema = z.object({
-  file:      z.string().describe("Absolute path to the C/C++ source file"),
-  line:      z.number().int().min(1).describe("Line number (1-based)"),
-  character: z.number().int().min(1).describe("Character offset (1-based)"),
-})
-
-const fileOnlySchema = z.object({
-  file: z.string().describe("Absolute path to the C/C++ source file"),
-})
-
-const incomingCallSchema = positionSchema
-
-// Helper: open file before position-based queries
-async function withFile(
-  client: LspClient,
-  filePath: string,
-  fn: () => Promise<string>,
-): Promise<string> {
-  try {
-    const text = readFileSync(filePath, "utf8")
-    const isFirstOpen = await client.openFile(filePath, text)
-    if (isFirstOpen) await new Promise((r) => setTimeout(r, 300))
-  } catch {
-    // proceed anyway — clangd may have it indexed
-  }
-  return fn()
-}
-
-function formatIntelligenceResponse(res: import("../intelligence/index.js").NormalizedQueryResponse): string {
-  const lines: string[] = []
-  lines.push(`Intent:    ${res.intent}`)
-  lines.push(`Status:    ${res.status}`)
-  lines.push(`Provenance: ${res.provenance.path}`)
-  if (res.provenance.deterministicAttempts.length > 0) {
-    lines.push(`Enrichers: ${res.provenance.deterministicAttempts.join(", ")}`)
-  }
-  if (res.provenance.llmUsed) lines.push("LLM:       used (last resort)")
-  lines.push("")
-
-  if (res.status === "error" || res.status === "not_found") {
-    if (res.errors?.length) lines.push(`Errors: ${res.errors.join("; ")}`)
-    else lines.push("No results found.")
-    return lines.join("\n")
-  }
-
-  const nodes = res.data.nodes
-  if (nodes.length === 0) {
-    lines.push("No results found.")
-    return lines.join("\n")
-  }
-
-  lines.push(`Results (${nodes.length}):`)
-  for (const node of nodes.slice(0, 50)) {
-    const parts: string[] = []
-    for (const [k, v] of Object.entries(node)) {
-      if (v != null && v !== "") parts.push(`${k}=${JSON.stringify(v)}`)
-    }
-    lines.push(`  ${parts.join("  ")}`)
-  }
-  if (nodes.length > 50) lines.push(`  ... and ${nodes.length - 50} more`)
-
-  if (res.data.edges.length > 0) {
-    lines.push("", `Edges (${res.data.edges.length}):`)
-    for (const e of res.data.edges.slice(0, 20)) {
-      lines.push(`  ${JSON.stringify(e)}`)
-    }
-  }
-
-  return lines.join("\n")
-}
+// Re-export formatters for backward compatibility (tests import from tools/index)
+export {
+  formatHover, formatDefinition, formatReferences, formatDocumentSymbol,
+  formatWorkspaceSymbol, formatIncomingCalls, formatOutgoingCalls,
+  formatTypeHierarchy, formatDiagnostics, formatCodeAction,
+  formatDocumentHighlight, formatFoldingRange, formatSignatureHelp,
+  formatRename, formatFormat, formatInlayHints, formatReasonChain,
+  formatIntelligenceResponse,
+} from "./formatters.js"
 
 export const TOOLS: ToolDef[] = [
   {
@@ -425,19 +61,18 @@ export const TOOLS: ToolDef[] = [
       "Return unified backend health/status for this workspace: daemon state, preflight policy/result, and index readiness.",
     inputSchema: z.object({}),
     execute: async (_args, client, tracker) => {
-      const state = readState(client.root)
       const clean = readCleaningConfig(client.root)
       const workspaceId = computeWorkspaceId(client.root)
-      const preflight = state?.compileCommandsPreflight ?? clean.preflight ?? {}
+      const preflight = getPreflightResult(client.root) ?? clean.preflight ?? {}
 
       const lines = [
         `workspace: ${client.root}`,
         `workspaceId: ${workspaceId}`,
         `indexReady: ${tracker.state.isReady}`,
-        `daemonBridgePid: ${state?.bridgePid ?? "unknown"}`,
-        `daemonPort: ${state?.port ?? "unknown"}`,
-        `httpPid: ${state?.httpPid ?? "unknown"}`,
-        `httpPort: ${state?.httpPort ?? "unknown"}`,
+        `daemonBridgePid: ${getDaemonBridgePid(client.root) ?? "unknown"}`,
+        `daemonPort: ${getDaemonPort(client.root) ?? "unknown"}`,
+        `httpPid: ${getHttpDaemonPid(client.root) ?? "unknown"}`,
+        `httpPort: ${getHttpDaemonPort(client.root) ?? "unknown"}`,
         `preflightOk: ${preflight.preflightOk ?? "unknown"}`,
         `unmatchedPatchCount: ${preflight.unmatchedPatchCount ?? "unknown"}`,
         `requireZeroUnmatched: ${preflight.requireZeroUnmatched ?? "unknown"}`,
@@ -965,60 +600,90 @@ export const TOOLS: ToolDef[] = [
     },
   },
 
-  // ── Intelligence ingest tool ───────────────────────────────────────────────
-  {
-    name: "intelligence_ingest",
-    description:
-      "Trigger full extraction + ingest pipeline for a workspace root. " +
-      "Extracts symbols, types, and call edges via clangd, persists to Postgres, " +
-      "commits the snapshot, and optionally syncs the Neo4j projection. " +
-      "Returns snapshotId, inserted counts, and any warnings. " +
-      "Requires INTELLIGENCE_POSTGRES_URL to be set.",
-    inputSchema: ingestInputSchema,
-    execute: async (args, _client, _tracker) => executeIngestTool(args),
-  },
+  // ── Intelligence tools (ingest + snapshot) ────────────────────────────────
+  ...INTELLIGENCE_TOOLS,
 
-  // ── Intelligence snapshot tool ─────────────────────────────────────────────
+  // ── get_callers — unified single-endpoint caller resolution ───────────────
   {
-    name: "intelligence_snapshot",
+    name: "get_callers",
     description:
-      "Manage intelligence snapshot lifecycle. " +
-      "Use action=begin to create a new snapshot (returns snapshotId). " +
-      "Use action=commit to mark a snapshot ready after ingestion. " +
-      "Use action=fail to mark a snapshot failed with a reason. " +
-      "Requires INTELLIGENCE_POSTGRES_URL to be set.",
-    inputSchema: snapshotInputSchema,
-    execute: async (args, _client, _tracker) => executeSnapshotTool(args),
+      "Unified single-endpoint caller resolution. Runs the full waterfall internally and returns " +
+      "a single structured JSON response — no need to orchestrate multiple tools.\n\n" +
+      "Waterfall (highest quality first):\n" +
+      "  1. lsp_runtime_flow      — LLM/cache runtime invoker (best, needs LLM config)\n" +
+      "  2. who_calls_api_at_runtime — DB runtime graph (needs intelligence snapshot)\n" +
+      "  3. who_calls_api         — DB static graph (needs intelligence snapshot)\n" +
+      "  4. lsp_indirect_callers  — LSP + C parser dispatch chain (resolve:true)\n" +
+      "  5. lsp_incoming_calls    — Direct callers only (always available)\n\n" +
+      "Name-alias handling: DB queries are tried with canonical name AND common C firmware " +
+      "alias variants (_foo, __foo, foo___RAM, _foo___RAM) so renamed symbols are found.\n\n" +
+      "Response: JSON with targetApi, callers[], source (which step succeeded), and provenance.",
+    inputSchema: positionSchema.extend({
+      snapshotId: z.number().int().positive().optional()
+        .describe("Intelligence snapshot ID (enables DB-backed caller lookup)"),
+      maxNodes: z.number().int().min(1).max(500).default(50).optional()
+        .describe("Maximum callers to return (default: 50)"),
+      resolve: z.boolean().default(true).optional()
+        .describe("If true (default), resolve full dispatch chain via lsp_indirect_callers for indirect callers"),
+    }),
+    execute: async (args, client, tracker) =>
+      withFile(client, args.file, async () => {
+        const backend = unifiedBackendOrThrow()
+        const INTELLIGENCE_DEPS = getIntelligenceDeps()
+        const result = await resolveCallers(client, tracker, backend, INTELLIGENCE_DEPS, args)
+        return JSON.stringify(result, null, 2)
+      }),
   },
 
   // ── Intelligence query tool ────────────────────────────────────────────────
   {
     name: "intelligence_query",
     description:
-      "Query the intelligence backend for code relationships, call chains, struct ownership, " +
-      "runtime flows, and log patterns. Uses a DB-first approach: returns cached results instantly, " +
-      "falls back to deterministic enrichment (clangd, c_parser), then LLM as last resort. " +
-      "Supported intents: " + QUERY_INTENTS.join(", "),
+      "Query the intelligence backend for runtime API relationships. Four core capabilities:\n" +
+      "  1. WHO CALLS an API at runtime: intent=who_calls_api_at_runtime, apiName=<fn>\n" +
+      "  2. WHAT an API CALLS at runtime: intent=what_api_calls, apiName=<fn>\n" +
+      "  3. WHAT LOGS an API emits: intent=find_api_logs or find_api_logs_by_level, apiName=<fn>, logLevel=<ERROR|WARN|INFO|DEBUG>\n" +
+      "  4. WHAT STRUCTURES an API modifies: intent=find_struct_writers (by struct) or show_hot_call_paths (by api)\n" +
+      "Uses a DB-first approach: returns cached results instantly, falls back to deterministic enrichment " +
+      "(clangd, c_parser), then LLM as last resort. " +
+      "All supported intents: " + QUERY_INTENTS.join(", "),
     inputSchema: z.object({
       intent: z.enum(QUERY_INTENTS).describe("Query intent"),
       snapshotId: z.number().int().positive().describe("Snapshot ID to query against"),
-      apiName: z.string().optional().describe("API/function name (required for caller/callee/dispatch intents)"),
+      apiName: z.string().optional().describe("API/function name (required for caller/callee/dispatch/log intents)"),
       structName: z.string().optional().describe("Struct name (required for struct ownership intents)"),
       fieldName: z.string().optional().describe("Field name (required for find_field_access_path)"),
       traceId: z.string().optional().describe("Trace ID (required for show_runtime_flow_for_trace)"),
       pattern: z.string().optional().describe("Log pattern (required for find_api_by_log_pattern)"),
+      logLevel: z.enum(["ERROR", "WARN", "INFO", "DEBUG", "VERBOSE", "TRACE"]).optional()
+        .describe("Log level filter (required for find_api_logs_by_level; one of ERROR, WARN, INFO, DEBUG, VERBOSE, TRACE)"),
       srcApi: z.string().optional().describe("Source API (required for show_cross_module_path)"),
       dstApi: z.string().optional().describe("Destination API (required for show_cross_module_path)"),
       depth: z.number().int().positive().optional().describe("Traversal depth limit"),
       limit: z.number().int().positive().optional().describe("Result row limit"),
     }),
     execute: async (args, _client, _tracker) => {
+      const INTELLIGENCE_DEPS = getIntelligenceDeps()
       if (!INTELLIGENCE_DEPS) {
-        return "intelligence_query: backend not initialized. Set INTELLIGENCE_POSTGRES_URL and INTELLIGENCE_NEO4J_URL to enable."
+        return JSON.stringify({
+          snapshotId: -1,
+          intent: args.intent ?? "who_calls_api",
+          status: "error",
+          data: { nodes: [], edges: [] },
+          provenance: { path: "db_miss_deterministic", deterministicAttempts: [], llmUsed: false },
+          errors: ["intelligence_query: backend not initialized. Set INTELLIGENCE_POSTGRES_URL and INTELLIGENCE_NEO4J_URL to enable."],
+        })
       }
       const validated = validateQueryRequest(args)
       if (!validated.ok) {
-        return `intelligence_query: invalid request — ${validated.errors.join("; ")}`
+        return JSON.stringify({
+          snapshotId: typeof args.snapshotId === "number" ? args.snapshotId : -1,
+          intent: args.intent ?? "who_calls_api",
+          status: "error",
+          data: { nodes: [], edges: [] },
+          provenance: { path: "db_miss_deterministic", deterministicAttempts: [], llmUsed: false },
+          errors: validated.errors,
+        })
       }
       const res = await executeOrchestratedQuery(args, INTELLIGENCE_DEPS)
       return JSON.stringify(res)
