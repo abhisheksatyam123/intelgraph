@@ -1,0 +1,145 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "_offldmgr_protocol_data_handler",
+  "aliases": [
+    "__offldmgr_protocol_data_handler",
+    "_offldmgr_protocol_data_handler___RAM"
+  ],
+  "source": {
+    "file": "wlan/offloads/src/offldmgr/offldmgr_ext.c",
+    "line": 890
+  },
+  "description": "Offload manager protocol data handler. Processes incoming data frames for registered protocol offloads via the data offload dispatch loop.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "offldmgr_dispatch_data_handler",
+        "callee": "_offldmgr_protocol_data_handler",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.9,
+        "dispatch_chain": [
+          "data_offld_thread",
+          "offldmgr_dispatch_data_handler",
+          "_offldmgr_protocol_data_handler"
+        ],
+        "runtime_trigger": "REO2FW ring data frame delivery",
+        "evidence": {
+          "kind": "dispatch_table_entry",
+          "loc": {
+            "file": "wlan/offloads/src/offldmgr/offldmgr_ext.c",
+            "line": 890
+          }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "_offldmgr_protocol_data_handler",
+        "callee": "offldmgr_invoke_data_handler",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/offloads/src/offldmgr/offldmgr_ext.c",
+            "line": 905
+          }
+        }
+      }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "offldmgr_register_data_offload",
+        "callback": "_offldmgr_protocol_data_handler",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "data",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/offloads/src/offldmgr/offldmgr_ext.c",
+            "line": 890
+          }
+        }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "_offldmgr_protocol_data_handler",
+        "struct": "offldmgr_data_entry_t",
+        "field": "data_handler",
+        "edge_kind": "read",
+        "edge_kind_verbose": "reads_structure_field",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": {
+            "file": "wlan/offloads/src/offldmgr/offldmgr_ext.c",
+            "line": 895
+          }
+        }
+      }
+    ],
+    "logs": [
+      {
+        "api_name": "_offldmgr_protocol_data_handler",
+        "level": "DEBUG",
+        "template": "OFFLDMGR: protocol data handler invoked proto=%d",
+        "subsystem": "OFFLDMGR",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": {
+            "file": "wlan/offloads/src/offldmgr/offldmgr_ext.c",
+            "line": 892
+          }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_runtime",
+      "register",
+      "read",
+      "emit_log"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "registrations_in": 1,
+      "structures": 1,
+      "logs": 1
+    },
+    "required_path_patterns": [
+      {
+        "name": "ring_to_protocol_handler",
+        "nodes": [
+          "ring",
+          "thread",
+          "dispatch_table",
+          "api"
+        ],
+        "description": "REO ring → data_offld_thread → offldmgr dispatch → _offldmgr_protocol_data_handler"
+      }
+    ]
+  }
+}

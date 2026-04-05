@@ -6,12 +6,12 @@ import {
   type ClangdEnricher,
   type EnrichmentAttempt,
   type FallbackPolicy,
+  type RuntimeFacetCompletenessStatus,
+  type RuntimeFacetCompletenessStatusMap,
   type LlmEnricher,
   type NormalizedQueryResponse,
   type PersistenceContracts,
   type QueryRequest,
-  type RuntimeFacetCompletenessStatus,
-  type RuntimeFacetCompletenessStatusMap,
   validateQueryRequest,
 } from "./contracts/orchestrator.js"
 
@@ -21,13 +21,6 @@ const RUNTIME_ONLY_INTENTS = new Set<QueryRequest["intent"]>([
   "show_runtime_flow_for_trace",
   "show_api_runtime_observations",
   "find_api_timer_triggers",
-])
-
-const STRUCTURE_RUNTIME_INTENTS = new Set<QueryRequest["intent"]>([
-  "current_structure_runtime_writers_of_structure",
-  "current_structure_runtime_readers_of_structure",
-  "current_structure_runtime_initializers_of_structure",
-  "current_structure_runtime_mutators_of_structure",
 ])
 
 const LEGACY_STRUCTURE_COMPAT_INTENTS = new Set<QueryRequest["intent"]>([
@@ -50,7 +43,10 @@ export function classifyRuntimeInvocationType(edgeKind: string): string {
   switch (edgeKind) {
     case "calls": return RuntimeInvocationType.RUNTIME_DIRECT_CALL
     case "registers_callback": return RuntimeInvocationType.RUNTIME_CALLBACK_REGISTRATION_CALL
-    case "indirect_calls": return RuntimeInvocationType.RUNTIME_FUNCTION_POINTER_CALL
+    // runtime_calls is the unified runtime relationship kind (direct + indirect).
+    // If runtime_call_kind metadata is absent, classify as function-pointer to avoid
+    // over-claiming direct runtime invocation.
+    case "runtime_calls": return RuntimeInvocationType.RUNTIME_FUNCTION_POINTER_CALL
     case "dispatches_to": return RuntimeInvocationType.RUNTIME_DISPATCH_TABLE_CALL
     default: return RuntimeInvocationType.RUNTIME_UNKNOWN_CALL_PATH
   }
@@ -58,30 +54,57 @@ export function classifyRuntimeInvocationType(edgeKind: string): string {
 
 function mapRuntimeCallerRowsToFrontendFriendlyLongNames(rows: Array<Record<string, unknown>>): Array<Record<string, unknown>> {
   return rows.map((row) => ({
+    kind: row.kind,
+    canonical_name: row.canonical_name ?? row.caller,
+    caller: row.caller,
+    callee: row.callee,
+    edge_kind: row.edge_kind,
+    derivation: row.derivation,
+    confidence: row.confidence,
     runtime_caller_api_name: row.caller,
     runtime_called_api_name: row.callee,
     runtime_caller_invocation_type_classification: classifyRuntimeInvocationType(String(row.edge_kind ?? "")),
     runtime_relation_confidence_score: row.confidence,
     runtime_relation_derivation_source: row.derivation,
+    file_path: row.file_path,
+    line_number: row.line_number,
   }))
 }
 
 function mapRuntimeObservationRowsToFrontendFriendlyLongNames(rows: Array<Record<string, unknown>>): Array<Record<string, unknown>> {
   return rows.map((row) => ({
+    kind: row.kind,
+    canonical_name: row.canonical_name ?? row.immediate_invoker ?? row.target_api,
+    caller: row.immediate_invoker,
+    callee: row.target_api,
+    edge_kind: row.edge_kind ?? "runtime_calls",
+    derivation: row.derivation ?? "runtime",
+    confidence: row.confidence,
     target_api_name: row.target_api,
     runtime_trigger_event_description: row.runtime_trigger,
     runtime_execution_path_from_entrypoint_to_target_api: row.dispatch_chain,
     runtime_immediate_caller_api_name: row.immediate_invoker,
     runtime_dispatch_source_location: row.dispatch_site,
     runtime_confidence_score: row.confidence,
+    file_path: row.file_path ?? (row.dispatch_site as Record<string, unknown> | undefined)?.filePath,
+    line_number: row.line_number ?? (row.dispatch_site as Record<string, unknown> | undefined)?.line,
   }))
 }
 
 function mapTimerTriggerRowsToFrontendFriendlyLongNames(rows: Array<Record<string, unknown>>): Array<Record<string, unknown>> {
   return rows.map((row) => ({
-    current_api_runtime_timer_identifier_name: row.timer_identifier_name,
+    kind: row.kind ?? "timer",
+    canonical_name: row.canonical_name ?? row.timer_identifier_name ?? row.caller,
+    caller: row.caller ?? row.timer_identifier_name ?? row.canonical_name,
+    callee: row.callee,
+    edge_kind: row.edge_kind ?? "runtime_calls",
+    confidence: row.timer_trigger_confidence_score ?? row.confidence,
+    derivation: row.derivation,
+    file_path: row.file_path,
+    line_number: row.line_number,
+    current_api_runtime_timer_identifier_name: row.timer_identifier_name ?? row.caller ?? row.canonical_name,
     current_api_runtime_timer_trigger_condition_description: row.timer_trigger_condition_description,
-    current_api_runtime_timer_trigger_confidence_score: row.timer_trigger_confidence_score,
+    current_api_runtime_timer_trigger_confidence_score: row.timer_trigger_confidence_score ?? row.confidence,
     current_api_runtime_timer_relation_derivation_source: row.derivation,
   }))
 }
@@ -100,36 +123,6 @@ function extractStructureEvidenceFields(row: Record<string, unknown>): Record<st
     out.current_api_runtime_structure_access_source_evidence_location = `${ev.file_path}:${ev.line}`
   }
   return out
-}
-
-function mapStructureRuntimeRowsToFrontendFriendlyLongNames(
-  intent: QueryRequest["intent"],
-  rows: Array<Record<string, unknown>>,
-): Array<Record<string, unknown>> {
-  const roleKeyByIntent: Record<string, string> = {
-    current_structure_runtime_writers_of_structure: "writer",
-    current_structure_runtime_readers_of_structure: "reader",
-    current_structure_runtime_initializers_of_structure: "initializer",
-    current_structure_runtime_mutators_of_structure: "mutator",
-  }
-  const roleApiNameFieldByIntent: Record<string, string> = {
-    current_structure_runtime_writers_of_structure: "current_structure_runtime_writer_api_name",
-    current_structure_runtime_readers_of_structure: "current_structure_runtime_reader_api_name",
-    current_structure_runtime_initializers_of_structure: "current_structure_runtime_initializer_api_name",
-    current_structure_runtime_mutators_of_structure: "current_structure_runtime_mutator_api_name",
-  }
-
-  const roleKey = roleKeyByIntent[intent]
-  const roleField = roleApiNameFieldByIntent[intent]
-
-  return rows.map((row) => ({
-    [roleField]: row[roleKey],
-    current_structure_runtime_target_structure_name: row.target,
-    current_structure_runtime_structure_operation_type_classification: row.edge_kind,
-    current_structure_runtime_structure_operation_confidence_score: row.confidence,
-    current_structure_runtime_relation_derivation_source: row.derivation,
-    ...extractStructureEvidenceFields(row),
-  }))
 }
 
 function mapLegacyStructureRowsToFrontendFriendlyLongNames(
@@ -166,10 +159,6 @@ function mapLegacyStructureRowsToFrontendFriendlyLongNames(
 }
 
 function projectRuntimeOnlyRows(intent: QueryRequest["intent"], rows: Array<Record<string, unknown>>): Array<Record<string, unknown>> {
-  if (STRUCTURE_RUNTIME_INTENTS.has(intent)) {
-    return mapStructureRuntimeRowsToFrontendFriendlyLongNames(intent, rows)
-  }
-
   if (LEGACY_STRUCTURE_COMPAT_INTENTS.has(intent)) {
     return mapLegacyStructureRowsToFrontendFriendlyLongNames(intent, rows)
   }
@@ -177,7 +166,19 @@ function projectRuntimeOnlyRows(intent: QueryRequest["intent"], rows: Array<Reco
   if (!RUNTIME_ONLY_INTENTS.has(intent)) return rows
 
   if (intent === "who_calls_api_at_runtime") {
-    const runtimeOnlyRows = rows.map((r) => pick(r, ["caller", "callee", "edge_kind", "confidence", "derivation"]))
+    const runtimeOnlyRows = rows.map((r) => pick(r, [
+      "kind",
+      "canonical_name",
+      "caller",
+      "callee",
+      "edge_kind",
+      "confidence",
+      "derivation",
+      "file_path",
+      "line_number",
+      "filePath",
+      "lineNumber",
+    ]))
     return mapRuntimeCallerRowsToFrontendFriendlyLongNames(runtimeOnlyRows)
   }
 
@@ -185,7 +186,22 @@ function projectRuntimeOnlyRows(intent: QueryRequest["intent"], rows: Array<Reco
     return mapTimerTriggerRowsToFrontendFriendlyLongNames(rows)
   }
 
-  const runtimeObservationRows = rows.map((r) => pick(r, ["target_api", "runtime_trigger", "dispatch_chain", "immediate_invoker", "dispatch_site", "confidence"]))
+  const runtimeObservationRows = rows.map((r) => pick(r, [
+    "kind",
+    "canonical_name",
+    "target_api",
+    "runtime_trigger",
+    "dispatch_chain",
+    "immediate_invoker",
+    "dispatch_site",
+    "edge_kind",
+    "derivation",
+    "confidence",
+    "file_path",
+    "line_number",
+    "filePath",
+    "lineNumber",
+  ]))
   return mapRuntimeObservationRowsToFrontendFriendlyLongNames(runtimeObservationRows)
 }
 
@@ -230,13 +246,13 @@ function computeFacetCompletenessStatus(status: NormalizedQueryResponse["status"
 }
 
 function buildFacetCompletenessStatusMap(status: NormalizedQueryResponse["status"]): RuntimeFacetCompletenessStatusMap {
-  const facetStatus = computeFacetCompletenessStatus(status)
+  const s = computeFacetCompletenessStatus(status)
   return {
-    runtime_callers_facet_completeness_status: facetStatus,
-    runtime_callees_facet_completeness_status: facetStatus,
-    runtime_structure_access_facet_completeness_status: facetStatus,
-    runtime_logs_facet_completeness_status: facetStatus,
-    runtime_timers_facet_completeness_status: facetStatus,
+    runtime_callers_facet_completeness_status: s,
+    runtime_callees_facet_completeness_status: s,
+    runtime_structure_access_facet_completeness_status: s,
+    runtime_logs_facet_completeness_status: s,
+    runtime_timers_facet_completeness_status: s,
   }
 }
 

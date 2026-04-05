@@ -10,6 +10,8 @@ export type {
   IngestReport,
   Provenance,
   RuntimeCallerRow,
+  RuntimeGraphNodeKind,
+  RuntimeGraphParticipantRow,
   SnapshotMeta,
   SnapshotRef,
   SourceLocation,
@@ -66,3 +68,6 @@ export type {
   QueryIntent,
   QueryRequest,
 } from "./orchestrator.js"
+
+export { nodeResponseSchema } from "./node-protocol.js"
+export type { NodeProtocolResponse } from "./node-protocol.js"

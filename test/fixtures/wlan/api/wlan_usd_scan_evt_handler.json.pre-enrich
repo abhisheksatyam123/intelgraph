@@ -1,0 +1,143 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "wlan_usd_scan_evt_handler",
+  "aliases": [
+    "_wlan_usd_scan_evt_handler",
+    "wlan_usd_scan_evt_handler___RAM"
+  ],
+  "source": {
+    "file": "wlan/offloads/src/usd/wlan_usd.c",
+    "line": 244
+  },
+  "description": "WLAN USD (Unsolicited Service Discovery) scan event handler. Processes scan scheduler events for USD service discovery.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "wlan_scan_sch_deliver_event",
+        "callee": "wlan_usd_scan_evt_handler",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.9,
+        "dispatch_chain": [
+          "scan_scheduler",
+          "wlan_scan_sch_deliver_event",
+          "wlan_usd_scan_evt_handler"
+        ],
+        "runtime_trigger": "scan scheduler event for USD",
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/offloads/src/usd/wlan_usd.c",
+            "line": 244
+          }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "wlan_usd_scan_evt_handler",
+        "callee": "wlan_usd_process_scan_result",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/offloads/src/usd/wlan_usd.c",
+            "line": 260
+          }
+        }
+      }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "wlan_scan_sch_register_event_handler",
+        "callback": "wlan_usd_scan_evt_handler",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "scan_event",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/offloads/src/usd/wlan_usd.c",
+            "line": 244
+          }
+        }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "wlan_usd_scan_evt_handler",
+        "struct": "wlan_usd_ctx_t",
+        "field": "scan_state",
+        "edge_kind": "read",
+        "edge_kind_verbose": "reads_structure_field",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": {
+            "file": "wlan/offloads/src/usd/wlan_usd.c",
+            "line": 250
+          }
+        }
+      }
+    ],
+    "logs": [
+      {
+        "api_name": "wlan_usd_scan_evt_handler",
+        "level": "DEBUG",
+        "template": "USD: scan event handler invoked event=%d",
+        "subsystem": "USD",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": {
+            "file": "wlan/offloads/src/usd/wlan_usd.c",
+            "line": 246
+          }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_runtime",
+      "register",
+      "read",
+      "emit_log"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "registrations_in": 1,
+      "structures": 1,
+      "logs": 1
+    },
+    "required_path_patterns": [
+      {
+        "name": "scan_scheduler_to_usd_handler",
+        "nodes": [
+          "thread",
+          "api"
+        ],
+        "description": "scan_scheduler → wlan_scan_sch_deliver_event → wlan_usd_scan_evt_handler"
+      }
+    ]
+  }
+}

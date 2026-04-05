@@ -1,0 +1,95 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "intr_handler",
+  "aliases": [
+    "_intr_handler",
+    "intr_handler___RAM"
+  ],
+  "source": {
+    "file": "wlan/syssw_services/src/osif/src/cmnos_intrinf.c",
+    "line": 917
+  },
+  "description": "Common OS interrupt handler entry point. Invoked by the QuRT IST thread on hardware interrupt delivery. Routes to registered ISR handlers via cmnos_intr_invoke_isr.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "IST_thread_main",
+        "callee": "intr_handler",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.98,
+        "dispatch_chain": [
+          "A_INUM_TQM_STATUS_HI",
+          "IST_thread_main",
+          "intr_handler"
+        ],
+        "runtime_trigger": "QuRT hardware interrupt",
+        "evidence": {
+          "kind": "fn_ptr_assign",
+          "loc": {
+            "file": "wlan/syssw_services/src/osif/src/cmnos_intrinf.c",
+            "line": 880
+          }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "intr_handler",
+        "callee": "cmnos_intr_invoke_isr",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/syssw_services/src/osif/src/cmnos_intrinf.c",
+            "line": 930
+          }
+        }
+      }
+    ],
+    "registrations_in": [],
+    "registrations_out": [],
+    "structures": [],
+    "logs": [],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_runtime",
+      "call_direct"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "calls_out": 1
+    },
+    "required_path_patterns": []
+  },
+  "enrichment_metadata": {
+    "timestamp": "2026-04-05T11:57:01.702Z",
+    "intents_queried": [
+      "who_calls_api",
+      "who_calls_api_at_runtime",
+      "what_api_calls",
+      "show_registration_chain",
+      "find_callback_registrars",
+      "find_api_logs",
+      "find_api_logs_by_level",
+      "find_api_struct_writes",
+      "find_api_struct_reads",
+      "find_struct_owners"
+    ],
+    "intents_hit": [],
+    "total_relations": 2
+  }
+}

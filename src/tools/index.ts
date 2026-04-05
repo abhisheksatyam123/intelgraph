@@ -22,6 +22,7 @@ import { buildRuntimeFlowPayload } from "./reason-engine/runtime-flow-output.js"
 import { readReasoningConfig } from "./reason-engine/reason-config.js"
 import { QUERY_INTENTS, validateQueryRequest, executeOrchestratedQuery } from "../intelligence/index.js"
 import { INTELLIGENCE_TOOLS } from "../intelligence/tools/index.js"
+import { toNodeResponse, toNodeErrorResponse, toLegacyFlatResponse } from "../intelligence/query-node-adapter.js"
 import { resolveCallers } from "./get-callers.js"
 
 import { positionSchema, fileOnlySchema, incomingCallSchema } from "./schemas.js"
@@ -628,7 +629,13 @@ export const TOOLS: ToolDef[] = [
     }),
     execute: async (args, client, tracker) =>
       withFile(client, args.file, async () => {
-        const backend = unifiedBackendOrThrow()
+        const backend = (() => {
+          try {
+            return unifiedBackendOrThrow()
+          } catch {
+            return null
+          }
+        })()
         const INTELLIGENCE_DEPS = getIntelligenceDeps()
         const result = await resolveCallers(client, tracker, backend, INTELLIGENCE_DEPS, args)
         return JSON.stringify(result, null, 2)
@@ -665,28 +672,34 @@ export const TOOLS: ToolDef[] = [
     execute: async (args, _client, _tracker) => {
       const INTELLIGENCE_DEPS = getIntelligenceDeps()
       if (!INTELLIGENCE_DEPS) {
-        return JSON.stringify({
-          snapshotId: -1,
-          intent: args.intent ?? "who_calls_api",
-          status: "error",
-          data: { nodes: [], edges: [] },
-          provenance: { path: "db_miss_deterministic", deterministicAttempts: [], llmUsed: false },
-          errors: ["intelligence_query: backend not initialized. Set INTELLIGENCE_POSTGRES_URL and INTELLIGENCE_NEO4J_URL to enable."],
-        })
+        return JSON.stringify(toLegacyFlatResponse(toNodeErrorResponse({
+          intent: args.intent,
+          snapshotId: typeof args.snapshotId === "number" ? args.snapshotId : undefined,
+          errors: ["intelligence_query: backend not initialized. Set INTELLIGENCE_NEO4J_URL to enable."],
+        })))
       }
       const validated = validateQueryRequest(args)
       if (!validated.ok) {
-        return JSON.stringify({
-          snapshotId: typeof args.snapshotId === "number" ? args.snapshotId : -1,
-          intent: args.intent ?? "who_calls_api",
-          status: "error",
-          data: { nodes: [], edges: [] },
-          provenance: { path: "db_miss_deterministic", deterministicAttempts: [], llmUsed: false },
+        return JSON.stringify(toLegacyFlatResponse(toNodeErrorResponse({
+          intent: args.intent,
+          snapshotId: typeof args.snapshotId === "number" ? args.snapshotId : undefined,
           errors: validated.errors,
-        })
+        })))
       }
-      const res = await executeOrchestratedQuery(args, INTELLIGENCE_DEPS)
-      return JSON.stringify(res)
+      try {
+        const res = await executeOrchestratedQuery(validated.value, INTELLIGENCE_DEPS)
+        const nodeProto = toNodeResponse(validated.value, res)
+        // Emit the legacy flat format the frontend expects ({status, data:{nodes,edges}})
+        // with the full NodeProtocolResponse nested under `nodeProtocol` for forward compat.
+        const out = toLegacyFlatResponse(nodeProto)
+        return JSON.stringify(out)
+      } catch (err) {
+        return JSON.stringify(toLegacyFlatResponse(toNodeErrorResponse({
+          intent: args.intent,
+          snapshotId: typeof args.snapshotId === "number" ? args.snapshotId : undefined,
+          errors: [err instanceof Error ? err.message : String(err)],
+        })))
+      }
     },
   },
 ]

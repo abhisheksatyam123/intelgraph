@@ -54,11 +54,13 @@ export interface WlanTarget {
 // Workspace root
 // ---------------------------------------------------------------------------
 
+export const CANONICAL_WLAN_WORKSPACE = "/local/mnt/workspace/code1/WLAN.CNG.1.0-01880.3-QCACNGSWPL_V1_V2_SILICON-1"
+
 export function getWlanWorkspaceRoot(): string {
   return (
     process.env.WLAN_WORKSPACE_ROOT ||
     process.env.CLANGD_MCP_WORKSPACE_ROOT ||
-    "/local/mnt/workspace/code1/WLAN.CNG.1.0-01880.3-QCACNGSWPL_V1_V2_SILICON-1"
+    CANONICAL_WLAN_WORKSPACE
   )
 }
 

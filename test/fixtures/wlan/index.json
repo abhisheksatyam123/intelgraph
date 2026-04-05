@@ -1,0 +1,99 @@
+{
+  "workspace": "WLAN.CNG.1.0-01880.3-QCACNGSWPL_V1_V2_SILICON-1/wlan_proc",
+  "description": "Manifest of all WLAN entity fixture files grouped by node family. Each entry is the canonical_name of the entity and maps to a JSON file in the corresponding family folder.",
+  "families": {
+    "api": [
+      "HIF_CE_get_dsr",
+      "HifLayerRecvCallback",
+      "HifLayerSendDoneCallback",
+      "WMIRecvMessageHandler",
+      "_offldmgr_enhanced_data_handler",
+      "_offldmgr_non_data_msg_hdlr",
+      "_offldmgr_protocol_data_handler",
+      "_offldmgr_send_htt_event_to_host",
+      "_offldmgr_sync_rt_data_offload_thread_msg_handler",
+      "_wal_wdcvs_wnoc_intr_handler",
+      "ap_ps_vdev_event_handler",
+      "arp_offload_proc_frame",
+      "blockack_pdev_event_handler",
+      "cmnos_wmac_isr",
+      "coex_roam_handoff_notify_cb",
+      "dispatch_wlan_phyerr_cmds",
+      "htt_done_sig_handler",
+      "intr_handler",
+      "lpass_data_svc_h2t_input",
+      "nan_roam_handoff_notify_cb",
+      "nan_wow_notif_handler",
+      "rri_prefetch_int_handler",
+      "rx_sifs_resp_dsr_hdlr",
+      "sta_ps_wow_notif_handler",
+      "tqm_sync_status_irq_route",
+      "twt_roam_handoff_notify_cb",
+      "tx_send_completion_isr_hdlr_wrapper",
+      "tx_seq_sched_algo_cmd_hdlr",
+      "wal_lp_bar_compl_peer_event_handler",
+      "wal_rx_completion_dsr_hdlr_wrapper",
+      "wal_rx_ul_ipc_ring_process",
+      "wal_tqm_hipri_cmd_intr_sig_hdlr",
+      "wal_tqm_hipri_status_intr_sig_hdlr",
+      "wal_tqm_lowpri_cmd_intr_sig_hdlr",
+      "wal_tqm_lowpri_status_intr_sig_hdlr",
+      "wal_tqm_process_status_ring",
+      "wal_tqm_sch2tqm_sig_hdlr",
+      "whal_aux_ipc_status_ring_handler",
+      "whal_sring_hw_intr_enable",
+      "whal_sring_init",
+      "whal_sring_read",
+      "whal_sring_write",
+      "whal_tqm_tcl_ent_proxy_update",
+      "wlan_bpf_filter_offload_handler",
+      "wlan_bpf_notify_handler",
+      "wlan_bpf_offload_cmd_handler",
+      "wlan_bpf_offload_vdev_notify_handler",
+      "wlan_btm_ofld_action_frame_handler",
+      "wlan_network_list_offload_handler",
+      "wlan_obss_scan_evt_handler",
+      "wlan_scan_autochan_event_handler",
+      "wlan_spm_mac_wow_handler",
+      "wlan_thread_irq_route_wmac_tx",
+      "wlan_thread_irq_sr_wakeup",
+      "wlan_thread_isr_rx_sifs",
+      "wlan_thread_post_init_hdlr",
+      "wlan_thread_signal_route_wmac_rx",
+      "wlan_thread_signal_route_wmac_tx",
+      "wlan_tqm_misc_intr_hdlr",
+      "wlan_usd_scan_evt_handler"
+    ],
+    "struct": [
+      "bpf_vdev_t",
+      "wlan_peer_t"
+    ],
+    "ring": [
+      "wbm_release_ring"
+    ],
+    "hw_block": [
+      "reo_destination"
+    ],
+    "thread": [
+      "data_offld_thread"
+    ],
+    "signal": [
+      "cmnos_thread_irq_signal"
+    ],
+    "interrupt": [
+      "A_INUM_TQM_STATUS_HI"
+    ],
+    "timer": [
+      "cmnos_timer_nondef_private"
+    ],
+    "dispatch_table": [
+      "offldmgr_dispatch_table"
+    ],
+    "message": [
+      "OFFLD_MSG_NON_DATA"
+    ],
+    "log_point": [
+      "bpf_filter_log"
+    ]
+  }
+}

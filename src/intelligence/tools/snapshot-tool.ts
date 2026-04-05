@@ -29,56 +29,59 @@ export const snapshotInputSchema = z.object({
 
 export async function executeSnapshotTool(args: z.infer<typeof snapshotInputSchema>): Promise<string> {
   if (!DB_FOUNDATION) {
-    return "intelligence_snapshot: DB foundation not initialized. Set INTELLIGENCE_POSTGRES_URL to enable."
+    return "intelligence_snapshot: backend not initialized. Set INTELLIGENCE_NEO4J_URL to enable."
   }
 
-  switch (args.action) {
-    case "begin": {
+  try {
+    if (args.action === "begin") {
       if (!args.workspaceRoot || !args.compileDbHash) {
-        return "intelligence_snapshot begin: workspaceRoot and compileDbHash are required."
+        return "intelligence_snapshot: workspaceRoot and compileDbHash are required for action=begin"
       }
-      try {
-        const ref = await DB_FOUNDATION.beginSnapshot({
-          workspaceRoot: args.workspaceRoot,
-          compileDbHash: args.compileDbHash,
-          parserVersion: args.parserVersion ?? "1.0.0",
-        })
-        return [
-          `Snapshot started:`,
-          `  snapshotId:  ${ref.snapshotId}`,
-          `  status:      ${ref.status}`,
-          `  createdAt:   ${ref.createdAt}`,
-        ].join("\n")
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err)
-        return `intelligence_snapshot: DB error during begin — ${msg}`
-      }
+      const res = await DB_FOUNDATION.beginSnapshot({
+        workspaceRoot: args.workspaceRoot,
+        compileDbHash: args.compileDbHash,
+        parserVersion: args.parserVersion ?? "1.0.0",
+      })
+      return [
+        "Snapshot started:",
+        `  snapshotId:  ${res.snapshotId}`,
+        `  status:      ${res.status}`,
+        `  createdAt:   ${res.createdAt}`,
+      ].join("\n")
     }
 
-    case "check": {
-      if (!args.workspaceRoot) return "intelligence_snapshot check: workspaceRoot is required."
-      try {
-        const ref = await DB_FOUNDATION.getLatestReadySnapshot(args.workspaceRoot)
-        if (!ref) {
-          return `No ready snapshot found for workspaceRoot=${args.workspaceRoot}`
-        }
-        return `Snapshot ready: snapshotId=${ref.snapshotId} workspaceRoot=${args.workspaceRoot} status=${ref.status}`
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err)
-        return `intelligence_snapshot: DB error during check — ${msg}`
+    if (args.action === "check") {
+      if (!args.workspaceRoot) {
+        return "intelligence_snapshot: workspaceRoot is required for action=check"
       }
+      const res = await DB_FOUNDATION.getLatestReadySnapshot(args.workspaceRoot)
+      if (!res) {
+        return `No ready snapshot found for workspaceRoot: ${args.workspaceRoot}`
+      }
+      return [
+        "Latest ready snapshot:",
+        `  snapshotId:  ${res.snapshotId}`,
+        `  status:      ${res.status}`,
+        `  createdAt:   ${res.createdAt}`,
+      ].join("\n")
     }
 
-    case "commit": {
-      if (!args.snapshotId) return "intelligence_snapshot commit: snapshotId is required."
+    if (args.action === "commit") {
+      if (!args.snapshotId) {
+        return "intelligence_snapshot: snapshotId is required for action=commit"
+      }
       await DB_FOUNDATION.commitSnapshot(args.snapshotId)
-      return `Snapshot ${args.snapshotId} committed (status: ready).`
+      return `Snapshot committed: id=${args.snapshotId} status=ready`
     }
 
-    case "fail": {
-      if (!args.snapshotId) return "intelligence_snapshot fail: snapshotId is required."
-      await DB_FOUNDATION.failSnapshot(args.snapshotId, args.failReason ?? "unknown")
-      return `Snapshot ${args.snapshotId} marked failed (reason: ${args.failReason ?? "unknown"}).`
+    if (!args.snapshotId) {
+      return "intelligence_snapshot: snapshotId is required for action=fail"
     }
+    const reason = args.failReason ?? "unknown"
+    await DB_FOUNDATION.failSnapshot(args.snapshotId, reason)
+    return `Snapshot failed: id=${args.snapshotId} reason=${reason}`
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    return `intelligence_snapshot: operation failed: ${msg}`
   }
 }

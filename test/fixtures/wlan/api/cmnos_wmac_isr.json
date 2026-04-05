@@ -1,0 +1,152 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "cmnos_wmac_isr",
+  "aliases": [
+    "_cmnos_wmac_isr",
+    "cmnos_wmac_isr___RAM"
+  ],
+  "source": {
+    "file": "wlan/syssw_services/src/osif/src/cmnos_intr_ext.c",
+    "line": 47
+  },
+  "description": "CMNOS WMAC ISR. Common OS WMAC interrupt service routine registered via A_ISR_ATTACH for WMAC0 RX OK interrupt.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "IST_thread_main",
+        "callee": "cmnos_wmac_isr",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.98,
+        "dispatch_chain": [
+          "A_INUM_WMAC0_RX_OK",
+          "IST_thread_main",
+          "cmnos_wmac_isr"
+        ],
+        "runtime_trigger": "A_INUM_WMAC0_RX_OK hardware interrupt",
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/syssw_services/src/osif/src/cmnos_intr_ext.c",
+            "line": 47
+          }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "cmnos_wmac_isr",
+        "callee": "cmnos_intr_invoke_isr",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/syssw_services/src/osif/src/cmnos_intr_ext.c",
+            "line": 60
+          }
+        }
+      }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "A_ISR_ATTACH",
+        "callback": "cmnos_wmac_isr",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "isr",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/syssw_services/src/osif/src/cmnos_intr_ext.c",
+            "line": 47
+          }
+        }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "cmnos_wmac_isr",
+        "struct": "cmnos_intr_ctx_t",
+        "field": "wmac_isr_count",
+        "edge_kind": "mutate",
+        "edge_kind_verbose": "mutates_structure_state",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": {
+            "file": "wlan/syssw_services/src/osif/src/cmnos_intr_ext.c",
+            "line": 52
+          }
+        }
+      }
+    ],
+    "logs": [
+      {
+        "api_name": "cmnos_wmac_isr",
+        "level": "DEBUG",
+        "template": "CMNOS: WMAC ISR invoked intr=%d",
+        "subsystem": "CMNOS",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": {
+            "file": "wlan/syssw_services/src/osif/src/cmnos_intr_ext.c",
+            "line": 49
+          }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_runtime",
+      "call_direct",
+      "register",
+      "emit_log"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "calls_out": 1,
+      "registrations_in": 1,
+      "structures": 1,
+      "logs": 1
+    },
+    "required_path_patterns": []
+  },
+  "enrichment_metadata": {
+    "timestamp": "2026-04-05T11:57:01.701Z",
+    "intents_queried": [
+      "who_calls_api",
+      "who_calls_api_at_runtime",
+      "what_api_calls",
+      "show_registration_chain",
+      "find_callback_registrars",
+      "find_api_logs",
+      "find_api_logs_by_level",
+      "find_api_struct_writes",
+      "find_api_struct_reads",
+      "find_struct_owners"
+    ],
+    "intents_hit": [],
+    "total_relations": 5
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "kind": "dispatch_table",
+  "kind_verbose": "dispatch_table",
+  "canonical_name": "offldmgr_dispatch_table",
+  "aliases": ["offldmgr_data_handler_table", "offload_dispatch_tbl"],
+  "source": {
+    "file": "wlan/offloads/src/offldmgr/offldmgr.c",
+    "line": 65
+  },
+  "description": "Offload manager dispatch table. Routes incoming data-path packets to registered offload handlers (ARP, NS, GTK, BPF, DHCP, mDNS, packet filters) based on packet type classification.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [],
+    "calls_out": [
+      {
+        "caller": "offldmgr_dispatch_table",
+        "callee": "wlan_bpf_filter_offload_handler",
+        "edge_kind": "dispatch",
+        "edge_kind_verbose": "dispatches_execution_to_api",
+        "derivation": "runtime",
+        "confidence": 0.95,
+        "evidence": {
+          "kind": "dispatch_table_entry",
+          "loc": { "file": "wlan/offloads/src/offldmgr/offldmgr.c", "line": 88 }
+        }
+      },
+      {
+        "caller": "offldmgr_dispatch_table",
+        "callee": "arp_offload_proc_frame",
+        "edge_kind": "dispatch",
+        "edge_kind_verbose": "dispatches_execution_to_api",
+        "derivation": "runtime",
+        "confidence": 0.95,
+        "evidence": {
+          "kind": "dispatch_table_entry",
+          "loc": { "file": "wlan/offloads/src/offldmgr/offldmgr.c", "line": 72 }
+        }
+      }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "offldmgr_register_data_handler",
+        "callback": "wlan_bpf_filter_offload_handler",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "data",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": { "file": "wlan/offloads/src/bpf/wlan_bpf.c", "line": 410 }
+        }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [],
+    "logs": [],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": ["dispatch", "register"],
+    "required_directions": ["incoming", "outgoing"],
+    "minimum_counts": {
+      "calls_out": 2,
+      "registrations_in": 1
+    },
+    "required_path_patterns": [
+      {
+        "name": "thread_to_dispatch_to_handler",
+        "nodes": ["thread", "dispatch_table", "api"],
+        "description": "DATA_OFFLD thread → dispatch table → offload handler"
+      }
+    ]
+  }
+}

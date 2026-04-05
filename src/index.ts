@@ -61,6 +61,7 @@ import { LspClient } from "./lsp/index.js"
 import { startHttp, startStdio } from "./core/server.js"
 import { initLogger, log, logError, getLogFile } from "./logging/logger.js"
 import { initIntelligenceBackend } from "./intelligence/init.js"
+import { ensureLocalIntelligenceRuntime } from "./intelligence/local-runtime.js"
 import { IndexTracker } from "./tracking/index.js"
 import {
   normaliseRoot,
@@ -118,7 +119,55 @@ async function main(): Promise<void> {
   initLogger({ component: "clangd-mcp" })
 
   // ── Intelligence backend auto-init (no-op when env vars not set) ────────────
-  initIntelligenceBackend().catch((err) =>
+  // Inject env vars from workspace config intelligenceLocal.env before init.
+  // Precedence: existing process.env > .clangd-mcp.json intelligenceLocal.env
+  // (so explicit env overrides always win, config fills in the gaps).
+  const wsIntelEnv = ws.intelligenceLocal?.env
+  if (wsIntelEnv && ws.intelligenceLocal?.enabled !== false) {
+    const keys = [
+      "INTELLIGENCE_NEO4J_URL",
+      "INTELLIGENCE_NEO4J_USER",
+      "INTELLIGENCE_NEO4J_PASSWORD",
+    ] as const
+    for (const key of keys) {
+      if (!process.env[key] && wsIntelEnv[key]) {
+        process.env[key] = wsIntelEnv[key]
+        log("INFO", `intelligence: injected ${key} from workspace config`, { source: ".clangd-mcp.json" })
+      }
+    }
+  }
+
+  // ── Shared state (declared early so the lazy LSP proxy can close over it) ───
+  const tracker = new IndexTracker()
+  const lifecycleConfig: LifecycleConfig = {
+    root,
+    workspaceId,
+    clangdPath,
+    clangdArgs,
+    wsCompileCommandsPolicy: ws.compileCommandsCleaning?.preflightPolicy,
+  }
+
+  let currentClient: LspClient | null = null
+  let reconnectPromise: Promise<LspClient> | null = null
+
+  // Lazy LSP proxy: delegates each call to currentClient at call time.
+  // This lets the intelligence backend be initialised before clangd connects —
+  // the real client is injected when the first ingest tool call arrives.
+  const lazyLspClient = {
+    documentSymbol: (filePath: string) =>
+      currentClient ? currentClient.documentSymbol(filePath) : Promise.resolve([]),
+    incomingCalls: (filePath: string, line: number, char: number) =>
+      currentClient ? currentClient.incomingCalls(filePath, line, char) : Promise.resolve([]),
+    outgoingCalls: (filePath: string, line: number, char: number) =>
+      currentClient ? currentClient.outgoingCalls(filePath, line, char) : Promise.resolve([]),
+  }
+
+  // Auto-provision local intelligence runtime for this workspace.
+  // Creates workspace-scoped config/data files and starts DB infra if missing.
+  ensureLocalIntelligenceRuntime(root, ws)
+  // Await intelligence init so the ingest/query tools are ready before the
+  // HTTP server starts accepting tool calls. Failure is non-fatal.
+  await initIntelligenceBackend(undefined, lazyLspClient).catch((err) =>
     log("WARN", "intelligence backend init failed — continuing without it", { err: String(err) }),
   )
 
@@ -161,19 +210,6 @@ async function main(): Promise<void> {
     )
     // Don't exit — log and continue
   })
-
-  // ── Shared state ────────────────────────────────────────────────────────────
-  const tracker = new IndexTracker()
-  const lifecycleConfig: LifecycleConfig = {
-    root,
-    workspaceId,
-    clangdPath,
-    clangdArgs,
-    wsCompileCommandsPolicy: ws.compileCommandsCleaning?.preflightPolicy,
-  }
-
-  let currentClient: LspClient | null = null
-  let reconnectPromise: Promise<LspClient> | null = null
 
   const getClient = makeGetClient(
     () => ({ currentClient, reconnectPromise }),

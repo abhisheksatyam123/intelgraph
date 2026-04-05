@@ -1,0 +1,152 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "tx_seq_sched_algo_cmd_hdlr",
+  "aliases": [
+    "_tx_seq_sched_algo_cmd_hdlr",
+    "tx_seq_sched_algo_cmd_hdlr___RAM"
+  ],
+  "source": {
+    "file": "wlan/fw_if/umac_if/src/tac/tac_thread.c",
+    "line": 375
+  },
+  "description": "TX sequence scheduler algorithm command handler. Processes scheduler algorithm command signals in the TAC thread.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "wlan_thread_dsr_wrapper_common",
+        "callee": "tx_seq_sched_algo_cmd_hdlr",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.9,
+        "dispatch_chain": [
+          "tac_thread",
+          "WAL_GET_SCHED_TAC_SCHCMD_SIG_ID",
+          "tx_seq_sched_algo_cmd_hdlr"
+        ],
+        "runtime_trigger": "WAL_GET_SCHED_TAC_SCHCMD_SIG_ID signal",
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/tac/tac_thread.c",
+            "line": 375
+          }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "tx_seq_sched_algo_cmd_hdlr",
+        "callee": "wal_tx_sched_process_cmd",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/tac/tac_thread.c",
+            "line": 388
+          }
+        }
+      }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "wlan_thread_register_signal_wrapper",
+        "callback": "tx_seq_sched_algo_cmd_hdlr",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "signal",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/tac/tac_thread.c",
+            "line": 375
+          }
+        }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "tx_seq_sched_algo_cmd_hdlr",
+        "struct": "tac_thread_ctx_t",
+        "field": "sched_cmd_count",
+        "edge_kind": "mutate",
+        "edge_kind_verbose": "mutates_structure_state",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/tac/tac_thread.c",
+            "line": 380
+          }
+        }
+      }
+    ],
+    "logs": [
+      {
+        "api_name": "tx_seq_sched_algo_cmd_hdlr",
+        "level": "DEBUG",
+        "template": "TAC: TX sched algo cmd handler invoked",
+        "subsystem": "TAC",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/tac/tac_thread.c",
+            "line": 377
+          }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_runtime",
+      "call_direct",
+      "register",
+      "emit_log"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "calls_out": 1,
+      "registrations_in": 1,
+      "structures": 1,
+      "logs": 1
+    },
+    "required_path_patterns": []
+  },
+  "enrichment_metadata": {
+    "timestamp": "2026-04-05T11:57:09.650Z",
+    "intents_queried": [
+      "who_calls_api",
+      "who_calls_api_at_runtime",
+      "what_api_calls",
+      "show_registration_chain",
+      "find_callback_registrars",
+      "find_api_logs",
+      "find_api_logs_by_level",
+      "find_api_struct_writes",
+      "find_api_struct_reads",
+      "find_struct_owners"
+    ],
+    "intents_hit": [],
+    "total_relations": 5
+  }
+}

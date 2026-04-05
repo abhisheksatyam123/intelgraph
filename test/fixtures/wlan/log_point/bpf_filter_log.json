@@ -1,0 +1,45 @@
+{
+  "kind": "log_point",
+  "kind_verbose": "log_emission_point",
+  "canonical_name": "bpf_filter_log",
+  "aliases": [],
+  "source": {
+    "file": "wlan/offloads/src/bpf/wlan_bpf.c",
+    "line": 314
+  },
+  "description": "BPF filter handler log emission point. Emitted at DEBUG level when the BPF offload handler is invoked, recording the vdev ID for tracing.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [],
+    "calls_out": [],
+    "registrations_in": [],
+    "registrations_out": [],
+    "structures": [],
+    "logs": [
+      {
+        "api_name": "wlan_bpf_filter_offload_handler",
+        "level": "DEBUG",
+        "template": "BPF: filter handler invoked vdev=%d",
+        "subsystem": "BPF",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": { "file": "wlan/offloads/src/bpf/wlan_bpf.c", "line": 314 }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": ["emit_log"],
+    "required_directions": ["outgoing"],
+    "minimum_counts": {
+      "logs": 1
+    },
+    "required_path_patterns": []
+  }
+}

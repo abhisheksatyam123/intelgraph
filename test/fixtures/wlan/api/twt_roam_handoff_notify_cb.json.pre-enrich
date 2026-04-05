@@ -1,0 +1,153 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "twt_roam_handoff_notify_cb",
+  "aliases": [
+    "_twt_roam_handoff_notify_cb",
+    "twt_roam_handoff_notify_cb___RAM"
+  ],
+  "source": {
+    "file": "wlan/offloads/src/twt/wlan_twt.c",
+    "line": 262
+  },
+  "description": "TWT (Target Wake Time) roam handoff notification callback. Notified when a roam handoff occurs to update TWT session state.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "wlan_roam_deliver_handoff_notify",
+        "callee": "twt_roam_handoff_notify_cb",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.9,
+        "dispatch_chain": [
+          "roam_handoff_dispatch",
+          "wlan_roam_deliver_handoff_notify",
+          "twt_roam_handoff_notify_cb"
+        ],
+        "runtime_trigger": "roam handoff event for TWT session",
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/offloads/src/twt/wlan_twt.c",
+            "line": 262
+          }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "twt_roam_handoff_notify_cb",
+        "callee": "twt_update_session_on_roam",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/offloads/src/twt/wlan_twt.c",
+            "line": 275
+          }
+        }
+      }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "wlan_roam_register_handoff_notify",
+        "callback": "twt_roam_handoff_notify_cb",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "roam_handoff",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/offloads/src/twt/wlan_twt.c",
+            "line": 262
+          }
+        }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "twt_roam_handoff_notify_cb",
+        "struct": "twt_session_t",
+        "field": "roam_state",
+        "edge_kind": "write",
+        "edge_kind_verbose": "writes_structure_field",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": {
+            "file": "wlan/offloads/src/twt/wlan_twt.c",
+            "line": 268
+          }
+        }
+      }
+    ],
+    "logs": [
+      {
+        "api_name": "twt_roam_handoff_notify_cb",
+        "level": "DEBUG",
+        "template": "TWT: roam handoff notify cb vdev=%d",
+        "subsystem": "TWT",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": {
+            "file": "wlan/offloads/src/twt/wlan_twt.c",
+            "line": 264
+          }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_runtime",
+      "call_direct",
+      "register",
+      "write",
+      "emit_log"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "calls_out": 1,
+      "registrations_in": 1,
+      "structures": 1,
+      "logs": 1
+    },
+    "required_path_patterns": []
+  },
+  "enrichment_metadata": {
+    "timestamp": "2026-04-05T11:55:05.991Z",
+    "intents_queried": [
+      "who_calls_api",
+      "who_calls_api_at_runtime",
+      "what_api_calls",
+      "show_registration_chain",
+      "find_callback_registrars",
+      "find_api_logs",
+      "find_api_logs_by_level",
+      "find_api_struct_writes",
+      "find_api_struct_reads",
+      "find_struct_owners"
+    ],
+    "intents_hit": [],
+    "total_relations": 5
+  }
+}

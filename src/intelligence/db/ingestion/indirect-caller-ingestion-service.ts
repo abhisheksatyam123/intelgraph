@@ -1,4 +1,3 @@
-import pg from "pg"
 import type { IIndirectCallerIngestion } from "../../contracts/indirect-caller-ingestion.js"
 import type {
   RuntimeCallerInput,
@@ -6,12 +5,17 @@ import type {
   LinkReport,
 } from "../../contracts/indirect-caller-ingestion.js"
 import type { IngestReport, RuntimeCallerRow } from "../../contracts/common.js"
-import { PostgresSnapshotIngestWriter } from "../postgres/ingest-writer.js"
+import { runtimeRows, type GraphWriteSink } from "../neo4j/node-contracts.js"
 
-const { Pool } = pg
+export interface SymbolFinder {
+  hasSymbol(snapshotId: number, name: string): Promise<boolean>
+}
 
 export class IndirectCallerIngestionService implements IIndirectCallerIngestion {
-  constructor(private pool: pg.Pool) {}
+  constructor(
+    private finder: SymbolFinder,
+    private sink?: GraphWriteSink,
+  ) {}
 
   async parseRuntimeCallers(input: RuntimeCallerInput): Promise<RuntimeCallerBatch> {
     // If records are provided directly (e.g. from wlan-targets.ts ground truth), use them
@@ -34,11 +38,8 @@ export class IndirectCallerIngestionService implements IIndirectCallerIngestion 
     const warnings: string[] = []
 
     for (const row of batch.rows) {
-      const res = await this.pool.query<{ name: string }>(
-        `SELECT name FROM symbol WHERE snapshot_id = $1 AND name = $2 LIMIT 1`,
-        [snapshotId, row.targetApi],
-      )
-      if (res.rows.length > 0) {
+      const ok = await this.finder.hasSymbol(snapshotId, row.targetApi)
+      if (ok) {
         linked.push(row)
       } else {
         unresolved.push(row)
@@ -50,10 +51,52 @@ export class IndirectCallerIngestionService implements IIndirectCallerIngestion 
   }
 
   async persistRuntimeChains(snapshotId: number, linked: LinkReport): Promise<IngestReport> {
-    const writer = new PostgresSnapshotIngestWriter(this.pool)
-    const report = await writer.writeSnapshotBatch(snapshotId, {
-      runtimeCallers: linked.linked,
-    })
+    const nodeMap = new Map<string, ReturnType<typeof runtimeRows>["nodes"][number]>()
+    const edgeMap = new Map<string, ReturnType<typeof runtimeRows>["edges"][number]>()
+    const observationMap = new Map<string, ReturnType<typeof runtimeRows>["observation"]>()
+    const evidenceMap = new Map<string, NonNullable<ReturnType<typeof runtimeRows>["evidence"]>>()
+
+    for (const row of linked.linked) {
+      const materialized = runtimeRows(snapshotId, row)
+      for (const node of materialized.nodes) {
+        nodeMap.set(node.node_id, node)
+      }
+      for (const edge of materialized.edges) {
+        edgeMap.set(edge.edge_id, edge)
+      }
+      observationMap.set(materialized.observation.observation_id, materialized.observation)
+      if (materialized.evidence) {
+        evidenceMap.set(materialized.evidence.evidence_id, materialized.evidence)
+      }
+    }
+
+    const nodes = [...nodeMap.values()]
+    const edges = [...edgeMap.values()]
+    const observations = [...observationMap.values()]
+    const evidence = [...evidenceMap.values()]
+
+    if (this.sink) {
+      await this.sink.write({
+        nodes,
+        edges,
+        evidence,
+        observations,
+      })
+    }
+
+    const report: IngestReport = {
+      snapshotId,
+      inserted: {
+        symbols: 0,
+        types: 0,
+        fields: 0,
+        edges: edges.length,
+        runtimeCallers: linked.linked.length,
+        logs: 0,
+        timerTriggers: 0,
+      },
+      warnings: [],
+    }
 
     if (linked.warnings.length > 0) {
       report.warnings.push(...linked.warnings)

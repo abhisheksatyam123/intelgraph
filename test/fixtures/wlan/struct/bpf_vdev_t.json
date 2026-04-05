@@ -1,0 +1,75 @@
+{
+  "kind": "struct",
+  "kind_verbose": "structure_type",
+  "canonical_name": "bpf_vdev_t",
+  "aliases": [],
+  "source": {
+    "file": "wlan/offloads/inc/bpf/wlan_bpf.h",
+    "line": 45
+  },
+  "description": "Per-vdev BPF offload context. Holds filter program state, enable flags, and vdev binding for the BPF offload subsystem.",
+  "fields": [
+    { "name": "filter_enabled", "type": "uint8_t", "description": "Whether BPF filtering is active for this vdev" },
+    { "name": "program_len", "type": "uint32_t", "description": "Length of the installed BPF program" },
+    { "name": "vdev_id", "type": "uint8_t", "description": "Vdev identifier" }
+  ],
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [],
+    "calls_out": [],
+    "registrations_in": [],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "wlan_bpf_filter_offload_handler",
+        "struct": "bpf_vdev_t",
+        "field": "filter_enabled",
+        "edge_kind": "read",
+        "edge_kind_verbose": "reads_structure_field",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": { "file": "wlan/offloads/src/bpf/wlan_bpf.c", "line": 318 }
+        }
+      },
+      {
+        "api": "wlan_bpf_enable_data_path",
+        "struct": "bpf_vdev_t",
+        "field": "filter_enabled",
+        "edge_kind": "write",
+        "edge_kind_verbose": "writes_structure_field",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "field_access",
+          "loc": { "file": "wlan/offloads/src/bpf/wlan_bpf.c", "line": 450 }
+        }
+      }
+    ],
+    "logs": [],
+    "owns": [
+      {
+        "owner": "wlan_bpf_ctx_t",
+        "owned": "bpf_vdev_t",
+        "edge_kind": "owner",
+        "edge_kind_verbose": "owns_structure_entity",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "fn_ptr_assign",
+          "loc": { "file": "wlan/offloads/inc/bpf/wlan_bpf.h", "line": 80 }
+        }
+      }
+    ],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": ["read", "write", "owner"],
+    "required_directions": ["incoming", "bidirectional"],
+    "minimum_counts": {
+      "structures": 2
+    },
+    "required_path_patterns": []
+  }
+}

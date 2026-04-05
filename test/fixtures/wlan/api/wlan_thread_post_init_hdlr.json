@@ -1,0 +1,153 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "wlan_thread_post_init_hdlr",
+  "aliases": [
+    "_wlan_thread_post_init_hdlr",
+    "wlan_thread_post_init_hdlr___RAM"
+  ],
+  "source": {
+    "file": "wlan/syssw_services/src/thread/hif_thread.c",
+    "line": 227
+  },
+  "description": "WLAN thread post-initialization handler. Invoked after thread initialization completes to perform deferred setup tasks.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "wlan_thread_dsr_wrapper_common",
+        "callee": "wlan_thread_post_init_hdlr",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.9,
+        "dispatch_chain": [
+          "wlan_thread",
+          "wlan_thread_dsr_wrapper_common",
+          "wlan_thread_post_init_hdlr"
+        ],
+        "runtime_trigger": "thread post-init signal dispatch",
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/syssw_services/src/thread/hif_thread.c",
+            "line": 227
+          }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "wlan_thread_post_init_hdlr",
+        "callee": "wlan_thread_complete_init",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/syssw_services/src/thread/hif_thread.c",
+            "line": 240
+          }
+        }
+      }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "wlan_thread_register_signal_wrapper",
+        "callback": "wlan_thread_post_init_hdlr",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "signal",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/syssw_services/src/thread/hif_thread.c",
+            "line": 227
+          }
+        }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "wlan_thread_post_init_hdlr",
+        "struct": "wlan_thread_ctx_t",
+        "field": "init_state",
+        "edge_kind": "write",
+        "edge_kind_verbose": "writes_structure_field",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": {
+            "file": "wlan/syssw_services/src/thread/hif_thread.c",
+            "line": 232
+          }
+        }
+      }
+    ],
+    "logs": [
+      {
+        "api_name": "wlan_thread_post_init_hdlr",
+        "level": "DEBUG",
+        "template": "THREAD: post-init handler invoked thread=%d",
+        "subsystem": "THREAD",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": {
+            "file": "wlan/syssw_services/src/thread/hif_thread.c",
+            "line": 229
+          }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_runtime",
+      "call_direct",
+      "register",
+      "write",
+      "emit_log"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "calls_out": 1,
+      "registrations_in": 1,
+      "structures": 1,
+      "logs": 1
+    },
+    "required_path_patterns": []
+  },
+  "enrichment_metadata": {
+    "timestamp": "2026-04-05T11:57:01.717Z",
+    "intents_queried": [
+      "who_calls_api",
+      "who_calls_api_at_runtime",
+      "what_api_calls",
+      "show_registration_chain",
+      "find_callback_registrars",
+      "find_api_logs",
+      "find_api_logs_by_level",
+      "find_api_struct_writes",
+      "find_api_struct_reads",
+      "find_struct_owners"
+    ],
+    "intents_hit": [],
+    "total_relations": 5
+  }
+}

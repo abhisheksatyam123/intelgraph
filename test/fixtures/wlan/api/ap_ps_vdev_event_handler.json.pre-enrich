@@ -1,0 +1,143 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "ap_ps_vdev_event_handler",
+  "aliases": [
+    "_ap_ps_vdev_event_handler",
+    "ap_ps_vdev_event_handler___RAM"
+  ],
+  "source": {
+    "file": "wlan/offloads/src/powersave/wlan_powersave_ap.c",
+    "line": 1961
+  },
+  "description": "AP power save vdev event handler. Handles vdev-level events for AP power save management including STA association and disassociation.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "wal_vdev_deliver_event",
+        "callee": "ap_ps_vdev_event_handler",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.9,
+        "dispatch_chain": [
+          "wal_vdev_event_dispatch",
+          "wal_vdev_deliver_event",
+          "ap_ps_vdev_event_handler"
+        ],
+        "runtime_trigger": "vdev event for AP power save",
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/offloads/src/powersave/wlan_powersave_ap.c",
+            "line": 1961
+          }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "ap_ps_vdev_event_handler",
+        "callee": "ap_ps_process_vdev_event",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/offloads/src/powersave/wlan_powersave_ap.c",
+            "line": 1975
+          }
+        }
+      }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "wal_vdev_register_event_handler",
+        "callback": "ap_ps_vdev_event_handler",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "vdev_event",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/offloads/src/powersave/wlan_powersave_ap.c",
+            "line": 1961
+          }
+        }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "ap_ps_vdev_event_handler",
+        "struct": "ap_ps_vdev_ctx_t",
+        "field": "ps_state",
+        "edge_kind": "read",
+        "edge_kind_verbose": "reads_structure_field",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": {
+            "file": "wlan/offloads/src/powersave/wlan_powersave_ap.c",
+            "line": 1965
+          }
+        }
+      }
+    ],
+    "logs": [
+      {
+        "api_name": "ap_ps_vdev_event_handler",
+        "level": "DEBUG",
+        "template": "AP_PS: vdev event handler event=%d vdev=%d",
+        "subsystem": "AP_PS",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": {
+            "file": "wlan/offloads/src/powersave/wlan_powersave_ap.c",
+            "line": 1963
+          }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_runtime",
+      "register",
+      "read",
+      "emit_log"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "registrations_in": 1,
+      "structures": 1,
+      "logs": 1
+    },
+    "required_path_patterns": [
+      {
+        "name": "vdev_event_to_ap_ps_handler",
+        "nodes": [
+          "thread",
+          "api"
+        ],
+        "description": "wal_vdev_event_dispatch → wal_vdev_deliver_event → ap_ps_vdev_event_handler"
+      }
+    ]
+  }
+}

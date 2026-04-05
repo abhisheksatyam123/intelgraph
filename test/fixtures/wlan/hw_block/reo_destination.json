@@ -1,0 +1,64 @@
+{
+  "kind": "hw_block",
+  "kind_verbose": "hardware_execution_block",
+  "canonical_name": "reo_destination",
+  "aliases": ["REO2FW", "REO_DEST_RING"],
+  "source": {
+    "file": "wlan/mac_dp_drv/inc/hal_reo.h",
+    "line": 34
+  },
+  "description": "REO (Reorder Engine) destination hardware block. Delivers reordered MPDU frames from the REO engine to firmware via the REO2FW ring. Primary source of data-path packets for offload processing.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [],
+    "calls_out": [],
+    "registrations_in": [],
+    "registrations_out": [
+      {
+        "registrar": "reo_destination",
+        "callback": "umac_rx_reo_handler",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "callback",
+        "derivation": "runtime",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": { "file": "wlan/mac_dp_drv/src/hal_reo.c", "line": 55 }
+        }
+      }
+    ],
+    "structures": [],
+    "logs": [],
+    "owns": [],
+    "uses": [
+      {
+        "user": "data_offld_thread",
+        "used": "reo_destination",
+        "edge_kind": "use",
+        "edge_kind_verbose": "uses_dependency_entity",
+        "derivation": "runtime",
+        "confidence": 0.95,
+        "evidence": {
+          "kind": "fn_ptr_assign",
+          "loc": { "file": "wlan/offloads/src/offldmgr/offldmgr.c", "line": 30 }
+        }
+      }
+    ]
+  },
+  "contract": {
+    "required_relation_kinds": ["register", "use"],
+    "required_directions": ["outgoing"],
+    "minimum_counts": {
+      "registrations_out": 1,
+      "uses": 1
+    },
+    "required_path_patterns": [
+      {
+        "name": "hw_to_thread",
+        "nodes": ["hw_block", "ring", "thread"],
+        "description": "REO HW block → REO2FW ring → DATA_OFFLD thread"
+      }
+    ]
+  }
+}

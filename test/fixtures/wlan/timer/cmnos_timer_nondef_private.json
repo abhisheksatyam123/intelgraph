@@ -1,0 +1,66 @@
+{
+  "kind": "timer",
+  "kind_verbose": "timer_trigger",
+  "canonical_name": "cmnos_timer_nondef_private",
+  "aliases": ["cmnos_timer_nondef", "os_timer_nondef"],
+  "source": {
+    "file": "wlan/syssw_services/src/osif/src/cmnos_timer.c",
+    "line": 44
+  },
+  "description": "Non-default private OS timer. Schedules delayed API execution via the QuRT timer subsystem. Used by recovery, scan, and offload subsystems for deferred callbacks.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [],
+    "calls_out": [
+      {
+        "caller": "cmnos_timer_nondef_private",
+        "callee": "recovery_delay_timer_handle",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.9,
+        "dispatch_chain": ["cmnos_timer_nondef_private", "recovery_delay_timer_handle"],
+        "runtime_trigger": "timer expiry",
+        "evidence": {
+          "kind": "fn_ptr_assign",
+          "loc": { "file": "wlan/syssw_services/src/osif/src/cmnos_timer.c", "line": 88 }
+        }
+      }
+    ],
+    "registrations_in": [],
+    "registrations_out": [
+      {
+        "registrar": "cmnos_timer_init",
+        "callback": "recovery_delay_timer_handle",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "callback",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": { "file": "wlan/syssw_services/src/osif/src/cmnos_timer.c", "line": 60 }
+        }
+      }
+    ],
+    "structures": [],
+    "logs": [],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": ["call_runtime", "register"],
+    "required_directions": ["outgoing"],
+    "minimum_counts": {
+      "calls_out": 1,
+      "registrations_out": 1
+    },
+    "required_path_patterns": [
+      {
+        "name": "timer_to_handler",
+        "nodes": ["timer", "api"],
+        "description": "Timer expiry → registered callback handler"
+      }
+    ]
+  }
+}

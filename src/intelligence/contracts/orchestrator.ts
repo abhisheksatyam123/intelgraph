@@ -31,10 +31,6 @@ export const QUERY_INTENTS = [
   "find_struct_owners",
   "find_struct_readers",
   "find_struct_writers",
-  "current_structure_runtime_writers_of_structure",
-  "current_structure_runtime_readers_of_structure",
-  "current_structure_runtime_initializers_of_structure",
-  "current_structure_runtime_mutators_of_structure",
   "find_field_access_path",
   "find_api_by_log_pattern",
   "show_runtime_flow_for_trace",
@@ -283,10 +279,6 @@ const INTENTS_REQUIRING_STRUCT = new Set<QueryIntent>([
   "find_struct_owners",
   "find_struct_readers",
   "find_struct_writers",
-  "current_structure_runtime_writers_of_structure",
-  "current_structure_runtime_readers_of_structure",
-  "current_structure_runtime_initializers_of_structure",
-  "current_structure_runtime_mutators_of_structure",
   "find_field_access_path",
 ])
 

@@ -52,26 +52,36 @@ export async function initParser(): Promise<void> {
   if (_initFailed) return
   if (_initPromise) return _initPromise
 
+  const WASM_INIT_TIMEOUT_MS = 10_000
+
   _initPromise = (async () => {
     try {
-      const { Parser, Language } = await import("web-tree-sitter")
+      const initWork = async () => {
+        const { Parser, Language } = await import("web-tree-sitter")
 
-      // Locate WASM files relative to this module
-      const moduleDir = path.dirname(fileURLToPath(import.meta.url))
-      const projectRoot = path.resolve(moduleDir, "../../..")
-      const wasmBinaryPath = path.join(projectRoot, "node_modules/web-tree-sitter/web-tree-sitter.wasm")
-      const langWasmPath = path.join(projectRoot, "node_modules/tree-sitter-c/tree-sitter-c.wasm")
+        // Locate WASM files relative to this module
+        const moduleDir = path.dirname(fileURLToPath(import.meta.url))
+        const projectRoot = path.resolve(moduleDir, "../../..")
+        const wasmBinaryPath = path.join(projectRoot, "node_modules/web-tree-sitter/web-tree-sitter.wasm")
+        const langWasmPath = path.join(projectRoot, "node_modules/tree-sitter-c/tree-sitter-c.wasm")
 
-      await Parser.init({
-        wasmBinary: readFileSync(wasmBinaryPath),
-      })
+        await Parser.init({
+          wasmBinary: readFileSync(wasmBinaryPath),
+        })
 
-      _language = await Language.load(langWasmPath)
-      _parser = new Parser()
-      _parser.setLanguage(_language)
+        _language = await Language.load(langWasmPath)
+        _parser = new Parser()
+        _parser.setLanguage(_language)
+      }
+
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("tree-sitter WASM init timed out")), WASM_INIT_TIMEOUT_MS)
+      )
+
+      await Promise.race([initWork(), timeout])
     } catch (err) {
       _initFailed = true
-      // Tree-sitter unavailable — character-level fallback will be used
+      console.error("[c-parser] tree-sitter init failed — using character-level fallback:", err)
     }
   })()
 
@@ -289,6 +299,7 @@ export function parseSource(source: string): any | null {
  * Find all nodes of a given type in the AST.
  */
 export function findAllNodes(root: any, type: string): any[] {
+  if (!root) return []
   const results: any[] = []
   walkAst(root, (node) => {
     if (node.type === type) results.push(node)
@@ -300,6 +311,7 @@ export function findAllNodes(root: any, type: string): any[] {
  * Walk the AST depth-first, calling visitor on each node.
  */
 export function walkAst(node: any, visitor: (n: any) => void): void {
+  if (!node) return
   visitor(node)
   for (let i = 0; i < node.childCount; i++) {
     walkAst(node.child(i), visitor)
@@ -321,6 +333,7 @@ export function findStoreAssignments(
   isStailq: boolean
   evidence: string
 }> {
+  if (!root) return []
   const results: any[] = []
   const lines = source.split(/\r?\n/)
 
@@ -374,7 +387,22 @@ export function extractFunctionParams(
   root: any,
   defLine: number,
 ): Array<{ name: string; typeText: string; isFnPtrTypedef: boolean }> {
+  if (!root) return []
   const results: any[] = []
+
+  // Known non-fn-ptr types: numeric typedefs, status codes, common firmware types
+  const KNOWN_NON_FNPTR_TYPES = new Set([
+    "void","int","char","unsigned","signed","long","short","float","double",
+    "bool","size_t","ssize_t","ptrdiff_t",
+    "uint8_t","uint16_t","uint32_t","uint64_t","int8_t","int16_t","int32_t","int64_t",
+    "u8","u16","u32","u64","s8","s16","s32","s64",
+    "A_UINT8","A_UINT16","A_UINT32","A_UINT64","A_INT8","A_INT16","A_INT32",
+    "A_BOOL","A_STATUS","QDF_STATUS","wlan_status_t","OFFLOAD_STATUS",
+    "NTSTATUS","errno_t",
+  ])
+
+  // Positive signals that a typedef is a function-pointer type
+  const FN_PTR_SIGNALS = ["_cb","_fn","_handler","_func","_routine","_callback","_op"]
 
   const funcDefs = findAllNodes(root, "function_definition")
   for (const fn of funcDefs) {
@@ -392,11 +420,21 @@ export function extractFunctionParams(
       const typeText = typeNode?.text ?? ""
       const name = declNode?.text ?? ""
 
-      // fn-ptr typedef: type is type_identifier (e.g. data_fn_t, handler_fn_t)
-      // and declarator is a plain identifier (not pointer_declarator)
+      // fn-ptr typedef detection:
+      // 1. Type must be a type_identifier (not a keyword like int/void)
+      // 2. Declarator must be a plain identifier (not pointer_declarator)
+      // 3. Must NOT be a known non-fn-ptr type (numeric/status typedefs)
+      // 4. Must NOT be a _t-suffixed type without a fn-ptr signal (struct/numeric typedef)
+      // 5. Should have a fn-ptr signal OR be a multi-token type expression
+      const hasFnPtrSignal = FN_PTR_SIGNALS.some(s => typeText.toLowerCase().includes(s))
+      const isKnownNonFnPtr = KNOWN_NON_FNPTR_TYPES.has(typeText)
+      // A _t suffix without explicit fn-ptr signal is almost certainly a numeric/struct typedef
+      const isNumericLikeTypedef = typeText.endsWith("_t") && !hasFnPtrSignal
       const isFnPtrTypedef = typeNode?.type === "type_identifier" &&
                               declNode?.type === "identifier" &&
-                              !["void", "int", "char", "unsigned", "signed", "long", "short", "float", "double"].includes(typeText)
+                              !isKnownNonFnPtr &&
+                              !isNumericLikeTypedef &&
+                              (hasFnPtrSignal || true) // keep existing behaviour for unknown types
 
       results.push({ name, typeText, isFnPtrTypedef })
     }
@@ -410,6 +448,7 @@ export function extractFunctionParams(
  * Find all call_expression nodes in the AST that match a given function name.
  */
 export function findCallsByName(root: any, fnName: string): any[] {
+  if (!root) return []
   const results: any[] = []
   const calls = findAllNodes(root, "call_expression")
   for (const call of calls) {
@@ -421,11 +460,13 @@ export function findCallsByName(root: any, fnName: string): any[] {
 
 /**
  * Check if a source line contains a fn-ptr call for a given field name.
- * Patterns: "->fieldName(", ".fieldName(", "fieldName("
+ * Only matches explicit struct-access patterns: "->fieldName(" or ".fieldName("
+ * Does NOT match bare identifier calls to prevent false positives on local variables
+ * and log string literals.
  */
 export function isCallSiteForField(lineText: string, fieldName: string): boolean {
   const escaped = fieldName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-  return new RegExp(`(?:->|\\.)${escaped}\\s*\\(|\\b${escaped}\\s*\\(`).test(lineText)
+  return new RegExp(`(?:->|\\.)${escaped}\\s*\\(`).test(lineText)
 }
 
 // ---------------------------------------------------------------------------
@@ -573,6 +614,8 @@ function findMatchingCloseBrace(source: string, from: number): number {
   for (let i = from + 1; i < source.length; i++) {
     const ch = source[i]
     if (ch === '"' || ch === "'") { i = skipStringForward(source, i); continue }
+    if (ch === '/' && source[i + 1] === '/') { i = skipLineCommentForward(source, i); continue }
+    if (ch === '/' && source[i + 1] === '*') { i = skipBlockCommentForward(source, i); continue }
     if (ch === '{') depth++
     else if (ch === '}') { if (depth === 0) return i; depth-- }
   }

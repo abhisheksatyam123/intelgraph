@@ -1,0 +1,10 @@
+services:
+  neo4j:
+    image: neo4j:5
+    container_name: clangd-mcp-neo4j-local
+    restart: unless-stopped
+    environment:
+      NEO4J_AUTH: neo4j/neo4j1234
+    volumes:
+      - ${WLAN_WORKSPACE_ROOT:-.}/.intelligence-data/neo4j/data:/data
+      - ${WLAN_WORKSPACE_ROOT:-.}/.intelligence-data/neo4j/logs:/logs

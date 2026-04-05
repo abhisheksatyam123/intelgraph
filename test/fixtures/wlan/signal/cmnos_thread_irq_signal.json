@@ -1,0 +1,51 @@
+{
+  "kind": "signal",
+  "kind_verbose": "signal_trigger",
+  "canonical_name": "cmnos_thread_irq_signal",
+  "aliases": ["CMNOS_THREAD_IRQ", "thread_irq_sig"],
+  "source": {
+    "file": "wlan/syssw_services/src/osif/src/cmnos_intrinf.c",
+    "line": 845
+  },
+  "description": "QuRT thread signal used to bridge hardware interrupt delivery from the IST thread to the DSR thread. Fired by cmnos_thread_irq when an interrupt fires, consumed by the DSR thread event loop.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "cmnos_thread_irq",
+        "callee": "cmnos_thread_irq_signal",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.95,
+        "dispatch_chain": ["A_INUM_TQM_STATUS_HI", "IST_thread_main", "cmnos_thread_irq", "cmnos_thread_irq_signal"],
+        "runtime_trigger": "QuRT hardware interrupt",
+        "evidence": {
+          "kind": "fn_ptr_assign",
+          "loc": { "file": "wlan/syssw_services/src/osif/src/cmnos_intrinf.c", "line": 850 }
+        }
+      }
+    ],
+    "calls_out": [],
+    "registrations_in": [],
+    "registrations_out": [],
+    "structures": [],
+    "logs": [],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": ["call_runtime"],
+    "required_directions": ["incoming"],
+    "minimum_counts": {
+      "calls_in_runtime": 1
+    },
+    "required_path_patterns": [
+      {
+        "name": "interrupt_to_signal",
+        "nodes": ["interrupt", "thread", "signal"],
+        "description": "HW interrupt → IST thread → cmnos_thread_irq → signal"
+      }
+    ]
+  }
+}

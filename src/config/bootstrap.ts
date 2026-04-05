@@ -17,6 +17,19 @@ export interface WorkspaceConfig {
   compileCommandsCleaning?: {
     preflightPolicy?: "reject" | "fix" | "remap"
   }
+  intelligenceLocal?: {
+    enabled?: boolean
+    composeFile?: string
+    startScript?: string
+    services?: Record<string, unknown>
+    env?: {
+      INTELLIGENCE_NEO4J_URL?: string
+      INTELLIGENCE_NEO4J_USER?: string
+      INTELLIGENCE_NEO4J_PASSWORD?: string
+      [key: string]: string | undefined
+    }
+    storage?: Record<string, string>
+  }
 }
 
 export function readWorkspaceConfig(dir: string): WorkspaceConfig {

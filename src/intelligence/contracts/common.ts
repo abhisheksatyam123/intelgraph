@@ -26,7 +26,7 @@ export interface SnapshotRef {
 
 export type EdgeKind =
   | "calls"
-  | "indirect_calls"
+  | "runtime_calls"
   | "registers_callback"
   | "dispatches_to"
   | "reads_field"
@@ -96,14 +96,47 @@ export interface EdgeRow {
   sourceLocation?: { sourceFilePath: string; sourceLineNumber: number }
 }
 
+export type RuntimeGraphNodeKind =
+  | SymbolRow["kind"]
+  | "api"
+  | "thread"
+  | "signal"
+  | "interrupt"
+  | "timer"
+  | "ring"
+  | "module"
+  | "hw_block"
+  | "dispatch_table"
+  | "message"
+  | "log_point"
+  | "unknown"
+
+export interface RuntimeGraphParticipantRow {
+  /** Stable display/canonical name for the runtime graph node. */
+  name: string
+  /** Graph node kind when the parser can infer it. */
+  kind: RuntimeGraphNodeKind
+  /** Optional source location of the participant declaration/registration site. */
+  location?: SourceLocation
+  /** Optional role label such as target, invoker, trigger, or context. */
+  role?: string
+  /** Free-form metadata captured by the parser. */
+  metadata?: Record<string, unknown>
+}
+
 export interface RuntimeCallerRow {
   targetApi: string
   runtimeTrigger: string
+  /** Ordered runtime path; entries may be APIs, signals, timers, interrupts, rings, or threads. */
   dispatchChain: string[]
   immediateInvoker: string
   dispatchSite: SourceLocation
   confidence: number
   evidence?: EvidenceRef
+  /** Optional explicit kind/location hints for runtime graph node materialization. */
+  participants?: RuntimeGraphParticipantRow[]
+  /** Optional kind hint for the target node when it differs from plain C symbol extraction. */
+  targetKind?: RuntimeGraphNodeKind
 }
 
 export interface TimerTriggerRow {

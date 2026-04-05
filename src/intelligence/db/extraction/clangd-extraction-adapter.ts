@@ -9,8 +9,12 @@ import type {
   ExtractionBatches,
 } from "../../contracts/extraction-adapter.js"
 import type { IngestReport, SymbolRow, EdgeRow } from "../../contracts/common.js"
-import { PostgresSnapshotIngestWriter } from "../postgres/ingest-writer.js"
-import type pg from "pg"
+import {
+  edgeRow,
+  evidenceRow,
+  symbolNode,
+  type GraphWriteSink,
+} from "../neo4j/node-contracts.js"
 
 // ---------------------------------------------------------------------------
 // Clangd LSP client interface (minimal surface we need)
@@ -70,7 +74,7 @@ function mapKind(k: number): SymbolRow["kind"] {
 export class ClangdExtractionAdapter implements IExtractionAdapter {
   constructor(
     private lsp: ClangdLspClient,
-    private pgPool?: pg.Pool,
+    private sink?: GraphWriteSink,
   ) {}
 
   async extractSymbols(input: ExtractionInput): Promise<SymbolBatch> {
@@ -154,19 +158,33 @@ export class ClangdExtractionAdapter implements IExtractionAdapter {
   }
 
   async materializeSnapshot(snapshotId: number, batches: ExtractionBatches): Promise<IngestReport> {
-    if (!this.pgPool) {
-      return {
-        snapshotId,
-        inserted: { symbols: 0, types: 0, fields: 0, edges: 0, runtimeCallers: 0, logs: 0, timerTriggers: 0 },
-        warnings: ["no pgPool configured — dry run only"],
-      }
+    const nodes = batches.symbolBatch.symbols.map((row) => symbolNode(snapshotId, row))
+    const edges = batches.edgeBatch.edges.map((row) => edgeRow(snapshotId, row))
+    const evidence = batches.edgeBatch.edges
+      .map((row, i) => evidenceRow(snapshotId, edges[i]!.edge_id, row.evidence))
+      .filter((row): row is NonNullable<typeof row> => Boolean(row))
+
+    if (this.sink) {
+      await this.sink.write({
+        nodes,
+        edges,
+        evidence,
+        observations: [],
+      })
     }
-    const writer = new PostgresSnapshotIngestWriter(this.pgPool)
-    return writer.writeSnapshotBatch(snapshotId, {
-      symbols: batches.symbolBatch.symbols,
-      types: batches.typeBatch.types,
-      fields: batches.typeBatch.fields,
-      edges: batches.edgeBatch.edges,
-    })
+
+    return {
+      snapshotId,
+      inserted: {
+        symbols: nodes.length,
+        types: batches.typeBatch.types.length,
+        fields: batches.typeBatch.fields.length,
+        edges: edges.length,
+        runtimeCallers: 0,
+        logs: 0,
+        timerTriggers: 0,
+      },
+      warnings: this.sink ? [] : ["materializeSnapshot ran without graph sink"],
+    }
   }
 }

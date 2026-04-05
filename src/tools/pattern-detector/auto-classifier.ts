@@ -73,9 +73,14 @@ export async function autoClassifyCall(
     const defs = await deps.lspClientFull.definition(filePath, refLine0, callNameChar)
     if (!defs?.length) return null
 
-    const defUri = defs[0].uri ?? ""
+    // Prefer a .c definition (function body) over a .h declaration
+    const preferredDef = defs.find((d: any) => {
+      const uri = d.uri ?? d.targetUri ?? ""
+      return uri.endsWith(".c") || uri.endsWith(".cc") || uri.endsWith(".cpp")
+    }) ?? defs[0]
+    const defUri = preferredDef?.uri ?? preferredDef?.targetUri ?? ""
     const defFile = defUri.startsWith("file://") ? fileURLToPath(defUri) : defUri
-    const defLine = defs[0].range?.start?.line ?? 0
+    const defLine = preferredDef?.range?.start?.line ?? preferredDef?.targetRange?.start?.line ?? 0
     const defSource = deps.readFile(defFile)
     if (!defSource) return null
 
@@ -128,7 +133,8 @@ export async function autoClassifyCall(
       callbackParamName: callbackParamName ?? undefined,
       callbackArgIndex: fnPtrArgIndex >= 0 ? fnPtrArgIndex : undefined,
     }
-  } catch {
+  } catch (err) {
+    console.error(`[auto-classifier] autoClassifyCall failed for call "${call?.name ?? "unknown"}":`, err)
     return null
   }
 }
@@ -140,6 +146,7 @@ export async function autoClassifyCall(
 export function deriveConnectionKind(callName: string): PatternConnectionKind {
   const n = callName.toLowerCase()
   if (/irq|interrupt/.test(n))             return "hw_interrupt"
+  if (/ring|threshold/.test(n))            return "ring_signal"
   if (/signal|event|notif|notify/.test(n)) return "event"
   if (/msg|message|thread_comm/.test(n))   return "api_call"
   return "api_call"
@@ -276,7 +283,11 @@ function extractParamsFallback(
   let sigText = ""
   for (let i = defLine; i < Math.min(defLine + 20, lines.length); i++) {
     sigText += " " + lines[i]
-    if (lines[i].includes("{")) break
+    if (lines[i].includes("{")) {
+      // Capture everything before the opening brace on this line
+      sigText += " " + lines[i].slice(0, lines[i].indexOf("{"))
+      break
+    }
   }
 
   const parenStart = sigText.indexOf("(")
@@ -291,9 +302,21 @@ function extractParamsFallback(
     const tokens = trimmed.replace(/[*()]/g, " ").trim().split(/\s+/)
     const name = tokens[tokens.length - 1] ?? ""
     const typeText = tokens.slice(0, -1).join(" ")
-    // Heuristic: fn-ptr typedef if type doesn't contain primitive keywords
-    const isFnPtrTypedef = !["void", "int", "char", "unsigned", "signed", "long", "short", "float", "double", "struct", "enum"].some((kw) => typeText.includes(kw))
-      && tokens.length >= 2
+    // Heuristic: fn-ptr typedef if type has fn-ptr signal OR doesn't contain primitive keywords
+    // but does NOT classify numeric/struct typedefs ending in _t as fn-ptrs
+    const FN_PTR_SIGNALS = ["_cb", "_fn", "_handler", "_func", "_routine", "_callback"]
+    const KNOWN_NON_FN_PTR = ["void","int","char","unsigned","signed","long","short","float","double",
+      "struct","enum","bool","size_t","ssize_t",
+      "uint8_t","uint16_t","uint32_t","uint64_t","int8_t","int16_t","int32_t","int64_t",
+      "u8","u16","u32","u64","s8","s16","s32","s64",
+      "A_UINT8","A_UINT16","A_UINT32","A_UINT64","A_INT8","A_INT16","A_INT32","A_BOOL",
+      "A_STATUS","QDF_STATUS","wlan_status_t","OFFLOAD_STATUS"]
+    const hasFnPtrSignal = FN_PTR_SIGNALS.some(s => typeText.toLowerCase().includes(s))
+    const isKnownNonFnPtr = KNOWN_NON_FN_PTR.some(kw => typeText === kw || typeText.startsWith(kw + " "))
+    // _t suffix without fn-ptr signal = numeric/struct typedef, not a fn-ptr
+    const isNumericLikeTypedef = typeText.endsWith("_t") && !hasFnPtrSignal
+    const isFnPtrTypedef = !isKnownNonFnPtr && !isNumericLikeTypedef
+      && (hasFnPtrSignal || tokens.length >= 2)
     return { name, typeText, isFnPtrTypedef }
   })
 }
@@ -323,5 +346,9 @@ function findCallNameChar(
   const source = deps.readFile(filePath)
   if (!source) return -1
   const lineText = source.split(/\r?\n/)[line0] ?? ""
-  return lineText.indexOf(callName)
+  // Use word-boundary search to avoid matching callName inside longer identifiers
+  const escaped = callName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  const wordBoundaryRegex = new RegExp(`(?<![a-zA-Z0-9_])${escaped}(?![a-zA-Z0-9_])\\s*\\(`)
+  const match = wordBoundaryRegex.exec(lineText)
+  return match ? match.index : lineText.indexOf(callName)
 }

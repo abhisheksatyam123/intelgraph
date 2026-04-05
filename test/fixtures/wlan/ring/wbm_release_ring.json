@@ -1,0 +1,64 @@
+{
+  "kind": "ring",
+  "kind_verbose": "ring_endpoint",
+  "canonical_name": "wbm_release_ring",
+  "aliases": ["WBM2FW_RELEASE", "A_INUM_WBM2SW0_RELEASE"],
+  "source": {
+    "file": "wlan/mac_dp_drv/inc/hal_ring.h",
+    "line": 112
+  },
+  "description": "WBM (Wireless Buffer Manager) release ring. Hardware ring that delivers buffer release completions from WBM to firmware. Triggers the WBM release handler via ISR.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [],
+    "calls_out": [],
+    "registrations_in": [],
+    "registrations_out": [
+      {
+        "registrar": "wbm_release_ring",
+        "callback": "wbm_ring_handler",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "callback",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": { "file": "wlan/mac_dp_drv/src/hal_ring.c", "line": 88 }
+        }
+      }
+    ],
+    "structures": [],
+    "logs": [],
+    "owns": [],
+    "uses": [
+      {
+        "user": "IST_thread_main",
+        "used": "wbm_release_ring",
+        "edge_kind": "use",
+        "edge_kind_verbose": "uses_dependency_entity",
+        "derivation": "runtime",
+        "confidence": 0.95,
+        "evidence": {
+          "kind": "fn_ptr_assign",
+          "loc": { "file": "wlan/syssw_services/src/osif/src/cmnos_intrinf.c", "line": 860 }
+        }
+      }
+    ]
+  },
+  "contract": {
+    "required_relation_kinds": ["register", "use"],
+    "required_directions": ["outgoing"],
+    "minimum_counts": {
+      "registrations_out": 1,
+      "uses": 1
+    },
+    "required_path_patterns": [
+      {
+        "name": "ring_to_isr",
+        "nodes": ["interrupt", "ring", "api"],
+        "description": "WBM interrupt → WBM release ring → ring handler"
+      }
+    ]
+  }
+}

@@ -1,0 +1,243 @@
+import type { QueryIntent } from "../intelligence/contracts/orchestrator"
+
+export type RelationArrayName =
+  | "calls_in_direct"
+  | "calls_in_runtime"
+  | "calls_out"
+  | "registrations_in"
+  | "registrations_out"
+  | "structures"
+  | "logs"
+  | "owns"
+  | "uses"
+
+/**
+ * Maps each QueryIntent to its corresponding fixture relation array.
+ * Based on the intent-to-array mapping from architecture-exhaustive-relation-capture.
+ */
+export function mapIntentToArray(intent: QueryIntent): RelationArrayName {
+  const mapping: Record<QueryIntent, RelationArrayName> = {
+    who_calls_api: "calls_in_direct",
+    who_calls_api_at_runtime: "calls_in_runtime",
+    why_api_invoked: "calls_in_runtime",
+    what_api_calls: "calls_out",
+    show_registration_chain: "registrations_in",
+    find_callback_registrars: "registrations_in",
+    show_dispatch_sites: "calls_out",
+    find_struct_writers: "structures",
+    find_struct_readers: "structures",
+    where_struct_initialized: "structures",
+    where_struct_modified: "structures",
+    find_struct_owners: "owns",
+    find_field_access_path: "structures",
+    find_api_struct_writes: "structures",
+    find_api_struct_reads: "structures",
+    find_api_logs: "logs",
+    find_api_logs_by_level: "logs",
+    find_api_timer_triggers: "owns",
+    show_runtime_flow_for_trace: "calls_in_runtime",
+    show_api_runtime_observations: "calls_in_runtime",
+    show_hot_call_paths: "calls_in_runtime",
+    show_cross_module_path: "calls_out",
+    find_api_by_log_pattern: "logs",
+  }
+
+  return mapping[intent] || "uses"
+}
+
+export interface ApiFixture {
+  kind: string
+  kind_verbose: string
+  canonical_name: string
+  aliases: string[]
+  source: {
+    file: string
+    line: number
+  }
+  description: string
+  relations: Relations
+  contract?: Contract
+  enrichment_metadata?: EnrichmentMetadata
+}
+
+export interface Relations {
+  calls_in_direct: Relation[]
+  calls_in_runtime: Relation[]
+  calls_out: Relation[]
+  registrations_in: Relation[]
+  registrations_out: Relation[]
+  structures: Relation[]
+  logs: Relation[]
+  owns: Relation[]
+  uses: Relation[]
+}
+
+export interface Relation {
+  caller?: string
+  callee?: string
+  api?: string
+  struct?: string
+  field?: string
+  registrar?: string
+  callback?: string
+  api_name?: string
+  level?: string
+  template?: string
+  subsystem?: string
+  edge_kind: string
+  edge_kind_verbose: string
+  derivation: "clangd" | "c_parser" | "runtime"
+  confidence: number
+  evidence?: Record<string, unknown>
+  dispatch_chain?: string[]
+  runtime_trigger?: string
+  registration_kind?: string
+  source_intent?: QueryIntent
+  bucket?: RelationArrayName
+  [key: string]: unknown
+}
+
+export interface Contract {
+  required_relation_kinds: string[]
+  required_directions: string[]
+  minimum_counts: Record<string, number>
+  required_path_patterns: Array<{
+    name: string
+    nodes: string[]
+    description: string
+  }>
+}
+
+export interface EnrichmentMetadata {
+  timestamp: string
+  intents_queried: QueryIntent[]
+  intents_hit: QueryIntent[]
+  total_relations: number
+}
+
+/**
+ * Select applicable intents for a given API based on its fixture metadata.
+ * Default: all Phase 1-3 intents unless role-based filtering suggests otherwise.
+ */
+export function selectIntentsForApi(
+  _apiName: string,
+  _fixture: ApiFixture,
+): QueryIntent[] {
+  // Default: query all core intents
+  return [
+    "who_calls_api",
+    "who_calls_api_at_runtime",
+    "what_api_calls",
+    "show_registration_chain",
+    "find_callback_registrars",
+    "find_api_logs",
+    "find_api_logs_by_level",
+    "find_api_struct_writes",
+    "find_api_struct_reads",
+    "find_struct_owners",
+  ]
+}
+
+/**
+ * Generate contract from populated relation arrays.
+ * Dynamic: only includes kinds that are actually present in the relations.
+ */
+export function generateContractFromRelations(relations: Relations): Contract {
+  const requiredKinds: Set<string> = new Set()
+  const requiredDirs: Set<string> = new Set()
+  const minimumCounts: Record<string, number> = {}
+
+  if ((relations.calls_in_direct?.length ?? 0) > 0) {
+    requiredKinds.add("call_direct")
+    requiredDirs.add("incoming")
+    minimumCounts.calls_in_direct = 1
+  }
+
+  if ((relations.calls_in_runtime?.length ?? 0) > 0) {
+    requiredKinds.add("call_runtime")
+    requiredDirs.add("incoming")
+    minimumCounts.calls_in_runtime = 1
+  }
+
+  if ((relations.calls_out?.length ?? 0) > 0) {
+    requiredKinds.add("call_direct")
+    requiredDirs.add("outgoing")
+    minimumCounts.calls_out = 1
+  }
+
+  if ((relations.registrations_in?.length ?? 0) > 0) {
+    requiredKinds.add("register")
+    requiredDirs.add("incoming")
+    minimumCounts.registrations_in = 1
+  }
+
+  if ((relations.structures?.length ?? 0) > 0) {
+    const hasReads = relations.structures.some((r) => r.edge_kind === "read")
+    const hasWrites = relations.structures.some((r) => r.edge_kind === "write")
+    if (hasReads) requiredKinds.add("read")
+    if (hasWrites) requiredKinds.add("write")
+    minimumCounts.structures = 1
+  }
+
+  if ((relations.logs?.length ?? 0) > 0) {
+    requiredKinds.add("emit_log")
+    minimumCounts.logs = 1
+  }
+
+  if ((relations.owns?.length ?? 0) > 0) {
+    minimumCounts.owns = 1
+  }
+
+  return {
+    required_relation_kinds: Array.from(requiredKinds),
+    required_directions: Array.from(requiredDirs),
+    minimum_counts: minimumCounts,
+    required_path_patterns: [],
+  }
+}
+
+/**
+ * Normalize an edge returned from backend query.
+ * Applies source_intent tracking and ensures bucket assignment.
+ */
+export function normalizeEdge(edge: Record<string, unknown>, bucket: RelationArrayName, intent: QueryIntent): Relation {
+  const normalized: Relation = {
+    ...edge,
+    edge_kind: String(edge.edge_kind || "unknown"),
+    edge_kind_verbose: String(edge.edge_kind_verbose || "unknown"),
+    derivation: (edge.derivation || "clangd") as "clangd" | "c_parser" | "runtime",
+    confidence: Number(edge.confidence || 0.5),
+    source_intent: intent,
+    bucket,
+  }
+
+  return normalized
+}
+
+/**
+ * Deduplicate relations by (caller||api, callee||struct, edge_kind) tuple.
+ * Prefer higher confidence, then clangd over c_parser.
+ */
+export function deduplicateRelations(relations: Relation[]): Map<string, Relation> {
+  const tracker = new Map<string, Relation>()
+
+  for (const relation of relations) {
+    const dedupKey = `${relation.caller || relation.api}|${relation.callee || relation.struct}|${relation.edge_kind}`
+
+    if (!tracker.has(dedupKey)) {
+      tracker.set(dedupKey, relation)
+    } else {
+      const existing = tracker.get(dedupKey)!
+      // Prefer higher confidence, then clangd over c_parser
+      const shouldReplace =
+        relation.confidence > existing.confidence ||
+        (relation.confidence === existing.confidence && relation.derivation === "clangd")
+
+      if (shouldReplace) {
+        tracker.set(dedupKey, relation)
+      }
+    }
+  }
+
+  return tracker
+}

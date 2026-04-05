@@ -1,0 +1,143 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "coex_roam_handoff_notify_cb",
+  "aliases": [
+    "_coex_roam_handoff_notify_cb",
+    "coex_roam_handoff_notify_cb___RAM"
+  ],
+  "source": {
+    "file": "wlan/offloads/src/coex/wlan_coex_init.c",
+    "line": 403
+  },
+  "description": "Coexistence roam handoff notification callback. Notified when a roam handoff occurs to update coexistence state for the new BSS.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "wlan_roam_deliver_handoff_notify",
+        "callee": "coex_roam_handoff_notify_cb",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.9,
+        "dispatch_chain": [
+          "roam_handoff_dispatch",
+          "wlan_roam_deliver_handoff_notify",
+          "coex_roam_handoff_notify_cb"
+        ],
+        "runtime_trigger": "roam handoff event for coexistence update",
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/offloads/src/coex/wlan_coex_init.c",
+            "line": 403
+          }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "coex_roam_handoff_notify_cb",
+        "callee": "coex_update_bss_on_roam",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/offloads/src/coex/wlan_coex_init.c",
+            "line": 416
+          }
+        }
+      }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "wlan_roam_register_handoff_notify",
+        "callback": "coex_roam_handoff_notify_cb",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "roam_handoff",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/offloads/src/coex/wlan_coex_init.c",
+            "line": 403
+          }
+        }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "coex_roam_handoff_notify_cb",
+        "struct": "coex_ctx_t",
+        "field": "bss_params",
+        "edge_kind": "write",
+        "edge_kind_verbose": "writes_structure_field",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": {
+            "file": "wlan/offloads/src/coex/wlan_coex_init.c",
+            "line": 408
+          }
+        }
+      }
+    ],
+    "logs": [
+      {
+        "api_name": "coex_roam_handoff_notify_cb",
+        "level": "DEBUG",
+        "template": "COEX: roam handoff notify cb vdev=%d",
+        "subsystem": "COEX",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": {
+            "file": "wlan/offloads/src/coex/wlan_coex_init.c",
+            "line": 405
+          }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_runtime",
+      "register",
+      "write",
+      "emit_log"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "registrations_in": 1,
+      "structures": 1,
+      "logs": 1
+    },
+    "required_path_patterns": [
+      {
+        "name": "roam_handoff_to_coex_cb",
+        "nodes": [
+          "thread",
+          "api"
+        ],
+        "description": "roam_handoff_dispatch → wlan_roam_deliver_handoff_notify → coex_roam_handoff_notify_cb"
+      }
+    ]
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "kind": "message",
+  "kind_verbose": "inter_thread_message",
+  "canonical_name": "OFFLD_MSG_NON_DATA",
+  "aliases": ["OFFLD_NON_DATA_MSG", "offld_msg_non_data"],
+  "source": {
+    "file": "wlan/offloads/inc/offldmgr/offldmgr.h",
+    "line": 32
+  },
+  "description": "Inter-thread message ID for non-data offload messages. Used to route WMI commands and control messages from the RT thread to the DATA_OFFLD thread for processing by non-data offload handlers.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "RT_thread",
+        "callee": "OFFLD_MSG_NON_DATA",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.9,
+        "dispatch_chain": ["RT_thread", "OFFLD_MSG_NON_DATA", "_offldmgr_non_data_msg_hdlr"],
+        "runtime_trigger": "WMI command delivery",
+        "evidence": {
+          "kind": "fn_ptr_assign",
+          "loc": { "file": "wlan/offloads/src/offldmgr/offldmgr.c", "line": 200 }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "OFFLD_MSG_NON_DATA",
+        "callee": "_offldmgr_non_data_msg_hdlr",
+        "edge_kind": "dispatch",
+        "edge_kind_verbose": "dispatches_execution_to_api",
+        "derivation": "runtime",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "dispatch_table_entry",
+          "loc": { "file": "wlan/offloads/src/offldmgr/offldmgr.c", "line": 205 }
+        }
+      }
+    ],
+    "registrations_in": [],
+    "registrations_out": [],
+    "structures": [],
+    "logs": [],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": ["call_runtime", "dispatch"],
+    "required_directions": ["incoming", "outgoing"],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "calls_out": 1
+    },
+    "required_path_patterns": [
+      {
+        "name": "thread_to_message_to_handler",
+        "nodes": ["thread", "message", "api"],
+        "description": "RT thread → OFFLD_MSG_NON_DATA → non-data handler"
+      }
+    ]
+  }
+}

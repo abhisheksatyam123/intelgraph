@@ -96,6 +96,16 @@ function applyDispatchFunctionCanonicalHint(
       }
     }
   }
+
+  // P2: wal_phy_dev_register_event_handler always dispatches through wal_phy_dev_dispatch_event
+  if (registrationApi === "wal_phy_dev_register_event_handler") {
+    return {
+      ...dispatch,
+      dispatchFunction: "wal_phy_dev_dispatch_event",
+      evidence: `${dispatch.evidence};hint:dispatch-fn:wal_phy_dev_dispatch_event`,
+    }
+  }
+
   return dispatch
 }
 
@@ -290,6 +300,73 @@ export async function resolveChain(
     confidenceScore: 1.0,
   }
 
+  // P1: Short-circuit for OS timer registrations — the timer struct is opaque to
+  // clangd, so store scanning will always fail. Directly classify as timer_expiry.
+  if (registrationApi === "A_INIT_TIMER" || registrationApi === "A_INIT_TIMER_EX") {
+    baseChain.store = {
+      containerType: "OS_TIMER",
+      containerFile: registrationFile,
+      containerLine: registrationLine,
+      confidence: "high",
+      evidence: "shortcircuit:A_INIT_TIMER",
+      storeFieldName: "timer_fn",
+    }
+    baseChain.dispatch = {
+      dispatchFunction: "OS_TIMER_SUBSYSTEM",
+      dispatchFile: registrationFile,
+      dispatchLine: registrationLine,
+      invocationPattern: "A_TIMEOUT_MS → timer callback",
+      confidence: "high",
+      evidence: "shortcircuit:A_INIT_TIMER:dispatch",
+    }
+    baseChain.trigger = {
+      triggerKind: "timer_expiry",
+      triggerKey: dispatchKey,
+      triggerFile: registrationFile,
+      triggerLine: registrationLine,
+      confidence: "high",
+      evidence: "shortcircuit:A_INIT_TIMER:trigger",
+    }
+    baseChain.confidenceLevel = "runtime_trigger_found"
+    baseChain.confidenceScore = 5.0
+    return baseChain
+  }
+
+  // P3: Short-circuit for thread message queue handlers registered via
+  // wlan_thread_msg_handler_register_var_len_buf / WLAN_THREAD_COMM_FUNC_* dispatch.
+  // These use a message-ID-based dispatch, not a fn-ptr field stored in a struct.
+  if (registrationApi === "wlan_thread_msg_handler_register_var_len_buf" ||
+      registrationApi === "cmnos_thread_msg_handler_register" ||
+      (dispatchKey !== null && dispatchKey.startsWith("WLAN_THREAD_COMM_FUNC_"))) {
+    baseChain.store = {
+      containerType: "THREAD_MSG_HANDLER_TABLE",
+      containerFile: registrationFile,
+      containerLine: registrationLine,
+      confidence: "high",
+      evidence: "shortcircuit:thread-msg-handler",
+      storeFieldName: "var_len_buf",
+    }
+    baseChain.dispatch = {
+      dispatchFunction: "cmnos_thread_msg_queue_rx_invoke_var_len_buf",
+      dispatchFile: registrationFile,
+      dispatchLine: registrationLine,
+      invocationPattern: "cmnos_thread_msg_buf_alloc → msg_queue → invoke",
+      confidence: "high",
+      evidence: "shortcircuit:thread-msg-handler:dispatch",
+    }
+    baseChain.trigger = {
+      triggerKind: "message",
+      triggerKey: dispatchKey,
+      triggerFile: registrationFile,
+      triggerLine: registrationLine,
+      confidence: "high",
+      evidence: "shortcircuit:thread-msg-handler:trigger",
+    }
+    baseChain.confidenceLevel = "runtime_trigger_found"
+    baseChain.confidenceScore = 5.0
+    return baseChain
+  }
+
   try {
     // Step 1: get the registration API definition body
     const registrationSource = deps.readFile(registrationFile)
@@ -352,8 +429,14 @@ export async function resolveChain(
             )
             if (triggerResult) {
               baseChain.trigger = triggerResult
-              baseChain.confidenceLevel = "runtime_trigger_found"
-              baseChain.confidenceScore = 5.0
+              if (triggerResult.confidence !== "low") {
+                baseChain.confidenceLevel = "runtime_trigger_found"
+                baseChain.confidenceScore = 5.0
+              } else {
+                // Fallback trigger points at dispatch site — stay at L4
+                baseChain.confidenceScore = Math.max(baseChain.confidenceScore, 4.0)
+                baseChain.confidenceLevel = "dispatch_site_found"
+              }
             }
             }
           }
@@ -374,7 +457,11 @@ export async function resolveChain(
       const candidateLine = def.range?.start?.line ?? 0
       const candidateSource = deps.readFile(candidateFile)
       if (!candidateSource) continue
-      if (candidateSource.includes("{")) sawFunctionBody = true
+      // Only treat as a real function body if it's a .c file (not a header declaration)
+      const defUriStr = def.uri ?? def.targetUri ?? ""
+      if ((defUriStr.endsWith(".c") || defUriStr.endsWith(".cc")) && candidateSource.includes("{")) {
+        sawFunctionBody = true
+      }
       const hit = findStoreInDefinition(candidateSource, candidateLine, callbackParamName ?? null)
       logDebug(deps, "resolveChain:definition-candidate", {
         candidateFile,
@@ -817,14 +904,22 @@ function deriveWorkspaceRoot(filePath: string): string | null {
 }
 
 function collectCandidateSourceFiles(root: string): string[] {
-  const preferred = [
-    path.join(root, "wlan_proc", "wlan", "protocol", "src"),
-    path.join(root, "wlan_proc", "wlan", "syssw_platform", "src"),
-    path.join(root, "wlan_proc", "wlan", "syssw_services", "src"),
-  ]
+  // Scan the full wlan_proc/wlan/ tree when available.
+  // Fall back to the original 3 known-good subdirs if the parent doesn't exist.
+  const { existsSync } = require("fs") as typeof import("fs")
+  const wlanRoot = path.join(root, "wlan_proc", "wlan")
+  const scanDirs = existsSync(wlanRoot)
+    ? [wlanRoot]
+    : [
+        path.join(root, "wlan_proc", "wlan", "protocol", "src"),
+        path.join(root, "wlan_proc", "wlan", "syssw_platform", "src"),
+        path.join(root, "wlan_proc", "wlan", "syssw_services", "src"),
+      ]
+
   const out: string[] = []
 
-  const walk = (dir: string): void => {
+  const walk = (dir: string, depth: number): void => {
+    if (depth > 20) return  // prevent symlink loops
     let entries: string[] = []
     try {
       entries = readdirSync(dir)
@@ -840,14 +935,14 @@ function collectCandidateSourceFiles(root: string): string[] {
         continue
       }
       if (st.isDirectory()) {
-        walk(full)
+        walk(full, depth + 1)
         continue
       }
       if (full.endsWith(".c") || full.endsWith(".h")) out.push(full)
     }
   }
 
-  for (const dir of preferred) walk(dir)
+  for (const dir of scanDirs) walk(dir, 0)
   return out
 }
 
@@ -921,6 +1016,14 @@ function fieldHints(fieldName: string): { file: RegExp[]; line: RegExp[] } {
       line: [/real_sig|signal|thread/i],
     }
   }
+  // P2: wal_phy_dev_register_event_handler stores the callback in a "fn" field
+  // inside a wal_phy_dev_event_handler_entry struct (wal_pdev.c dispatch loop).
+  if (fieldName === "fn") {
+    return {
+      file: [/wal_pdev\.c$/i, /wal_phy_dev\.c$/i],
+      line: [/phy_dev.*dispatch|dispatch.*event|event.*handler/i],
+    }
+  }
   return { file: [], line: [] }
 }
 
@@ -940,6 +1043,8 @@ function functionNameHint(fieldName: string): RegExp | null {
   if (fieldName === "data_handler") return /^_offldmgr_enhanced_data_handler$/i
   if (fieldName === "handler") return /^wlan_vdev_deliver_notif$/i
   if (fieldName === "sig_handler") return /^wlan_thread_dsr_wrapper_common$/i
+  // P2: wal_phy_dev_register_event_handler stores callbacks in a "fn" field
+  if (fieldName === "fn") return /^wal_phy_dev_dispatch_event$/i
   return null
 }
 
@@ -955,6 +1060,10 @@ function registrationHint(registrationApi: string): RegExp | null {
   }
   if (registrationApi === "wlan_thread_register_signal_wrapper") {
     return /^wlan_thread_dsr_wrapper_common$/i
+  }
+  // P2: wal_phy_dev_register_event_handler dispatches through wal_phy_dev_dispatch_event
+  if (registrationApi === "wal_phy_dev_register_event_handler") {
+    return /^wal_phy_dev_dispatch_event$/i
   }
   return null
 }
@@ -987,7 +1096,11 @@ async function findDispatchSiteByHeuristicScan(
   const workspaceRoot = deriveWorkspaceRoot(bodyFile)
   if (!workspaceRoot) return null
 
-  const cacheKey = `${workspaceRoot}::${storeFieldName}`
+  // Cache key includes registration file basename to avoid sharing cache entries
+  // across different dispatch patterns that happen to store to the same field name
+  // (e.g. all data_handler registrations previously shared one entry)
+  const registrationBasename = bodyFile ? path.basename(bodyFile) : "unknown"
+  const cacheKey = `${workspaceRoot}::${storeFieldName}::${registrationBasename}`
   const cached = heuristicDispatchCache.get(cacheKey)
   if (cached) return cached
 
@@ -1125,7 +1238,20 @@ async function findTriggerSite(
   deps: ResolverDeps,
 ): Promise<ResolvedChain["trigger"] | null> {
   try {
-    const incomingPromise = timedIncomingCalls(deps, dispatchFile, dispatchLine, 0)
+    // Look up the actual column of the dispatch function name on the dispatch line
+    // so incomingCalls() hits the right token, not column 0
+    let dispatchChar = 0
+    try {
+      const dispatchSource = deps.readFile(dispatchFile)
+      if (dispatchSource && dispatchFunction) {
+        const lineText = dispatchSource.split(/\r?\n/)[dispatchLine] ?? ""
+        const escaped = dispatchFunction.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+        const m = new RegExp(`(?<![a-zA-Z0-9_])${escaped}(?![a-zA-Z0-9_])`).exec(lineText)
+        dispatchChar = m ? m.index : Math.max(0, lineText.indexOf(dispatchFunction))
+      }
+    } catch { /* keep 0 as fallback */ }
+
+    const incomingPromise = timedIncomingCalls(deps, dispatchFile, dispatchLine, dispatchChar)
     const timeoutMs = Number(process.env.CHAIN_TRIGGER_TIMEOUT_MS || "0")
     const callers = timeoutMs > 0
       ? await Promise.race<any[]>([

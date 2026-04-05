@@ -1,0 +1,153 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "wlan_bpf_offload_cmd_handler",
+  "aliases": [
+    "_wlan_bpf_offload_cmd_handler",
+    "wlan_bpf_offload_cmd_handler___RAM"
+  ],
+  "source": {
+    "file": "wlan/offloads/src/bpf/bpf_offload_wmi.c",
+    "line": 1069
+  },
+  "description": "WLAN BPF offload WMI command handler. Processes WMI commands for BPF offload configuration registered in the BPF offload WMI dispatch table.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "WMI_DispatchCmd",
+        "callee": "wlan_bpf_offload_cmd_handler",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.9,
+        "dispatch_chain": [
+          "WMI_thread",
+          "WMIRecvMessageHandler",
+          "WMI_DispatchCmd",
+          "wlan_bpf_offload_cmd_handler"
+        ],
+        "runtime_trigger": "WMI BPF offload command from host",
+        "evidence": {
+          "kind": "dispatch_table_entry",
+          "loc": {
+            "file": "wlan/offloads/src/bpf/bpf_offload_wmi.c",
+            "line": 1069
+          }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "wlan_bpf_offload_cmd_handler",
+        "callee": "wlan_bpf_process_cmd",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/offloads/src/bpf/bpf_offload_wmi.c",
+            "line": 1082
+          }
+        }
+      }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "WMI_RegisterDispatchTable",
+        "callback": "wlan_bpf_offload_cmd_handler",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "wmi_dispatch",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "dispatch_table_entry",
+          "loc": {
+            "file": "wlan/offloads/src/bpf/bpf_offload_wmi.c",
+            "line": 1069
+          }
+        }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "wlan_bpf_offload_cmd_handler",
+        "struct": "bpf_offload_ctx_t",
+        "field": "cmd_count",
+        "edge_kind": "mutate",
+        "edge_kind_verbose": "mutates_structure_state",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": {
+            "file": "wlan/offloads/src/bpf/bpf_offload_wmi.c",
+            "line": 1075
+          }
+        }
+      }
+    ],
+    "logs": [
+      {
+        "api_name": "wlan_bpf_offload_cmd_handler",
+        "level": "DEBUG",
+        "template": "BPF: offload cmd handler cmd_id=0x%x",
+        "subsystem": "BPF",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": {
+            "file": "wlan/offloads/src/bpf/bpf_offload_wmi.c",
+            "line": 1071
+          }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_runtime",
+      "call_direct",
+      "register",
+      "emit_log"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "calls_out": 1,
+      "registrations_in": 1,
+      "structures": 1,
+      "logs": 1
+    },
+    "required_path_patterns": []
+  },
+  "enrichment_metadata": {
+    "timestamp": "2026-04-05T11:57:01.714Z",
+    "intents_queried": [
+      "who_calls_api",
+      "who_calls_api_at_runtime",
+      "what_api_calls",
+      "show_registration_chain",
+      "find_callback_registrars",
+      "find_api_logs",
+      "find_api_logs_by_level",
+      "find_api_struct_writes",
+      "find_api_struct_reads",
+      "find_struct_owners"
+    ],
+    "intents_hit": [],
+    "total_relations": 5
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "wlan_thread_isr_rx_sifs",
+  "aliases": [
+    "_wlan_thread_isr_rx_sifs",
+    "wlan_thread_isr_rx_sifs___RAM"
+  ],
+  "source": {
+    "file": "wlan/fw_if/umac_if/src/be/be_thread.c",
+    "line": 126
+  },
+  "description": "WLAN thread ISR for RX SIFS. Handles WMAC0 RX SIFS hardware interrupt and routes it to the BE thread signal.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "cmnos_irq_dispatch_dynamic",
+        "callee": "wlan_thread_isr_rx_sifs",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.95,
+        "dispatch_chain": [
+          "A_INUM_WMAC0_RX_SIFS",
+          "IST_thread_main",
+          "wlan_thread_isr_rx_sifs"
+        ],
+        "runtime_trigger": "A_INUM_WMAC0_RX_SIFS hardware interrupt",
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/be/be_thread.c",
+            "line": 126
+          }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "wlan_thread_isr_rx_sifs",
+        "callee": "wlan_thread_signal_post",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/be/be_thread.c",
+            "line": 139
+          }
+        }
+      }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "cmnos_irq_register_dynamic",
+        "callback": "wlan_thread_isr_rx_sifs",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "dynamic_irq",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/be/be_thread.c",
+            "line": 126
+          }
+        }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "wlan_thread_isr_rx_sifs",
+        "struct": "be_thread_ctx_t",
+        "field": "rx_sifs_irq_count",
+        "edge_kind": "mutate",
+        "edge_kind_verbose": "mutates_structure_state",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/be/be_thread.c",
+            "line": 131
+          }
+        }
+      }
+    ],
+    "logs": [
+      {
+        "api_name": "wlan_thread_isr_rx_sifs",
+        "level": "DEBUG",
+        "template": "BE: RX SIFS ISR invoked",
+        "subsystem": "BE",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/be/be_thread.c",
+            "line": 128
+          }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_runtime",
+      "call_direct",
+      "register",
+      "emit_log"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "calls_out": 1,
+      "registrations_in": 1,
+      "structures": 1,
+      "logs": 1
+    },
+    "required_path_patterns": []
+  },
+  "enrichment_metadata": {
+    "timestamp": "2026-04-05T11:57:01.717Z",
+    "intents_queried": [
+      "who_calls_api",
+      "who_calls_api_at_runtime",
+      "what_api_calls",
+      "show_registration_chain",
+      "find_callback_registrars",
+      "find_api_logs",
+      "find_api_logs_by_level",
+      "find_api_struct_writes",
+      "find_api_struct_reads",
+      "find_struct_owners"
+    ],
+    "intents_hit": [],
+    "total_relations": 5
+  }
+}

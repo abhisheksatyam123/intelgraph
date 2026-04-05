@@ -1,0 +1,152 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "lpass_data_svc_h2t_input",
+  "aliases": [
+    "_lpass_data_svc_h2t_input",
+    "lpass_data_svc_h2t_input___RAM"
+  ],
+  "source": {
+    "file": "wlan/fw_if/lpass/src/lpass_svc.c",
+    "line": 511
+  },
+  "description": "LPASS data service host-to-target input handler. Processes incoming data from the host via the LPASS HTC service.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "HTC_ServiceDispatch",
+        "callee": "lpass_data_svc_h2t_input",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.95,
+        "dispatch_chain": [
+          "HTC_thread",
+          "HTC_ServiceDispatch",
+          "lpass_data_svc_h2t_input"
+        ],
+        "runtime_trigger": "HTC service data from host to LPASS",
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/fw_if/lpass/src/lpass_svc.c",
+            "line": 532
+          }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "lpass_data_svc_h2t_input",
+        "callee": "lpass_process_h2t_data",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/fw_if/lpass/src/lpass_svc.c",
+            "line": 545
+          }
+        }
+      }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "HTC_RegisterService",
+        "callback": "lpass_data_svc_h2t_input",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "htc_service",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/fw_if/lpass/src/lpass_svc.c",
+            "line": 511
+          }
+        }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "lpass_data_svc_h2t_input",
+        "struct": "lpass_svc_ctx_t",
+        "field": "h2t_count",
+        "edge_kind": "mutate",
+        "edge_kind_verbose": "mutates_structure_state",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": {
+            "file": "wlan/fw_if/lpass/src/lpass_svc.c",
+            "line": 518
+          }
+        }
+      }
+    ],
+    "logs": [
+      {
+        "api_name": "lpass_data_svc_h2t_input",
+        "level": "DEBUG",
+        "template": "LPASS: h2t input handler len=%d",
+        "subsystem": "LPASS",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": {
+            "file": "wlan/fw_if/lpass/src/lpass_svc.c",
+            "line": 513
+          }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_runtime",
+      "call_direct",
+      "register",
+      "emit_log"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "calls_out": 1,
+      "registrations_in": 1,
+      "structures": 1,
+      "logs": 1
+    },
+    "required_path_patterns": []
+  },
+  "enrichment_metadata": {
+    "timestamp": "2026-04-05T11:55:05.989Z",
+    "intents_queried": [
+      "who_calls_api",
+      "who_calls_api_at_runtime",
+      "what_api_calls",
+      "show_registration_chain",
+      "find_callback_registrars",
+      "find_api_logs",
+      "find_api_logs_by_level",
+      "find_api_struct_writes",
+      "find_api_struct_reads",
+      "find_struct_owners"
+    ],
+    "intents_hit": [],
+    "total_relations": 5
+  }
+}

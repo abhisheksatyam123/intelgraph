@@ -1,0 +1,80 @@
+{
+  "kind": "thread",
+  "kind_verbose": "thread_context",
+  "canonical_name": "data_offld_thread",
+  "aliases": ["DATA_OFFLD_THREAD", "offload_thread"],
+  "source": {
+    "file": "wlan/offloads/src/offldmgr/offldmgr.c",
+    "line": 18
+  },
+  "description": "DATA_OFFLD firmware thread. Processes all data-path offload packets from the local RXDMA2FW and remote REO2FW rings. Dispatches to registered offload handlers (ARP, NS, GTK, BPF, DHCP, mDNS, packet filters).",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "reo_destination",
+        "callee": "data_offld_thread",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.95,
+        "dispatch_chain": ["reo_destination", "data_offld_thread"],
+        "runtime_trigger": "REO2FW ring delivery",
+        "evidence": {
+          "kind": "fn_ptr_assign",
+          "loc": { "file": "wlan/offloads/src/offldmgr/offldmgr.c", "line": 30 }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "data_offld_thread",
+        "callee": "offldmgr_dispatch_data_handler",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1.0,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": { "file": "wlan/offloads/src/offldmgr/offldmgr.c", "line": 55 }
+        }
+      }
+    ],
+    "registrations_in": [],
+    "registrations_out": [
+      {
+        "registrar": "data_offld_thread",
+        "callback": "wlan_bpf_filter_offload_handler",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "data",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": { "file": "wlan/offloads/src/offldmgr/offldmgr.c", "line": 120 }
+        }
+      }
+    ],
+    "structures": [],
+    "logs": [],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": ["call_runtime", "call_direct", "register"],
+    "required_directions": ["incoming", "outgoing"],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "calls_out": 1,
+      "registrations_out": 1
+    },
+    "required_path_patterns": [
+      {
+        "name": "ring_to_dispatch",
+        "nodes": ["hw_block", "thread", "api"],
+        "description": "REO HW → DATA_OFFLD thread → offload handler dispatch"
+      }
+    ]
+  }
+}

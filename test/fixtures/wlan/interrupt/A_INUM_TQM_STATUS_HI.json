@@ -1,0 +1,66 @@
+{
+  "kind": "interrupt",
+  "kind_verbose": "interrupt_source",
+  "canonical_name": "A_INUM_TQM_STATUS_HI",
+  "aliases": ["TQM_STATUS_HI_IRQ", "INUM_TQM_STATUS_HI"],
+  "source": {
+    "file": "wlan/wlanhw/inc/hw_irq.h",
+    "line": 88
+  },
+  "description": "TQM (Transmit Queue Manager) status high interrupt. Hardware interrupt source that fires when TQM reports a high-priority status event. Triggers the IST thread which routes to the TQM ring handler.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [],
+    "calls_out": [
+      {
+        "caller": "A_INUM_TQM_STATUS_HI",
+        "callee": "IST_thread_main",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.98,
+        "dispatch_chain": ["A_INUM_TQM_STATUS_HI", "IST_thread_main"],
+        "runtime_trigger": "QGIC hardware interrupt",
+        "evidence": {
+          "kind": "fn_ptr_assign",
+          "loc": { "file": "wlan/syssw_services/src/osif/src/cmnos_intrinf.c", "line": 870 }
+        }
+      }
+    ],
+    "registrations_in": [],
+    "registrations_out": [
+      {
+        "registrar": "A_ISR_ATTACH",
+        "callback": "IST_thread_main",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "callback",
+        "derivation": "clangd",
+        "confidence": 0.95,
+        "evidence": {
+          "kind": "register_call",
+          "loc": { "file": "wlan/syssw_services/src/osif/src/cmnos_intrinf.c", "line": 870 }
+        }
+      }
+    ],
+    "structures": [],
+    "logs": [],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": ["call_runtime", "register"],
+    "required_directions": ["outgoing"],
+    "minimum_counts": {
+      "calls_out": 1,
+      "registrations_out": 1
+    },
+    "required_path_patterns": [
+      {
+        "name": "irq_to_ist",
+        "nodes": ["interrupt", "thread"],
+        "description": "TQM HW interrupt → IST thread"
+      }
+    ]
+  }
+}

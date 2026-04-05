@@ -1,0 +1,118 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "wal_tqm_process_status_ring",
+  "aliases": [
+    "_wal_tqm_process_status_ring",
+    "wal_tqm_process_status_ring___RAM"
+  ],
+  "source": {
+    "file": "wlan/fw_if/umac_if/src/tqm/wal_tqm_cmn.c",
+    "line": 3912
+  },
+  "description": "WAL TQM status ring processor. Processes TQM status ring entries, handling TX completion and error status.",
+  "relations": {
+    "calls_in_direct": [
+      {
+        "caller": "wal_tqm_hipri_status_intr_sig_hdlr",
+        "callee": "wal_tqm_process_status_ring",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/tqm/tqm_thread.c",
+            "line": 135
+          }
+        }
+      }
+    ],
+    "calls_in_runtime": [],
+    "calls_out": [
+      {
+        "caller": "wal_tqm_process_status_ring",
+        "callee": "whal_sring_read",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/tqm/wal_tqm_cmn.c",
+            "line": 3920
+          }
+        }
+      }
+    ],
+    "registrations_in": [],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "wal_tqm_process_status_ring",
+        "struct": "tqm_status_ring_t",
+        "field": "status_entries",
+        "edge_kind": "read",
+        "edge_kind_verbose": "reads_structure_field",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "field_access",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/tqm/wal_tqm_cmn.c",
+            "line": 3917
+          }
+        }
+      }
+    ],
+    "logs": [
+      {
+        "api_name": "wal_tqm_process_status_ring",
+        "level": "DEBUG",
+        "template": "TQM: process status ring count=%d",
+        "subsystem": "TQM",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/tqm/wal_tqm_cmn.c",
+            "line": 3914
+          }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_direct",
+      "read",
+      "emit_log"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_direct": 1,
+      "structures": 1,
+      "logs": 1
+    },
+    "required_path_patterns": [
+      {
+        "name": "signal_handler_to_ring_processor",
+        "nodes": [
+          "api",
+          "api"
+        ],
+        "description": "wal_tqm_hipri_status_intr_sig_hdlr → wal_tqm_process_status_ring"
+      }
+    ]
+  }
+}

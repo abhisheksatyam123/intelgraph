@@ -1,0 +1,62 @@
+{
+  "kind": "struct",
+  "kind_verbose": "structure_type",
+  "canonical_name": "wlan_peer_t",
+  "aliases": [],
+  "source": {
+    "file": "wlan/protocol/inc/wlan_peer.h",
+    "line": 62
+  },
+  "description": "Per-peer state structure. Holds association state, key material, and event handler bindings for a connected peer.",
+  "fields": [
+    { "name": "peer_id", "type": "uint16_t", "description": "Hardware peer ID" },
+    { "name": "assoc_state", "type": "uint8_t", "description": "Current association state machine value" },
+    { "name": "event_handler", "type": "fn_ptr", "description": "Registered peer event handler callback" }
+  ],
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [],
+    "calls_out": [],
+    "registrations_in": [],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "wal_peer_execute_event_handler",
+        "struct": "wlan_peer_t",
+        "field": "event_handler",
+        "edge_kind": "read",
+        "edge_kind_verbose": "reads_structure_field",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "field_access",
+          "loc": { "file": "wlan/protocol/src/wal_peer.c", "line": 145 }
+        }
+      },
+      {
+        "api": "wal_peer_free_event_confirmation",
+        "struct": "wlan_peer_t",
+        "field": "assoc_state",
+        "edge_kind": "write",
+        "edge_kind_verbose": "writes_structure_field",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": { "file": "wlan/protocol/src/wal_peer.c", "line": 210 }
+        }
+      }
+    ],
+    "logs": [],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": ["read", "write"],
+    "required_directions": ["bidirectional"],
+    "minimum_counts": {
+      "structures": 2
+    },
+    "required_path_patterns": []
+  }
+}

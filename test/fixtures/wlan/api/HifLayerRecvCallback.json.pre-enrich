@@ -1,0 +1,152 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "HifLayerRecvCallback",
+  "aliases": [
+    "_HifLayerRecvCallback",
+    "HifLayerRecvCallback___RAM"
+  ],
+  "source": {
+    "file": "wlan/fw_if/htc/src/htc.c",
+    "line": 974
+  },
+  "description": "HIF layer receive callback. Invoked by the HIF layer when a packet is received from the host, forwarding it to the HTC layer for processing.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "HIF_deliver_recv",
+        "callee": "HifLayerRecvCallback",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.95,
+        "dispatch_chain": [
+          "HIF_layer",
+          "HIF_deliver_recv",
+          "HifLayerRecvCallback"
+        ],
+        "runtime_trigger": "HIF layer packet receive from host",
+        "evidence": {
+          "kind": "fn_ptr_assign",
+          "loc": {
+            "file": "wlan/fw_if/htc/src/htc.c",
+            "line": 978
+          }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "HifLayerRecvCallback",
+        "callee": "HTC_ProcessRecvPacket",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/fw_if/htc/src/htc.c",
+            "line": 990
+          }
+        }
+      }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "HIF_register_callback",
+        "callback": "HifLayerRecvCallback",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "hif_callback",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "fn_ptr_assign",
+          "loc": {
+            "file": "wlan/fw_if/htc/src/htc.c",
+            "line": 974
+          }
+        }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "HifLayerRecvCallback",
+        "struct": "HTC_ENDPOINT",
+        "field": "recv_count",
+        "edge_kind": "mutate",
+        "edge_kind_verbose": "mutates_structure_state",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": {
+            "file": "wlan/fw_if/htc/src/htc.c",
+            "line": 980
+          }
+        }
+      }
+    ],
+    "logs": [
+      {
+        "api_name": "HifLayerRecvCallback",
+        "level": "DEBUG",
+        "template": "HTC: HIF recv callback endpoint=%d len=%d",
+        "subsystem": "HTC",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": {
+            "file": "wlan/fw_if/htc/src/htc.c",
+            "line": 976
+          }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_runtime",
+      "call_direct",
+      "register",
+      "emit_log"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "calls_out": 1,
+      "registrations_in": 1,
+      "structures": 1,
+      "logs": 1
+    },
+    "required_path_patterns": []
+  },
+  "enrichment_metadata": {
+    "timestamp": "2026-04-05T11:55:05.981Z",
+    "intents_queried": [
+      "who_calls_api",
+      "who_calls_api_at_runtime",
+      "what_api_calls",
+      "show_registration_chain",
+      "find_callback_registrars",
+      "find_api_logs",
+      "find_api_logs_by_level",
+      "find_api_struct_writes",
+      "find_api_struct_reads",
+      "find_struct_owners"
+    ],
+    "intents_hit": [],
+    "total_relations": 5
+  }
+}

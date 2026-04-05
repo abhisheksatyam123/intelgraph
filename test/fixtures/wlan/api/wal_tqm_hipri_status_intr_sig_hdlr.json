@@ -1,0 +1,155 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "wal_tqm_hipri_status_intr_sig_hdlr",
+  "aliases": [
+    "_wal_tqm_hipri_status_intr_sig_hdlr",
+    "wal_tqm_hipri_status_intr_sig_hdlr___RAM"
+  ],
+  "source": {
+    "file": "wlan/fw_if/umac_if/src/tqm/tqm_thread.c",
+    "line": 122
+  },
+  "description": "WAL TQM high-priority status interrupt signal handler. Processes TQM high-priority status ring completions triggered by hardware interrupt signal.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "wlan_thread_dsr_wrapper_common",
+        "callee": "wal_tqm_hipri_status_intr_sig_hdlr",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.9,
+        "dispatch_chain": [
+          "A_INUM_TQM_STATUS_HI",
+          "IST_thread",
+          "tqm_sync_status_irq_route",
+          "tqm_thread",
+          "WLAN_THREAD_SIG_TQM_HIPRI_STATUS_HW_INTR",
+          "wal_tqm_hipri_status_intr_sig_hdlr"
+        ],
+        "runtime_trigger": "WLAN_THREAD_SIG_TQM_HIPRI_STATUS_HW_INTR signal",
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/tqm/tqm_thread.c",
+            "line": 122
+          }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "wal_tqm_hipri_status_intr_sig_hdlr",
+        "callee": "wal_tqm_process_status_ring",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/tqm/tqm_thread.c",
+            "line": 135
+          }
+        }
+      }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "wlan_thread_register_signal_wrapper",
+        "callback": "wal_tqm_hipri_status_intr_sig_hdlr",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "signal",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/tqm/tqm_thread.c",
+            "line": 122
+          }
+        }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "wal_tqm_hipri_status_intr_sig_hdlr",
+        "struct": "tqm_thread_ctx_t",
+        "field": "hipri_status_count",
+        "edge_kind": "mutate",
+        "edge_kind_verbose": "mutates_structure_state",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/tqm/tqm_thread.c",
+            "line": 127
+          }
+        }
+      }
+    ],
+    "logs": [
+      {
+        "api_name": "wal_tqm_hipri_status_intr_sig_hdlr",
+        "level": "DEBUG",
+        "template": "TQM: hipri status intr sig handler invoked",
+        "subsystem": "TQM",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/tqm/tqm_thread.c",
+            "line": 124
+          }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_runtime",
+      "call_direct",
+      "register",
+      "emit_log"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "calls_out": 1,
+      "registrations_in": 1,
+      "structures": 1,
+      "logs": 1
+    },
+    "required_path_patterns": []
+  },
+  "enrichment_metadata": {
+    "timestamp": "2026-04-05T11:57:01.708Z",
+    "intents_queried": [
+      "who_calls_api",
+      "who_calls_api_at_runtime",
+      "what_api_calls",
+      "show_registration_chain",
+      "find_callback_registrars",
+      "find_api_logs",
+      "find_api_logs_by_level",
+      "find_api_struct_writes",
+      "find_api_struct_reads",
+      "find_struct_owners"
+    ],
+    "intents_hit": [],
+    "total_relations": 5
+  }
+}

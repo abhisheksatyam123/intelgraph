@@ -1,0 +1,153 @@
+{
+  "kind": "api",
+  "kind_verbose": "application_programming_interface",
+  "canonical_name": "wal_lp_bar_compl_peer_event_handler",
+  "aliases": [
+    "_wal_lp_bar_compl_peer_event_handler",
+    "wal_lp_bar_compl_peer_event_handler___RAM"
+  ],
+  "source": {
+    "file": "wlan/fw_if/umac_if/src/wal/wal_lp_bar.c",
+    "line": 96
+  },
+  "description": "WAL LP BAR completion peer event handler. Handles peer-level events for low-power BAR (Block Ack Request) completion processing.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "wal_peer_deliver_event",
+        "callee": "wal_lp_bar_compl_peer_event_handler",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "runtime_invokes_api",
+        "derivation": "runtime",
+        "confidence": 0.9,
+        "dispatch_chain": [
+          "wal_peer_event_dispatch",
+          "wal_peer_deliver_event",
+          "wal_lp_bar_compl_peer_event_handler"
+        ],
+        "runtime_trigger": "peer event for LP BAR completion",
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/wal/wal_lp_bar.c",
+            "line": 96
+          }
+        }
+      }
+    ],
+    "calls_out": [
+      {
+        "caller": "wal_lp_bar_compl_peer_event_handler",
+        "callee": "wal_lp_bar_process_completion",
+        "edge_kind": "call_direct",
+        "edge_kind_verbose": "static_direct_calls",
+        "derivation": "clangd",
+        "confidence": 1,
+        "evidence": {
+          "kind": "call_expr",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/wal/wal_lp_bar.c",
+            "line": 110
+          }
+        }
+      }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "wal_peer_register_event_handler",
+        "callback": "wal_lp_bar_compl_peer_event_handler",
+        "edge_kind": "register",
+        "edge_kind_verbose": "registers_callback_handler",
+        "registration_kind": "peer_event",
+        "derivation": "clangd",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "register_call",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/wal/wal_lp_bar.c",
+            "line": 96
+          }
+        }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [
+      {
+        "api": "wal_lp_bar_compl_peer_event_handler",
+        "struct": "wal_peer_t",
+        "field": "lp_bar_state",
+        "edge_kind": "read",
+        "edge_kind_verbose": "reads_structure_field",
+        "derivation": "c_parser",
+        "confidence": 0.85,
+        "evidence": {
+          "kind": "field_access",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/wal/wal_lp_bar.c",
+            "line": 100
+          }
+        }
+      }
+    ],
+    "logs": [
+      {
+        "api_name": "wal_lp_bar_compl_peer_event_handler",
+        "level": "DEBUG",
+        "template": "WAL: LP BAR compl peer event handler peer=%p",
+        "subsystem": "WAL",
+        "edge_kind": "emit_log",
+        "edge_kind_verbose": "emits_runtime_log_event",
+        "derivation": "c_parser",
+        "confidence": 0.9,
+        "evidence": {
+          "kind": "log_site",
+          "loc": {
+            "file": "wlan/fw_if/umac_if/src/wal/wal_lp_bar.c",
+            "line": 98
+          }
+        }
+      }
+    ],
+    "owns": [],
+    "uses": []
+  },
+  "contract": {
+    "required_relation_kinds": [
+      "call_runtime",
+      "call_direct",
+      "register",
+      "read",
+      "emit_log"
+    ],
+    "required_directions": [
+      "incoming",
+      "outgoing"
+    ],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "calls_out": 1,
+      "registrations_in": 1,
+      "structures": 1,
+      "logs": 1
+    },
+    "required_path_patterns": []
+  },
+  "enrichment_metadata": {
+    "timestamp": "2026-04-05T11:57:01.707Z",
+    "intents_queried": [
+      "who_calls_api",
+      "who_calls_api_at_runtime",
+      "what_api_calls",
+      "show_registration_chain",
+      "find_callback_registrars",
+      "find_api_logs",
+      "find_api_logs_by_level",
+      "find_api_struct_writes",
+      "find_api_struct_reads",
+      "find_struct_owners"
+    ],
+    "intents_hit": [],
+    "total_relations": 5
+  }
+}
