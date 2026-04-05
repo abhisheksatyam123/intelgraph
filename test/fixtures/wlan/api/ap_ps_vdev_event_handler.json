@@ -7,8 +7,8 @@
     "ap_ps_vdev_event_handler___RAM"
   ],
   "source": {
-    "file": "wlan/offloads/src/powersave/wlan_powersave_ap.c",
-    "line": 1961
+    "file": "wlan/protocol/src/power/ap_ps/wlan_powersave_ap.c",
+    "line": 1753
   },
   "description": "AP power save vdev event handler. Handles vdev-level events for AP power save management including STA association and disassociation.",
   "relations": {
@@ -149,5 +149,11 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "resolved_alias_symbol": "wlan_ps_ap_wal_vdev_event_handler",
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

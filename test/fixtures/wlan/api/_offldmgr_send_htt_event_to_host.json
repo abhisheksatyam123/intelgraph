@@ -7,15 +7,15 @@
     "_offldmgr_send_htt_event_to_host___RAM"
   ],
   "source": {
-    "file": "wlan/offloads/src/offldmgr/offldmgr_ext.c",
-    "line": 1100
+    "file": "wlan/protocol/src/cmn_infra/src/offload_mgr/offload_mgr.c",
+    "line": 201
   },
   "description": "Offload manager HTT event sender to host. Dispatches HTT events from the offload manager to the host via the HTT offload loop.",
   "relations": {
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "offldmgr_dispatch_htt_handler",
+        "caller": "_offldmgr_send_htt_event_to_host",
         "callee": "_offldmgr_send_htt_event_to_host",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -149,5 +149,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

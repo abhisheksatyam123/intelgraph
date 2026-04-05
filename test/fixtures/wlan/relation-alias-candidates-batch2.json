@@ -1,0 +1,360 @@
+{
+  "summary": {
+    "missing_symbol_count": 64,
+    "with_candidates": 19,
+    "without_candidates": 45
+  },
+  "symbols": [
+    {
+      "symbol": "HIF_CE_process_completion",
+      "candidates": []
+    },
+    {
+      "symbol": "HIF_deliver_recv",
+      "candidates": [
+        {
+          "candidate": "HifLayerRecvCallback",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "HIF_deliver_send_done",
+      "candidates": [
+        {
+          "candidate": "HifLayerSendDoneCallback",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "HTC_FreeTxPacket",
+      "candidates": []
+    },
+    {
+      "symbol": "HTC_ProcessRecvPacket",
+      "candidates": []
+    },
+    {
+      "symbol": "HTC_ServiceDispatch",
+      "candidates": []
+    },
+    {
+      "symbol": "IST_thread_main",
+      "candidates": [
+        {
+          "candidate": "intr_handler",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "ap_ps_process_vdev_event",
+      "candidates": []
+    },
+    {
+      "symbol": "blockack_process_pdev_event",
+      "candidates": []
+    },
+    {
+      "symbol": "cmnos_dsr_dispatch",
+      "candidates": [
+        {
+          "candidate": "cmnos_thread_irq",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "cmnos_irq_dispatch_dynamic",
+      "candidates": [
+        {
+          "candidate": "cmnos_thread_irq",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "coex_update_bss_on_roam",
+      "candidates": []
+    },
+    {
+      "symbol": "htt_h2t_send_complete",
+      "candidates": []
+    },
+    {
+      "symbol": "htt_process_upload_done",
+      "candidates": []
+    },
+    {
+      "symbol": "lpass_process_h2t_data",
+      "candidates": []
+    },
+    {
+      "symbol": "nan_process_wow_event",
+      "candidates": []
+    },
+    {
+      "symbol": "nan_update_session_on_roam",
+      "candidates": []
+    },
+    {
+      "symbol": "offldmgr_dispatch_data_handler",
+      "candidates": [
+        {
+          "candidate": "_offldmgr_protocol_data_handler",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "offldmgr_dispatch_htt_handler",
+      "candidates": [
+        {
+          "candidate": "_offldmgr_send_htt_event_to_host",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "offldmgr_dispatch_nondata_handler",
+      "candidates": [
+        {
+          "candidate": "_offldmgr_non_data_msg_hdlr",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "offldmgr_invoke_data_handler",
+      "candidates": []
+    },
+    {
+      "symbol": "offldmgr_invoke_enhanced_handler",
+      "candidates": []
+    },
+    {
+      "symbol": "offldmgr_invoke_nondata_handler",
+      "candidates": []
+    },
+    {
+      "symbol": "offldmgr_process_sync_rt_msg",
+      "candidates": []
+    },
+    {
+      "symbol": "offldmgr_register_data_handler",
+      "candidates": [
+        {
+          "candidate": "offldmgr_register_data_offload",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "rri_process_prefetch_completion",
+      "candidates": []
+    },
+    {
+      "symbol": "sta_ps_process_wow_notif",
+      "candidates": []
+    },
+    {
+      "symbol": "twt_update_session_on_roam",
+      "candidates": []
+    },
+    {
+      "symbol": "wal_lp_bar_process_completion",
+      "candidates": [
+        {
+          "candidate": "wal_send_lp_bar_frame",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "wal_rx_process_completion",
+      "candidates": [
+        {
+          "candidate": "rx_completion_hdlr",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "wal_rx_process_ring",
+      "candidates": []
+    },
+    {
+      "symbol": "wal_rx_sifs_process_response",
+      "candidates": [
+        {
+          "candidate": "rx_sifs_resp_dsr_hdlr",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "wal_tqm_enable_ring_interrupts",
+      "candidates": []
+    },
+    {
+      "symbol": "wal_tqm_init_rings",
+      "candidates": []
+    },
+    {
+      "symbol": "wal_tqm_process_cmd_ring",
+      "candidates": [
+        {
+          "candidate": "wal_tqm_dispatch_commands",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "wal_tqm_process_sch_trigger",
+      "candidates": []
+    },
+    {
+      "symbol": "wal_tx_enqueue_to_ring",
+      "candidates": []
+    },
+    {
+      "symbol": "wal_tx_process_completion_ring",
+      "candidates": []
+    },
+    {
+      "symbol": "wal_tx_process_send_completion",
+      "candidates": [
+        {
+          "candidate": "tx_send_completion_isr_hdlr",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "wal_tx_sched_process_cmd",
+      "candidates": [
+        {
+          "candidate": "tx_send_seq_post_sched_cmd",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "wal_vdev_deliver_event",
+      "candidates": []
+    },
+    {
+      "symbol": "wal_wdcvs_process_wnoc_intr",
+      "candidates": []
+    },
+    {
+      "symbol": "whal_aux_ipc_process_status_ring",
+      "candidates": []
+    },
+    {
+      "symbol": "whal_sring_hw_setup",
+      "candidates": []
+    },
+    {
+      "symbol": "whal_sring_update_consumer_ptr",
+      "candidates": []
+    },
+    {
+      "symbol": "whal_sring_update_producer_ptr",
+      "candidates": [
+        {
+          "candidate": "whal_sring_advance_hp",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "whal_sring_write_reg",
+      "candidates": [
+        {
+          "candidate": "SRING_OUT",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "whal_tqm_update_tcl_entrance",
+      "candidates": []
+    },
+    {
+      "symbol": "wlan_autochan_update_channel_stats",
+      "candidates": []
+    },
+    {
+      "symbol": "wlan_bpf_match_frame",
+      "candidates": []
+    },
+    {
+      "symbol": "wlan_bpf_process_cmd",
+      "candidates": []
+    },
+    {
+      "symbol": "wlan_bpf_process_wow_notif",
+      "candidates": []
+    },
+    {
+      "symbol": "wlan_bpf_update_vdev_state",
+      "candidates": []
+    },
+    {
+      "symbol": "wlan_btm_process_action_frame",
+      "candidates": []
+    },
+    {
+      "symbol": "wlan_nlo_process_scan_result",
+      "candidates": []
+    },
+    {
+      "symbol": "wlan_obss_process_scan_result",
+      "candidates": []
+    },
+    {
+      "symbol": "wlan_phyerr_process_cmd",
+      "candidates": [
+        {
+          "candidate": "wlan_phyerr_wmi_set_phyerr_state",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "wlan_roam_deliver_handoff_notify",
+      "candidates": [
+        {
+          "candidate": "wlan_roam_dispatch_notify",
+          "kind": "manual_verified"
+        }
+      ]
+    },
+    {
+      "symbol": "wlan_spm_process_wow_event",
+      "candidates": []
+    },
+    {
+      "symbol": "wlan_thread_complete_init",
+      "candidates": []
+    },
+    {
+      "symbol": "wlan_thread_signal_dispatch",
+      "candidates": []
+    },
+    {
+      "symbol": "wlan_thread_signal_post",
+      "candidates": []
+    },
+    {
+      "symbol": "wlan_tqm_process_misc_intr",
+      "candidates": []
+    },
+    {
+      "symbol": "wlan_usd_process_scan_result",
+      "candidates": []
+    }
+  ]
+}

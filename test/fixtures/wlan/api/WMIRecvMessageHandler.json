@@ -7,8 +7,8 @@
     "WMIRecvMessageHandler___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/wmi/src/wmi_svc.c",
-    "line": 1614
+    "file": "wlan/syssw_platform/src/hostif/wmisvc/wmi_svc.c",
+    "line": 835
   },
   "description": "WMI receive message handler. Processes incoming WMI messages from the host, registered as an HTC service receive callback.",
   "relations": {
@@ -148,5 +148,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

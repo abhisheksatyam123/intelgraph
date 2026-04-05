@@ -7,15 +7,15 @@
     "_offldmgr_non_data_msg_hdlr___RAM"
   ],
   "source": {
-    "file": "wlan/offloads/src/offldmgr/offldmgr_ext.c",
-    "line": 1725
+    "file": "wlan/protocol/src/cmn_infra/src/offload_mgr/offload_mgr_ext.c",
+    "line": 1233
   },
   "description": "Offload manager non-data message handler. Dispatches non-data offload messages to registered protocol handlers via the nondata offload dispatch table.",
   "relations": {
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "offldmgr_dispatch_nondata_handler",
+        "caller": "_offldmgr_non_data_msg_hdlr",
         "callee": "_offldmgr_non_data_msg_hdlr",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -149,5 +149,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

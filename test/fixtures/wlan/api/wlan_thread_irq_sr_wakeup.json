@@ -7,7 +7,7 @@
     "wlan_thread_irq_sr_wakeup___RAM"
   ],
   "source": {
-    "file": "wlan/syssw_services/src/thread/wlan_thread.c",
+    "file": "wlan/syssw_platform/src/thread/wlan_thread.c",
     "line": 617
   },
   "description": "WLAN thread IRQ software-reset wakeup handler. Registered as a dynamic IRQ handler to wake the thread on software-reset interrupt.",
@@ -15,7 +15,7 @@
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "cmnos_irq_dispatch_dynamic",
+        "caller": "cmnos_thread_irq",
         "callee": "wlan_thread_irq_sr_wakeup",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -148,5 +148,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

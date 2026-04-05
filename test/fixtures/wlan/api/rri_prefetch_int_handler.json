@@ -7,15 +7,15 @@
     "rri_prefetch_int_handler___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/rt/rt_thread.c",
-    "line": 1583
+    "file": "wlan/syssw_platform/src/platform/src/ipq5332/rri_prefetch.c",
+    "line": 840
   },
   "description": "RRI prefetch interrupt handler. Handles RRI (Rate-based Resource Indication) prefetch hardware interrupt for RT thread processing.",
   "relations": {
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "cmnos_irq_dispatch_dynamic",
+        "caller": "cmnos_thread_irq",
         "callee": "rri_prefetch_int_handler",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -148,5 +148,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

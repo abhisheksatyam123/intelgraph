@@ -7,8 +7,8 @@
     "wlan_scan_autochan_event_handler___RAM"
   ],
   "source": {
-    "file": "wlan/offloads/src/scan/wlan_scan_init.c",
-    "line": 290
+    "file": "wlan/protocol/src/cmn_infra/src/scan_mgr/wlan_scan_eng.c",
+    "line": 1238
   },
   "description": "WLAN automatic channel selection scan event handler. Processes scan scheduler events for automatic channel selection algorithm.",
   "relations": {
@@ -149,5 +149,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

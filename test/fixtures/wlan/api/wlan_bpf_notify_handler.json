@@ -7,7 +7,7 @@
     "wlan_bpf_notify_handler___RAM"
   ],
   "source": {
-    "file": "wlan/offloads/src/bpf/bpf_offload_int.c",
+    "file": "wlan/protocol/src/offloads/src/l2/bpf/bpf_offload_int.c",
     "line": 394
   },
   "description": "WLAN BPF notification handler. Handles WoW notification events for BPF offload, dispatched from _offldmgr_wow_notify_event.",
@@ -148,5 +148,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

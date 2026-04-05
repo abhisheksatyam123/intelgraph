@@ -1,9 +1,17 @@
 {
   "clangd": "clangd",
-  "args": ["--background-index", "--enable-config", "--log=error"],
+  "args": [
+    "--background-index",
+    "--enable-config",
+    "--log=error"
+  ],
   "enabled": true,
   "compileCommandsCleaning": {
-    "preflightPolicy": "fix"
+    "preflightPolicy": "fix",
+    "preflight": {
+      "requireZeroUnmatched": false,
+      "preflightOk": true
+    }
   },
   "intelligenceLocal": {
     "enabled": true,

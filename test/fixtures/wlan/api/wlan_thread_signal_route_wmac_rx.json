@@ -7,8 +7,8 @@
     "wlan_thread_signal_route_wmac_rx___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/be/be_thread.c",
-    "line": 307
+    "file": "wlan/syssw_platform/src/thread/be_thread.c",
+    "line": 101
   },
   "description": "WLAN thread signal router for WMAC RX. Routes WMAC0 RX interrupt signals to the BE thread for RX ring processing.",
   "relations": {
@@ -150,5 +150,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

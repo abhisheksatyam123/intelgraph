@@ -7,8 +7,8 @@
     "wlan_usd_scan_evt_handler___RAM"
   ],
   "source": {
-    "file": "wlan/offloads/src/usd/wlan_usd.c",
-    "line": 244
+    "file": "wlan/protocol/src/usd/wlan_usd.c",
+    "line": 577
   },
   "description": "WLAN USD (Unsolicited Service Discovery) scan event handler. Processes scan scheduler events for USD service discovery.",
   "relations": {
@@ -149,5 +149,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

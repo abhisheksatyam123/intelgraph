@@ -8,15 +8,15 @@
     "_wlan_bpf_filter_offload_handler___RAM"
   ],
   "source": {
-    "file": "wlan/offloads/src/bpf/wlan_bpf.c",
-    "line": 312
+    "file": "wlan/protocol/src/offloads/src/l2/bpf/bpf_offload.c",
+    "line": 83
   },
   "description": "BPF (Berkeley Packet Filter) offload handler. Processes incoming packets against installed BPF programs during normal and WoW operation.",
   "relations": {
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "offldmgr_dispatch_data_handler",
+        "caller": "_offldmgr_protocol_data_handler",
         "callee": "wlan_bpf_filter_offload_handler",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -56,7 +56,7 @@
     ],
     "registrations_in": [
       {
-        "registrar": "offldmgr_register_data_handler",
+        "registrar": "offldmgr_register_data_offload",
         "callback": "wlan_bpf_filter_offload_handler",
         "edge_kind": "register",
         "edge_kind_verbose": "registers_callback_handler",
@@ -150,5 +150,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

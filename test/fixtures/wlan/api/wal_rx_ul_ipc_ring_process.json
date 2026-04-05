@@ -7,7 +7,7 @@
     "wal_rx_ul_ipc_ring_process___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/be/be_thread.c",
+    "file": "wlan/syssw_platform/src/thread/be_thread.c",
     "line": 453
   },
   "description": "WAL RX uplink IPC ring processor. Processes uplink IPC ring updates for the BE WMAC0 UL path.",
@@ -148,5 +148,11 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "unresolved_reason": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated.",
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

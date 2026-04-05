@@ -1,0 +1,688 @@
+{
+  "summary": {
+    "total_fixtures": 60,
+    "exact_matches": 1,
+    "mismatches": 44,
+    "unresolved": 15
+  },
+  "corrections": [
+    {
+      "fixture": "HIF_CE_get_dsr.json",
+      "canonical_name": "HIF_CE_get_dsr",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/be/be_thread.c",
+        "line": 349
+      },
+      "corrected": null,
+      "note": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated."
+    },
+    {
+      "fixture": "HifLayerRecvCallback.json",
+      "canonical_name": "HifLayerRecvCallback",
+      "current": {
+        "file": "wlan/fw_if/htc/src/htc.c",
+        "line": 974
+      },
+      "corrected": {
+        "file": "wlan/syssw_platform/src/hostif/htc/htc.c",
+        "line": 816
+      }
+    },
+    {
+      "fixture": "HifLayerSendDoneCallback.json",
+      "canonical_name": "HifLayerSendDoneCallback",
+      "current": {
+        "file": "wlan/fw_if/htc/src/htc.c",
+        "line": 974
+      },
+      "corrected": {
+        "file": "wlan/syssw_platform/src/hostif/htc/htc.c",
+        "line": 447
+      }
+    },
+    {
+      "fixture": "WMIRecvMessageHandler.json",
+      "canonical_name": "WMIRecvMessageHandler",
+      "current": {
+        "file": "wlan/fw_if/wmi/src/wmi_svc.c",
+        "line": 1614
+      },
+      "corrected": {
+        "file": "wlan/syssw_platform/src/hostif/wmisvc/wmi_svc.c",
+        "line": 835
+      }
+    },
+    {
+      "fixture": "_offldmgr_enhanced_data_handler.json",
+      "canonical_name": "_offldmgr_enhanced_data_handler",
+      "current": {
+        "file": "wlan/offloads/src/offldmgr/offldmgr_ext.c",
+        "line": 950
+      },
+      "corrected": {
+        "file": "wlan/protocol/src/cmn_infra/src/offload_mgr/offload_mgr_ext.c",
+        "line": 878
+      }
+    },
+    {
+      "fixture": "_offldmgr_non_data_msg_hdlr.json",
+      "canonical_name": "_offldmgr_non_data_msg_hdlr",
+      "current": {
+        "file": "wlan/offloads/src/offldmgr/offldmgr_ext.c",
+        "line": 1725
+      },
+      "corrected": {
+        "file": "wlan/protocol/src/cmn_infra/src/offload_mgr/offload_mgr_ext.c",
+        "line": 1233
+      }
+    },
+    {
+      "fixture": "_offldmgr_protocol_data_handler.json",
+      "canonical_name": "_offldmgr_protocol_data_handler",
+      "current": {
+        "file": "wlan/offloads/src/offldmgr/offldmgr_ext.c",
+        "line": 890
+      },
+      "corrected": {
+        "file": "wlan/protocol/src/cmn_infra/src/offload_mgr/offload_mgr_ext.c",
+        "line": 1166
+      }
+    },
+    {
+      "fixture": "_offldmgr_send_htt_event_to_host.json",
+      "canonical_name": "_offldmgr_send_htt_event_to_host",
+      "current": {
+        "file": "wlan/offloads/src/offldmgr/offldmgr_ext.c",
+        "line": 1100
+      },
+      "corrected": {
+        "file": "wlan/protocol/src/cmn_infra/src/offload_mgr/offload_mgr.c",
+        "line": 201
+      }
+    },
+    {
+      "fixture": "_offldmgr_sync_rt_data_offload_thread_msg_handler.json",
+      "canonical_name": "_offldmgr_sync_rt_data_offload_thread_msg_handler",
+      "current": {
+        "file": "wlan/offloads/src/offldmgr/offldmgr_ext.c",
+        "line": 1010
+      },
+      "corrected": {
+        "file": "wlan/protocol/src/cmn_infra/src/offload_mgr/offload_mgr.c",
+        "line": 124
+      }
+    },
+    {
+      "fixture": "_wal_wdcvs_wnoc_intr_handler.json",
+      "canonical_name": "_wal_wdcvs_wnoc_intr_handler",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/wdcvs/wal_wdcvs.c",
+        "line": 1706
+      },
+      "corrected": {
+        "file": "wlan/power_svc/src/power_common/wal_wdcvs.c",
+        "line": 1531
+      }
+    },
+    {
+      "fixture": "ap_ps_vdev_event_handler.json",
+      "canonical_name": "ap_ps_vdev_event_handler",
+      "current": {
+        "file": "wlan/offloads/src/powersave/wlan_powersave_ap.c",
+        "line": 1961
+      },
+      "corrected": null,
+      "note": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated."
+    },
+    {
+      "fixture": "arp_offload_proc_frame.json",
+      "canonical_name": "arp_offload_proc_frame",
+      "current": {
+        "file": "wlan/offloads/src/arp/arp_offload.c",
+        "line": 198
+      },
+      "corrected": {
+        "file": "wlan/protocol/src/offloads/src/l2/arp_ns/wlan_arp_ns_offload.c",
+        "line": 1390
+      }
+    },
+    {
+      "fixture": "blockack_pdev_event_handler.json",
+      "canonical_name": "blockack_pdev_event_handler",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/blockack/blockack.c",
+        "line": 1416
+      },
+      "corrected": null,
+      "note": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated."
+    },
+    {
+      "fixture": "cmnos_wmac_isr.json",
+      "canonical_name": "cmnos_wmac_isr",
+      "current": {
+        "file": "wlan/syssw_services/src/osif/src/cmnos_intr_ext.c",
+        "line": 47
+      },
+      "corrected": {
+        "file": "wlan/syssw_services/src/osif/src/cmnos_intr.c",
+        "line": 24
+      }
+    },
+    {
+      "fixture": "coex_roam_handoff_notify_cb.json",
+      "canonical_name": "coex_roam_handoff_notify_cb",
+      "current": {
+        "file": "wlan/offloads/src/coex/wlan_coex_init.c",
+        "line": 403
+      },
+      "corrected": null,
+      "note": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated."
+    },
+    {
+      "fixture": "dispatch_wlan_phyerr_cmds.json",
+      "canonical_name": "dispatch_wlan_phyerr_cmds",
+      "current": {
+        "file": "wlan/protocol/src/offloads/src/misc/wlan_phyerr.c",
+        "line": 156
+      },
+      "corrected": {
+        "file": "wlan/protocol/src/misc/src/phyerr/wlan_phyerr.c",
+        "line": 166
+      }
+    },
+    {
+      "fixture": "htt_done_sig_handler.json",
+      "canonical_name": "htt_done_sig_handler",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/tqm/tqm_thread.c",
+        "line": 170
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_svc/stats/wal_htt_ppdu_stats.c",
+        "line": 443
+      }
+    },
+    {
+      "fixture": "lpass_data_svc_h2t_input.json",
+      "canonical_name": "lpass_data_svc_h2t_input",
+      "current": {
+        "file": "wlan/fw_if/lpass/src/lpass_svc.c",
+        "line": 511
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_svc/hostif/lpass_svc/lpass_svc.c",
+        "line": 208
+      }
+    },
+    {
+      "fixture": "nan_roam_handoff_notify_cb.json",
+      "canonical_name": "nan_roam_handoff_notify_cb",
+      "current": {
+        "file": "wlan/offloads/src/nan/wlan_nan_init.c",
+        "line": 1003
+      },
+      "corrected": null,
+      "note": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated."
+    },
+    {
+      "fixture": "nan_wow_notif_handler.json",
+      "canonical_name": "nan_wow_notif_handler",
+      "current": {
+        "file": "wlan/offloads/src/nan/wlan_nan_mac_ext.c",
+        "line": 1028
+      },
+      "corrected": null,
+      "note": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated."
+    },
+    {
+      "fixture": "rri_prefetch_int_handler.json",
+      "canonical_name": "rri_prefetch_int_handler",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/rt/rt_thread.c",
+        "line": 1583
+      },
+      "corrected": {
+        "file": "wlan/syssw_platform/src/platform/src/ipq5332/rri_prefetch.c",
+        "line": 840
+      }
+    },
+    {
+      "fixture": "rx_sifs_resp_dsr_hdlr.json",
+      "canonical_name": "rx_sifs_resp_dsr_hdlr",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/be/be_thread.c",
+        "line": 337
+      },
+      "corrected": null,
+      "note": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated."
+    },
+    {
+      "fixture": "sta_ps_wow_notif_handler.json",
+      "canonical_name": "sta_ps_wow_notif_handler",
+      "current": {
+        "file": "wlan/offloads/src/powersave/wlan_powersave_sta.c",
+        "line": 1917
+      },
+      "corrected": null,
+      "note": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated."
+    },
+    {
+      "fixture": "tqm_sync_status_irq_route.json",
+      "canonical_name": "tqm_sync_status_irq_route",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/tqm/wal_tqm_cmn.c",
+        "line": 3997
+      },
+      "corrected": {
+        "file": "wlan/syssw_platform/src/thread/tqm_thread.c",
+        "line": 62
+      }
+    },
+    {
+      "fixture": "twt_roam_handoff_notify_cb.json",
+      "canonical_name": "twt_roam_handoff_notify_cb",
+      "current": {
+        "file": "wlan/offloads/src/twt/wlan_twt.c",
+        "line": 262
+      },
+      "corrected": null,
+      "note": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated."
+    },
+    {
+      "fixture": "tx_send_completion_isr_hdlr_wrapper.json",
+      "canonical_name": "tx_send_completion_isr_hdlr_wrapper",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/tx/wal_tx_control.c",
+        "line": 4795
+      },
+      "corrected": null,
+      "note": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated."
+    },
+    {
+      "fixture": "tx_seq_sched_algo_cmd_hdlr.json",
+      "canonical_name": "tx_seq_sched_algo_cmd_hdlr",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/tac/tac_thread.c",
+        "line": 375
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_svc/tx/wal_tx_seq.c",
+        "line": 8483
+      }
+    },
+    {
+      "fixture": "wal_lp_bar_compl_peer_event_handler.json",
+      "canonical_name": "wal_lp_bar_compl_peer_event_handler",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/wal/wal_lp_bar.c",
+        "line": 96
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_svc/data_txrx/ctrl_signalling/wal_lp_bar.c",
+        "line": 173
+      }
+    },
+    {
+      "fixture": "wal_rx_completion_dsr_hdlr_wrapper.json",
+      "canonical_name": "wal_rx_completion_dsr_hdlr_wrapper",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/rx/wal_rx_control.c",
+        "line": 1496
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_svc/rx/wal_rx_fast.c",
+        "line": 3185
+      }
+    },
+    {
+      "fixture": "wal_rx_ul_ipc_ring_process.json",
+      "canonical_name": "wal_rx_ul_ipc_ring_process",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/be/be_thread.c",
+        "line": 453
+      },
+      "corrected": null,
+      "note": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated."
+    },
+    {
+      "fixture": "wal_tqm_hipri_cmd_intr_sig_hdlr.json",
+      "canonical_name": "wal_tqm_hipri_cmd_intr_sig_hdlr",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/tqm/tqm_thread.c",
+        "line": 139
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_svc/tqm/wal_tqm_cmn.c",
+        "line": 3860
+      }
+    },
+    {
+      "fixture": "wal_tqm_hipri_status_intr_sig_hdlr.json",
+      "canonical_name": "wal_tqm_hipri_status_intr_sig_hdlr",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/tqm/tqm_thread.c",
+        "line": 122
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_svc/tqm/wal_tqm_cmn.c",
+        "line": 3912
+      }
+    },
+    {
+      "fixture": "wal_tqm_lowpri_cmd_intr_sig_hdlr.json",
+      "canonical_name": "wal_tqm_lowpri_cmd_intr_sig_hdlr",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/tqm/tqm_thread.c",
+        "line": 153
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_svc/tqm/wal_tqm_cmn.c",
+        "line": 3833
+      }
+    },
+    {
+      "fixture": "wal_tqm_lowpri_status_intr_sig_hdlr.json",
+      "canonical_name": "wal_tqm_lowpri_status_intr_sig_hdlr",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/tqm/tqm_thread.c",
+        "line": 148
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_svc/tqm/wal_tqm_cmn.c",
+        "line": 3882
+      }
+    },
+    {
+      "fixture": "wal_tqm_process_status_ring.json",
+      "canonical_name": "wal_tqm_process_status_ring",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/tqm/wal_tqm_cmn.c",
+        "line": 3912
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_svc/tqm/wal_tqm_cmn.c",
+        "line": 2486
+      }
+    },
+    {
+      "fixture": "wal_tqm_sch2tqm_sig_hdlr.json",
+      "canonical_name": "wal_tqm_sch2tqm_sig_hdlr",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/tqm/tqm_thread.c",
+        "line": 144
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_svc/tqm/wal_tqm_cmn.c",
+        "line": 3932
+      }
+    },
+    {
+      "fixture": "whal_aux_ipc_status_ring_handler.json",
+      "canonical_name": "whal_aux_ipc_status_ring_handler",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/aux/aux_be_thread.c",
+        "line": 169
+      },
+      "corrected": {
+        "file": "wlan/mac_cp_drv/src/auxmac/whal_aux_ipc.c",
+        "line": 390
+      }
+    },
+    {
+      "fixture": "whal_sring_hw_intr_enable.json",
+      "canonical_name": "whal_sring_hw_intr_enable",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/hal/whal_sring.c",
+        "line": 120
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_drv/src/sring/whal_sring.c",
+        "line": 509
+      }
+    },
+    {
+      "fixture": "whal_sring_init.json",
+      "canonical_name": "whal_sring_init",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/hal/whal_sring.c",
+        "line": 45
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_drv/src/sring/whal_sring.c",
+        "line": 935
+      }
+    },
+    {
+      "fixture": "whal_sring_read.json",
+      "canonical_name": "whal_sring_read",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/hal/whal_sring.c",
+        "line": 200
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_drv/src/sring/whal_sring.c",
+        "line": 1599
+      }
+    },
+    {
+      "fixture": "whal_sring_write.json",
+      "canonical_name": "whal_sring_write",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/hal/whal_sring.c",
+        "line": 260
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_drv/src/sring/whal_sring.c",
+        "line": 1449
+      }
+    },
+    {
+      "fixture": "whal_tqm_tcl_ent_proxy_update.json",
+      "canonical_name": "whal_tqm_tcl_ent_proxy_update",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/soc/wal_soc_dev_hw.c",
+        "line": 211
+      },
+      "corrected": null,
+      "note": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated."
+    },
+    {
+      "fixture": "wlan_bpf_filter_offload_handler.json",
+      "canonical_name": "wlan_bpf_filter_offload_handler",
+      "current": {
+        "file": "wlan/offloads/src/bpf/wlan_bpf.c",
+        "line": 312
+      },
+      "corrected": {
+        "file": "wlan/protocol/src/offloads/src/l2/bpf/bpf_offload.c",
+        "line": 83
+      }
+    },
+    {
+      "fixture": "wlan_bpf_notify_handler.json",
+      "canonical_name": "wlan_bpf_notify_handler",
+      "current": {
+        "file": "wlan/offloads/src/bpf/bpf_offload_int.c",
+        "line": 394
+      },
+      "corrected": {
+        "file": "wlan/protocol/src/offloads/src/l2/bpf/bpf_offload_int.c",
+        "line": 394
+      }
+    },
+    {
+      "fixture": "wlan_bpf_offload_cmd_handler.json",
+      "canonical_name": "wlan_bpf_offload_cmd_handler",
+      "current": {
+        "file": "wlan/offloads/src/bpf/bpf_offload_wmi.c",
+        "line": 1069
+      },
+      "corrected": null,
+      "note": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated."
+    },
+    {
+      "fixture": "wlan_bpf_offload_vdev_notify_handler.json",
+      "canonical_name": "wlan_bpf_offload_vdev_notify_handler",
+      "current": {
+        "file": "wlan/offloads/src/bpf/wlan_bpf.c",
+        "line": 450
+      },
+      "corrected": {
+        "file": "wlan/protocol/src/offloads/src/l2/bpf/bpf_offload_int.c",
+        "line": 366
+      }
+    },
+    {
+      "fixture": "wlan_btm_ofld_action_frame_handler.json",
+      "canonical_name": "wlan_btm_ofld_action_frame_handler",
+      "current": {
+        "file": "wlan/offloads/src/btm/wlan_btm_offload.c",
+        "line": 854
+      },
+      "corrected": null,
+      "note": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated."
+    },
+    {
+      "fixture": "wlan_network_list_offload_handler.json",
+      "canonical_name": "wlan_network_list_offload_handler",
+      "current": {
+        "file": "wlan/offloads/src/nlo/wlan_network_list_offload.c",
+        "line": 1125
+      },
+      "corrected": null,
+      "note": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated."
+    },
+    {
+      "fixture": "wlan_obss_scan_evt_handler.json",
+      "canonical_name": "wlan_obss_scan_evt_handler",
+      "current": {
+        "file": "wlan/offloads/src/obss/wlan_obss_scan_offload_wmi_ext.c",
+        "line": 215
+      },
+      "corrected": {
+        "file": "wlan/protocol/src/scan_clients/src/obss/wlan_obss_scan_offload_wmi.c",
+        "line": 32
+      }
+    },
+    {
+      "fixture": "wlan_scan_autochan_event_handler.json",
+      "canonical_name": "wlan_scan_autochan_event_handler",
+      "current": {
+        "file": "wlan/offloads/src/scan/wlan_scan_init.c",
+        "line": 290
+      },
+      "corrected": {
+        "file": "wlan/protocol/src/cmn_infra/src/scan_mgr/wlan_scan_eng.c",
+        "line": 1238
+      }
+    },
+    {
+      "fixture": "wlan_spm_mac_wow_handler.json",
+      "canonical_name": "wlan_spm_mac_wow_handler",
+      "current": {
+        "file": "wlan/offloads/src/lp/wlan_lp_cmn.c",
+        "line": 192
+      },
+      "corrected": {
+        "file": "wlan/protocol/src/power/misc_ps/wlan_lp_cmn.c",
+        "line": 37
+      }
+    },
+    {
+      "fixture": "wlan_thread_irq_route_wmac_tx.json",
+      "canonical_name": "wlan_thread_irq_route_wmac_tx",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/tx/wal_tx_control.c",
+        "line": 4785
+      },
+      "corrected": {
+        "file": "wlan/syssw_platform/src/thread/tac_thread.c",
+        "line": 121
+      }
+    },
+    {
+      "fixture": "wlan_thread_irq_sr_wakeup.json",
+      "canonical_name": "wlan_thread_irq_sr_wakeup",
+      "current": {
+        "file": "wlan/syssw_services/src/thread/wlan_thread.c",
+        "line": 617
+      },
+      "corrected": {
+        "file": "wlan/syssw_platform/src/thread/wlan_thread.c",
+        "line": 617
+      }
+    },
+    {
+      "fixture": "wlan_thread_isr_rx_sifs.json",
+      "canonical_name": "wlan_thread_isr_rx_sifs",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/be/be_thread.c",
+        "line": 126
+      },
+      "corrected": {
+        "file": "wlan/syssw_platform/src/thread/be_thread.c",
+        "line": 49
+      }
+    },
+    {
+      "fixture": "wlan_thread_post_init_hdlr.json",
+      "canonical_name": "wlan_thread_post_init_hdlr",
+      "current": {
+        "file": "wlan/syssw_platform/src/thread/hif_thread.c",
+        "line": 227
+      },
+      "corrected": {
+        "file": "wlan/syssw_platform/src/thread/wlan_thread.c",
+        "line": 1412
+      }
+    },
+    {
+      "fixture": "wlan_thread_signal_route_wmac_rx.json",
+      "canonical_name": "wlan_thread_signal_route_wmac_rx",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/be/be_thread.c",
+        "line": 307
+      },
+      "corrected": {
+        "file": "wlan/syssw_platform/src/thread/be_thread.c",
+        "line": 101
+      }
+    },
+    {
+      "fixture": "wlan_thread_signal_route_wmac_tx.json",
+      "canonical_name": "wlan_thread_signal_route_wmac_tx",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/tac/tac_thread.c",
+        "line": 354
+      },
+      "corrected": {
+        "file": "wlan/syssw_platform/src/thread/tac_thread.c",
+        "line": 161
+      }
+    },
+    {
+      "fixture": "wlan_tqm_misc_intr_hdlr.json",
+      "canonical_name": "wlan_tqm_misc_intr_hdlr",
+      "current": {
+        "file": "wlan/fw_if/umac_if/src/tqm/wal_tqm_cmn.c",
+        "line": 4048
+      },
+      "corrected": {
+        "file": "wlan/mac_dp_svc/tqm/wal_tqm.c",
+        "line": 5519
+      }
+    },
+    {
+      "fixture": "wlan_usd_scan_evt_handler.json",
+      "canonical_name": "wlan_usd_scan_evt_handler",
+      "current": {
+        "file": "wlan/offloads/src/usd/wlan_usd.c",
+        "line": 244
+      },
+      "corrected": {
+        "file": "wlan/protocol/src/usd/wlan_usd.c",
+        "line": 577
+      }
+    }
+  ]
+}

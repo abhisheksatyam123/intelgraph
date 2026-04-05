@@ -7,8 +7,8 @@
     "wal_tqm_hipri_cmd_intr_sig_hdlr___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/tqm/tqm_thread.c",
-    "line": 139
+    "file": "wlan/mac_dp_svc/tqm/wal_tqm_cmn.c",
+    "line": 3860
   },
   "description": "WAL TQM high-priority command interrupt signal handler. Processes TQM high-priority command ring completions triggered by hardware interrupt signal.",
   "relations": {
@@ -41,7 +41,7 @@
     "calls_out": [
       {
         "caller": "wal_tqm_hipri_cmd_intr_sig_hdlr",
-        "callee": "wal_tqm_process_cmd_ring",
+        "callee": "wal_tqm_dispatch_commands",
         "edge_kind": "call_direct",
         "edge_kind_verbose": "static_direct_calls",
         "derivation": "clangd",
@@ -150,5 +150,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

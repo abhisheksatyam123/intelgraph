@@ -131,6 +131,7 @@ export async function executeIngestTool(args: z.infer<typeof ingestInputSchema>)
 
     const input = {
       workspaceRoot: root,
+      fileLimit: args.fileLimit,
     }
 
     const [symbolBatch, typeBatch, edgeBatch] = await Promise.all([

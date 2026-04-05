@@ -7,15 +7,15 @@
     "wlan_btm_ofld_action_frame_handler___RAM"
   ],
   "source": {
-    "file": "wlan/offloads/src/btm/wlan_btm_offload.c",
-    "line": 854
+    "file": "wlan/protocol/src/conn_mgmt/src/btm_offload/wlan_btm_offload.c",
+    "line": 1256
   },
   "description": "WLAN BTM (BSS Transition Management) offload action frame handler. Processes BTM action frames received during offload operation.",
   "relations": {
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "offldmgr_dispatch_nondata_handler",
+        "caller": "_offldmgr_non_data_msg_hdlr",
         "callee": "wlan_btm_ofld_action_frame_handler",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -149,5 +149,11 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "resolved_alias_symbol": "_wlan_btm_ofld_action_frame_handler",
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

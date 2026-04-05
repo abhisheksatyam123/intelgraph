@@ -7,15 +7,15 @@
     "coex_roam_handoff_notify_cb___RAM"
   ],
   "source": {
-    "file": "wlan/offloads/src/coex/wlan_coex_init.c",
-    "line": 403
+    "file": "wlan/protocol/src/coex/wlan_coex_main.c",
+    "line": 736
   },
   "description": "Coexistence roam handoff notification callback. Notified when a roam handoff occurs to update coexistence state for the new BSS.",
   "relations": {
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "wlan_roam_deliver_handoff_notify",
+        "caller": "wlan_roam_dispatch_notify",
         "callee": "coex_roam_handoff_notify_cb",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -149,5 +149,11 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "resolved_alias_symbol": "coex_roam_handoff_event_cb",
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

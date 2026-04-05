@@ -7,8 +7,8 @@
     "whal_sring_hw_intr_enable___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/hal/whal_sring.c",
-    "line": 120
+    "file": "wlan/mac_dp_drv/src/sring/whal_sring.c",
+    "line": 509
   },
   "description": "WHAL SRING hardware interrupt enable. Enables the hardware interrupt for a software ring to trigger on ring entry availability.",
   "relations": {
@@ -33,7 +33,7 @@
     "calls_out": [
       {
         "caller": "whal_sring_hw_intr_enable",
-        "callee": "whal_sring_write_reg",
+        "callee": "SRING_OUT",
         "edge_kind": "call_direct",
         "edge_kind_verbose": "static_direct_calls",
         "derivation": "clangd",
@@ -123,5 +123,10 @@
     ],
     "intents_hit": [],
     "total_relations": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

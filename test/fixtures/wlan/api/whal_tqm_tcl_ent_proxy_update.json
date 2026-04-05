@@ -7,7 +7,7 @@
     "whal_tqm_tcl_ent_proxy_update___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/soc/wal_soc_dev_hw.c",
+    "file": "wlan/mac_cp_svc/proto/dev/wal_soc_dev_hw.c",
     "line": 211
   },
   "description": "WHAL TQM TCL entrance proxy update handler. Handles TQM TCL-to-TQM entrance proxy update interrupts for ring management.",
@@ -15,7 +15,7 @@
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "cmnos_irq_dispatch_dynamic",
+        "caller": "cmnos_thread_irq",
         "callee": "whal_tqm_tcl_ent_proxy_update",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -148,5 +148,11 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "unresolved_reason": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated.",
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

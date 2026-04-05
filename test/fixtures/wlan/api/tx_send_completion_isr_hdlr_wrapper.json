@@ -7,15 +7,15 @@
     "tx_send_completion_isr_hdlr_wrapper___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/tx/wal_tx_control.c",
-    "line": 4795
+    "file": "wlan/mac_dp_svc/tx/wal_tx_send_isr.c",
+    "line": 542
   },
   "description": "TX send completion ISR handler wrapper. DSR wrapper for TX send completion interrupt, registered via A_DSR_ATTACH for WMAC TX interrupt.",
   "relations": {
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "cmnos_dsr_dispatch",
+        "caller": "cmnos_thread_irq",
         "callee": "tx_send_completion_isr_hdlr_wrapper",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -40,7 +40,7 @@
     "calls_out": [
       {
         "caller": "tx_send_completion_isr_hdlr_wrapper",
-        "callee": "wal_tx_process_send_completion",
+        "callee": "tx_send_completion_isr_hdlr",
         "edge_kind": "call_direct",
         "edge_kind_verbose": "static_direct_calls",
         "derivation": "clangd",
@@ -149,5 +149,11 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "resolved_alias_symbol": "tx_send_completion_isr_hdlr_wrapper",
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

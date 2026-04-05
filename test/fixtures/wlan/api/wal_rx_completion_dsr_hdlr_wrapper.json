@@ -7,15 +7,15 @@
     "wal_rx_completion_dsr_hdlr_wrapper___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/rx/wal_rx_control.c",
-    "line": 1496
+    "file": "wlan/mac_dp_svc/rx/wal_rx_fast.c",
+    "line": 3185
   },
   "description": "WAL RX completion DSR handler wrapper. DSR wrapper for RX completion interrupt, registered via A_DSR_ATTACH for WMAC RX interrupt.",
   "relations": {
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "cmnos_dsr_dispatch",
+        "caller": "cmnos_thread_irq",
         "callee": "wal_rx_completion_dsr_hdlr_wrapper",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -40,7 +40,7 @@
     "calls_out": [
       {
         "caller": "wal_rx_completion_dsr_hdlr_wrapper",
-        "callee": "wal_rx_process_completion",
+        "callee": "rx_completion_hdlr",
         "edge_kind": "call_direct",
         "edge_kind_verbose": "static_direct_calls",
         "derivation": "clangd",
@@ -149,5 +149,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

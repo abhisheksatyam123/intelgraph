@@ -7,7 +7,7 @@
     "rx_sifs_resp_dsr_hdlr___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/be/be_thread.c",
+    "file": "wlan/syssw_platform/src/thread/be_thread.c",
     "line": 337
   },
   "description": "RX SIFS response DSR handler. Processes SIFS (Short Inter-Frame Space) response events from the WMAC RX SIFS interrupt.",
@@ -41,7 +41,7 @@
     "calls_out": [
       {
         "caller": "rx_sifs_resp_dsr_hdlr",
-        "callee": "wal_rx_sifs_process_response",
+        "callee": "rx_sifs_resp_dsr_hdlr",
         "edge_kind": "call_direct",
         "edge_kind_verbose": "static_direct_calls",
         "derivation": "clangd",
@@ -150,5 +150,11 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "unresolved_reason": "No concrete function definition found in scanned non-ROM/non-build C sources; likely macro/alias/prototype-only or generated.",
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

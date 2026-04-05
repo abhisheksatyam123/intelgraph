@@ -7,8 +7,8 @@
     "wlan_bpf_offload_cmd_handler___RAM"
   ],
   "source": {
-    "file": "wlan/offloads/src/bpf/bpf_offload_wmi.c",
-    "line": 1069
+    "file": "wlan/protocol/src/offloads/src/l2/bpf/bpf_offload_wmi.c",
+    "line": 159
   },
   "description": "WLAN BPF offload WMI command handler. Processes WMI commands for BPF offload configuration registered in the BPF offload WMI dispatch table.",
   "relations": {
@@ -149,5 +149,11 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "resolved_alias_symbol": "_wlan_bpf_offload_cmd_handler",
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

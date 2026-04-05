@@ -1,4 +1,4 @@
-import { readdir, stat } from "fs/promises"
+import { readdir } from "fs/promises"
 import { join, extname } from "path"
 import type { IExtractionAdapter } from "../../contracts/extraction-adapter.js"
 import type {
@@ -31,14 +31,51 @@ export interface ClangdLspClient {
 // ---------------------------------------------------------------------------
 
 const C_EXTS = new Set([".c", ".h", ".cpp", ".cc", ".cxx", ".hpp"])
+function isWlanProcRoot(dir: string): boolean {
+  const normalized = dir.replace(/\\/g, "/")
+  return normalized === "/wlan_proc" || normalized.endsWith("/wlan_proc") || normalized.includes("/wlan_proc/")
+}
+
+function isLikelyBuildArtifactPath(filePath: string): boolean {
+  const p = filePath.replace(/\\/g, "/").toLowerCase()
+  const markers = [
+    "/build/",
+    "/config/bsp/",
+    "/core/debugtools/",
+    "/core/power/",
+    "/core/services/",
+  ]
+  return markers.some((m) => p.includes(m))
+}
+
+function rankFilePath(filePath: string): number {
+  const p = filePath.replace(/\\/g, "/").toLowerCase()
+  const hasWlan = p.includes("/wlan/")
+  const isSrc = p.includes("/src/")
+  const isBuild = isLikelyBuildArtifactPath(p)
+  if (hasWlan && isSrc && !isBuild) return 0
+  if (hasWlan && !isBuild) return 1
+  if (!isBuild) return 2
+  return 3
+}
+
+function prioritizeWlanProcFiles(files: string[]): string[] {
+  return [...files].sort((a, b) => {
+    const rankDiff = rankFilePath(a) - rankFilePath(b)
+    if (rankDiff !== 0) return rankDiff
+    return a.localeCompare(b)
+  })
+}
 
 async function collectFiles(dir: string, limit = 500): Promise<string[]> {
   const out: string[] = []
+  const wlanProcMode = isWlanProcRoot(dir)
+  const traversalLimit = wlanProcMode ? Math.max(limit * 50, 2000) : limit
   async function walk(d: string) {
-    if (out.length >= limit) return
+    if (out.length >= traversalLimit) return
     const entries = await readdir(d, { withFileTypes: true })
     for (const e of entries) {
-      if (out.length >= limit) break
+      if (out.length >= traversalLimit) break
       const full = join(d, e.name)
       if (e.isDirectory() && !e.name.startsWith(".")) {
         await walk(full)
@@ -48,7 +85,8 @@ async function collectFiles(dir: string, limit = 500): Promise<string[]> {
     }
   }
   await walk(dir)
-  return out
+  const prioritized = wlanProcMode ? prioritizeWlanProcFiles(out) : out
+  return prioritized.slice(0, limit)
 }
 
 // ---------------------------------------------------------------------------
@@ -78,7 +116,7 @@ export class ClangdExtractionAdapter implements IExtractionAdapter {
   ) {}
 
   async extractSymbols(input: ExtractionInput): Promise<SymbolBatch> {
-    const files = input.files ?? await collectFiles(input.workspaceRoot, 200)
+    const files = input.files ?? await collectFiles(input.workspaceRoot, input.fileLimit ?? 200)
     const symbols: SymbolRow[] = []
 
     for (const file of files) {

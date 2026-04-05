@@ -7,15 +7,15 @@
     "wlan_tqm_misc_intr_hdlr___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/tqm/wal_tqm_cmn.c",
-    "line": 4048
+    "file": "wlan/mac_dp_svc/tqm/wal_tqm.c",
+    "line": 5519
   },
   "description": "WLAN TQM miscellaneous interrupt handler. Handles TQM miscellaneous hardware interrupts for error and status reporting.",
   "relations": {
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "IST_thread_main",
+        "caller": "intr_handler",
         "callee": "wlan_tqm_misc_intr_hdlr",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -164,5 +164,10 @@
     ],
     "intents_hit": [],
     "total_relations": 6
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

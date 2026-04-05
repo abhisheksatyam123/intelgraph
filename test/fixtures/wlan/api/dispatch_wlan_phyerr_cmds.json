@@ -7,8 +7,8 @@
     "dispatch_wlan_phyerr_cmds___RAM"
   ],
   "source": {
-    "file": "wlan/offloads/src/phyerr/wlan_phyerr.c",
-    "line": 156
+    "file": "wlan/protocol/src/misc/src/phyerr/wlan_phyerr.c",
+    "line": 166
   },
   "description": "WMI dispatch handler for WLAN PHY error commands. Processes WMI commands related to PHY error reporting and configuration.",
   "relations": {
@@ -40,7 +40,7 @@
     "calls_out": [
       {
         "caller": "dispatch_wlan_phyerr_cmds",
-        "callee": "wlan_phyerr_process_cmd",
+        "callee": "wlan_phyerr_wmi_set_phyerr_state",
         "edge_kind": "call_direct",
         "edge_kind_verbose": "static_direct_calls",
         "derivation": "clangd",
@@ -149,5 +149,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

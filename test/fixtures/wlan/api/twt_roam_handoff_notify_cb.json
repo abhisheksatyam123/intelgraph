@@ -7,15 +7,15 @@
     "twt_roam_handoff_notify_cb___RAM"
   ],
   "source": {
-    "file": "wlan/offloads/src/twt/wlan_twt.c",
-    "line": 262
+    "file": "wlan/protocol/src/power/sta_twt/wlan_twt_sta_adaptor.c",
+    "line": 1138
   },
   "description": "TWT (Target Wake Time) roam handoff notification callback. Notified when a roam handoff occurs to update TWT session state.",
   "relations": {
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "wlan_roam_deliver_handoff_notify",
+        "caller": "wlan_roam_dispatch_notify",
         "callee": "twt_roam_handoff_notify_cb",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -149,5 +149,11 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "resolved_alias_symbol": "wlan_sta_roam_twt_notify_handle",
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

@@ -1,0 +1,21 @@
+{
+  "HIF_deliver_recv": "HifLayerRecvCallback",
+  "HIF_deliver_send_done": "HifLayerSendDoneCallback",
+  "IST_thread_main": "intr_handler",
+  "cmnos_dsr_dispatch": "cmnos_thread_irq",
+  "cmnos_irq_dispatch_dynamic": "cmnos_thread_irq",
+  "offldmgr_dispatch_data_handler": "_offldmgr_protocol_data_handler",
+  "offldmgr_dispatch_htt_handler": "_offldmgr_send_htt_event_to_host",
+  "offldmgr_dispatch_nondata_handler": "_offldmgr_non_data_msg_hdlr",
+  "offldmgr_register_data_handler": "offldmgr_register_data_offload",
+  "wal_lp_bar_process_completion": "wal_send_lp_bar_frame",
+  "wal_rx_process_completion": "rx_completion_hdlr",
+  "wal_rx_sifs_process_response": "rx_sifs_resp_dsr_hdlr",
+  "wal_tqm_process_cmd_ring": "wal_tqm_dispatch_commands",
+  "wal_tx_process_send_completion": "tx_send_completion_isr_hdlr",
+  "wal_tx_sched_process_cmd": "tx_send_seq_post_sched_cmd",
+  "whal_sring_update_producer_ptr": "whal_sring_advance_hp",
+  "whal_sring_write_reg": "SRING_OUT",
+  "wlan_phyerr_process_cmd": "wlan_phyerr_wmi_set_phyerr_state",
+  "wlan_roam_deliver_handoff_notify": "wlan_roam_dispatch_notify"
+}

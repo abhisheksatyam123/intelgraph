@@ -1,0 +1,1085 @@
+{
+  "generated_at": "2026-04-05T16:54:40.483Z",
+  "source_root": "/local/mnt/workspace/code1/WLAN.CNG.1.0-01880.3-QCACNGSWPL_V1_V2_SILICON-1/wlan_proc",
+  "fixtures_root": "test/fixtures/wlan",
+  "total_fixtures": 60,
+  "ok_fixtures": 4,
+  "fixtures_with_issues": 56,
+  "issue_class_counts": {
+    "callee_symbol_missing": 52,
+    "caller_symbol_missing": 35,
+    "registrar_symbol_missing": 2
+  },
+  "top_issue_classes": [
+    {
+      "issue_class": "callee_symbol_missing",
+      "count": 52
+    },
+    {
+      "issue_class": "caller_symbol_missing",
+      "count": 35
+    },
+    {
+      "issue_class": "registrar_symbol_missing",
+      "count": 2
+    }
+  ],
+  "previous_issue_class_counts": {
+    "callee_symbol_missing": 52,
+    "caller_symbol_missing": 35,
+    "registrar_symbol_missing": 2,
+    "source_path_mismatch": 3
+  },
+  "issue_class_deltas": {
+    "callee_symbol_missing": 0,
+    "caller_symbol_missing": 0,
+    "registrar_symbol_missing": 0,
+    "source_path_mismatch": -3
+  },
+  "rerun_command": "node scripts/wlan-fixture-gap-audit.mjs --source-root=/local/mnt/workspace/code1/WLAN.CNG.1.0-01880.3-QCACNGSWPL_V1_V2_SILICON-1/wlan_proc --index=test/fixtures/wlan/index.json --fixtures-root=test/fixtures/wlan --report-json=test/fixtures/wlan/wlan-gap-audit-report.json --report-md=test/fixtures/wlan/wlan-gap-audit-report.md",
+  "fixtures": [
+    {
+      "fixture": "HIF_CE_get_dsr.json",
+      "api": "HIF_CE_get_dsr",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "HIF_CE_process_completion"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_platform/src/hostif/hif/hif_ce/hif_ce.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "HifLayerRecvCallback.json",
+      "api": "HifLayerRecvCallback",
+      "api_found": true,
+      "callers_missing": [
+        "HIF_deliver_recv"
+      ],
+      "callees_missing": [
+        "HTC_ProcessRecvPacket"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_platform/src/hostif/htc/htc.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "HifLayerSendDoneCallback.json",
+      "api": "HifLayerSendDoneCallback",
+      "api_found": true,
+      "callers_missing": [
+        "HIF_deliver_send_done"
+      ],
+      "callees_missing": [
+        "HTC_FreeTxPacket"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_platform/src/hostif/htc/htc.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "WMIRecvMessageHandler.json",
+      "api": "WMIRecvMessageHandler",
+      "api_found": true,
+      "callers_missing": [
+        "HTC_ServiceDispatch"
+      ],
+      "callees_missing": [],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_platform/src/hostif/wmisvc/wmi_svc.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "_offldmgr_enhanced_data_handler.json",
+      "api": "_offldmgr_enhanced_data_handler",
+      "api_found": true,
+      "callers_missing": [
+        "offldmgr_dispatch_data_handler"
+      ],
+      "callees_missing": [
+        "offldmgr_invoke_enhanced_handler"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/cmn_infra/src/offload_mgr/offload_mgr_ext.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "_offldmgr_non_data_msg_hdlr.json",
+      "api": "_offldmgr_non_data_msg_hdlr",
+      "api_found": true,
+      "callers_missing": [
+        "offldmgr_dispatch_nondata_handler"
+      ],
+      "callees_missing": [
+        "offldmgr_invoke_nondata_handler"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/cmn_infra/src/offload_mgr/offload_mgr_ext.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "_offldmgr_protocol_data_handler.json",
+      "api": "_offldmgr_protocol_data_handler",
+      "api_found": true,
+      "callers_missing": [
+        "offldmgr_dispatch_data_handler"
+      ],
+      "callees_missing": [
+        "offldmgr_invoke_data_handler"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/cmn_infra/src/offload_mgr/offload_mgr_ext.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "_offldmgr_send_htt_event_to_host.json",
+      "api": "_offldmgr_send_htt_event_to_host",
+      "api_found": true,
+      "callers_missing": [
+        "offldmgr_dispatch_htt_handler"
+      ],
+      "callees_missing": [
+        "htt_h2t_send_complete"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/cmn_infra/src/offload_mgr/offload_mgr.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "_offldmgr_sync_rt_data_offload_thread_msg_handler.json",
+      "api": "_offldmgr_sync_rt_data_offload_thread_msg_handler",
+      "api_found": true,
+      "callers_missing": [
+        "offldmgr_dispatch_data_handler"
+      ],
+      "callees_missing": [
+        "offldmgr_process_sync_rt_msg"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/cmn_infra/src/offload_mgr/offload_mgr.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "_wal_wdcvs_wnoc_intr_handler.json",
+      "api": "_wal_wdcvs_wnoc_intr_handler",
+      "api_found": true,
+      "callers_missing": [
+        "cmnos_dsr_dispatch"
+      ],
+      "callees_missing": [
+        "wal_wdcvs_process_wnoc_intr"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/power_svc/src/power_common/wal_wdcvs.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "ap_ps_vdev_event_handler.json",
+      "api": "ap_ps_vdev_event_handler",
+      "api_found": true,
+      "callers_missing": [
+        "wal_vdev_deliver_event"
+      ],
+      "callees_missing": [
+        "ap_ps_process_vdev_event"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/power/ap_ps/wlan_powersave_ap.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "arp_offload_proc_frame.json",
+      "api": "arp_offload_proc_frame",
+      "api_found": true,
+      "callers_missing": [
+        "offldmgr_dispatch_data_handler"
+      ],
+      "callees_missing": [],
+      "registrars_missing": [
+        "offldmgr_register_data_handler"
+      ],
+      "source_path": "wlan/protocol/src/offloads/src/l2/arp_ns/wlan_arp_ns_offload.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "registrar_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "blockack_pdev_event_handler.json",
+      "api": "blockack_pdev_event_handler",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "blockack_process_pdev_event"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_svc/data_txrx/ctrl_signalling/blockack.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "cmnos_wmac_isr.json",
+      "api": "cmnos_wmac_isr",
+      "api_found": true,
+      "callers_missing": [
+        "IST_thread_main"
+      ],
+      "callees_missing": [],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_services/src/osif/src/cmnos_intr.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "coex_roam_handoff_notify_cb.json",
+      "api": "coex_roam_handoff_notify_cb",
+      "api_found": true,
+      "callers_missing": [
+        "wlan_roam_deliver_handoff_notify"
+      ],
+      "callees_missing": [
+        "coex_update_bss_on_roam"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/coex/wlan_coex_main.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "dispatch_wlan_phyerr_cmds.json",
+      "api": "dispatch_wlan_phyerr_cmds",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wlan_phyerr_process_cmd"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/misc/src/phyerr/wlan_phyerr.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "htt_done_sig_handler.json",
+      "api": "htt_done_sig_handler",
+      "api_found": true,
+      "callers_missing": [
+        "wlan_thread_signal_dispatch"
+      ],
+      "callees_missing": [
+        "htt_process_upload_done"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_svc/stats/wal_htt_ppdu_stats.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "intr_handler.json",
+      "api": "intr_handler",
+      "api_found": true,
+      "callers_missing": [
+        "IST_thread_main"
+      ],
+      "callees_missing": [],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_services/src/osif/src/cmnos_intrinf.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "lpass_data_svc_h2t_input.json",
+      "api": "lpass_data_svc_h2t_input",
+      "api_found": true,
+      "callers_missing": [
+        "HTC_ServiceDispatch"
+      ],
+      "callees_missing": [
+        "lpass_process_h2t_data"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_svc/hostif/lpass_svc/lpass_svc.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "nan_roam_handoff_notify_cb.json",
+      "api": "nan_roam_handoff_notify_cb",
+      "api_found": true,
+      "callers_missing": [
+        "wlan_roam_deliver_handoff_notify"
+      ],
+      "callees_missing": [
+        "nan_update_session_on_roam"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/nan/wlan_nan_std_plus.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "nan_wow_notif_handler.json",
+      "api": "nan_wow_notif_handler",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "nan_process_wow_event"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/nan/wlan_nan_mac_ext.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "rri_prefetch_int_handler.json",
+      "api": "rri_prefetch_int_handler",
+      "api_found": true,
+      "callers_missing": [
+        "cmnos_irq_dispatch_dynamic"
+      ],
+      "callees_missing": [
+        "rri_process_prefetch_completion"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_platform/src/platform/src/ipq5332/rri_prefetch.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "rx_sifs_resp_dsr_hdlr.json",
+      "api": "rx_sifs_resp_dsr_hdlr",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wal_rx_sifs_process_response"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_platform/src/thread/be_thread.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "sta_ps_wow_notif_handler.json",
+      "api": "sta_ps_wow_notif_handler",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "sta_ps_process_wow_notif"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/power/legacy_sta_ps/wlan_powersave_sta.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "tqm_sync_status_irq_route.json",
+      "api": "tqm_sync_status_irq_route",
+      "api_found": true,
+      "callers_missing": [
+        "IST_thread_main"
+      ],
+      "callees_missing": [
+        "wlan_thread_signal_post"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_platform/src/thread/tqm_thread.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "twt_roam_handoff_notify_cb.json",
+      "api": "twt_roam_handoff_notify_cb",
+      "api_found": true,
+      "callers_missing": [
+        "wlan_roam_deliver_handoff_notify"
+      ],
+      "callees_missing": [
+        "twt_update_session_on_roam"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/power/sta_twt/wlan_twt_sta_adaptor.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "tx_send_completion_isr_hdlr_wrapper.json",
+      "api": "tx_send_completion_isr_hdlr_wrapper",
+      "api_found": true,
+      "callers_missing": [
+        "cmnos_dsr_dispatch"
+      ],
+      "callees_missing": [
+        "wal_tx_process_send_completion"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_svc/tx/wal_tx_send_isr.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "tx_seq_sched_algo_cmd_hdlr.json",
+      "api": "tx_seq_sched_algo_cmd_hdlr",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wal_tx_sched_process_cmd"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_svc/tx/wal_tx_seq.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wal_lp_bar_compl_peer_event_handler.json",
+      "api": "wal_lp_bar_compl_peer_event_handler",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wal_lp_bar_process_completion"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_svc/data_txrx/ctrl_signalling/wal_lp_bar.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wal_rx_completion_dsr_hdlr_wrapper.json",
+      "api": "wal_rx_completion_dsr_hdlr_wrapper",
+      "api_found": true,
+      "callers_missing": [
+        "cmnos_dsr_dispatch"
+      ],
+      "callees_missing": [
+        "wal_rx_process_completion"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_svc/rx/wal_rx_fast.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wal_rx_ul_ipc_ring_process.json",
+      "api": "wal_rx_ul_ipc_ring_process",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_platform/src/thread/be_thread.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": []
+    },
+    {
+      "fixture": "wal_tqm_hipri_cmd_intr_sig_hdlr.json",
+      "api": "wal_tqm_hipri_cmd_intr_sig_hdlr",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wal_tqm_process_cmd_ring"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_svc/tqm/wal_tqm_cmn.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wal_tqm_hipri_status_intr_sig_hdlr.json",
+      "api": "wal_tqm_hipri_status_intr_sig_hdlr",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_svc/tqm/wal_tqm_cmn.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": []
+    },
+    {
+      "fixture": "wal_tqm_lowpri_cmd_intr_sig_hdlr.json",
+      "api": "wal_tqm_lowpri_cmd_intr_sig_hdlr",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wal_tqm_process_cmd_ring"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_svc/tqm/wal_tqm_cmn.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wal_tqm_lowpri_status_intr_sig_hdlr.json",
+      "api": "wal_tqm_lowpri_status_intr_sig_hdlr",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_svc/tqm/wal_tqm_cmn.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": []
+    },
+    {
+      "fixture": "wal_tqm_process_status_ring.json",
+      "api": "wal_tqm_process_status_ring",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_svc/tqm/wal_tqm_cmn.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": []
+    },
+    {
+      "fixture": "wal_tqm_sch2tqm_sig_hdlr.json",
+      "api": "wal_tqm_sch2tqm_sig_hdlr",
+      "api_found": true,
+      "callers_missing": [
+        "wlan_thread_signal_dispatch"
+      ],
+      "callees_missing": [
+        "wal_tqm_process_sch_trigger"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_svc/tqm/wal_tqm_cmn.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "whal_aux_ipc_status_ring_handler.json",
+      "api": "whal_aux_ipc_status_ring_handler",
+      "api_found": true,
+      "callers_missing": [
+        "cmnos_irq_dispatch_dynamic"
+      ],
+      "callees_missing": [
+        "whal_aux_ipc_process_status_ring"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_cp_drv/src/auxmac/whal_aux_ipc.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "whal_sring_hw_intr_enable.json",
+      "api": "whal_sring_hw_intr_enable",
+      "api_found": true,
+      "callers_missing": [
+        "wal_tqm_enable_ring_interrupts"
+      ],
+      "callees_missing": [
+        "whal_sring_write_reg"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_drv/src/sring/whal_sring.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "whal_sring_init.json",
+      "api": "whal_sring_init",
+      "api_found": true,
+      "callers_missing": [
+        "wal_tqm_init_rings"
+      ],
+      "callees_missing": [
+        "whal_sring_hw_setup"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_drv/src/sring/whal_sring.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "whal_sring_read.json",
+      "api": "whal_sring_read",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "whal_sring_update_consumer_ptr"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_drv/src/sring/whal_sring.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "whal_sring_write.json",
+      "api": "whal_sring_write",
+      "api_found": true,
+      "callers_missing": [
+        "wal_tx_enqueue_to_ring"
+      ],
+      "callees_missing": [
+        "whal_sring_update_producer_ptr"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_drv/src/sring/whal_sring.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "whal_tqm_tcl_ent_proxy_update.json",
+      "api": "whal_tqm_tcl_ent_proxy_update",
+      "api_found": true,
+      "callers_missing": [
+        "cmnos_irq_dispatch_dynamic"
+      ],
+      "callees_missing": [
+        "whal_tqm_update_tcl_entrance"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_cp_svc/proto/dev/wal_soc_dev_hw.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_bpf_filter_offload_handler.json",
+      "api": "wlan_bpf_filter_offload_handler",
+      "api_found": true,
+      "callers_missing": [
+        "offldmgr_dispatch_data_handler"
+      ],
+      "callees_missing": [
+        "wlan_bpf_match_frame"
+      ],
+      "registrars_missing": [
+        "offldmgr_register_data_handler"
+      ],
+      "source_path": "wlan/protocol/src/offloads/src/l2/bpf/bpf_offload.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing",
+        "registrar_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_bpf_notify_handler.json",
+      "api": "wlan_bpf_notify_handler",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wlan_bpf_process_wow_notif"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/offloads/src/l2/bpf/bpf_offload_int.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_bpf_offload_cmd_handler.json",
+      "api": "wlan_bpf_offload_cmd_handler",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wlan_bpf_process_cmd"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/offloads/src/l2/bpf/bpf_offload_wmi.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_bpf_offload_vdev_notify_handler.json",
+      "api": "wlan_bpf_offload_vdev_notify_handler",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wlan_bpf_update_vdev_state"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/offloads/src/l2/bpf/bpf_offload_int.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_btm_ofld_action_frame_handler.json",
+      "api": "wlan_btm_ofld_action_frame_handler",
+      "api_found": true,
+      "callers_missing": [
+        "offldmgr_dispatch_nondata_handler"
+      ],
+      "callees_missing": [
+        "wlan_btm_process_action_frame"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/conn_mgmt/src/btm_offload/wlan_btm_offload.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_network_list_offload_handler.json",
+      "api": "wlan_network_list_offload_handler",
+      "api_found": true,
+      "callers_missing": [
+        "offldmgr_dispatch_nondata_handler"
+      ],
+      "callees_missing": [
+        "wlan_nlo_process_scan_result"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/scan_clients/src/pno/wlan_network_list_offload.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_obss_scan_evt_handler.json",
+      "api": "wlan_obss_scan_evt_handler",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wlan_obss_process_scan_result"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/scan_clients/src/obss/wlan_obss_scan_offload_wmi.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_scan_autochan_event_handler.json",
+      "api": "wlan_scan_autochan_event_handler",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wlan_autochan_update_channel_stats"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/cmn_infra/src/scan_mgr/wlan_scan_eng.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_spm_mac_wow_handler.json",
+      "api": "wlan_spm_mac_wow_handler",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wlan_spm_process_wow_event"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/power/misc_ps/wlan_lp_cmn.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_thread_irq_route_wmac_tx.json",
+      "api": "wlan_thread_irq_route_wmac_tx",
+      "api_found": true,
+      "callers_missing": [
+        "cmnos_irq_dispatch_dynamic"
+      ],
+      "callees_missing": [
+        "wlan_thread_signal_post"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_platform/src/thread/tac_thread.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_thread_irq_sr_wakeup.json",
+      "api": "wlan_thread_irq_sr_wakeup",
+      "api_found": true,
+      "callers_missing": [
+        "cmnos_irq_dispatch_dynamic"
+      ],
+      "callees_missing": [
+        "wlan_thread_signal_post"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_platform/src/thread/wlan_thread.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_thread_isr_rx_sifs.json",
+      "api": "wlan_thread_isr_rx_sifs",
+      "api_found": true,
+      "callers_missing": [
+        "cmnos_irq_dispatch_dynamic"
+      ],
+      "callees_missing": [
+        "wlan_thread_signal_post"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_platform/src/thread/be_thread.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_thread_post_init_hdlr.json",
+      "api": "wlan_thread_post_init_hdlr",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wlan_thread_complete_init"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_platform/src/thread/wlan_thread.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_thread_signal_route_wmac_rx.json",
+      "api": "wlan_thread_signal_route_wmac_rx",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wal_rx_process_ring"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_platform/src/thread/be_thread.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_thread_signal_route_wmac_tx.json",
+      "api": "wlan_thread_signal_route_wmac_tx",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wal_tx_process_completion_ring"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/syssw_platform/src/thread/tac_thread.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_tqm_misc_intr_hdlr.json",
+      "api": "wlan_tqm_misc_intr_hdlr",
+      "api_found": true,
+      "callers_missing": [
+        "IST_thread_main"
+      ],
+      "callees_missing": [
+        "wlan_tqm_process_misc_intr"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/mac_dp_svc/tqm/wal_tqm.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "caller_symbol_missing",
+        "callee_symbol_missing"
+      ]
+    },
+    {
+      "fixture": "wlan_usd_scan_evt_handler.json",
+      "api": "wlan_usd_scan_evt_handler",
+      "api_found": true,
+      "callers_missing": [],
+      "callees_missing": [
+        "wlan_usd_process_scan_result"
+      ],
+      "registrars_missing": [],
+      "source_path": "wlan/protocol/src/usd/wlan_usd.c",
+      "source_path_exact": true,
+      "source_path_alternatives": [],
+      "issue_classes": [
+        "callee_symbol_missing"
+      ]
+    }
+  ]
+}

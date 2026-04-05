@@ -7,15 +7,15 @@
     "HifLayerRecvCallback___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/htc/src/htc.c",
-    "line": 974
+    "file": "wlan/syssw_platform/src/hostif/htc/htc.c",
+    "line": 816
   },
   "description": "HIF layer receive callback. Invoked by the HIF layer when a packet is received from the host, forwarding it to the HTC layer for processing.",
   "relations": {
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "HIF_deliver_recv",
+        "caller": "HifLayerRecvCallback",
         "callee": "HifLayerRecvCallback",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -148,5 +148,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

@@ -15,7 +15,7 @@
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "IST_thread_main",
+        "caller": "intr_handler",
         "callee": "intr_handler",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",

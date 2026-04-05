@@ -7,15 +7,15 @@
     "whal_aux_ipc_status_ring_handler___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/aux/aux_be_thread.c",
-    "line": 169
+    "file": "wlan/mac_cp_drv/src/auxmac/whal_aux_ipc.c",
+    "line": 390
   },
   "description": "WHAL auxiliary IPC status ring handler. Handles AUX IPC CSI status ring interrupts for auxiliary processing.",
   "relations": {
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "cmnos_irq_dispatch_dynamic",
+        "caller": "cmnos_thread_irq",
         "callee": "whal_aux_ipc_status_ring_handler",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -148,5 +148,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

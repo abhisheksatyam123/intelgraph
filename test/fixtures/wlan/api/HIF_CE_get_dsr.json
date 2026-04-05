@@ -7,8 +7,8 @@
     "HIF_CE_get_dsr___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/be/be_thread.c",
-    "line": 349
+    "file": "wlan/syssw_platform/src/hostif/hif/hif_ce/hif_ce.c",
+    "line": 1278
   },
   "description": "HIF CE (Copy Engine) get DSR handler. Processes CE memcpy pipe completion signals in the BE thread.",
   "relations": {
@@ -149,5 +149,11 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "resolved_alias_symbol": "_HIF_CE_get_dsr",
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

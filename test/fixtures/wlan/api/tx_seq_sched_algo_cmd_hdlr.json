@@ -7,8 +7,8 @@
     "tx_seq_sched_algo_cmd_hdlr___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/tac/tac_thread.c",
-    "line": 375
+    "file": "wlan/mac_dp_svc/tx/wal_tx_seq.c",
+    "line": 8483
   },
   "description": "TX sequence scheduler algorithm command handler. Processes scheduler algorithm command signals in the TAC thread.",
   "relations": {
@@ -39,7 +39,7 @@
     "calls_out": [
       {
         "caller": "tx_seq_sched_algo_cmd_hdlr",
-        "callee": "wal_tx_sched_process_cmd",
+        "callee": "tx_send_seq_post_sched_cmd",
         "edge_kind": "call_direct",
         "edge_kind_verbose": "static_direct_calls",
         "derivation": "clangd",
@@ -148,5 +148,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

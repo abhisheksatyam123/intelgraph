@@ -7,8 +7,8 @@
     "wal_tqm_lowpri_status_intr_sig_hdlr___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/tqm/tqm_thread.c",
-    "line": 148
+    "file": "wlan/mac_dp_svc/tqm/wal_tqm_cmn.c",
+    "line": 3882
   },
   "description": "WAL TQM low-priority status interrupt signal handler. Processes TQM low-priority status ring completions triggered by hardware interrupt signal.",
   "relations": {
@@ -150,5 +150,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

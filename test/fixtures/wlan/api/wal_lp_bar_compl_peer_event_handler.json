@@ -7,8 +7,8 @@
     "wal_lp_bar_compl_peer_event_handler___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/wal/wal_lp_bar.c",
-    "line": 96
+    "file": "wlan/mac_dp_svc/data_txrx/ctrl_signalling/wal_lp_bar.c",
+    "line": 173
   },
   "description": "WAL LP BAR completion peer event handler. Handles peer-level events for low-power BAR (Block Ack Request) completion processing.",
   "relations": {
@@ -39,7 +39,7 @@
     "calls_out": [
       {
         "caller": "wal_lp_bar_compl_peer_event_handler",
-        "callee": "wal_lp_bar_process_completion",
+        "callee": "wal_send_lp_bar_frame",
         "edge_kind": "call_direct",
         "edge_kind_verbose": "static_direct_calls",
         "derivation": "clangd",
@@ -149,5 +149,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

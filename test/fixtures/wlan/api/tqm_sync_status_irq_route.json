@@ -7,15 +7,15 @@
     "tqm_sync_status_irq_route___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/umac_if/src/tqm/wal_tqm_cmn.c",
-    "line": 3997
+    "file": "wlan/syssw_platform/src/thread/tqm_thread.c",
+    "line": 62
   },
   "description": "TQM synchronous status IRQ router. Routes TQM status high-priority hardware interrupt to the TQM thread signal.",
   "relations": {
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "IST_thread_main",
+        "caller": "intr_handler",
         "callee": "tqm_sync_status_irq_route",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -164,5 +164,10 @@
     ],
     "intents_hit": [],
     "total_relations": 6
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

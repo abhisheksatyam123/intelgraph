@@ -7,8 +7,8 @@
     "sta_ps_wow_notif_handler___RAM"
   ],
   "source": {
-    "file": "wlan/offloads/src/powersave/wlan_powersave_sta.c",
-    "line": 1917
+    "file": "wlan/protocol/src/power/legacy_sta_ps/wlan_powersave_sta.c",
+    "line": 4710
   },
   "description": "STA power save WoW notification handler. Handles WoW notification events for STA power save mode transitions.",
   "relations": {
@@ -149,5 +149,11 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "resolved_alias_symbol": "wlan_ps_sta_sched_pm_wow_notify",
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

@@ -7,8 +7,8 @@
     "lpass_data_svc_h2t_input___RAM"
   ],
   "source": {
-    "file": "wlan/fw_if/lpass/src/lpass_svc.c",
-    "line": 511
+    "file": "wlan/mac_dp_svc/hostif/lpass_svc/lpass_svc.c",
+    "line": 208
   },
   "description": "LPASS data service host-to-target input handler. Processes incoming data from the host via the LPASS HTC service.",
   "relations": {
@@ -148,5 +148,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

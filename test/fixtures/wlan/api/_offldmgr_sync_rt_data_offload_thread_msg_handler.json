@@ -7,15 +7,15 @@
     "_offldmgr_sync_rt_data_offload_thread_msg_handler___RAM"
   ],
   "source": {
-    "file": "wlan/offloads/src/offldmgr/offldmgr_ext.c",
-    "line": 1010
+    "file": "wlan/protocol/src/cmn_infra/src/offload_mgr/offload_mgr.c",
+    "line": 124
   },
   "description": "Offload manager synchronous real-time data offload thread message handler. Handles thread messages for synchronous RT data offload processing registered via offldmgr_register_data_offload.",
   "relations": {
     "calls_in_direct": [],
     "calls_in_runtime": [
       {
-        "caller": "offldmgr_dispatch_data_handler",
+        "caller": "_offldmgr_protocol_data_handler",
         "callee": "_offldmgr_sync_rt_data_offload_thread_msg_handler",
         "edge_kind": "call_runtime",
         "edge_kind_verbose": "runtime_invokes_api",
@@ -149,5 +149,10 @@
     ],
     "intents_hit": [],
     "total_relations": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_wlan_codebase",
+    "verification_report": "test/fixtures/wlan/api_source_mismatch_report.json",
+    "last_verified": "2026-04-05T16:24:42.708131Z"
   }
 }

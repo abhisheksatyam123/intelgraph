@@ -9,6 +9,7 @@ import type {
 export interface ExtractionInput {
   workspaceRoot: string
   files?: string[]
+  fileLimit?: number
   sourceRevision?: string
 }
 
