@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-05T11:48:07.238Z",
+  "timestamp": "2026-04-06T11:05:42.783Z",
   "total_apis": 60,
   "average_completeness_score": 90,
   "tier_distribution": {
@@ -93,5 +93,1454 @@
     "uses": 0
   },
   "apis_needing_followup": [],
-  "per_api_scores": []
+  "per_api_scores": [
+    {
+      "name": "wlan_network_list_offload_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_bpf_filter_offload_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "nan_roam_handoff_notify_cb",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "WMIRecvMessageHandler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_scan_autochan_event_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "_offldmgr_non_data_msg_hdlr",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wal_tqm_hipri_cmd_intr_sig_hdlr",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "tx_seq_sched_algo_cmd_hdlr",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wal_tqm_process_status_ring",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_runtime",
+        "registrations_in",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 1,
+        "calls_in_runtime": 0,
+        "calls_out": 1,
+        "registrations_in": 0,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wal_tqm_hipri_status_intr_sig_hdlr",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "whal_sring_write",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_runtime",
+        "registrations_in",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 1,
+        "calls_in_runtime": 0,
+        "calls_out": 1,
+        "registrations_in": 0,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_obss_scan_evt_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "sta_ps_wow_notif_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wal_tqm_lowpri_cmd_intr_sig_hdlr",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "whal_sring_init",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_runtime",
+        "registrations_in",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 1,
+        "calls_in_runtime": 0,
+        "calls_out": 1,
+        "registrations_in": 0,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "HifLayerRecvCallback",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_thread_irq_sr_wakeup",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "twt_roam_handoff_notify_cb",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wal_tqm_lowpri_status_intr_sig_hdlr",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "HifLayerSendDoneCallback",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "htt_done_sig_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wal_rx_completion_dsr_hdlr_wrapper",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_thread_irq_route_wmac_tx",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "coex_roam_handoff_notify_cb",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "intr_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_in",
+        "registrations_out",
+        "structures",
+        "logs",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 0,
+        "registrations_out": 0,
+        "structures": 0,
+        "logs": 0,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wal_lp_bar_compl_peer_event_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "tqm_sync_status_irq_route",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 2,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wal_tqm_sch2tqm_sig_hdlr",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_thread_signal_route_wmac_tx",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "rx_sifs_resp_dsr_hdlr",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_spm_mac_wow_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "whal_sring_read",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_runtime",
+        "registrations_in",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 1,
+        "calls_in_runtime": 0,
+        "calls_out": 1,
+        "registrations_in": 0,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "tx_send_completion_isr_hdlr_wrapper",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_tqm_misc_intr_hdlr",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 2,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "whal_tqm_tcl_ent_proxy_update",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "_offldmgr_protocol_data_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_btm_ofld_action_frame_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "lpass_data_svc_h2t_input",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_bpf_offload_vdev_notify_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "HIF_CE_get_dsr",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_thread_post_init_hdlr",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "blockack_pdev_event_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "_offldmgr_send_htt_event_to_host",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "whal_aux_ipc_status_ring_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "rri_prefetch_int_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wal_rx_ul_ipc_ring_process",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_bpf_notify_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "whal_sring_hw_intr_enable",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_runtime",
+        "registrations_in",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 1,
+        "calls_in_runtime": 0,
+        "calls_out": 1,
+        "registrations_in": 0,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "ap_ps_vdev_event_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_bpf_offload_cmd_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "arp_offload_proc_frame",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "_offldmgr_sync_rt_data_offload_thread_msg_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "nan_wow_notif_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_thread_isr_rx_sifs",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "cmnos_wmac_isr",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "dispatch_wlan_phyerr_cmds",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "_wal_wdcvs_wnoc_intr_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_usd_scan_evt_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "wlan_thread_signal_route_wmac_rx",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    },
+    {
+      "name": "_offldmgr_enhanced_data_handler",
+      "tier1_complete": true,
+      "tier2_complete": true,
+      "tier3_complete": false,
+      "completeness_score": 90,
+      "missing_relations": [
+        "calls_in_direct",
+        "registrations_out",
+        "owns",
+        "uses"
+      ],
+      "relation_counts": {
+        "calls_in_direct": 0,
+        "calls_in_runtime": 1,
+        "calls_out": 1,
+        "registrations_in": 1,
+        "registrations_out": 0,
+        "structures": 1,
+        "logs": 1,
+        "owns": 0,
+        "uses": 0
+      }
+    }
+  ]
 }

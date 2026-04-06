@@ -1,21 +1,21 @@
-import { describe, it, expect, beforeEach, vi } from "vitest"
-import fs from "fs/promises"
-import path from "path"
+import { describe, it, expect, beforeEach, mock } from "bun:test"
 
 import { enrichApiFixture, enrichAllApis } from "../../../src/fixtures/exhaustive-relation-scanner"
 
-// Mock the filesystem operations
-vi.mock("fs/promises", () => ({
-  default: {
-    readFile: vi.fn(),
-    writeFile: vi.fn(),
-    readdir: vi.fn(),
-  },
-}))
+// Bun-compatible fs/promises mock
+const fsMock = {
+  readFile: mock(() => Promise.resolve("{}")),
+  writeFile: mock(() => Promise.resolve(undefined)),
+  readdir: mock(() => Promise.resolve([])),
+}
+
+mock.module("fs/promises", () => ({ default: fsMock }))
 
 describe("exhaustive-relation-scanner", () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    fsMock.readFile.mockReset()
+    fsMock.writeFile.mockReset()
+    fsMock.readdir.mockReset()
   })
 
   describe("enrichApiFixture", () => {
@@ -41,7 +41,7 @@ describe("exhaustive-relation-scanner", () => {
         },
       }
 
-      vi.mocked(fs.readFile).mockResolvedValueOnce(JSON.stringify(mockFixture))
+      fsMock.readFile.mockResolvedValueOnce(JSON.stringify(mockFixture))
 
       const result = await enrichApiFixture("test_api", 1)
 
@@ -75,7 +75,7 @@ describe("exhaustive-relation-scanner", () => {
         },
       }
 
-      vi.mocked(fs.readFile).mockResolvedValueOnce(JSON.stringify(mockFixture))
+      fsMock.readFile.mockResolvedValueOnce(JSON.stringify(mockFixture))
 
       const result = await enrichApiFixture("test_api", 1)
 
@@ -91,7 +91,7 @@ describe("exhaustive-relation-scanner", () => {
     })
 
     it("throws error when fixture file not found", async () => {
-      vi.mocked(fs.readFile).mockRejectedValueOnce(new Error("File not found"))
+      fsMock.readFile.mockRejectedValueOnce(new Error("File not found"))
 
       await expect(enrichApiFixture("nonexistent_api", 1)).rejects.toThrow(
         "Failed to load fixture for nonexistent_api",
@@ -99,7 +99,7 @@ describe("exhaustive-relation-scanner", () => {
     })
 
     it("handles fixture file parse errors", async () => {
-      vi.mocked(fs.readFile).mockResolvedValueOnce("invalid json")
+      fsMock.readFile.mockResolvedValueOnce("invalid json")
 
       await expect(enrichApiFixture("test_api", 1)).rejects.toThrow()
     })
@@ -133,9 +133,9 @@ describe("exhaustive-relation-scanner", () => {
         },
       }
 
-      vi.mocked(fs.readdir).mockResolvedValueOnce(["test_api.json", "other_api.json"] as any)
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify(mockFixture))
-      vi.mocked(fs.writeFile).mockResolvedValue(undefined as any)
+      fsMock.readdir.mockResolvedValueOnce(["test_api.json", "other_api.json"] as any)
+      fsMock.readFile.mockResolvedValue(JSON.stringify(mockFixture))
+      fsMock.writeFile.mockResolvedValue(undefined as any)
 
       const result = await enrichAllApis({ default: 1 })
 
@@ -147,8 +147,8 @@ describe("exhaustive-relation-scanner", () => {
     })
 
     it("tracks failed APIs in report", async () => {
-      vi.mocked(fs.readdir).mockResolvedValueOnce(["test_api.json", "bad_api.json"] as any)
-      vi.mocked(fs.readFile).mockImplementation((filePath: any) => {
+      fsMock.readdir.mockResolvedValueOnce(["test_api.json", "bad_api.json"] as any)
+      fsMock.readFile.mockImplementation((filePath: any) => {
         if (filePath.includes("bad_api")) {
           return Promise.reject(new Error("Read error"))
         }
@@ -179,7 +179,7 @@ describe("exhaustive-relation-scanner", () => {
           }),
         )
       })
-      vi.mocked(fs.writeFile).mockResolvedValue(undefined as any)
+      fsMock.writeFile.mockResolvedValue(undefined as any)
 
       const result = await enrichAllApis({ default: 1 })
 
@@ -216,9 +216,9 @@ describe("exhaustive-relation-scanner", () => {
         },
       }
 
-      vi.mocked(fs.readdir).mockResolvedValueOnce(["test_api.json"] as any)
-      vi.mocked(fs.readFile).mockResolvedValue(JSON.stringify(mockFixture))
-      vi.mocked(fs.writeFile).mockResolvedValue(undefined as any)
+      fsMock.readdir.mockResolvedValueOnce(["test_api.json"] as any)
+      fsMock.readFile.mockResolvedValue(JSON.stringify(mockFixture))
+      fsMock.writeFile.mockResolvedValue(undefined as any)
 
       const result = await enrichAllApis({ test_api: 42, default: 1 })
 
@@ -278,12 +278,12 @@ describe("exhaustive-relation-scanner", () => {
         },
       }
 
-      vi.mocked(fs.readdir).mockResolvedValueOnce(["api1.json", "api2.json"] as any)
-      vi.mocked(fs.readFile).mockImplementation((filePath: any) => {
+      fsMock.readdir.mockResolvedValueOnce(["api1.json", "api2.json"] as any)
+      fsMock.readFile.mockImplementation((filePath: any) => {
         if (filePath.includes("api2")) return Promise.resolve(JSON.stringify(fixture2))
         return Promise.resolve(JSON.stringify(fixture1))
       })
-      vi.mocked(fs.writeFile).mockResolvedValue(undefined as any)
+      fsMock.writeFile.mockResolvedValue(undefined as any)
 
       const result = await enrichAllApis({ default: 1 })
 
