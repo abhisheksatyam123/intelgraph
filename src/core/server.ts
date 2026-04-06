@@ -83,11 +83,18 @@ export async function startStdio(deps: BackendDeps): Promise<void> {
   const transport = new StdioServerTransport()
 
   transport.onclose = () => {
-    log("WARN", "Stdio MCP transport closed (client disconnected)", { pid: process.pid })
+    log("WARN", "Stdio MCP transport closed (client disconnected) — exiting", { pid: process.pid })
+    process.exit(0)
   }
   ;(transport as any).onerror = (err: Error) => {
     logError("Stdio MCP transport error", err)
   }
+
+  // Detect parent death: stdin EOF means the parent process closed our pipe.
+  process.stdin.on("end", () => {
+    log("INFO", "Stdin closed (parent exited) — exiting", { pid: process.pid })
+    process.exit(0)
+  })
 
   await server.connect(transport)
   log("INFO", "Stdio MCP server connected and listening", { pid: process.pid })
@@ -100,6 +107,10 @@ export async function startStdio(deps: BackendDeps): Promise<void> {
 // Clients connect with:
 //   { "url": "http://localhost:<port>/mcp" }
 
+// How long the HTTP daemon stays alive with zero active sessions before auto-exiting.
+// This prevents permanent daemon accumulation when all clients disconnect.
+const HTTP_IDLE_TIMEOUT_MS = 30 * 60 * 1000 // 30 minutes
+
 export async function startHttp(
   deps: BackendDeps,
   port: number,
@@ -107,6 +118,25 @@ export async function startHttp(
   log("INFO", "Creating HTTP MCP server", { port, pid: process.pid })
   // Map of sessionId → transport (for DELETE / cleanup)
   const sessions = new Map<string, StreamableHTTPServerTransport>()
+
+  // ── Idle auto-exit: shut down when no sessions remain for too long ──────
+  let idleTimer: ReturnType<typeof setTimeout> | null = null
+
+  const resetIdleTimer = () => {
+    if (idleTimer) clearTimeout(idleTimer)
+    if (sessions.size === 0) {
+      idleTimer = setTimeout(() => {
+        log("INFO", "HTTP daemon idle timeout — no active sessions, exiting", {
+          port, pid: process.pid, timeoutMs: HTTP_IDLE_TIMEOUT_MS,
+        })
+        process.exit(0)
+      }, HTTP_IDLE_TIMEOUT_MS)
+    } else {
+      idleTimer = null
+    }
+  }
+  // Start the idle timer immediately — if no client ever connects, exit after timeout
+  resetIdleTimer()
 
   const httpServer = createServer(async (req: IncomingMessage, res: ServerResponse) => {
     const url = new URL(req.url ?? "/", `http://localhost:${port}`)
@@ -131,6 +161,8 @@ export async function startHttp(
           },
         })
         sessions.set(sessionId, transport)
+        // Cancel idle timer — we have an active session
+        resetIdleTimer()
 
         const server = await createMcpServer(deps)
         await server.connect(transport)
@@ -139,6 +171,8 @@ export async function startHttp(
           sessions.delete(sessionId)
           log("INFO", "HTTP session closed", { sessionId, port, remainingSessions: sessions.size })
           process.stderr.write(`[clangd-mcp] Session closed: ${sessionId}\n`)
+          // Restart idle timer if this was the last session
+          resetIdleTimer()
         }
       }
 
@@ -166,6 +200,7 @@ export async function startHttp(
         log("INFO", "DELETE session request", { sessionId, port })
         await transport.handleRequest(req, res)
         sessions.delete(sessionId)
+        resetIdleTimer()
       } else {
         log("WARN", "DELETE request for unknown session", { sessionId, port })
         res.writeHead(404).end("Session not found")
@@ -260,9 +295,24 @@ export async function startStdioProxy(httpUrl: string): Promise<void> {
   }
 
   const stdioTransport = new StdioServerTransport()
+
+  const exitProxy = (reason: string) => {
+    log("INFO", "Stdio proxy exiting", { reason, httpUrl, pid: process.pid })
+    // Close the upstream HTTP client connection before exiting
+    transport.close().catch(() => {})
+    // Give a moment for the close to flush, then exit
+    setTimeout(() => process.exit(0), 100)
+  }
+
   stdioTransport.onclose = () => {
     log("WARN", "Stdio proxy transport closed (client disconnected)", { httpUrl, pid: process.pid })
+    exitProxy("transport-closed")
   }
+
+  // Detect parent death: when the parent process (e.g. OpenCode) exits,
+  // stdin gets an EOF. Without this handler, the proxy stays alive forever.
+  process.stdin.on("end", () => exitProxy("stdin-end"))
+  process.stdin.on("close", () => exitProxy("stdin-close"))
 
   await server.connect(stdioTransport)
   log("INFO", "Stdio proxy MCP server listening", { httpUrl, pid: process.pid })

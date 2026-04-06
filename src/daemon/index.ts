@@ -403,6 +403,16 @@ export async function spawnDaemon(opts: SpawnDaemonOptions): Promise<DaemonState
     throw new Error("Failed to spawn bridge process (no PID assigned)")
   }
 
+  // Listen for unexpected bridge death while we're still running.
+  // This cleans up the stale state file so the next spawn check doesn't
+  // think the daemon is alive and skip respawning.
+  bridge.on("exit", (code, signal) => {
+    log("WARN", "Bridge process exited while parent still running — clearing stale state", {
+      bridgePid: bridge.pid, code, signal, port, root,
+    })
+    clearState(root)
+  })
+
   // Detach from the bridge so our process exit doesn't kill it
   bridge.unref()
 
@@ -579,6 +589,21 @@ export async function spawnHttpDaemon(
     })
 
     if (!daemon.pid) throw new Error("Failed to spawn HTTP MCP daemon (no PID)")
+
+    // Listen for unexpected HTTP daemon death while proxy is still running.
+    // Clears httpPort/httpPid from state so the next proxy doesn't think the daemon is alive.
+    const httpDaemonPid = daemon.pid
+    daemon.on("exit", (code, signal) => {
+      log("WARN", "HTTP daemon exited while proxy still running — clearing HTTP state", {
+        httpPid: httpDaemonPid, code, signal, httpPort, root,
+      })
+      const currentState = readState(root)
+      if (currentState && currentState.httpPid === httpDaemonPid) {
+        const { httpPort: _hp, httpPid: _hpid, ...rest } = currentState as any
+        writeState(root, rest)
+      }
+    })
+
     daemon.unref()
 
     log("INFO", "HTTP MCP daemon process spawned", { httpPid: daemon.pid, httpPort })
