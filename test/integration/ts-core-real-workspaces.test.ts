@@ -356,6 +356,65 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_type_dependencies returns the types a function references", async () => {
+      // Pick any function/method that has at least one outgoing
+      // references_type edge.
+      const consumer = ingest.client.raw
+        .prepare(
+          `SELECT src.canonical_name AS name
+           FROM graph_edges e
+           INNER JOIN graph_nodes src
+             ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+           WHERE e.snapshot_id = ?
+             AND e.edge_kind = 'references_type'
+             AND src.kind IN ('function', 'method')
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string } | undefined
+      if (!consumer) return
+      const result = await ingest.lookup.lookup({
+        intent: "find_type_dependencies",
+        snapshotId: ingest.snapshotId,
+        apiName: consumer.name,
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      for (const row of result.rows) {
+        expect(row.edge_kind).toBe("references_type")
+      }
+    })
+
+    it("find_type_consumers returns the symbols that reference a type", async () => {
+      // Pick the most-referenced type — by definition has incoming
+      // references_type edges.
+      const target = ingest.client.raw
+        .prepare(
+          `SELECT dst.canonical_name AS name, COUNT(*) AS n
+           FROM graph_edges e
+           INNER JOIN graph_nodes dst
+             ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+           WHERE e.snapshot_id = ? AND e.edge_kind = 'references_type'
+           GROUP BY dst.canonical_name
+           ORDER BY n DESC
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string; n: number } | undefined
+      if (!target) return
+      const result = await ingest.lookup.lookup({
+        intent: "find_type_consumers",
+        snapshotId: ingest.snapshotId,
+        apiName: target.name,
+        limit: 100,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      expect(result.rows.length).toBeLessThanOrEqual(target.n)
+      for (const row of result.rows) {
+        expect(row.edge_kind).toBe("references_type")
+      }
+    })
+
     it("find_interface_implementors finds classes that implement an interface", async () => {
       // Pick the most-implemented interface.
       const iface = ingest.client.raw

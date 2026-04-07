@@ -190,6 +190,10 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.incomingByEdgeKind(snapshotId, apiNames, "extends", limit)
       case "find_interface_implementors":
         return this.incomingByEdgeKind(snapshotId, apiNames, "implements", limit)
+      case "find_type_dependencies":
+        return this.outgoingByEdgeKind(snapshotId, apiNames, "references_type", limit)
+      case "find_type_consumers":
+        return this.incomingByEdgeKind(snapshotId, apiNames, "references_type", limit)
       default:
         return []
     }

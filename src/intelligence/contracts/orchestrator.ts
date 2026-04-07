@@ -58,6 +58,10 @@ export const QUERY_INTENTS = [
   "find_class_subtypes",
   /** Classes that implement this interface (incoming 'implements' edges). */
   "find_interface_implementors",
+  /** Types that this symbol references in its signature/body (outgoing 'references_type' edges). */
+  "find_type_dependencies",
+  /** Symbols that reference this type in their signatures/bodies (incoming 'references_type' edges). */
+  "find_type_consumers",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
