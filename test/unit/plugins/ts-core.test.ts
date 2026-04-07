@@ -122,6 +122,20 @@ export class FormalGreeter extends Greeter implements NamedThing {
 `,
   )
 
+  // services.ts — typed top-level constants. Round D8 should emit
+  // these as global_var symbols and produce references_type edges.
+  writeFileSync(
+    join(tempRoot, "src", "services.ts"),
+    `
+import { Greeter } from "./module-a"
+import type { Greeting } from "./module-b"
+
+export const defaultGreeter: Greeter = new Greeter("hi")
+export const fallback: Greeting = "hello"
+export const noTypeAnnotation = 42
+`,
+  )
+
   // util: pure utility module
   writeFileSync(
     join(tempRoot, "src", "util.ts"),
@@ -452,6 +466,50 @@ describe("ts-core plugin — extraction", () => {
     }
     expect(nsMeta?.resolved).toBe(true)
     expect(nsMeta?.resolutionKind).toBe("namespace-member")
+  })
+
+  it("emits typed top-level variables as global_var symbols with references_type", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    // services.ts has two typed consts (defaultGreeter, fallback) and
+    // one untyped (noTypeAnnotation). Only the typed ones become symbols.
+    const globalVars = sink.allNodes().filter((n) => n.kind === "global_var")
+    const fromServices = globalVars.filter((n) =>
+      String(n.canonical_name).includes("services.ts"),
+    )
+    expect(fromServices.length).toBe(2)
+
+    const names = new Set(
+      fromServices.map((n) => String(n.canonical_name).split("#")[1]),
+    )
+    expect(names.has("defaultGreeter")).toBe(true)
+    expect(names.has("fallback")).toBe(true)
+    expect(names.has("noTypeAnnotation")).toBe(false)
+
+    // references_type edges from defaultGreeter → Greeter
+    const refEdges = sink
+      .allEdges()
+      .filter((e) => e.edge_kind === "references_type")
+    const fromDefault = refEdges.filter((e) =>
+      String(e.src_node_id).endsWith("services.ts#defaultGreeter"),
+    )
+    expect(fromDefault.length).toBe(1)
+    expect(String(fromDefault[0].dst_node_id)).toMatch(/module-a\.ts#Greeter$/)
+
+    // fallback → Greeting
+    const fromFallback = refEdges.filter((e) =>
+      String(e.src_node_id).endsWith("services.ts#fallback"),
+    )
+    expect(fromFallback.length).toBe(1)
+    expect(String(fromFallback[0].dst_node_id)).toMatch(/module-b\.ts#Greeting$/)
   })
 
   it("emits references_type edges for class field types", async () => {

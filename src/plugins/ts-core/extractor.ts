@@ -370,6 +370,27 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
             yield ctx.edge({ payload: ref })
           }
         }
+
+        // Top-level typed variable: walk its variable_declarator's
+        // type_annotation. The annotation lives one level down inside
+        // the lexical_declaration → variable_declarator subtree, so we
+        // pass that container to the walker.
+        if (kind === "global_var") {
+          const declarator = firstNamedChildOfType(node, "variable_declarator")
+          if (declarator) {
+            for (const ref of extractTypeReferencesFromAnnotations(
+              [firstNamedChildOfType(declarator, "type_annotation")].filter(
+                (a): a is TsNode => a !== null,
+              ),
+              canonicalName,
+              resolver,
+              moduleNodeName,
+              file,
+            )) {
+              yield ctx.edge({ payload: ref })
+            }
+          }
+        }
       }
 
       // Push the class/interface onto classStack BEFORE recursing so
@@ -524,6 +545,9 @@ function extractDeclaration(
     case "variable_declaration": {
       // const foo = () => {} → record as function-typed export when
       // the initializer is an arrow_function or function_expression.
+      // Otherwise, if the declarator carries a type_annotation, emit
+      // it as `global_var` so its referenced types still flow into
+      // the graph.
       const declarator = firstNamedChildOfType(node, "variable_declarator")
       if (!declarator) return null
       const nameNode = declarator.childForFieldName("name")
@@ -534,6 +558,11 @@ function extractDeclaration(
         (value.type === "arrow_function" || value.type === "function_expression")
       ) {
         return { name: nameNode.text, kind: "function" }
+      }
+      // Typed top-level variable: emit as global_var so its
+      // type_annotation can be walked for references_type edges.
+      if (firstNamedChildOfType(declarator, "type_annotation")) {
+        return { name: nameNode.text, kind: "global_var" }
       }
       return null
     }
@@ -765,26 +794,7 @@ function extractTypeReferences(
   resolver: FileResolver,
   moduleNodeName: string,
   file: string,
-): Array<{
-  edgeKind: "references_type"
-  srcSymbolName: string
-  dstSymbolName: string
-  confidence: number
-  derivation: "clangd" | "llm" | "runtime" | "hybrid"
-  sourceLocation: { sourceFilePath: string; sourceLineNumber: number }
-  metadata: Record<string, unknown>
-}> {
-  const out: Array<{
-    edgeKind: "references_type"
-    srcSymbolName: string
-    dstSymbolName: string
-    confidence: number
-    derivation: "clangd" | "llm" | "runtime" | "hybrid"
-    sourceLocation: { sourceFilePath: string; sourceLineNumber: number }
-    metadata: Record<string, unknown>
-  }> = []
-  const seen = new Set<string>()
-
+): Array<TypeRefEdgePayload> {
   const annotations: TsNode[] = []
 
   // Parameter type annotations
@@ -808,6 +818,40 @@ function extractTypeReferences(
       annotations.push(child)
     }
   }
+
+  return extractTypeReferencesFromAnnotations(
+    annotations,
+    thisFqName,
+    resolver,
+    moduleNodeName,
+    file,
+  )
+}
+
+interface TypeRefEdgePayload {
+  edgeKind: "references_type"
+  srcSymbolName: string
+  dstSymbolName: string
+  confidence: number
+  derivation: "clangd" | "llm" | "runtime" | "hybrid"
+  sourceLocation: { sourceFilePath: string; sourceLineNumber: number }
+  metadata: Record<string, unknown>
+}
+
+/**
+ * Shared core for emitting references_type edges from a list of
+ * type_annotation nodes. Called by the function-signature, class-field,
+ * and global-var paths.
+ */
+function extractTypeReferencesFromAnnotations(
+  annotations: TsNode[],
+  thisFqName: string,
+  resolver: FileResolver,
+  moduleNodeName: string,
+  file: string,
+): Array<TypeRefEdgePayload> {
+  const out: TypeRefEdgePayload[] = []
+  const seen = new Set<string>()
 
   for (const ann of annotations) {
     for (const typeName of namedDescendantTexts(ann, "type_identifier")) {
