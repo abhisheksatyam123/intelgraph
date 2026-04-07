@@ -40,6 +40,16 @@ export function mapIntentToArray(intent: QueryIntent): RelationArrayName {
     show_hot_call_paths: "calls_in_runtime",
     show_cross_module_path: "calls_out",
     find_api_by_log_pattern: "logs",
+    // Language-agnostic structural intents (used by ts-core). These
+    // don't map to the C-shaped fixture relation arrays — they're
+    // mapped to "uses" as a catch-all so the WLAN fixture validator
+    // doesn't crash on them.
+    find_module_imports: "uses",
+    find_module_dependents: "uses",
+    find_module_symbols: "uses",
+    find_class_inheritance: "uses",
+    find_class_subtypes: "uses",
+    find_interface_implementors: "uses",
   }
 
   return mapping[intent] || "uses"

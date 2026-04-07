@@ -474,3 +474,135 @@ describe("SqliteDbLookup — unknown intent", () => {
     expect(result.rows).toHaveLength(0)
   })
 })
+
+// ---------------------------------------------------------------------------
+// Language-agnostic structural intents (used by ts-core)
+// ---------------------------------------------------------------------------
+
+describe("SqliteDbLookup — structural intents (ts-core)", () => {
+  beforeEach(async () => {
+    // Seed the existing fixture with a few imports/contains/extends
+    // edges so the new intents have something to query.
+    await store.write({
+      nodes: [
+        // Two new modules
+        makeNode({ id: "n-mod-a", name: "module:src/a.ts", kind: "module" }),
+        makeNode({ id: "n-mod-b", name: "module:src/b.ts", kind: "module" }),
+        // A class declared in module-a, parent class in module-b
+        makeNode({
+          id: "n-cls-foo",
+          name: "module:src/a.ts#Foo",
+          kind: "class",
+          file: "/src/a.ts",
+          line: 10,
+        }),
+        makeNode({
+          id: "n-cls-base",
+          name: "module:src/b.ts#Base",
+          kind: "class",
+          file: "/src/b.ts",
+          line: 5,
+        }),
+        // An interface implemented by Foo
+        makeNode({
+          id: "n-iface-named",
+          name: "module:src/b.ts#Named",
+          kind: "interface",
+          file: "/src/b.ts",
+          line: 1,
+        }),
+      ],
+      edges: [
+        // module-a imports module-b
+        makeEdge({
+          id: "ts-imp-1",
+          kind: "imports" as never,
+          src: "n-mod-a",
+          dst: "n-mod-b",
+        }),
+        // module-a contains Foo
+        makeEdge({
+          id: "ts-con-1",
+          kind: "contains" as never,
+          src: "n-mod-a",
+          dst: "n-cls-foo",
+        }),
+        // Foo extends Base
+        makeEdge({
+          id: "ts-ext-1",
+          kind: "extends" as never,
+          src: "n-cls-foo",
+          dst: "n-cls-base",
+        }),
+        // Foo implements Named
+        makeEdge({
+          id: "ts-imp-foo-named",
+          kind: "implements" as never,
+          src: "n-cls-foo",
+          dst: "n-iface-named",
+        }),
+      ],
+      evidence: [],
+      observations: [],
+    })
+  })
+
+  it("find_module_imports returns outgoing imports edges", async () => {
+    const result = await lookup.lookup(
+      req({ intent: "find_module_imports", apiName: "module:src/a.ts" }),
+    )
+    expect(result.hit).toBe(true)
+    expect(result.rows[0].callee).toBe("module:src/b.ts")
+    expect(result.rows[0].edge_kind).toBe("imports")
+  })
+
+  it("find_module_dependents returns incoming imports edges", async () => {
+    const result = await lookup.lookup(
+      req({ intent: "find_module_dependents", apiName: "module:src/b.ts" }),
+    )
+    expect(result.hit).toBe(true)
+    expect(result.rows[0].caller).toBe("module:src/a.ts")
+    expect(result.rows[0].edge_kind).toBe("imports")
+  })
+
+  it("find_module_symbols returns symbols a module contains", async () => {
+    const result = await lookup.lookup(
+      req({ intent: "find_module_symbols", apiName: "module:src/a.ts" }),
+    )
+    expect(result.hit).toBe(true)
+    const names = result.rows.map((r) => r.callee)
+    expect(names).toContain("module:src/a.ts#Foo")
+  })
+
+  it("find_class_inheritance returns parent classes", async () => {
+    const result = await lookup.lookup(
+      req({ intent: "find_class_inheritance", apiName: "module:src/a.ts#Foo" }),
+    )
+    expect(result.hit).toBe(true)
+    expect(result.rows[0].callee).toBe("module:src/b.ts#Base")
+  })
+
+  it("find_class_subtypes returns child classes", async () => {
+    const result = await lookup.lookup(
+      req({ intent: "find_class_subtypes", apiName: "module:src/b.ts#Base" }),
+    )
+    expect(result.hit).toBe(true)
+    expect(result.rows[0].caller).toBe("module:src/a.ts#Foo")
+  })
+
+  it("find_interface_implementors returns implementing classes", async () => {
+    const result = await lookup.lookup(
+      req({ intent: "find_interface_implementors", apiName: "module:src/b.ts#Named" }),
+    )
+    expect(result.hit).toBe(true)
+    expect(result.rows[0].caller).toBe("module:src/a.ts#Foo")
+  })
+
+  it("structural intents return empty when no matching api name", async () => {
+    const result = await lookup.lookup(
+      req({ intent: "find_module_imports", apiName: "module:does/not/exist" }),
+    )
+    expect(result.hit).toBe(false)
+    expect(result.rows).toHaveLength(0)
+  })
+})

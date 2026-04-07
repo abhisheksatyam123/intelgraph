@@ -176,6 +176,20 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.observations(snapshotId, apiNames, limit)
       case "find_api_by_log_pattern":
         return this.logPattern(snapshotId, request.pattern, limit)
+      // ── Language-agnostic structural intents (used by ts-core and any
+      //    future plugin that emits imports/contains/extends/implements)
+      case "find_module_imports":
+        return this.outgoingByEdgeKind(snapshotId, apiNames, "imports", limit)
+      case "find_module_dependents":
+        return this.incomingByEdgeKind(snapshotId, apiNames, "imports", limit)
+      case "find_module_symbols":
+        return this.outgoingByEdgeKind(snapshotId, apiNames, "contains", limit)
+      case "find_class_inheritance":
+        return this.outgoingByEdgeKind(snapshotId, apiNames, "extends", limit)
+      case "find_class_subtypes":
+        return this.incomingByEdgeKind(snapshotId, apiNames, "extends", limit)
+      case "find_interface_implementors":
+        return this.incomingByEdgeKind(snapshotId, apiNames, "implements", limit)
       default:
         return []
     }
@@ -925,5 +939,98 @@ export class SqliteDbLookup implements DbLookupRepository {
         line_number: extractLine(obj.location),
       }
     })
+  }
+
+  // ── language-agnostic structural intent helpers ─────────────────────────
+  //
+  // outgoingByEdgeKind / incomingByEdgeKind back the new ts-core intents
+  // (find_module_imports, find_class_inheritance, etc.) but are kind-
+  // parameterized so they work for any future structural edge_kind
+  // without per-intent code duplication.
+
+  private outgoingByEdgeKind(
+    snapshotId: number,
+    srcNames: string[],
+    edgeKind: string,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (srcNames.length === 0) return []
+    const sql = `
+      SELECT
+        src.canonical_name AS caller,
+        dst.canonical_name AS callee,
+        dst.canonical_name AS canonical_name,
+        dst.kind           AS kind,
+        e.edge_kind        AS edge_kind,
+        e.confidence       AS confidence,
+        e.derivation       AS derivation,
+        dst.location       AS location
+      FROM graph_edges e
+      INNER JOIN graph_nodes src
+        ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+      INNER JOIN graph_nodes dst
+        ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+      WHERE e.snapshot_id = ?
+        AND src.canonical_name IN (${expandIn(srcNames)})
+        AND e.edge_kind = ?
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, ...srcNames, edgeKind, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "module",
+      canonical_name: obj.canonical_name ?? obj.callee,
+      caller: obj.caller,
+      callee: obj.callee,
+      edge_kind: obj.edge_kind,
+      confidence: toNumber(obj.confidence),
+      derivation: obj.derivation,
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
+
+  private incomingByEdgeKind(
+    snapshotId: number,
+    dstNames: string[],
+    edgeKind: string,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (dstNames.length === 0) return []
+    const sql = `
+      SELECT
+        src.canonical_name AS caller,
+        dst.canonical_name AS callee,
+        src.canonical_name AS canonical_name,
+        src.kind           AS kind,
+        e.edge_kind        AS edge_kind,
+        e.confidence       AS confidence,
+        e.derivation       AS derivation,
+        src.location       AS location
+      FROM graph_edges e
+      INNER JOIN graph_nodes src
+        ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+      INNER JOIN graph_nodes dst
+        ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+      WHERE e.snapshot_id = ?
+        AND dst.canonical_name IN (${expandIn(dstNames)})
+        AND e.edge_kind = ?
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, ...dstNames, edgeKind, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "module",
+      canonical_name: obj.canonical_name ?? obj.caller,
+      caller: obj.caller,
+      callee: obj.callee,
+      edge_kind: obj.edge_kind,
+      confidence: toNumber(obj.confidence),
+      derivation: obj.derivation,
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
   }
 }

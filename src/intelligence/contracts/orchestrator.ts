@@ -44,6 +44,20 @@ export const QUERY_INTENTS = [
   "find_api_struct_writes",
   /** What structs does this API read? (API-centric, src_symbol_name = apiName) */
   "find_api_struct_reads",
+  // ── language-agnostic structural intents (used by ts-core and any
+  //    future plugin that emits imports/contains/extends/implements)
+  /** Modules this module imports (outgoing 'imports' edges). */
+  "find_module_imports",
+  /** Modules that import this module (incoming 'imports' edges). */
+  "find_module_dependents",
+  /** Symbols declared in this module (outgoing 'contains' edges). */
+  "find_module_symbols",
+  /** Parent classes/interfaces this symbol extends (outgoing 'extends' edges). */
+  "find_class_inheritance",
+  /** Subclasses/sub-interfaces of this symbol (incoming 'extends' edges). */
+  "find_class_subtypes",
+  /** Classes that implement this interface (incoming 'implements' edges). */
+  "find_interface_implementors",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
