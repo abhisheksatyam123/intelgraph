@@ -68,6 +68,8 @@ export const QUERY_INTENTS = [
   "find_top_imported_modules",
   /** Top-N functions/methods ranked by incoming calls edges (most-called). */
   "find_top_called_functions",
+  /** Modules with zero incoming imports — likely entry points / scripts / tests. */
+  "find_module_entry_points",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

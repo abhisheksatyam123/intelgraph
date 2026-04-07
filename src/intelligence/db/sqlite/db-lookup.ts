@@ -200,6 +200,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.topByIncoming(snapshotId, "imports", "module", limit)
       case "find_top_called_functions":
         return this.topByIncoming(snapshotId, "calls", null, limit)
+      case "find_module_entry_points":
+        return this.moduleEntryPoints(snapshotId, limit)
       default:
         return []
     }
@@ -957,6 +959,51 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find modules with zero incoming imports — likely entry points
+   * (CLI files, test files, scripts, top-level pages). The query
+   * returns module nodes that don't appear as the dst of any imports
+   * edge. Visualizers can use this to root the dependency tree or
+   * highlight scripts that are only invoked externally.
+   */
+  private moduleEntryPoints(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        m.canonical_name AS canonical_name,
+        m.kind AS kind,
+        m.location AS location
+      FROM graph_nodes m
+      WHERE m.snapshot_id = ? AND m.kind = 'module'
+        AND NOT EXISTS (
+          SELECT 1 FROM graph_edges e
+          INNER JOIN graph_nodes dst
+            ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+          WHERE e.snapshot_id = m.snapshot_id
+            AND e.edge_kind = 'imports'
+            AND dst.canonical_name = m.canonical_name
+        )
+      ORDER BY m.canonical_name
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: "module",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "imports",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
 
   /**
    * Find the top-N nodes ranked by their incoming-edge count for a

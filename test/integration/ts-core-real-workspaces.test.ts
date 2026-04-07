@@ -385,6 +385,24 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_module_entry_points returns modules with no incoming imports", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_module_entry_points",
+        snapshotId: ingest.snapshotId,
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // Every entry point should be a module
+      for (const row of result.rows) {
+        expect(row.kind).toBe("module")
+        expect(String(row.canonical_name)).toMatch(/^module:/)
+      }
+      // Sanity: opencode has bin/index files and test files that are
+      // entry points. We expect at least a few.
+      expect(result.rows.length).toBeGreaterThan(3)
+    })
+
     it("find_top_imported_modules ranks busy hub modules", async () => {
       const result = await ingest.lookup.lookup({
         intent: "find_top_imported_modules",
