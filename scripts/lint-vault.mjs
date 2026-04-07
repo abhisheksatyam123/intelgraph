@@ -149,13 +149,16 @@ function loadRegisteredTags() {
   } catch {
     return new Set()
   }
-  // Match lines like: | tag-name | meaning | YYYY-MM-DD |
+  // Match lines like: | `tag-name` | meaning | count | etc.
+  // Tags may be wrapped in backticks; strip them.
   const tags = new Set()
   for (const line of content.split("\n")) {
     const m = line.match(/^\|\s*([^\s|][^|]*?)\s*\|/)
     if (!m) continue
-    const tag = m[1].trim()
+    let tag = m[1].trim()
     if (!tag) continue
+    // Strip surrounding backticks
+    if (tag.startsWith("`") && tag.endsWith("`")) tag = tag.slice(1, -1)
     if (tag.toLowerCase() === "tag") continue // header row
     if (tag === "---" || /^-+$/.test(tag)) continue // separator
     tags.add(tag)
