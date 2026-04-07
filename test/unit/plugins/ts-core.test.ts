@@ -221,6 +221,12 @@ export function viaCasted() {
 export async function asyncCaller() {
   await localNs.helper()
 }
+
+// Round D34: yield expressions wrapping calls.
+export function* genCaller() {
+  yield localNs.helper()
+  yield* Greeter.makeFormal()
+}
 `,
   )
 
@@ -970,6 +976,38 @@ describe("ts-core plugin — extraction", () => {
         String(e.dst_node_id).endsWith("anon-class.ts#default"),
     )
     expect(anonClassContains).toBeDefined()
+  })
+
+  it("tags yielded call sites with metadata.yielded and delegated", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const callEdges = sink.allEdges().filter((e) => e.edge_kind === "calls")
+
+    // genCaller has both `yield localNs.helper()` (yielded, not delegated)
+    // and `yield* Greeter.makeFormal()` (yielded, delegated).
+    const fromGen = callEdges.filter((e) =>
+      String(e.src_node_id).endsWith("namespace-fixture.ts#genCaller"),
+    )
+    const yielded = fromGen.filter(
+      (e) => (e.metadata as { yielded?: boolean })?.yielded === true,
+    )
+    expect(yielded.length).toBeGreaterThanOrEqual(2)
+
+    const delegated = fromGen.find(
+      (e) => (e.metadata as { delegated?: boolean })?.delegated === true,
+    )
+    expect(delegated).toBeDefined()
+    // The delegated one should be Greeter.makeFormal (named-member)
+    const meta = delegated!.metadata as { resolutionKind?: string }
+    expect(meta.resolutionKind).toBe("named-member")
   })
 
   it("tags awaited call sites with metadata.awaited", async () => {

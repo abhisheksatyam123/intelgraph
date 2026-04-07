@@ -673,6 +673,10 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
         // await_expression > call_expression so we check the parent.
         const isAwaited =
           node.parent !== null && node.parent.type === "await_expression"
+        // D34: detect yield wrapping. `yield foo()` and `yield* foo()`
+        // both parse as yield_expression > call_expression. Effect
+        // generator code uses this heavily.
+        const yieldedFlags = detectYieldWrapping(node)
         yield ctx.edge({
           payload: {
             edgeKind: "calls",
@@ -689,6 +693,7 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
               resolutionKind: callee.kind,
               ...(isTaggedTemplate ? { taggedTemplate: true } : {}),
               ...(isAwaited ? { awaited: true } : {}),
+              ...yieldedFlags,
             },
             evidence: {
               sourceKind: "file_line",
@@ -1904,6 +1909,32 @@ function isComponentTagName(name: string): boolean {
  */
 function isExportedDeclaration(node: TsNode): boolean {
   return node.parent !== null && node.parent.type === "export_statement"
+}
+
+/**
+ * Detect whether a call_expression is wrapped in a yield_expression
+ * (`yield foo()` or `yield* foo()`). Returns an object with the
+ * appropriate metadata flags. tree-sitter encodes both forms as
+ * `yield_expression > call_expression` — the `*` is anonymous so we
+ * detect delegation by walking the yield_expression's children for
+ * an anonymous "*" token.
+ */
+function detectYieldWrapping(callNode: TsNode): {
+  yielded?: boolean
+  delegated?: boolean
+} {
+  const parent = callNode.parent
+  if (!parent || parent.type !== "yield_expression") return {}
+  // Walk the yield_expression's anonymous children for "*"
+  let delegated = false
+  for (let i = 0; i < parent.childCount; i++) {
+    const child = parent.child(i)
+    if (child && child.type === "*") {
+      delegated = true
+      break
+    }
+  }
+  return delegated ? { yielded: true, delegated: true } : { yielded: true }
 }
 
 /**
