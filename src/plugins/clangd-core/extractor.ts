@@ -31,8 +31,13 @@
  * on content, not order.
  */
 
+import { existsSync, readdirSync } from "node:fs"
+import { join } from "node:path"
 import { defineExtractor } from "../../intelligence/extraction/contract.js"
-import type { Capability } from "../../intelligence/extraction/contract.js"
+import type {
+  Capability,
+  WorkspaceProbe,
+} from "../../intelligence/extraction/contract.js"
 import type { SymbolRow } from "../../intelligence/contracts/common.js"
 
 const CAPABILITIES: Capability[] = [
@@ -84,9 +89,17 @@ const clangdCoreExtractor = defineExtractor({
     description:
       "Direct clangd extraction: workspace symbols and outgoing-call edges. The default extractor for any C/C++ workspace.",
     capabilities: CAPABILITIES,
-    // Run on every C/C++ workspace. The presence of compile_commands.json
-    // is a strong signal but not strictly required — clangd can index
-    // without it via heuristics.
+    appliesTo: (probe: WorkspaceProbe) => {
+      // Active when the workspace looks like a C/C++ project. The
+      // strongest signal is compile_commands.json (which the workspace
+      // probe already detects). Fall back to a shallow filesystem
+      // scan: if the root or its src/ subdirectory contains a .c/.h/
+      // .cpp/.hpp file, run. This means a TS-only workspace like
+      // opencode is correctly skipped.
+      if (probe.hasCompileCommands) return true
+      const root = probe.workspaceRoot
+      return hasCFamilyShallow(root) || hasCFamilyShallow(join(root, "src"))
+    },
   },
 
   async *extract(ctx) {
@@ -215,3 +228,47 @@ const clangdCoreExtractor = defineExtractor({
 })
 
 export default clangdCoreExtractor
+
+// ---------------------------------------------------------------------------
+// appliesTo helper
+// ---------------------------------------------------------------------------
+
+const C_FAMILY_FILE_EXTS = [".c", ".h", ".cpp", ".cc", ".cxx", ".hpp"]
+
+/**
+ * Shallow check: does this directory contain any C/C++ source file at
+ * depth 0 or 1? Used by appliesTo() so the clangd-core plugin doesn't
+ * fire on TS-only workspaces.
+ */
+function hasCFamilyShallow(dir: string): boolean {
+  if (!existsSync(dir)) return false
+  let entries
+  try {
+    entries = readdirSync(dir, { withFileTypes: true })
+  } catch {
+    return false
+  }
+  for (const entry of entries) {
+    const name = entry.name
+    if (entry.isFile()) {
+      if (C_FAMILY_FILE_EXTS.some((ext) => name.endsWith(ext))) {
+        return true
+      }
+    } else if (entry.isDirectory() && !name.startsWith(".") && name !== "node_modules") {
+      try {
+        const subEntries = readdirSync(join(dir, name), { withFileTypes: true })
+        for (const sub of subEntries) {
+          if (
+            sub.isFile() &&
+            C_FAMILY_FILE_EXTS.some((ext) => sub.name.endsWith(ext))
+          ) {
+            return true
+          }
+        }
+      } catch {
+        // unreadable
+      }
+    }
+  }
+  return false
+}
