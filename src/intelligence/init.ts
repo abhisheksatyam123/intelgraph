@@ -8,6 +8,8 @@
  */
 import { createIntelligenceBackend } from "./backend-factory.js"
 import type { LspClientForExtraction } from "./backend-factory.js"
+import { createSqliteIntelligenceBackend } from "./sqlite-backend-factory.js"
+import type { IntelligenceBackend } from "./backend-factory.js"
 import { setIntelligenceDeps } from "../tools/index.js"
 import { setDbFoundation, setIngestDeps } from "./tools/index.js"
 import { getLogger } from "../logging/logger.js"
@@ -15,6 +17,7 @@ import type { ClangdEnricher, CParserEnricher } from "./index.js"
 import type { ILanguageClient } from "../lsp/types.js"
 import { collectIndirectCallers } from "../tools/indirect-callers.js"
 import { BUILT_IN_EXTRACTORS } from "../plugins/index.js"
+import { join } from "node:path"
 
 // ── Module-level backend storage for graceful shutdown ──────────────────────
 let _backend: { close: () => Promise<void> } | null = null
@@ -74,11 +77,8 @@ export async function initIntelligenceBackend(
   const neo4jUrl = process.env.INTELLIGENCE_NEO4J_URL
   const neo4jUser = process.env.INTELLIGENCE_NEO4J_USER ?? "neo4j"
   const neo4jPassword = process.env.INTELLIGENCE_NEO4J_PASSWORD ?? "neo4j1234"
-
-  if (!neo4jUrl) {
-    getLogger().info("intelligence backend: INTELLIGENCE_NEO4J_URL not set — skipping auto-init")
-    return false
-  }
+  const sqliteDbPath =
+    process.env.INTELLIGENCE_DB_PATH ?? join(".clangd-mcp", "intelligence.db")
 
   const noopEnricher = {
     source: "clangd" as const,
@@ -88,32 +88,51 @@ export async function initIntelligenceBackend(
     source: "c_parser" as const,
     enrich: async () => ({ attempts: [{ source: "c_parser" as const, status: "failed" as const }], persistedRows: 0 }),
   }
+  const resolvedEnrichers = {
+    clangdEnricher: enrichers?.clangdEnricher ?? noopEnricher,
+    cParserEnricher: enrichers?.cParserEnricher ?? noopCParser,
+  }
 
-  const backend = await createBackendWithRetry(
-    { neo4jUrl, neo4jUser, neo4jPassword },
-    {
-      clangdEnricher: enrichers?.clangdEnricher ?? noopEnricher,
-      cParserEnricher: enrichers?.cParserEnricher ?? noopCParser,
-    },
-    lspClient,
-  )
-
-  let migrationsReady = false
-  let migrationAttempt = 0
-  while (!migrationsReady) {
-    migrationAttempt += 1
-    try {
-      await backend.db.runMigrations()
-      migrationsReady = true
-    } catch (err) {
-      if (!shouldRetryNeo4jInit(err) || migrationAttempt >= 20) throw err
-      const delayMs = Math.min(1000 * migrationAttempt, 5000)
-      getLogger().warn("intelligence backend: migration retry; Neo4j not ready", {
-        attempt: migrationAttempt,
-        delayMs,
-      })
-      await sleep(delayMs)
+  let backend: IntelligenceBackend
+  if (neo4jUrl) {
+    getLogger().info("intelligence backend: using Neo4j (INTELLIGENCE_NEO4J_URL set)", {
+      neo4jUrl,
+    })
+    backend = await createBackendWithRetry(
+      { neo4jUrl, neo4jUser, neo4jPassword },
+      resolvedEnrichers,
+      lspClient,
+    )
+    let migrationsReady = false
+    let migrationAttempt = 0
+    while (!migrationsReady) {
+      migrationAttempt += 1
+      try {
+        await backend.db.runMigrations()
+        migrationsReady = true
+      } catch (err) {
+        if (!shouldRetryNeo4jInit(err) || migrationAttempt >= 20) throw err
+        const delayMs = Math.min(1000 * migrationAttempt, 5000)
+        getLogger().warn("intelligence backend: migration retry; Neo4j not ready", {
+          attempt: migrationAttempt,
+          delayMs,
+        })
+        await sleep(delayMs)
+      }
     }
+  } else {
+    getLogger().info(
+      "intelligence backend: using embedded SQLite (set INTELLIGENCE_NEO4J_URL to override)",
+      { dbPath: sqliteDbPath },
+    )
+    backend = await createSqliteIntelligenceBackend(
+      { dbPath: sqliteDbPath },
+      resolvedEnrichers,
+      lspClient,
+    )
+    // initSchema already ran inside createSqliteIntelligenceBackend, but
+    // call runMigrations for parity with the Neo4j path.
+    await backend.db.runMigrations()
   }
 
   // Store backend for graceful shutdown on daemon idle/exit

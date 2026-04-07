@@ -16,7 +16,10 @@ import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3"
 import { and, desc, eq } from "drizzle-orm"
 import type { IDbFoundation, DbTxContext } from "../../contracts/db-foundation.js"
 import type { SnapshotMeta, SnapshotRef } from "../../contracts/common.js"
+import * as schema from "./schema.js"
 import { DDL_STATEMENTS, graphSnapshots } from "./schema.js"
+
+type SqliteDb = BetterSQLite3Database<typeof schema>
 
 function nowIso(): string {
   return new Date().toISOString()
@@ -24,7 +27,7 @@ function nowIso(): string {
 
 export class SqliteDbFoundation implements IDbFoundation {
   constructor(
-    private readonly db: BetterSQLite3Database,
+    private readonly db: SqliteDb,
     private readonly raw: BetterSqlite3.Database,
   ) {}
 

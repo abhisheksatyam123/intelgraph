@@ -29,6 +29,7 @@ import type {
 } from "../neo4j/node-contracts.js"
 import type { SymbolFinder } from "../ingestion/indirect-caller-ingestion-service.js"
 import type { SourceLocation } from "../../contracts/common.js"
+import * as schema from "./schema.js"
 import {
   type EdgeMetadata,
   type EvidencePayload,
@@ -40,8 +41,10 @@ import {
   graphObservations,
 } from "./schema.js"
 
+type SqliteDb = BetterSQLite3Database<typeof schema>
+
 export class SqliteGraphStore implements GraphWriteSink, SymbolFinder {
-  constructor(private readonly db: BetterSQLite3Database) {}
+  constructor(private readonly db: SqliteDb) {}
 
   async hasSymbol(snapshotId: number, name: string): Promise<boolean> {
     const rows = this.db
@@ -75,7 +78,7 @@ export class SqliteGraphStore implements GraphWriteSink, SymbolFinder {
   // -------------------------------------------------------------------------
 
   private writeNodes(
-    tx: BetterSQLite3Database,
+    tx: SqliteDb,
     rows: GraphNodeRow[],
   ): void {
     if (rows.length === 0) return
@@ -103,7 +106,7 @@ export class SqliteGraphStore implements GraphWriteSink, SymbolFinder {
   }
 
   private writeEdges(
-    tx: BetterSQLite3Database,
+    tx: SqliteDb,
     rows: GraphEdgeRow[],
   ): void {
     if (rows.length === 0) return
@@ -135,7 +138,7 @@ export class SqliteGraphStore implements GraphWriteSink, SymbolFinder {
   }
 
   private writeEvidence(
-    tx: BetterSQLite3Database,
+    tx: SqliteDb,
     rows: GraphEvidenceRow[],
   ): void {
     if (rows.length === 0) return
@@ -165,7 +168,7 @@ export class SqliteGraphStore implements GraphWriteSink, SymbolFinder {
   }
 
   private writeObservations(
-    tx: BetterSQLite3Database,
+    tx: SqliteDb,
     rows: GraphObservationRow[],
   ): void {
     if (rows.length === 0) return

@@ -41,6 +41,9 @@ import type {
   LookupResult,
   QueryRequest,
 } from "../../contracts/orchestrator.js"
+import type * as schema from "./schema.js"
+
+type SqliteDb = BetterSQLite3Database<typeof schema>
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -103,7 +106,7 @@ function extractLine(locationJson: unknown): number | null {
 
 export class SqliteDbLookup implements DbLookupRepository {
   constructor(
-    private readonly _db: BetterSQLite3Database,
+    private readonly _db: SqliteDb,
     private readonly raw: BetterSqlite3.Database,
   ) {}
 
