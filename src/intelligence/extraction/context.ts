@@ -1,22 +1,26 @@
 /**
- * context.ts — the ExtractionContext interface.
+ * context.ts — the ExtractionContext interface and implementation.
  *
  * The `ctx` object passed to every plugin invocation. It exposes the parsing
  * services (LSP, tree-sitter, ripgrep, workspace) plus typed fact builders
- * that emit into the FactBus.
+ * that construct Facts with provenance pre-tagged.
  *
- * Step 1 of the plugin infrastructure rollout (see
- * /home/abhi/.claude/plans/zippy-mapping-flurry.md) introduces only the
- * **interface** here. The concrete class implementation lands in Step 4
- * once the FactBus and services exist. Splitting the interface from the
- * implementation lets the contract type-check on its own and lets later
- * steps land incrementally.
+ * Plugins use the builders by yielding their results:
  *
- * Why an interface and not a class shape directly: an interface lets the
- * runner construct different ctx instances for different plugins (each
- * with its own extractorName for provenance) without subclassing. Later
- * problems (Problem 4 in particular) may also stub a `ReadOnlyContext` for
- * library-mode embedding.
+ *     async *extract(ctx) {
+ *       for (const file of await ctx.workspace.walkFiles(...)) {
+ *         const symbols = await ctx.lsp.documentSymbol(file, ctx.workspace.readFile(file)!)
+ *         for (const sym of symbols.value ?? []) {
+ *           yield ctx.symbol({ payload: { name: sym.name, kind: "function" } })
+ *         }
+ *       }
+ *     }
+ *
+ * The runner consumes the AsyncIterable and emits each yielded fact into
+ * the FactBus. ctx.symbol/edge/etc therefore stay synchronous: they only
+ * build the envelope, never touch storage. This separates plugin
+ * responsibility (build facts) from runner responsibility (emit, dedupe,
+ * write).
  */
 
 import type {
@@ -162,4 +166,265 @@ export interface ExtractionContext {
   readonly log: PluginLogger
   readonly metrics: PluginMetrics
   readonly signal: AbortSignal
+}
+
+// ---------------------------------------------------------------------------
+// Implementations
+// ---------------------------------------------------------------------------
+//
+// All concrete classes for the helpers exposed via ExtractionContext.
+// They're small, single-purpose, and have no dependencies on the Neo4j
+// layer or the FactBus — the bus consumes the facts a plugin yields, but
+// the context itself never touches the bus directly.
+
+/**
+ * In-snapshot keyed cache. Lifetime is one ExtractionContext instance
+ * (which is scoped to one plugin invocation on one snapshot).
+ */
+export class InMemoryKeyedCache implements KeyedCache {
+  private readonly store = new Map<string, unknown>()
+
+  get<T>(key: string): T | undefined {
+    return this.store.get(key) as T | undefined
+  }
+
+  set<T>(key: string, value: T): void {
+    this.store.set(key, value as unknown)
+  }
+
+  has(key: string): boolean {
+    return this.store.has(key)
+  }
+
+  async getOrCompute<T>(key: string, compute: () => Promise<T> | T): Promise<T> {
+    if (this.store.has(key)) {
+      return this.store.get(key) as T
+    }
+    const value = await compute()
+    this.store.set(key, value as unknown)
+    return value
+  }
+}
+
+/**
+ * Logger that prefixes every message with the extractor name. Plugins
+ * call ctx.log.debug/info/warn/error; the runner can configure where the
+ * output goes (console, file, structured sink). Default writes JSON-ish
+ * lines to the console.error stream so they don't interleave with normal
+ * MCP stdout traffic.
+ */
+export class PrefixedPluginLogger implements PluginLogger {
+  constructor(
+    private readonly extractorName: string,
+    private readonly sink: (
+      level: "debug" | "info" | "warn" | "error",
+      line: string,
+    ) => void = defaultLogSink,
+  ) {}
+
+  debug(message: string, context: Record<string, unknown> = {}): void {
+    this.emit("debug", message, context)
+  }
+  info(message: string, context: Record<string, unknown> = {}): void {
+    this.emit("info", message, context)
+  }
+  warn(message: string, context: Record<string, unknown> = {}): void {
+    this.emit("warn", message, context)
+  }
+  error(message: string, context: Record<string, unknown> = {}): void {
+    this.emit("error", message, context)
+  }
+
+  private emit(
+    level: "debug" | "info" | "warn" | "error",
+    message: string,
+    context: Record<string, unknown>,
+  ): void {
+    const ctxJson = Object.keys(context).length > 0 ? " " + JSON.stringify(context) : ""
+    this.sink(level, `[${this.extractorName}] ${message}${ctxJson}`)
+  }
+}
+
+function defaultLogSink(
+  level: "debug" | "info" | "warn" | "error",
+  line: string,
+): void {
+  if (level === "error" || level === "warn") {
+    console.error(line)
+  } else if (level === "info") {
+    console.error(line)
+  }
+  // debug is silent by default
+}
+
+/**
+ * Per-plugin metrics sink. Counters and timings accumulate locally; the
+ * runner drains them via snapshot() at the end of the plugin invocation
+ * and folds them into the IngestReport.
+ */
+export class InMemoryPluginMetrics implements PluginMetrics {
+  private readonly counters = new Map<string, number>()
+  private readonly timings = new Map<string, { count: number; totalMs: number }>()
+
+  count(name: string, n: number = 1): void {
+    this.counters.set(name, (this.counters.get(name) ?? 0) + n)
+  }
+
+  timing(name: string, ms: number): void {
+    const existing = this.timings.get(name)
+    if (existing) {
+      existing.count += 1
+      existing.totalMs += ms
+    } else {
+      this.timings.set(name, { count: 1, totalMs: ms })
+    }
+  }
+
+  /**
+   * Drain the accumulated metrics into a plain object. Called by the
+   * runner once per plugin per snapshot.
+   */
+  snapshot(): {
+    counters: Record<string, number>
+    timings: Record<string, { count: number; totalMs: number; avgMs: number }>
+  } {
+    const counters: Record<string, number> = {}
+    for (const [k, v] of this.counters.entries()) counters[k] = v
+    const timings: Record<string, { count: number; totalMs: number; avgMs: number }> = {}
+    for (const [k, v] of this.timings.entries()) {
+      timings[k] = {
+        count: v.count,
+        totalMs: v.totalMs,
+        avgMs: v.count > 0 ? v.totalMs / v.count : 0,
+      }
+    }
+    return { counters, timings }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// ExtractionContextImpl — the concrete class
+// ---------------------------------------------------------------------------
+
+export interface ExtractionContextOptions {
+  snapshotId: number
+  workspaceRoot: string
+  extractorName: string
+  lsp: LspService
+  treesitter: TreeSitterService
+  ripgrep: RipgrepService
+  workspace: WorkspaceService
+  signal?: AbortSignal
+  logSink?: (
+    level: "debug" | "info" | "warn" | "error",
+    line: string,
+  ) => void
+}
+
+/**
+ * Concrete ExtractionContext. Constructed once per (plugin, snapshot)
+ * pair by the ExtractorRunner. The fact builders return facts with
+ * `producedBy: [extractorName]` already set; plugins yield those facts
+ * and the runner emits them into the FactBus.
+ */
+export class ExtractionContextImpl implements ExtractionContext {
+  readonly snapshotId: number
+  readonly workspaceRoot: string
+  readonly extractorName: string
+
+  readonly lsp: LspService
+  readonly treesitter: TreeSitterService
+  readonly ripgrep: RipgrepService
+  readonly workspace: WorkspaceService
+
+  readonly cache: KeyedCache
+  readonly log: PluginLogger
+  readonly metrics: PluginMetrics
+  readonly signal: AbortSignal
+
+  // Public so the runner can drain metrics after extraction completes.
+  readonly _metricsImpl: InMemoryPluginMetrics
+
+  constructor(opts: ExtractionContextOptions) {
+    this.snapshotId = opts.snapshotId
+    this.workspaceRoot = opts.workspaceRoot
+    this.extractorName = opts.extractorName
+    this.lsp = opts.lsp
+    this.treesitter = opts.treesitter
+    this.ripgrep = opts.ripgrep
+    this.workspace = opts.workspace
+    this.cache = new InMemoryKeyedCache()
+    this.log = new PrefixedPluginLogger(opts.extractorName, opts.logSink)
+    this._metricsImpl = new InMemoryPluginMetrics()
+    this.metrics = this._metricsImpl
+    this.signal = opts.signal ?? new AbortController().signal
+  }
+
+  // -------------------------------------------------------------------------
+  // Fact builders
+  //
+  // Each builder constructs a fully-formed Fact with the envelope filled
+  // in (producedBy = [this.extractorName], confidence defaulting to 1.0).
+  // The plugin yields the returned fact; the runner pumps it through the
+  // FactBus, which validates, dedupes, batches, and writes.
+  // -------------------------------------------------------------------------
+
+  symbol(input: SymbolFactInput): SymbolFact {
+    return {
+      kind: "symbol",
+      payload: input.payload,
+      producedBy: [this.extractorName],
+      confidence: input.confidence ?? 1.0,
+    }
+  }
+
+  type(input: TypeFactInput): TypeFact {
+    return {
+      kind: "type",
+      payload: input.payload,
+      producedBy: [this.extractorName],
+      confidence: input.confidence ?? 1.0,
+    }
+  }
+
+  aggregateField(input: AggregateFieldFactInput): AggregateFieldFact {
+    return {
+      kind: "aggregate-field",
+      payload: input.payload,
+      producedBy: [this.extractorName],
+      confidence: input.confidence ?? 1.0,
+    }
+  }
+
+  edge(input: EdgeFactInput): EdgeFact {
+    return {
+      kind: "edge",
+      payload: input.payload,
+      producedBy: [this.extractorName],
+      confidence: input.confidence ?? input.payload.confidence ?? 1.0,
+    }
+  }
+
+  evidence(input: EvidenceFactInput): EvidenceFact {
+    return {
+      kind: "evidence",
+      payload: input.payload,
+      attachedTo: input.attachedTo,
+      producedBy: [this.extractorName],
+      confidence: input.confidence ?? 1.0,
+    }
+  }
+
+  observation(input: ObservationFactInput): ObservationFact {
+    return {
+      kind: "observation",
+      payload: input.payload,
+      producedBy: [this.extractorName],
+      confidence: input.confidence ?? 1.0,
+    }
+  }
+
+  location(filePath: string, line: number, column?: number): SourceLocation {
+    return { filePath, line, column }
+  }
 }
