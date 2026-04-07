@@ -304,9 +304,9 @@ Check:
 
 ## More docs
 
-- `doc/project/data/schema/neo4j-graph-schema.md` — **Neo4j intelligence schema** (labels, edge kinds, indexes roadmap)
-- `doc/project/task/todo-neo4j-schema-hardening.md` — **task plan / checklist** for Neo4j hardening
-- `doc/atomic/domain/graph-db/philosophy-graph-instrumentation.md` — **core philosophy**: persistent LSP, graph model, instrumentation (Neo4j intents)
+- `doc/project/data/schema/sqlite-graph-schema.md` — **embedded SQLite intelligence schema** (tables, indexes, edge kinds, the join shape every query uses)
+- `doc/project/architecture/extraction-pipeline.md` — **extraction pipeline**: how IExtractor plugins, the FactBus, and the SQLite store fit together
+- `doc/atomic/domain/graph-db/philosophy-graph-instrumentation.md` — **core philosophy**: persistent LSP, graph model, intent-driven queries
 - `doc/architecture.md` — repo-facing architecture summary
 - `doc/WLAN_ANALYSIS_ARCHITECTURE.md` — **WLAN code analysis pipeline + PostgreSQL schema design**
 - `doc/diagrams/clangd-mcp-architecture.puml` — PlantUML component diagram (basic runtime)
