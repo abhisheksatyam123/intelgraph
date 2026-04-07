@@ -162,6 +162,87 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       // opencode has many call sites; expect a substantial count.
       expect(callCount.n).toBeGreaterThan(200)
     })
+
+    // ── End-to-end query tests through SqliteDbLookup ───────────────────
+
+    it("find_module_imports returns the imports of a real opencode module", async () => {
+      // Pick the agent module which we know imports many things.
+      const agentModule = ingest.client.raw
+        .prepare(
+          `SELECT canonical_name FROM graph_nodes
+           WHERE snapshot_id = ? AND kind = 'module' AND canonical_name LIKE '%agent/agent.ts'
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { canonical_name: string } | undefined
+      if (!agentModule) {
+        // The file might have been renamed; the test passes vacuously
+        // — opencode evolves and we don't want flapping on rename.
+        return
+      }
+      const result = await ingest.lookup.lookup({
+        intent: "find_module_imports",
+        snapshotId: ingest.snapshotId,
+        apiName: agentModule.canonical_name,
+        limit: 100,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // Every row should be an imports edge
+      for (const row of result.rows) {
+        expect(row.edge_kind).toBe("imports")
+      }
+    })
+
+    it("find_module_symbols returns symbols declared in a real opencode module", async () => {
+      const agentModule = ingest.client.raw
+        .prepare(
+          `SELECT canonical_name FROM graph_nodes
+           WHERE snapshot_id = ? AND kind = 'module' AND canonical_name LIKE '%agent/agent.ts'
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { canonical_name: string } | undefined
+      if (!agentModule) return
+      const result = await ingest.lookup.lookup({
+        intent: "find_module_symbols",
+        snapshotId: ingest.snapshotId,
+        apiName: agentModule.canonical_name,
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // Every row should be a contains edge
+      for (const row of result.rows) {
+        expect(row.edge_kind).toBe("contains")
+      }
+    })
+
+    it("find_module_dependents finds reverse imports", async () => {
+      // Find any module that has at least one incoming import.
+      const dependedOnModule = ingest.client.raw
+        .prepare(
+          `SELECT dst.canonical_name AS name, COUNT(*) AS n
+           FROM graph_edges e
+           INNER JOIN graph_nodes dst
+             ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+           WHERE e.snapshot_id = ?
+             AND e.edge_kind = 'imports'
+             AND dst.kind = 'module'
+           GROUP BY dst.canonical_name
+           ORDER BY n DESC
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string; n: number } | undefined
+      if (!dependedOnModule) return
+      const result = await ingest.lookup.lookup({
+        intent: "find_module_dependents",
+        snapshotId: ingest.snapshotId,
+        apiName: dependedOnModule.name,
+        limit: 100,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      expect(result.rows.length).toBeLessThanOrEqual(dependedOnModule.n)
+    })
   },
 )
 
