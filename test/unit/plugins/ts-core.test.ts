@@ -85,6 +85,10 @@ export class Greeter {
 
 export interface NamedThing {
   name: string
+  // Round D14: method signatures inside interface bodies should
+  // surface their parameter and return types as references_type edges.
+  // Both Greeter and NamedThing are local to this file.
+  greet(target: Greeter): NamedThing
 }
 `,
   )
@@ -663,6 +667,48 @@ describe("ts-core plugin — extraction", () => {
     )
     expect(fromFallback.length).toBe(1)
     expect(String(fromFallback[0].dst_node_id)).toMatch(/module-b\.ts#Greeting$/)
+  })
+
+  it("walks interface method_signature for parameter and return type references", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const refEdges = sink
+      .allEdges()
+      .filter((e) => e.edge_kind === "references_type")
+    // NamedThing.greet(target: Greeter): NamedThing
+    // → NamedThing should have 2 fieldRef edges:
+    //     - to Greeter (parameter type, local)
+    //     - to NamedThing (return type, self-reference, local)
+    const fromNamedThing = refEdges.filter(
+      (e) =>
+        String(e.src_node_id).endsWith("module-a.ts#NamedThing") &&
+        (e.metadata as { fieldRef?: boolean })?.fieldRef === true,
+    )
+    expect(fromNamedThing.length).toBeGreaterThanOrEqual(2)
+
+    const targets = new Set(
+      fromNamedThing.map((e) => String(e.dst_node_id)),
+    )
+    expect([...targets].some((t) => t.endsWith("module-a.ts#Greeter"))).toBe(true)
+    expect(
+      [...targets].some((t) => t.endsWith("module-a.ts#NamedThing")),
+    ).toBe(true)
+
+    // The method_signature edge should carry memberKind=method_signature
+    // so visualizers can distinguish field types from method types.
+    const hasMethodSig = fromNamedThing.some(
+      (e) =>
+        (e.metadata as { memberKind?: string })?.memberKind === "method_signature",
+    )
+    expect(hasMethodSig).toBe(true)
   })
 
   it("emits references_type edges for class field types", async () => {

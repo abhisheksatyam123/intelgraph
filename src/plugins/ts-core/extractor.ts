@@ -1021,13 +1021,19 @@ function extractTypeAliasBodyReferences(
 /**
  * Walk the body of a class or interface and emit references_type edges
  * for each typed field / property whose type resolves through the
- * FileResolver. Mirrors extractTypeReferences but pulls type_annotations
- * from public_field_definition (class fields) and property_signature
- * (interface properties).
+ * FileResolver. Handles three member node types:
+ *   - public_field_definition (class fields):     `field: Type`
+ *   - property_signature      (interface props):  `field: Type`
+ *   - method_signature        (interface methods): `greet(name: string): Result`
  *
- * Method signatures inside the body are NOT walked here — they're
- * already handled by extractTypeReferences when each method_definition
- * is processed during the recursive walk.
+ * For property_signature and public_field_definition, we look at the
+ * direct type_annotation child. For method_signature, we walk the
+ * entire node — every type_identifier inside lives in either a
+ * parameter type_annotation or the return type_annotation.
+ *
+ * Class method bodies (method_definition nodes inside class_body) are
+ * NOT walked here — they're already handled by extractTypeReferences
+ * when each method_definition is processed during the recursive walk.
  */
 function extractFieldTypeReferences(
   classOrIfaceNode: TsNode,
@@ -1035,24 +1041,8 @@ function extractFieldTypeReferences(
   resolver: FileResolver,
   moduleNodeName: string,
   file: string,
-): Array<{
-  edgeKind: "references_type"
-  srcSymbolName: string
-  dstSymbolName: string
-  confidence: number
-  derivation: "clangd" | "llm" | "runtime" | "hybrid"
-  sourceLocation: { sourceFilePath: string; sourceLineNumber: number }
-  metadata: Record<string, unknown>
-}> {
-  const out: Array<{
-    edgeKind: "references_type"
-    srcSymbolName: string
-    dstSymbolName: string
-    confidence: number
-    derivation: "clangd" | "llm" | "runtime" | "hybrid"
-    sourceLocation: { sourceFilePath: string; sourceLineNumber: number }
-    metadata: Record<string, unknown>
-  }> = []
+): Array<TypeRefEdgePayload> {
+  const out: TypeRefEdgePayload[] = []
   const seen = new Set<string>()
 
   const body =
@@ -1064,15 +1054,27 @@ function extractFieldTypeReferences(
   for (let i = 0; i < body.namedChildCount; i++) {
     const member = body.namedChild(i)
     if (!member) continue
+
+    // Pick the right walking strategy by member kind.
+    let walkRoot: TsNode | null = null
     if (
-      member.type !== "public_field_definition" &&
-      member.type !== "property_signature"
+      member.type === "public_field_definition" ||
+      member.type === "property_signature"
     ) {
-      continue
+      // The type_annotation child carries the field's type. Walking
+      // just that subtree avoids picking up unrelated identifiers
+      // (e.g. inside a default value initializer).
+      walkRoot = firstNamedChildOfType(member, "type_annotation")
+    } else if (member.type === "method_signature") {
+      // Interface method shorthand: `greet(name: string): Result`.
+      // Every type_identifier inside the method_signature lives in a
+      // parameter type_annotation or the return type, so walking the
+      // whole member is safe and picks up both.
+      walkRoot = member
     }
-    const ann = firstNamedChildOfType(member, "type_annotation")
-    if (!ann) continue
-    for (const typeName of namedDescendantTexts(ann, "type_identifier")) {
+    if (!walkRoot) continue
+
+    for (const typeName of namedDescendantTexts(walkRoot, "type_identifier")) {
       if (seen.has(typeName)) continue
       const resolved = resolveTypeName(typeName, resolver, moduleNodeName)
       if (!resolved) continue
@@ -1085,13 +1087,14 @@ function extractFieldTypeReferences(
         derivation: "clangd",
         sourceLocation: {
           sourceFilePath: file,
-          sourceLineNumber: ann.startPosition.row + 1,
+          sourceLineNumber: walkRoot.startPosition.row + 1,
         },
         metadata: {
           resolved: true,
           resolutionKind: resolved.kind,
           typeName,
           fieldRef: true,
+          memberKind: member.type,
         },
       })
     }
