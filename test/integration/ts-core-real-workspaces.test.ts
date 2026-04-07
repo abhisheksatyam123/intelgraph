@@ -588,12 +588,21 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       expect(orphanRate).toBeLessThan(0.4)
     })
 
-    it("KPI: ≥45% of calls edges are resolved (regression guard for D1–D19)", () => {
+    it("KPI: ≥40% of calls edges are resolved (regression guard for the resolver chain)", () => {
       // Cumulative resolution rate across every kind:
       //   named-import / default-import / namespace-member /
       //   named-member / local-member / var-member / param-member /
-      //   this-method / local / jsx-component
+      //   this-method / local / jsx-component / jsx-namespace-component /
+      //   constructor
       // Excludes the lossy `member`, `bare`, and `raw` fallbacks.
+      //
+      // The threshold is a SOFT floor meant to catch the kind of bug
+      // where an entire resolver path silently breaks. Each round
+      // that adds new edge categories may shift the rate slightly —
+      // adding D27 constructor edges dropped it from ~53% to ~45%
+      // because most constructor targets are external types (URL,
+      // Set, Map, Error). 40% is comfortably above the floor for a
+      // healthy snapshot but still catches a major regression.
       const totals = ingest.client.raw
         .prepare(
           `SELECT
@@ -605,9 +614,7 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
         .get(ingest.snapshotId) as { resolved: number; total: number }
       expect(totals.total).toBeGreaterThan(0)
       const rate = totals.resolved / totals.total
-      // Soft floor — currently sits around 53% on opencode after D1–D19.
-      // Drop below 45% means a resolution path regressed.
-      expect(rate).toBeGreaterThan(0.45)
+      expect(rate).toBeGreaterThan(0.4)
     })
 
     it("Round D17: typed parameter member calls resolve to param-member", () => {

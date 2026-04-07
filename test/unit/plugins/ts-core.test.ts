@@ -199,6 +199,12 @@ export const inferred = new Greeter("inferred")
 export function viaInferred() {
   inferred.greet("inferred-call")
 }
+
+// Round D27: bare new expression as a statement should produce a
+// constructor calls edge from makeOne to Greeter.
+export function makeOne(): Greeter {
+  return new Greeter("standalone")
+}
 `,
   )
 
@@ -918,6 +924,40 @@ describe("ts-core plugin — extraction", () => {
         String(e.dst_node_id).endsWith("anon-class.ts#default"),
     )
     expect(anonClassContains).toBeDefined()
+  })
+
+  it("emits a constructor calls edge for bare `new Foo()` expressions", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const callEdges = sink.allEdges().filter((e) => e.edge_kind === "calls")
+    const stripPrefix = (id: unknown): string =>
+      String(id).replace(/^graph_node:\d+:symbol:/, "")
+
+    // makeOne() returns `new Greeter("standalone")`. The new_expression
+    // should produce a constructor calls edge from makeOne to Greeter.
+    const fromMakeOne = callEdges.filter((e) =>
+      String(e.src_node_id).endsWith("namespace-fixture.ts#makeOne"),
+    )
+    const ctorCall = fromMakeOne.find(
+      (e) =>
+        (e.metadata as { resolutionKind?: string })?.resolutionKind ===
+        "constructor",
+    )
+    expect(ctorCall).toBeDefined()
+    expect(stripPrefix(ctorCall!.dst_node_id)).toBe(
+      "module:src/module-a.ts#Greeter",
+    )
+    const meta = ctorCall!.metadata as { ctorName?: string; resolved?: boolean }
+    expect(meta.ctorName).toBe("Greeter")
+    expect(meta.resolved).toBe(true)
   })
 
   it("infers var type from `new Foo()` and resolves member calls", async () => {

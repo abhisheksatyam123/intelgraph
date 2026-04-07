@@ -614,6 +614,43 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
       }
     }
 
+    // new Foo() — constructor invocations are semantically a call to
+    // the type. The variable_declarator path (D18) already handles
+    // `const x = new Foo()` for type inference; here we also emit a
+    // calls edge so the call graph captures the instantiation, even
+    // when the new-expression is a bare statement or an argument.
+    if (node.type === "new_expression") {
+      const ctor = node.namedChild(0)
+      if (ctor && ctor.type === "identifier") {
+        const resolved = resolveTypeName(ctor.text, resolver, moduleNodeName)
+        const callerName = scopeStack.length
+          ? scopeStack[scopeStack.length - 1].name
+          : moduleNodeName
+        yield ctx.edge({
+          payload: {
+            edgeKind: "calls",
+            srcSymbolName: callerName,
+            dstSymbolName: resolved ? resolved.name : ctor.text,
+            confidence: resolved ? 0.95 : 0.7,
+            derivation: "clangd",
+            sourceLocation: {
+              sourceFilePath: file,
+              sourceLineNumber: node.startPosition.row + 1,
+            },
+            metadata: {
+              resolved: resolved !== null,
+              resolutionKind: "constructor",
+              ctorName: ctor.text,
+            },
+            evidence: {
+              sourceKind: "file_line",
+              location: locationOf(file, node),
+            },
+          },
+        })
+      }
+    }
+
     // Call expressions inside the current scope
     if (node.type === "call_expression") {
       const enclosingClassNow = classStack.length
