@@ -112,6 +112,9 @@ export class User {
 
 export class FormalGreeter extends Greeter implements NamedThing {
   name = "formal"
+  owner: User
+  fallback?: Greeting
+  count: number
   greet(name: string): Greeting {
     return greetUser(name).toUpperCase()
   }
@@ -449,6 +452,39 @@ describe("ts-core plugin — extraction", () => {
     }
     expect(nsMeta?.resolved).toBe(true)
     expect(nsMeta?.resolutionKind).toBe("namespace-member")
+  })
+
+  it("emits references_type edges for class field types", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const refEdges = sink
+      .allEdges()
+      .filter((e) => e.edge_kind === "references_type")
+
+    // FormalGreeter has fields: owner: User, fallback: Greeting, count: number
+    // - User and Greeting resolve (local declarations in module-b)
+    // - number is a predefined_type, dropped
+    // Expected: 2 edges from FormalGreeter
+    const fromFormal = refEdges.filter(
+      (e) =>
+        String(e.src_node_id).endsWith("module-b.ts#FormalGreeter") &&
+        (e.metadata as { fieldRef?: boolean })?.fieldRef === true,
+    )
+    expect(fromFormal.length).toBe(2)
+
+    const dsts = new Set(
+      fromFormal.map((e) => String(e.dst_node_id)),
+    )
+    expect([...dsts].some((d) => d.endsWith("module-b.ts#User"))).toBe(true)
+    expect([...dsts].some((d) => d.endsWith("module-b.ts#Greeting"))).toBe(true)
   })
 
   it("emits references_type edges for function signature types", async () => {

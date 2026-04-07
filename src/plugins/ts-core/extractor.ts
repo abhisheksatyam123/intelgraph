@@ -354,6 +354,22 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
             yield ctx.edge({ payload: ref })
           }
         }
+
+        // Class field and interface property type references. Emit one
+        // references_type edge per resolved type from the class/interface
+        // FQ name. Built-ins (predefined_type) are auto-dropped because
+        // they're not type_identifier nodes.
+        if (kind === "class" || kind === "interface") {
+          for (const ref of extractFieldTypeReferences(
+            node,
+            canonicalName,
+            resolver,
+            moduleNodeName,
+            file,
+          )) {
+            yield ctx.edge({ payload: ref })
+          }
+        }
       }
 
       // Push the class/interface onto classStack BEFORE recursing so
@@ -813,6 +829,87 @@ function extractTypeReferences(
           resolved: true,
           resolutionKind: resolved.kind,
           typeName,
+        },
+      })
+    }
+  }
+  return out
+}
+
+/**
+ * Walk the body of a class or interface and emit references_type edges
+ * for each typed field / property whose type resolves through the
+ * FileResolver. Mirrors extractTypeReferences but pulls type_annotations
+ * from public_field_definition (class fields) and property_signature
+ * (interface properties).
+ *
+ * Method signatures inside the body are NOT walked here — they're
+ * already handled by extractTypeReferences when each method_definition
+ * is processed during the recursive walk.
+ */
+function extractFieldTypeReferences(
+  classOrIfaceNode: TsNode,
+  thisFqName: string,
+  resolver: FileResolver,
+  moduleNodeName: string,
+  file: string,
+): Array<{
+  edgeKind: "references_type"
+  srcSymbolName: string
+  dstSymbolName: string
+  confidence: number
+  derivation: "clangd" | "llm" | "runtime" | "hybrid"
+  sourceLocation: { sourceFilePath: string; sourceLineNumber: number }
+  metadata: Record<string, unknown>
+}> {
+  const out: Array<{
+    edgeKind: "references_type"
+    srcSymbolName: string
+    dstSymbolName: string
+    confidence: number
+    derivation: "clangd" | "llm" | "runtime" | "hybrid"
+    sourceLocation: { sourceFilePath: string; sourceLineNumber: number }
+    metadata: Record<string, unknown>
+  }> = []
+  const seen = new Set<string>()
+
+  const body =
+    firstNamedChildOfType(classOrIfaceNode, "class_body") ??
+    firstNamedChildOfType(classOrIfaceNode, "interface_body") ??
+    firstNamedChildOfType(classOrIfaceNode, "object_type")
+  if (!body) return out
+
+  for (let i = 0; i < body.namedChildCount; i++) {
+    const member = body.namedChild(i)
+    if (!member) continue
+    if (
+      member.type !== "public_field_definition" &&
+      member.type !== "property_signature"
+    ) {
+      continue
+    }
+    const ann = firstNamedChildOfType(member, "type_annotation")
+    if (!ann) continue
+    for (const typeName of namedDescendantTexts(ann, "type_identifier")) {
+      if (seen.has(typeName)) continue
+      const resolved = resolveTypeName(typeName, resolver, moduleNodeName)
+      if (!resolved) continue
+      seen.add(typeName)
+      out.push({
+        edgeKind: "references_type",
+        srcSymbolName: thisFqName,
+        dstSymbolName: resolved.name,
+        confidence: 0.95,
+        derivation: "clangd",
+        sourceLocation: {
+          sourceFilePath: file,
+          sourceLineNumber: ann.startPosition.row + 1,
+        },
+        metadata: {
+          resolved: true,
+          resolutionKind: resolved.kind,
+          typeName,
+          fieldRef: true,
         },
       })
     }

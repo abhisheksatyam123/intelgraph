@@ -316,10 +316,10 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
-    it("Round D6: references_type edges link signatures to imported types", () => {
-      // opencode is type-heavy. Function and method signatures
-      // referencing imported types should produce a substantial number
-      // of references_type edges.
+    it("Round D6/D7: references_type edges link signatures and class fields to types", () => {
+      // opencode is type-heavy. Function/method signatures AND class
+      // field declarations referencing imported types both produce
+      // references_type edges.
       const totals = ingest.client.raw
         .prepare(
           `SELECT COUNT(*) AS n FROM graph_edges
@@ -327,6 +327,16 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
         )
         .get(ingest.snapshotId) as { n: number }
       expect(totals.n).toBeGreaterThan(50)
+
+      // Round D7: at least some of those should be field references.
+      const fieldRefs = ingest.client.raw
+        .prepare(
+          `SELECT COUNT(*) AS n FROM graph_edges
+           WHERE snapshot_id = ? AND edge_kind = 'references_type'
+             AND json_extract(metadata, '$.fieldRef') = 1`,
+        )
+        .get(ingest.snapshotId) as { n: number }
+      expect(fieldRefs.n).toBeGreaterThan(0)
 
       // All references_type edges should resolve (we drop unresolved
       // types like Promise/string at extraction time).
