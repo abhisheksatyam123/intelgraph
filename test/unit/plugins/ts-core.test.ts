@@ -575,6 +575,44 @@ describe("ts-core plugin — extraction", () => {
     expect(String(fromGreetingMap[0].dst_node_id)).toMatch(/module-b\.ts#Greeting$/)
   })
 
+  it("tags `import type` imports edges with metadata.importType", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const importEdges = sink
+      .allEdges()
+      .filter((e) => e.edge_kind === "imports")
+
+    // services.ts has both `import { Greeter }` and
+    // `import type { Greeting }`. Find each.
+    const fromServices = importEdges.filter((e) =>
+      String(e.src_node_id).includes("services.ts"),
+    )
+    const greeterImport = fromServices.find((e) =>
+      String(e.dst_node_id).endsWith("module-a.ts"),
+    )
+    const greetingImport = fromServices.find((e) =>
+      String(e.dst_node_id).endsWith("module-b.ts"),
+    )
+    expect(greeterImport).toBeDefined()
+    expect(greetingImport).toBeDefined()
+
+    // Greeter is a value import → no importType flag
+    const greeterMeta = greeterImport?.metadata as { importType?: boolean }
+    expect(greeterMeta?.importType).toBeUndefined()
+
+    // Greeting is a type-only import → importType=true
+    const greetingMeta = greetingImport?.metadata as { importType?: boolean }
+    expect(greetingMeta?.importType).toBe(true)
+  })
+
   it("emits typed top-level variables as global_var symbols with references_type", async () => {
     const sink = new CaptureSink()
     const runner = new ExtractorRunner({

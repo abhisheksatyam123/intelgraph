@@ -1207,6 +1207,9 @@ function extractImportEdge(
 ): ImportEdgePayload | null {
   const source = firstStringChildText(importNode)
   if (!source) return null
+  // Detect `import type { … } from "…"` — the `type` keyword is an
+  // anonymous child of import_statement, not a named one.
+  const isTypeOnly = hasAnonymousChildOfType(importNode, "type")
   return {
     edgeKind: "imports",
     srcSymbolName: moduleNodeName,
@@ -1217,6 +1220,7 @@ function extractImportEdge(
       sourceFilePath: file,
       sourceLineNumber: importNode.startPosition.row + 1,
     },
+    ...(isTypeOnly ? { metadata: { importType: true } } : {}),
   }
 }
 
@@ -1427,6 +1431,19 @@ function isComponentTagName(name: string): boolean {
   const c = name.charCodeAt(0)
   // 'A'..'Z' or '_' or '$'
   return (c >= 65 && c <= 90) || c === 95 || c === 36
+}
+
+/**
+ * Check whether any of `node`'s children (named or anonymous) have the
+ * given type. Used for keywords like `type` in `import type` that
+ * appear as anonymous children of import_statement.
+ */
+function hasAnonymousChildOfType(node: TsNode, type: string): boolean {
+  for (let i = 0; i < node.childCount; i++) {
+    const child = node.child(i)
+    if (child && child.type === type) return true
+  }
+  return false
 }
 
 function firstNamedChildOfType(node: TsNode, type: string): TsNode | null {
