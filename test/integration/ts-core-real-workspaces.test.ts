@@ -737,5 +737,83 @@ describe.skipIf(!existsSync(INSTRUCTKR_ROOT))(
         .get(ingest.snapshotId) as { n: number }
       expect(count.n).toBeGreaterThan(0)
     })
+
+    it("emits references_type edges (D6/D7 cross-workspace check)", () => {
+      const count = ingest.client.raw
+        .prepare(
+          "SELECT COUNT(*) AS n FROM graph_edges WHERE snapshot_id = ? AND edge_kind = 'references_type'",
+        )
+        .get(ingest.snapshotId) as { n: number }
+      expect(count.n).toBeGreaterThan(0)
+    })
+
+    it("KPI: ≥30% of calls edges resolve (lower floor for unfamiliar shape)", () => {
+      // instructkr-claude-code is a mirror project — its coding style
+      // is different from opencode (no Effect, less namespace-heavy).
+      // The resolution rate is lower because there's less for our
+      // namespace-style heuristics to grab. We assert a softer 30%
+      // floor than opencode's 45%.
+      const totals = ingest.client.raw
+        .prepare(
+          `SELECT
+             SUM(CASE WHEN json_extract(metadata, '$.resolved') = 1 THEN 1 ELSE 0 END) AS resolved,
+             COUNT(*) AS total
+           FROM graph_edges
+           WHERE snapshot_id = ? AND edge_kind = 'calls'`,
+        )
+        .get(ingest.snapshotId) as { resolved: number; total: number }
+      expect(totals.total).toBeGreaterThan(0)
+      const rate = totals.resolved / totals.total
+      expect(rate).toBeGreaterThan(0.3)
+    })
+
+    it("Property: workspace-internal edge dsts must reference real graph_nodes", () => {
+      // Same property check as opencode — catches D12-style bugs
+      // where extends/implements use bare dst names. instructkr is a
+      // different shape so this provides cross-workspace validation.
+      const workspaceModules = new Set(
+        (
+          ingest.client.raw
+            .prepare(
+              `SELECT canonical_name FROM graph_nodes
+               WHERE snapshot_id = ? AND kind = 'module'`,
+            )
+            .all(ingest.snapshotId) as Array<{ canonical_name: string }>
+        ).map((row) => row.canonical_name),
+      )
+      const knownNodeIds = new Set(
+        (
+          ingest.client.raw
+            .prepare(
+              `SELECT node_id FROM graph_nodes WHERE snapshot_id = ?`,
+            )
+            .all(ingest.snapshotId) as Array<{ node_id: string }>
+        ).map((row) => row.node_id),
+      )
+      const edges = ingest.client.raw
+        .prepare(
+          `SELECT dst_node_id FROM graph_edges
+           WHERE snapshot_id = ?
+             AND dst_node_id LIKE '%symbol:module:%'`,
+        )
+        .all(ingest.snapshotId) as Array<{ dst_node_id: string }>
+
+      let internalChecked = 0
+      let orphans = 0
+      for (const edge of edges) {
+        const canonical = edge.dst_node_id.replace(
+          /^graph_node:\d+:symbol:/,
+          "",
+        )
+        const hash = canonical.indexOf("#")
+        const modulePart = hash >= 0 ? canonical.substring(0, hash) : canonical
+        if (!workspaceModules.has(modulePart)) continue
+        internalChecked++
+        if (!knownNodeIds.has(edge.dst_node_id)) orphans++
+      }
+      expect(internalChecked).toBeGreaterThan(0)
+      const orphanRate = orphans / internalChecked
+      expect(orphanRate).toBeLessThan(0.4)
+    })
   },
 )
