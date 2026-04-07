@@ -14,8 +14,16 @@ export { LspServiceImpl, classifyLspError } from "./lsp-service.js"
 export type {
   TreeSitterService,
   FunctionCall,
+  SupportedLanguage,
+  TsNode,
+  TsTree,
 } from "./treesitter-service.js"
-export { TreeSitterServiceImpl } from "./treesitter-service.js"
+export { TreeSitterServiceImpl, getParser } from "./treesitter-service.js"
+export {
+  inferLanguageFromExtension,
+  walkTree,
+  findDescendant,
+} from "./treesitter-registry.js"
 
 export type {
   RipgrepService,

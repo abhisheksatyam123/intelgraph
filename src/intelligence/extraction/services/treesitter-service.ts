@@ -1,25 +1,21 @@
 /**
  * treesitter-service.ts — TreeSitter service exposed via ctx.treesitter.
  *
- * Wraps the existing tree-sitter C parser at
- * src/tools/pattern-detector/c-parser.ts. Plugins use this to parse C source
- * and locate structural constructs without spinning up their own parser
- * instance or knowing about the WASM init dance.
+ * Wraps two layers:
+ *   1. The legacy C-only helpers from
+ *      src/tools/pattern-detector/c-parser.ts (findEnclosingCall, etc.)
+ *      that the pattern-resolver still depends on.
+ *   2. The new multi-language registry in treesitter-registry.ts that
+ *      lazy-loads any installed grammar (C, TypeScript, TSX, etc.) by
+ *      language id, exposes raw AST access via parseSource/parseFile,
+ *      and provides walkTree / findDescendant utilities.
  *
- * The service:
- *   - Triggers initParser() lazily on first use (and caches the failure
- *     state, so a parser that fails to init does not retry on every call).
- *   - Reads files on demand if the plugin doesn't already have the source.
- *   - Exposes the existing FunctionCall shape and helper functions
- *     (findEnclosingCall, findEnclosingConstruct) directly.
- *
- * Future extensions (deferred to later problems):
- *   - Pluggable grammar registry for non-C languages
- *   - Tree-sitter query API (s-expression patterns) for richer matching
- *   - Per-snapshot parser cache so the same file isn't reparsed
+ * Plugins should use the multi-language surface for new work. The C-only
+ * helpers remain for the WLAN dispatch resolver until that code moves
+ * into a project-specific plugin.
  */
 
-import { readFileSync } from "fs"
+import { readFileSync } from "node:fs"
 import {
   type FunctionCall,
   findEnclosingCall as cFindEnclosingCall,
@@ -27,8 +23,20 @@ import {
   initParser as cInitParser,
   isParserReady as cIsParserReady,
 } from "../../../tools/pattern-detector/c-parser.js"
+import {
+  type SupportedLanguage,
+  type TsNode,
+  type TsTree,
+  findDescendant,
+  getParser,
+  inferLanguageFromExtension,
+  parseFile as registryParseFile,
+  parseSource as registryParseSource,
+  walkTree,
+} from "./treesitter-registry.js"
 
 export type { FunctionCall }
+export type { SupportedLanguage, TsNode, TsTree }
 
 // ---------------------------------------------------------------------------
 // Public service interface
@@ -78,6 +86,36 @@ export interface TreeSitterService {
     line: number,
     column: number,
   ): Promise<FunctionCall | null>
+
+  // ── Multi-language surface ─────────────────────────────────────────────
+
+  /**
+   * Parse a source string with the given tree-sitter grammar. Returns
+   * null if the grammar is not loadable (missing WASM, init failure) or
+   * if parsing throws. Plugins should treat this as best-effort.
+   */
+  parseSource(
+    language: SupportedLanguage,
+    source: string,
+  ): Promise<TsTree | null>
+
+  /**
+   * Read a file and parse it. Language is inferred from the extension if
+   * not provided explicitly.
+   */
+  parseFile(
+    filePath: string,
+    language?: SupportedLanguage,
+  ): Promise<TsTree | null>
+
+  /** Infer a language id from a file path's extension. */
+  inferLanguage(filePath: string): SupportedLanguage | null
+
+  /** Walk a tree depth-first yielding every named node. */
+  walk(node: TsNode): Generator<TsNode>
+
+  /** Find the first descendant matching a predicate. */
+  findDescendant(node: TsNode, predicate: (n: TsNode) => boolean): TsNode | null
 }
 
 // ---------------------------------------------------------------------------
@@ -138,4 +176,37 @@ export class TreeSitterServiceImpl implements TreeSitterService {
     }
     return this.findEnclosingCall(source, line, column)
   }
+
+  // ── Multi-language methods ───────────────────────────────────────────────
+
+  async parseSource(
+    language: SupportedLanguage,
+    source: string,
+  ): Promise<TsTree | null> {
+    return registryParseSource(language, source)
+  }
+
+  async parseFile(
+    filePath: string,
+    language?: SupportedLanguage,
+  ): Promise<TsTree | null> {
+    return registryParseFile(filePath, language)
+  }
+
+  inferLanguage(filePath: string): SupportedLanguage | null {
+    return inferLanguageFromExtension(filePath)
+  }
+
+  walk(node: TsNode): Generator<TsNode> {
+    return walkTree(node)
+  }
+
+  findDescendant(node: TsNode, predicate: (n: TsNode) => boolean): TsNode | null {
+    return findDescendant(node, predicate)
+  }
 }
+
+// Re-export getParser at the module level so plugins that need raw
+// Parser instances (e.g. to run tree-sitter queries) can import it
+// without reaching into the registry directly.
+export { getParser }
