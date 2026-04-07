@@ -385,6 +385,39 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_symbols_in_file returns all symbols in a file ordered by line", async () => {
+      // Pick any file path that has multiple symbols.
+      const seed = ingest.client.raw
+        .prepare(
+          `SELECT json_extract(location, '$.filePath') AS file, COUNT(*) AS n
+           FROM graph_nodes
+           WHERE snapshot_id = ? AND location IS NOT NULL
+           GROUP BY file
+           HAVING n > 5
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { file: string; n: number } | undefined
+      if (!seed) return
+
+      const result = await ingest.lookup.lookup({
+        intent: "find_symbols_in_file",
+        snapshotId: ingest.snapshotId,
+        filePath: seed.file,
+        limit: 100,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // All rows should have the same filePath
+      for (const row of result.rows) {
+        expect(row.file_path).toBe(seed.file)
+      }
+      // Ordered ascending by line
+      const lines = result.rows.map((r) => Number(r.line_number))
+      for (let i = 1; i < lines.length; i++) {
+        expect(lines[i - 1]).toBeLessThanOrEqual(lines[i])
+      }
+    })
+
     it("find_module_summary returns aggregate health metrics", async () => {
       // Pick the most-importing module so we know its summary will
       // have non-trivial counts.

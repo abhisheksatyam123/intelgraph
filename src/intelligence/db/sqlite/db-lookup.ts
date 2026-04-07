@@ -236,6 +236,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.externalImports(snapshotId, limit)
       case "find_module_summary":
         return this.moduleSummary(snapshotId, apiNames[0] ?? "")
+      case "find_symbols_in_file":
+        return this.symbolsInFile(snapshotId, request.filePath ?? "", limit)
       default:
         return []
     }
@@ -993,6 +995,50 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * List all symbols defined in a given file, ordered by start line.
+   * Used by visualizer file-outline views — the visualizer can pass
+   * a filepath without having to construct the module FQ name first.
+   *
+   * Returns every symbol whose location.filePath matches, including
+   * the module symbol itself, top-level functions/classes, and nested
+   * methods. Modules and members both flow through.
+   */
+  private symbolsInFile(
+    snapshotId: number,
+    filePath: string,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (!filePath) return []
+    const sql = `
+      SELECT
+        canonical_name,
+        kind,
+        location,
+        json_extract(payload, '$.metadata.endLine') AS end_line
+      FROM graph_nodes
+      WHERE snapshot_id = ?
+        AND json_extract(location, '$.filePath') = ?
+      ORDER BY json_extract(location, '$.line') ASC, canonical_name ASC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, filePath, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "function",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "contains",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+      end_line: toNumberOrNull(obj.end_line),
+    }))
+  }
 
   /**
    * Aggregate health summary for a single module. Returns one row

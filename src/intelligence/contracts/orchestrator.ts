@@ -88,6 +88,8 @@ export const QUERY_INTENTS = [
   "find_external_imports",
   /** Single-row aggregate health summary for a module (symbol/import counts, line count). */
   "find_module_summary",
+  /** All symbols defined in a file (request.filePath), ordered by line number. */
+  "find_symbols_in_file",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
