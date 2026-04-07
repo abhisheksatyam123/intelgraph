@@ -266,6 +266,33 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       expect(ratio).toBeGreaterThan(0.1)
     })
 
+    it("Round D3: re-export edges land with metadata.reExport=true", () => {
+      // opencode has barrel files (export ... from "./x") in many places.
+      // After Round D3, those land as imports edges with metadata.reExport=true.
+      const reExports = ingest.client.raw
+        .prepare(
+          `SELECT COUNT(*) AS n FROM graph_edges
+           WHERE snapshot_id = ? AND edge_kind = 'imports'
+             AND json_extract(metadata, '$.reExport') = 1`,
+        )
+        .get(ingest.snapshotId) as { n: number }
+      // opencode has many index.ts barrels — assert a soft floor.
+      expect(reExports.n).toBeGreaterThan(5)
+
+      // Spot-check at least one row carries the flag.
+      const sample = ingest.client.raw
+        .prepare(
+          `SELECT metadata FROM graph_edges
+           WHERE snapshot_id = ? AND edge_kind = 'imports'
+             AND json_extract(metadata, '$.reExport') = 1
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { metadata: string | null } | undefined
+      expect(sample).toBeDefined()
+      const meta = sample?.metadata ? JSON.parse(sample.metadata) : null
+      expect(meta?.reExport).toBe(true)
+    })
+
     it("Round D1: resolved call edges carry resolutionKind metadata", () => {
       const sample = ingest.client.raw
         .prepare(

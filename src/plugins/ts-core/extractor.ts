@@ -322,6 +322,20 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
       }
     }
 
+    // Re-exports: `export { x } from "./y"`, `export * from "./y"`,
+    // `export * as ns from "./y"`. These are semantically imports — the
+    // current module depends on the source module — so we emit them as
+    // `imports` edges. Re-exports don't bring names into local scope, so
+    // the resolver is not populated. (Plain `export const x = ...` and
+    // `export function y() {}` flow through the recursive walk via
+    // their declaration children and are picked up by extractDeclaration.)
+    if (node.type === "export_statement") {
+      const reExport = extractReExportEdge(node, moduleNodeName, file, workspaceRoot)
+      if (reExport) {
+        yield ctx.edge({ payload: reExport })
+      }
+    }
+
     // Scope management for call_expression attribution
     const enter = maybeEnterScope(node)
     if (enter) {
@@ -658,49 +672,28 @@ function extractInheritanceEdges(
   return out
 }
 
-function extractImportEdge(
-  importNode: TsNode,
-  moduleNodeName: string,
-  file: string,
-  workspaceRoot: string,
-): {
+interface ImportEdgePayload {
   edgeKind: "imports"
   srcSymbolName: string
   dstSymbolName: string
   confidence: number
   derivation: "clangd" | "llm" | "runtime" | "hybrid"
   sourceLocation: { sourceFilePath: string; sourceLineNumber: number }
-} | null {
-  // import_statement → string (the source)
-  let source: string | null = null
-  for (let i = 0; i < importNode.namedChildCount; i++) {
-    const child = importNode.namedChild(i)
-    if (!child) continue
-    if (child.type === "string") {
-      // strip surrounding quotes
-      source = child.text.replace(/^['"]|['"]$/g, "")
-      break
-    }
-  }
+  metadata?: Record<string, unknown>
+}
+
+function extractImportEdge(
+  importNode: TsNode,
+  moduleNodeName: string,
+  file: string,
+  workspaceRoot: string,
+): ImportEdgePayload | null {
+  const source = firstStringChildText(importNode)
   if (!source) return null
-
-  // Resolve relative imports against the file's directory; bare
-  // specifiers (npm packages) are kept as-is.
-  let target: string
-  if (source.startsWith("./") || source.startsWith("../")) {
-    const abs = resolveImportPath(resolvePath(dirname(file), source))
-    target = `module:${workspaceRelativePath(workspaceRoot, abs)}`
-  } else if (source.startsWith("/")) {
-    const abs = resolveImportPath(source)
-    target = `module:${workspaceRelativePath(workspaceRoot, abs)}`
-  } else {
-    target = `module:${source}`
-  }
-
   return {
     edgeKind: "imports",
     srcSymbolName: moduleNodeName,
-    dstSymbolName: target,
+    dstSymbolName: resolveImportTarget(source, file, workspaceRoot),
     confidence: 1,
     derivation: "clangd",
     sourceLocation: {
@@ -708,6 +701,66 @@ function extractImportEdge(
       sourceLineNumber: importNode.startPosition.row + 1,
     },
   }
+}
+
+/**
+ * `export { x } from "./y"`, `export * from "./y"`, and
+ * `export * as ns from "./y"` are semantically imports — they create a
+ * dependency on the source module. We emit them as `imports` edges with
+ * metadata.reExport=true so a visualizer can distinguish them from
+ * direct imports.
+ *
+ * `export const x = ...` and `export function y() {}` have no `string`
+ * source and are returned as null; their declaration children flow
+ * through the recursive walk and are picked up by extractDeclaration.
+ */
+function extractReExportEdge(
+  exportNode: TsNode,
+  moduleNodeName: string,
+  file: string,
+  workspaceRoot: string,
+): ImportEdgePayload | null {
+  const source = firstStringChildText(exportNode)
+  if (!source) return null
+  return {
+    edgeKind: "imports",
+    srcSymbolName: moduleNodeName,
+    dstSymbolName: resolveImportTarget(source, file, workspaceRoot),
+    confidence: 1,
+    derivation: "clangd",
+    sourceLocation: {
+      sourceFilePath: file,
+      sourceLineNumber: exportNode.startPosition.row + 1,
+    },
+    metadata: { reExport: true },
+  }
+}
+
+function firstStringChildText(node: TsNode): string | null {
+  for (let i = 0; i < node.namedChildCount; i++) {
+    const child = node.namedChild(i)
+    if (!child) continue
+    if (child.type === "string") {
+      return child.text.replace(/^['"]|['"]$/g, "")
+    }
+  }
+  return null
+}
+
+function resolveImportTarget(
+  source: string,
+  file: string,
+  workspaceRoot: string,
+): string {
+  if (source.startsWith("./") || source.startsWith("../")) {
+    const abs = resolveImportPath(resolvePath(dirname(file), source))
+    return `module:${workspaceRelativePath(workspaceRoot, abs)}`
+  }
+  if (source.startsWith("/")) {
+    const abs = resolveImportPath(source)
+    return `module:${workspaceRelativePath(workspaceRoot, abs)}`
+  }
+  return `module:${source}`
 }
 
 // ---------------------------------------------------------------------------

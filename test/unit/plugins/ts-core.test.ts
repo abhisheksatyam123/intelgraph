@@ -129,6 +129,16 @@ export function App() {
 }
 `,
   )
+
+  // barrel re-export module — exercises export * and named re-exports
+  writeFileSync(
+    join(tempRoot, "src", "index.ts"),
+    `
+export { entry, Greeter } from "./module-a"
+export * from "./module-b"
+export * as util from "./util"
+`,
+  )
 })
 
 afterAll(() => {
@@ -423,6 +433,43 @@ describe("ts-core plugin — extraction", () => {
     }
     expect(nsMeta?.resolved).toBe(true)
     expect(nsMeta?.resolutionKind).toBe("namespace-member")
+  })
+
+  it("emits imports edges for re-exports (export ... from)", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const importEdges = sink.allEdges().filter((e) => e.edge_kind === "imports")
+    const fromIndex = importEdges.filter((e) =>
+      String(e.src_node_id).includes("src/index.ts"),
+    )
+    // index.ts re-exports from module-a, module-b, and util → 3 edges
+    expect(fromIndex.length).toBeGreaterThanOrEqual(3)
+
+    const targets = new Set(
+      fromIndex.map((e) => String(e.dst_node_id)),
+    )
+    expect(
+      [...targets].some((t) => t.endsWith("module:src/module-a.ts")),
+    ).toBe(true)
+    expect(
+      [...targets].some((t) => t.endsWith("module:src/module-b.ts")),
+    ).toBe(true)
+    expect([...targets].some((t) => t.endsWith("module:src/util.ts"))).toBe(true)
+
+    // Every re-export edge should carry metadata.reExport=true so the
+    // visualizer can distinguish them from direct imports.
+    for (const edge of fromIndex) {
+      const meta = edge.metadata as { reExport?: boolean } | null
+      expect(meta?.reExport).toBe(true)
+    }
   })
 
   it("auto-tags every emitted fact with producedBy=ts-core", async () => {
