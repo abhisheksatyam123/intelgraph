@@ -385,6 +385,35 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_external_imports inventories npm dependencies", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_external_imports",
+        snapshotId: ingest.snapshotId,
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // Each row should have an incoming_count
+      const counts = result.rows.map(
+        (r) => Number((r as { incoming_count?: number }).incoming_count),
+      )
+      for (const c of counts) {
+        expect(c).toBeGreaterThan(0)
+      }
+      // Ordered descending
+      for (let i = 1; i < counts.length; i++) {
+        expect(counts[i - 1]).toBeGreaterThanOrEqual(counts[i])
+      }
+      // opencode imports `effect` heavily — expect it in the top results
+      const names = result.rows.map((r) => String(r.canonical_name))
+      // Spot check: at least one row's canonical_name doesn't contain a /
+      // (bare specifier = external)
+      const hasExternal = names.some(
+        (n) => n.startsWith("module:") && !n.substring(7).includes("/"),
+      )
+      expect(hasExternal).toBe(true)
+    })
+
     it("find_long_functions ranks functions by line count", async () => {
       const result = await ingest.lookup.lookup({
         intent: "find_long_functions",

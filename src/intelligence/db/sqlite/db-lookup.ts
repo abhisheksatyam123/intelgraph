@@ -232,6 +232,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         )
       case "find_long_functions":
         return this.longFunctions(snapshotId, request.depth ?? 50, limit)
+      case "find_external_imports":
+        return this.externalImports(snapshotId, limit)
       default:
         return []
     }
@@ -989,6 +991,58 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find distinct external (npm/bare) imports with usage counts.
+   * Internal imports have a `module:path/with/slashes` form; external
+   * imports are bare like `module:react` or `module:effect`. The
+   * heuristic: an import dst is external if there's no graph_node
+   * row with that canonical_name in the same snapshot — internal
+   * modules are always extracted as graph_nodes.
+   *
+   * Result rows are ordered DESC by usage count so the most-relied-on
+   * dependencies appear first. Each row has an `incoming_count` field
+   * showing how many imports edges point at the package.
+   */
+  private externalImports(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        e.dst_node_id AS dst_id,
+        REPLACE(e.dst_node_id,
+          'graph_node:' || e.snapshot_id || ':symbol:',
+          '') AS canonical_name,
+        COUNT(*) AS usage_count
+      FROM graph_edges e
+      WHERE e.snapshot_id = ?
+        AND e.edge_kind = 'imports'
+        AND NOT EXISTS (
+          SELECT 1 FROM graph_nodes n
+          WHERE n.snapshot_id = e.snapshot_id
+            AND n.node_id = e.dst_node_id
+        )
+      GROUP BY e.dst_node_id
+      ORDER BY usage_count DESC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: "module",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "imports",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: null,
+      line_number: null,
+      incoming_count: toNumber(obj.usage_count),
+    }))
+  }
 
   /**
    * Find functions/methods exceeding a line-count threshold. Uses

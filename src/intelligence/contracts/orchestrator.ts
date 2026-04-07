@@ -84,6 +84,8 @@ export const QUERY_INTENTS = [
   "find_symbol_at_location",
   /** Functions/methods exceeding `depth` lines (default 50), ordered DESC by lineCount. */
   "find_long_functions",
+  /** Distinct list of external (npm/bare) imports with usage counts. */
+  "find_external_imports",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
