@@ -192,6 +192,13 @@ export function viaInstance() {
 export function viaParam(p: Greeter) {
   p.greet("param")
 }
+
+// Round D18: untyped const x = new Foo() — type comes from constructor.
+export const inferred = new Greeter("inferred")
+
+export function viaInferred() {
+  inferred.greet("inferred-call")
+}
 `,
   )
 
@@ -825,6 +832,56 @@ describe("ts-core plugin — extraction", () => {
       String(e.src_node_id).endsWith("module-b.ts#greetUser"),
     )
     expect(fromGreetUser.length).toBe(0)
+  })
+
+  it("infers var type from `new Foo()` and resolves member calls", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    // Even without an explicit annotation, `inferred` should be a
+    // global_var symbol with its type recovered from the constructor.
+    const globalVars = sink.allNodes().filter((n) => n.kind === "global_var")
+    const inferredNode = globalVars.find((n) =>
+      String(n.canonical_name).endsWith("namespace-fixture.ts#inferred"),
+    )
+    expect(inferredNode).toBeDefined()
+
+    // A references_type edge from inferred → Greeter should be emitted
+    // with metadata.inferredFromNew=true
+    const refEdges = sink
+      .allEdges()
+      .filter((e) => e.edge_kind === "references_type")
+    const fromInferred = refEdges.find(
+      (e) =>
+        String(e.src_node_id).endsWith("namespace-fixture.ts#inferred") &&
+        (e.metadata as { inferredFromNew?: boolean })?.inferredFromNew === true,
+    )
+    expect(fromInferred).toBeDefined()
+    expect(String(fromInferred!.dst_node_id)).toMatch(/module-a\.ts#Greeter$/)
+
+    // viaInferred() calls inferred.greet() → var-member to Greeter.greet
+    const callEdges = sink.allEdges().filter((e) => e.edge_kind === "calls")
+    const stripPrefix = (id: unknown): string =>
+      String(id).replace(/^graph_node:\d+:symbol:/, "")
+    const fromViaInferred = callEdges.filter((e) =>
+      String(e.src_node_id).endsWith("namespace-fixture.ts#viaInferred"),
+    )
+    const varMember = fromViaInferred.find(
+      (e) =>
+        (e.metadata as { resolutionKind?: string })?.resolutionKind ===
+        "var-member",
+    )
+    expect(varMember).toBeDefined()
+    expect(stripPrefix(varMember!.dst_node_id)).toBe(
+      "module:src/module-a.ts#Greeter.greet",
+    )
   })
 
   it("resolves typedParam.method() via the parameter's type annotation", async () => {

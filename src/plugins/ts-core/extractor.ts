@@ -407,21 +407,22 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
           }
         }
 
-        // Top-level typed variable: walk its variable_declarator's
-        // type_annotation. The annotation lives one level down inside
-        // the lexical_declaration → variable_declarator subtree, so we
-        // pass that container to the walker. Also record the var → type
-        // mapping in resolver.varTypes so subsequent member calls on
-        // the var can resolve to the type's FQ name.
+        // Top-level typed variable: record its var → type mapping in
+        // resolver.varTypes so subsequent member calls on the var can
+        // resolve to the type's FQ name. Two paths:
+        //   1. Explicit annotation: `const x: Foo = ...`
+        //   2. new-expression inference: `const x = new Foo()`
+        // Both also emit references_type edges from the var to its type.
         if (kind === "global_var") {
           const declarator = firstNamedChildOfType(node, "variable_declarator")
           if (declarator) {
             const ann = firstNamedChildOfType(declarator, "type_annotation")
             if (ann) {
-              // Find the FIRST type_identifier in the annotation. For
-              // simple `: Foo` this is Foo. For `: Foo | null` it's
-              // still Foo. For `: Promise<Foo>` it's Promise (which is
-              // built-in and won't resolve, so we drop it).
+              // Path 1: explicit type annotation. Find the FIRST
+              // type_identifier in the annotation. For simple `: Foo`
+              // this is Foo. For `: Foo | null` it's still Foo. For
+              // `: Promise<Foo>` it's Promise (which is built-in and
+              // won't resolve, so we drop it).
               const firstType = findFirstDescendantOfType(ann, "type_identifier")
               if (firstType) {
                 const resolved = resolveTypeName(
@@ -441,6 +442,47 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
                 file,
               )) {
                 yield ctx.edge({ payload: ref })
+              }
+            } else {
+              // Path 2: untyped declarator with a new_expression value.
+              // The constructor identifier is the implied type. Only
+              // simple `new Foo()` shape is recognized — chained or
+              // member-expression constructors fall through.
+              const value = declarator.childForFieldName("value")
+              if (value && value.type === "new_expression") {
+                const ctor = value.namedChild(0)
+                if (ctor && ctor.type === "identifier") {
+                  const resolved = resolveTypeName(
+                    ctor.text,
+                    resolver,
+                    moduleNodeName,
+                  )
+                  if (resolved) {
+                    resolver.varTypes.set(name, resolved.name)
+                    // Also emit a references_type edge from the var
+                    // to its inferred type so the visualizer can find
+                    // it.
+                    yield ctx.edge({
+                      payload: {
+                        edgeKind: "references_type",
+                        srcSymbolName: canonicalName,
+                        dstSymbolName: resolved.name,
+                        confidence: 0.9,
+                        derivation: "clangd",
+                        sourceLocation: {
+                          sourceFilePath: file,
+                          sourceLineNumber: value.startPosition.row + 1,
+                        },
+                        metadata: {
+                          resolved: true,
+                          resolutionKind: resolved.kind,
+                          typeName: ctor.text,
+                          inferredFromNew: true,
+                        },
+                      },
+                    })
+                  }
+                }
               }
             }
           }
@@ -657,7 +699,8 @@ function extractDeclaration(
       // the initializer is an arrow_function or function_expression.
       // Otherwise, if the declarator carries a type_annotation, emit
       // it as `global_var` so its referenced types still flow into
-      // the graph.
+      // the graph. Round D18 also picks up untyped `const x = new Foo()`
+      // — the constructor is the implied type.
       const declarator = firstNamedChildOfType(node, "variable_declarator")
       if (!declarator) return null
       const nameNode = declarator.childForFieldName("name")
@@ -672,6 +715,12 @@ function extractDeclaration(
       // Typed top-level variable: emit as global_var so its
       // type_annotation can be walked for references_type edges.
       if (firstNamedChildOfType(declarator, "type_annotation")) {
+        return { name: nameNode.text, kind: "global_var" }
+      }
+      // Untyped `const x = new Foo()` — also a global_var, type
+      // recovered from the new_expression's constructor in the
+      // global_var emit block.
+      if (value && value.type === "new_expression") {
         return { name: nameNode.text, kind: "global_var" }
       }
       return null
