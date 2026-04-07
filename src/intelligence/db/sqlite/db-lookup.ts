@@ -204,6 +204,14 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.moduleEntryPoints(snapshotId, limit)
       case "find_dead_exports":
         return this.deadExports(snapshotId, limit)
+      case "find_call_chain":
+        return this.callChain(
+          snapshotId,
+          request.srcApi ?? "",
+          request.dstApi ?? "",
+          request.depth ?? 6,
+          limit,
+        )
       default:
         return []
     }
@@ -961,6 +969,102 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find a shortest call chain from srcApi to dstApi via a bounded
+   * BFS over the calls graph. Implementation: SQLite recursive CTE
+   * that walks dst.canonical_name forward, joining graph_nodes at
+   * each step to filter the destination by name.
+   *
+   * Returns one row per hop in the chain, ordered by depth, with
+   * `caller`, `callee`, `path_index`, and `chain_depth` fields. The
+   * visualizer can render this as a vertical call list.
+   *
+   * Returns an empty list when:
+   *   - srcApi or dstApi is empty
+   *   - No path exists within the depth bound
+   *   - The chain would exceed the depth bound
+   */
+  private callChain(
+    snapshotId: number,
+    srcApi: string,
+    dstApi: string,
+    depth: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (!srcApi || !dstApi) return []
+    const maxDepth = Math.min(Math.max(depth, 1), 10)
+    // The recursive CTE walks forward via calls edges, tracking the
+    // path through `prev_canonical` so we can reconstruct the chain
+    // at the end. We use canonical_name (not node_id) so the join
+    // back to graph_nodes is direct.
+    const sql = `
+      WITH RECURSIVE chain(caller_name, callee_name, depth_n, path) AS (
+        SELECT
+          src.canonical_name,
+          dst.canonical_name,
+          1,
+          src.canonical_name || ' -> ' || dst.canonical_name
+        FROM graph_edges e
+        INNER JOIN graph_nodes src
+          ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+        INNER JOIN graph_nodes dst
+          ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+        WHERE e.snapshot_id = ?
+          AND e.edge_kind = 'calls'
+          AND src.canonical_name = ?
+        UNION ALL
+        SELECT
+          c.callee_name,
+          dst.canonical_name,
+          c.depth_n + 1,
+          c.path || ' -> ' || dst.canonical_name
+        FROM chain c
+        INNER JOIN graph_edges e
+          ON e.snapshot_id = ?
+          AND e.edge_kind = 'calls'
+        INNER JOIN graph_nodes src
+          ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+          AND src.canonical_name = c.callee_name
+        INNER JOIN graph_nodes dst
+          ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+        WHERE c.depth_n < ?
+          -- avoid revisiting nodes already in the path (cycle prevention)
+          AND instr(c.path || ' -> ', dst.canonical_name || ' -> ') = 0
+      )
+      SELECT caller_name, callee_name, depth_n, path
+      FROM chain
+      WHERE callee_name = ?
+      ORDER BY depth_n ASC
+      LIMIT ?
+    `
+    type Row = {
+      caller_name: string
+      callee_name: string
+      depth_n: number
+      path: string
+    }
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, srcApi, snapshotId, maxDepth, dstApi, limit) as Row[]
+    // Take the shortest chain. Expand its path into per-hop rows.
+    if (rows.length === 0) return []
+    const shortest = rows[0]
+    const segments = shortest.path.split(" -> ")
+    return segments.slice(0, -1).map((caller, i) => ({
+      kind: "function",
+      canonical_name: caller,
+      caller,
+      callee: segments[i + 1],
+      edge_kind: "calls",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: null,
+      line_number: null,
+      path_index: i,
+      chain_depth: shortest.depth_n,
+    }))
+  }
 
   /**
    * Find exported symbols (functions/classes/interfaces) with zero

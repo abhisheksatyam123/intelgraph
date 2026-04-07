@@ -385,6 +385,55 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_call_chain returns a shortest BFS path between two symbols", async () => {
+      // Self-discovery: pick any 2-hop call chain in the snapshot
+      // (a calls b, b calls c) to give the query a known src/dst.
+      const seed = ingest.client.raw
+        .prepare(
+          `SELECT
+             a.canonical_name AS src,
+             c.canonical_name AS dst
+           FROM graph_edges e1
+           INNER JOIN graph_nodes a
+             ON e1.src_node_id = a.node_id AND e1.snapshot_id = a.snapshot_id
+           INNER JOIN graph_edges e2
+             ON e2.snapshot_id = e1.snapshot_id
+             AND e2.src_node_id = e1.dst_node_id
+             AND e2.edge_kind = 'calls'
+           INNER JOIN graph_nodes c
+             ON e2.dst_node_id = c.node_id AND e2.snapshot_id = c.snapshot_id
+           WHERE e1.snapshot_id = ?
+             AND e1.edge_kind = 'calls'
+             AND a.canonical_name LIKE 'module:%'
+             AND c.canonical_name LIKE 'module:%'
+             AND a.canonical_name != c.canonical_name
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { src: string; dst: string } | undefined
+      if (!seed) return
+
+      const result = await ingest.lookup.lookup({
+        intent: "find_call_chain",
+        snapshotId: ingest.snapshotId,
+        srcApi: seed.src,
+        dstApi: seed.dst,
+        depth: 6,
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // Per-hop rows should have edge_kind=calls
+      for (const row of result.rows) {
+        expect(row.edge_kind).toBe("calls")
+        expect(typeof row.path_index).toBe("number")
+        expect(typeof row.chain_depth).toBe("number")
+      }
+      // First row's caller should be the src; last row's callee should
+      // be the dst.
+      expect(result.rows[0].caller).toBe(seed.src)
+      expect(result.rows[result.rows.length - 1].callee).toBe(seed.dst)
+    })
+
     it("find_dead_exports returns exported symbols with no callers/refs", async () => {
       const result = await ingest.lookup.lookup({
         intent: "find_dead_exports",
