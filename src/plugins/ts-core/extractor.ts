@@ -210,6 +210,11 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
   // Track function/method scopes so we can attribute call_expression
   // sites to their enclosing declaration.
   const scopeStack: Array<{ name: string; node: TsNode }> = []
+  // Track enclosing class/interface scope so methods can be qualified
+  // as `Class.method` and their contains edges anchor to the class
+  // instead of the module. The stack stores LOCAL names; the FQ class
+  // id is recomputed at use sites as `${moduleNodeName}#${local}`.
+  const classStack: string[] = []
   const seenSymbols = new Set<string>()
 
   const resolver: FileResolver = {
@@ -263,11 +268,27 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
     const declared = extractDeclaration(node)
     if (declared) {
       const { name, kind } = declared
-      const canonicalName = `${moduleNodeName}#${name}`
-      // Track for intra-file resolution. We add the LOCAL name (not the
-      // FQ name) so call sites can look it up by what the source code
-      // actually wrote.
-      resolver.localSymbols.add(name)
+      // Methods are qualified with their enclosing class/interface so
+      // `Greeter.greet` and a top-level `greet` don't collide. The
+      // contains edge for a method points from the class, not the module.
+      const enclosingClass = classStack.length
+        ? classStack[classStack.length - 1]
+        : null
+      const isMember = kind === "method" && enclosingClass !== null
+      const localName = isMember ? `${enclosingClass}.${name}` : name
+      const canonicalName = `${moduleNodeName}#${localName}`
+      const containsSrc = isMember
+        ? `${moduleNodeName}#${enclosingClass}`
+        : moduleNodeName
+
+      // Track for intra-file resolution. Methods are NOT bare-callable
+      // (you write `this.method()` not `method()`), so we skip adding
+      // them to the resolver — otherwise a top-level `format()` call
+      // would falsely resolve to a same-named method.
+      if (!isMember) {
+        resolver.localSymbols.add(name)
+      }
+
       if (!seenSymbols.has(canonicalName)) {
         seenSymbols.add(canonicalName)
         yield ctx.symbol({
@@ -279,14 +300,16 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
             name: canonicalName,
             qualifiedName: canonicalName,
             location: locationOf(file, node),
-            metadata: { localName: name },
+            metadata: isMember
+              ? { localName: name, owningClass: enclosingClass }
+              : { localName: name },
           },
         })
-        // contains edge: module → symbol
+        // contains edge: module → symbol, OR class → method
         yield ctx.edge({
           payload: {
             edgeKind: "contains",
-            srcSymbolName: moduleNodeName,
+            srcSymbolName: containsSrc,
             dstSymbolName: canonicalName,
             confidence: 1,
             derivation: "clangd",
@@ -307,6 +330,13 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
             yield ctx.edge({ payload: inheritEdge })
           }
         }
+      }
+
+      // Push the class/interface onto classStack BEFORE recursing so
+      // child method_definition nodes see it as their enclosing scope.
+      // Popped after the recursive walk, below.
+      if (kind === "class" || kind === "interface") {
+        classStack.push(name)
       }
     }
 
@@ -339,8 +369,17 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
     // Scope management for call_expression attribution
     const enter = maybeEnterScope(node)
     if (enter) {
-      const enclosingName = enter.name
-      const fqName = `${moduleNodeName}#${enclosingName}`
+      // For methods inside a class, qualify the scope name as
+      // `Class.method` so call edges originate from the right symbol
+      // (matches the canonical_name used at declaration time).
+      const enclosingClassForScope =
+        enter.kind === "method" && classStack.length
+          ? classStack[classStack.length - 1]
+          : null
+      const localName = enclosingClassForScope
+        ? `${enclosingClassForScope}.${enter.name}`
+        : enter.name
+      const fqName = `${moduleNodeName}#${localName}`
       scopeStack.push({ name: fqName, node })
     }
 
@@ -385,6 +424,9 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
 
     if (enter) {
       scopeStack.pop()
+    }
+    if (declared && (declared.kind === "class" || declared.kind === "interface")) {
+      classStack.pop()
     }
   }
 

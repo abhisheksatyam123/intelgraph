@@ -398,9 +398,11 @@ describe("ts-core plugin — extraction", () => {
     const stripPrefix = (id: unknown): string =>
       String(id).replace(/^graph_node:\d+:symbol:/, "")
 
-    // Greeter.greet calls greetUser (named import from ./module-b)
+    // Greeter.greet calls greetUser (named import from ./module-b).
+    // After Round D4 the method is qualified as `Greeter.greet` so its
+    // canonical_name ends with `#Greeter.greet`, not `#greet`.
     const greeterCalls = callEdges.filter((e) =>
-      String(e.src_node_id).endsWith("#greet"),
+      String(e.src_node_id).endsWith("#Greeter.greet"),
     )
     expect(
       greeterCalls.some((e) =>
@@ -433,6 +435,49 @@ describe("ts-core plugin — extraction", () => {
     }
     expect(nsMeta?.resolved).toBe(true)
     expect(nsMeta?.resolutionKind).toBe("namespace-member")
+  })
+
+  it("methods are qualified with their class and contains anchors at the class", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    // Method symbols are now `Class.method`, not bare `method`.
+    const methodNodes = sink.allNodes().filter((n) => n.kind === "method")
+    const methodNames = new Set(
+      methodNodes.map((n) => String(n.canonical_name).split("#")[1]),
+    )
+    expect(methodNames.has("Greeter.greet")).toBe(true)
+    expect(methodNames.has("FormalGreeter.greet")).toBe(true)
+
+    // Their contains edge originates at the class FQ name, not the module.
+    const containsEdges = sink.allEdges().filter((e) => e.edge_kind === "contains")
+    const greeterMethodContains = containsEdges.find(
+      (e) =>
+        String(e.src_node_id).endsWith("#Greeter") &&
+        String(e.dst_node_id).endsWith("#Greeter.greet"),
+    )
+    expect(greeterMethodContains).toBeDefined()
+
+    // owningClass metadata is set on the method symbol's payload.metadata
+    const greetNode = methodNodes.find((n) =>
+      String(n.canonical_name).endsWith("#Greeter.greet"),
+    )
+    const payload = (greetNode?.payload as Record<string, unknown> | undefined) ?? {}
+    const meta = (payload.metadata as Record<string, unknown> | undefined) ?? {}
+    expect(meta.owningClass).toBe("Greeter")
+
+    // Sanity: there should NOT be a top-level `module:...#greet` symbol
+    // (the bare unqualified form was the bug).
+    const allCanonical = sink.allNodes().map((n) => String(n.canonical_name))
+    const bareGreet = allCanonical.filter((n) => /[^.]#greet$/.test(n))
+    expect(bareGreet.length).toBe(0)
   })
 
   it("emits imports edges for re-exports (export ... from)", async () => {
