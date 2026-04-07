@@ -62,6 +62,8 @@ export const QUERY_INTENTS = [
   "find_type_dependencies",
   /** Symbols that reference this type in their signatures/bodies (incoming 'references_type' edges). */
   "find_type_consumers",
+  /** Pairs of modules that import each other (2-cycles in the imports graph). */
+  "find_import_cycles",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

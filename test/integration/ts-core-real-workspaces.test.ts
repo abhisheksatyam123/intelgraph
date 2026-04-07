@@ -385,6 +385,27 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_import_cycles surfaces 2-cycles in the imports graph", async () => {
+      // opencode has real 2-cycles (provider/transform, session.sql,
+      // tool/notes/todo, etc.). The intent should return at least one
+      // pair so visualizers can highlight refactor opportunities.
+      const result = await ingest.lookup.lookup({
+        intent: "find_import_cycles",
+        snapshotId: ingest.snapshotId,
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      for (const row of result.rows) {
+        expect(row.edge_kind).toBe("imports")
+        // caller and callee should both be module: paths
+        expect(String(row.caller)).toMatch(/^module:/)
+        expect(String(row.callee)).toMatch(/^module:/)
+        // De-dup constraint: caller < callee alphabetically
+        expect(String(row.caller) < String(row.callee)).toBe(true)
+      }
+    })
+
     it("find_type_consumers returns the symbols that reference a type", async () => {
       // Pick the most-referenced type — by definition has incoming
       // references_type edges.

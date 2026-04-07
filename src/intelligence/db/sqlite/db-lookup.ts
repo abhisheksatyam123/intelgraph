@@ -194,6 +194,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.outgoingByEdgeKind(snapshotId, apiNames, "references_type", limit)
       case "find_type_consumers":
         return this.incomingByEdgeKind(snapshotId, apiNames, "references_type", limit)
+      case "find_import_cycles":
+        return this.importCycles(snapshotId, limit)
       default:
         return []
     }
@@ -951,6 +953,63 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find pairs of modules that mutually import each other (2-cycles
+   * in the imports graph). Detected via a self-join: edge1 (A→B)
+   * matched against edge2 (B→A) on the same snapshot. The
+   * canonical_name comparison filters duplicates so each cycle
+   * appears once as (a, b) with a < b alphabetically.
+   *
+   * Doesn't take an apiName — returns all cycles in the snapshot.
+   * Visualizers can render these as bidirectional edges or refactor
+   * suggestions.
+   */
+  private importCycles(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        a.canonical_name AS caller,
+        b.canonical_name AS callee,
+        a.canonical_name AS canonical_name,
+        'module' AS kind,
+        'imports' AS edge_kind,
+        1.0 AS confidence,
+        'clangd' AS derivation,
+        a.location AS location
+      FROM graph_edges e1
+      INNER JOIN graph_nodes a
+        ON e1.src_node_id = a.node_id AND e1.snapshot_id = a.snapshot_id
+      INNER JOIN graph_nodes b
+        ON e1.dst_node_id = b.node_id AND e1.snapshot_id = b.snapshot_id
+      INNER JOIN graph_edges e2
+        ON e2.snapshot_id = e1.snapshot_id
+        AND e2.src_node_id = e1.dst_node_id
+        AND e2.dst_node_id = e1.src_node_id
+      WHERE e1.snapshot_id = ?
+        AND e1.edge_kind = 'imports'
+        AND e2.edge_kind = 'imports'
+        AND a.kind = 'module' AND b.kind = 'module'
+        AND a.canonical_name < b.canonical_name
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: "module",
+      canonical_name: obj.canonical_name,
+      caller: obj.caller,
+      callee: obj.callee,
+      edge_kind: "imports",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
 
   private outgoingByEdgeKind(
     snapshotId: number,
