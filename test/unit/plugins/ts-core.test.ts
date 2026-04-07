@@ -202,6 +202,27 @@ export function viaInferred() {
 `,
   )
 
+  // Round D19: anonymous default-export forms in their own files.
+  writeFileSync(
+    join(tempRoot, "src", "anon-class.ts"),
+    `export default class {
+  greet() { return "anon class" }
+}
+`,
+  )
+  writeFileSync(
+    join(tempRoot, "src", "anon-fn.ts"),
+    `export default function() {
+  return "anon fn"
+}
+`,
+  )
+  writeFileSync(
+    join(tempRoot, "src", "anon-arrow.ts"),
+    `export default (name: string) => "hello " + name
+`,
+  )
+
   // tsx file with JSX — has both HTML elements and components
   writeFileSync(
     join(tempRoot, "src", "ui.tsx"),
@@ -832,6 +853,55 @@ describe("ts-core plugin — extraction", () => {
       String(e.src_node_id).endsWith("module-b.ts#greetUser"),
     )
     expect(fromGreetUser.length).toBe(0)
+  })
+
+  it("emits anonymous default exports as `default` symbols", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const allNodes = sink.allNodes()
+
+    // anon-class.ts → default class symbol
+    const anonClass = allNodes.find(
+      (n) =>
+        n.kind === "class" &&
+        String(n.canonical_name).endsWith("anon-class.ts#default"),
+    )
+    expect(anonClass).toBeDefined()
+
+    // anon-fn.ts → default function symbol
+    const anonFn = allNodes.find(
+      (n) =>
+        n.kind === "function" &&
+        String(n.canonical_name).endsWith("anon-fn.ts#default"),
+    )
+    expect(anonFn).toBeDefined()
+
+    // anon-arrow.ts → default function symbol (kind=function)
+    const anonArrow = allNodes.find(
+      (n) =>
+        n.kind === "function" &&
+        String(n.canonical_name).endsWith("anon-arrow.ts#default"),
+    )
+    expect(anonArrow).toBeDefined()
+
+    // Each should also have a contains edge from its module.
+    const containsEdges = sink
+      .allEdges()
+      .filter((e) => e.edge_kind === "contains")
+    const anonClassContains = containsEdges.find(
+      (e) =>
+        String(e.src_node_id).endsWith("module:src/anon-class.ts") &&
+        String(e.dst_node_id).endsWith("anon-class.ts#default"),
+    )
+    expect(anonClassContains).toBeDefined()
   })
 
   it("infers var type from `new Foo()` and resolves member calls", async () => {

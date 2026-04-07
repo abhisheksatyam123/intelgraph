@@ -693,6 +693,29 @@ function extractDeclaration(
       const name = node.childForFieldName("name")
       return name ? { name: name.text, kind: "method" } : null
     }
+    // Anonymous default exports: `export default class {}`,
+    // `export default function() {}`, `export default ({}) => ...`.
+    // Recognized only when the parent is export_statement; the
+    // synthesized name is "default" so the symbol has a stable id
+    // (canonical_name becomes module:foo.ts#default).
+    case "class": {
+      if (node.parent && node.parent.type === "export_statement") {
+        return { name: "default", kind: "class" }
+      }
+      return null
+    }
+    case "function_expression": {
+      if (node.parent && node.parent.type === "export_statement") {
+        return { name: "default", kind: "function" }
+      }
+      return null
+    }
+    case "arrow_function": {
+      if (node.parent && node.parent.type === "export_statement") {
+        return { name: "default", kind: "function" }
+      }
+      return null
+    }
     case "lexical_declaration":
     case "variable_declaration": {
       // const foo = () => {} → record as function-typed export when
