@@ -385,6 +385,45 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_module_summary returns aggregate health metrics", async () => {
+      // Pick the most-importing module so we know its summary will
+      // have non-trivial counts.
+      const seed = ingest.client.raw
+        .prepare(
+          `SELECT src.canonical_name AS name, COUNT(*) AS n
+           FROM graph_edges e
+           INNER JOIN graph_nodes src
+             ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+           WHERE e.snapshot_id = ? AND e.edge_kind = 'imports'
+             AND src.kind = 'module'
+           GROUP BY src.canonical_name
+           ORDER BY n DESC LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string; n: number } | undefined
+      if (!seed) return
+
+      const result = await ingest.lookup.lookup({
+        intent: "find_module_summary",
+        snapshotId: ingest.snapshotId,
+        apiName: seed.name,
+        limit: 1,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBe(1)
+      const row = result.rows[0] as {
+        symbol_count: number
+        exported_count: number
+        outgoing_imports: number
+        incoming_imports: number
+        line_count: number | null
+      }
+      expect(row.outgoing_imports).toBeGreaterThan(0)
+      expect(row.symbol_count).toBeGreaterThanOrEqual(0)
+      expect(row.exported_count).toBeGreaterThanOrEqual(0)
+      // exported_count should never exceed symbol_count
+      expect(row.exported_count).toBeLessThanOrEqual(row.symbol_count)
+    })
+
     it("find_external_imports inventories npm dependencies", async () => {
       const result = await ingest.lookup.lookup({
         intent: "find_external_imports",

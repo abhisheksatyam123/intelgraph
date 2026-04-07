@@ -86,6 +86,8 @@ export const QUERY_INTENTS = [
   "find_long_functions",
   /** Distinct list of external (npm/bare) imports with usage counts. */
   "find_external_imports",
+  /** Single-row aggregate health summary for a module (symbol/import counts, line count). */
+  "find_module_summary",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
