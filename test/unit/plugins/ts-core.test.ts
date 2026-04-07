@@ -154,6 +154,29 @@ export function format(s: string): string {
 }
 
 export const upper = (s: string) => s.toUpperCase()
+
+// Round D15: a namespace-style namedImport member access pattern.
+// The Account namedImport has a "list" member that callers in other
+// files invoke as Account.list(). We don't actually export an Account
+// here — this file is the consumer side of the import. See
+// services.ts which imports the symbol and calls .list() on it.
+`,
+  )
+
+  // namespace-style fixture for D15: a local namespace function call.
+  writeFileSync(
+    join(tempRoot, "src", "namespace-fixture.ts"),
+    `
+import { Greeter } from "./module-a"
+
+export function localNs() { return "ns" }
+
+export function caller() {
+  // Greeter.makeFormal() — Greeter is a named import → named-member
+  Greeter.makeFormal()
+  // localNs.helper() — localNs is a local declaration → local-member
+  localNs.helper()
+}
 `,
   )
 
@@ -787,6 +810,62 @@ describe("ts-core plugin — extraction", () => {
       String(e.src_node_id).endsWith("module-b.ts#greetUser"),
     )
     expect(fromGreetUser.length).toBe(0)
+  })
+
+  it("resolves namedImport.member() and local.member() to FQ destinations", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const callEdges = sink.allEdges().filter((e) => e.edge_kind === "calls")
+    const stripPrefix = (id: unknown): string =>
+      String(id).replace(/^graph_node:\d+:symbol:/, "")
+
+    // namespace-fixture.ts > caller() makes two member calls:
+    //   - Greeter.makeFormal() → named-member (Greeter is named import)
+    //   - localNs.helper()     → local-member (localNs is same-file)
+    const fromCaller = callEdges.filter((e) =>
+      String(e.src_node_id).endsWith("namespace-fixture.ts#caller"),
+    )
+
+    const namedMember = fromCaller.find(
+      (e) =>
+        (e.metadata as { resolutionKind?: string })?.resolutionKind ===
+        "named-member",
+    )
+    expect(namedMember).toBeDefined()
+    // dst is `${named-import-fq}.${member}` =
+    // `module:src/module-a.ts#Greeter.makeFormal`
+    expect(stripPrefix(namedMember!.dst_node_id)).toBe(
+      "module:src/module-a.ts#Greeter.makeFormal",
+    )
+
+    const localMember = fromCaller.find(
+      (e) =>
+        (e.metadata as { resolutionKind?: string })?.resolutionKind ===
+        "local-member",
+    )
+    expect(localMember).toBeDefined()
+    expect(stripPrefix(localMember!.dst_node_id)).toBe(
+      "module:src/namespace-fixture.ts#localNs.helper",
+    )
+
+    // Sanity check: existing namespace-member resolution still works.
+    const entryCalls = callEdges.filter((e) =>
+      String(e.src_node_id).endsWith("module-a.ts#entry"),
+    )
+    const namespaceCall = entryCalls.find(
+      (e) =>
+        (e.metadata as { resolutionKind?: string })?.resolutionKind ===
+        "namespace-member",
+    )
+    expect(namespaceCall).toBeDefined()
   })
 
   it("resolves this.method() calls to the enclosing class's method", async () => {

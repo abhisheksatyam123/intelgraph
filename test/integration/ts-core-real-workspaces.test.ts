@@ -498,6 +498,24 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("Round D15: namedImport.member() and local.member() resolve to FQ destinations", () => {
+      // After D15, member-style calls where the receiver is a named
+      // import or a local declaration produce FQ-shaped dst names
+      // (kind=named-member or local-member). On opencode this fires
+      // for the heavy `Effect.run(...)`-style namespace usage and for
+      // local namespace function members.
+      const counts = ingest.client.raw
+        .prepare(
+          `SELECT COUNT(*) AS n FROM graph_edges
+           WHERE snapshot_id = ? AND edge_kind = 'calls'
+             AND json_extract(metadata, '$.resolutionKind') IN ('named-member', 'local-member')`,
+        )
+        .get(ingest.snapshotId) as { n: number }
+      // Soft floor — opencode is heavy on Effect.x() and namespace
+      // function calls. Diagnostic showed ~4000 of these.
+      expect(counts.n).toBeGreaterThan(500)
+    })
+
     it("Round D10: JSX component usage emits calls edges with jsx-component", () => {
       // opencode has React/Ink TUI components. We expect a non-trivial
       // number of jsx-component call edges across the codebase.

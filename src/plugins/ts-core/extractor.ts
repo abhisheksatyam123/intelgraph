@@ -709,8 +709,8 @@ function extractCalleeWithResolution(
           kind: "this-method",
         }
       }
-      // namespace.member → look up the namespace in import map
       if (obj.type === "identifier") {
+        // namespace.member → look up the namespace in import map
         const ns = resolver.namespaceImports.get(obj.text)
         if (ns) {
           // ns is "module:src/x.ts"; member is `format`
@@ -718,6 +718,30 @@ function extractCalleeWithResolution(
             name: `${ns}#${propName}`,
             resolved: true,
             kind: "namespace-member",
+          }
+        }
+        // namedImport.member() → many opencode-style namespaces are
+        // exported as named values: `import { Effect } from "effect"`
+        // → `Effect.sync(...)`. Treat the receiver's named-import FQ
+        // as the parent and append the member. The dst may or may
+        // not exist as a real graph_node, but the FQ shape is what
+        // lets a visualizer group calls by their owning namespace.
+        const named = resolver.namedImports.get(obj.text)
+        if (named) {
+          // named is e.g. "module:effect#Effect"; append .propName
+          return {
+            name: `${named}.${propName}`,
+            resolved: true,
+            kind: "named-member",
+          }
+        }
+        // local.member() — receiver is a same-file declaration. Same
+        // logic: treat the local FQ as the namespace parent.
+        if (resolver.localSymbols.has(obj.text)) {
+          return {
+            name: `${moduleNodeName}#${obj.text}.${propName}`,
+            resolved: true,
+            kind: "local-member",
           }
         }
       }
