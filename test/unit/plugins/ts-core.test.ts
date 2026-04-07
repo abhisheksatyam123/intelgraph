@@ -227,6 +227,15 @@ export function* genCaller() {
   yield localNs.helper()
   yield* Greeter.makeFormal()
 }
+
+// Round D35: typed parameter on an inline arrow inside a higher-order
+// call. The arrow's 'g' param should resolve via paramTypeStack so
+// 'g.greet()' becomes a var-member to Greeter.greet.
+export function inlineCaller(items: Array<Greeter>) {
+  items.forEach((g: Greeter) => {
+    g.greet("inline")
+  })
+}
 `,
   )
 
@@ -976,6 +985,37 @@ describe("ts-core plugin — extraction", () => {
         String(e.dst_node_id).endsWith("anon-class.ts#default"),
     )
     expect(anonClassContains).toBeDefined()
+  })
+
+  it("resolves typed params on inline arrow lambdas via param-member", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const callEdges = sink.allEdges().filter((e) => e.edge_kind === "calls")
+    const stripPrefix = (id: unknown): string =>
+      String(id).replace(/^graph_node:\d+:symbol:/, "")
+
+    // inlineCaller forwards to a `forEach((g: Greeter) => g.greet())`.
+    // The g.greet() call should resolve via param-member because the
+    // inline arrow's typed param now lands on the paramTypeStack.
+    // Caller attribution stays at the outer inlineCaller scope.
+    const fromInline = callEdges.filter((e) =>
+      String(e.src_node_id).endsWith("namespace-fixture.ts#inlineCaller"),
+    )
+    const paramMember = fromInline.find(
+      (e) =>
+        (e.metadata as { resolutionKind?: string })?.resolutionKind ===
+          "param-member" &&
+        stripPrefix(e.dst_node_id).endsWith("module-a.ts#Greeter.greet"),
+    )
+    expect(paramMember).toBeDefined()
   })
 
   it("tags yielded call sites with metadata.yielded and delegated", async () => {

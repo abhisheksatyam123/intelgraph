@@ -564,6 +564,24 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
         moduleNodeName,
       )
       resolver.paramTypeStack.push(paramFrame)
+    } else if (
+      // D35: inline arrow/function_expression that maybeEnterScope
+      // didn't grab (e.g. `arr.map((x: Foo) => x.y())`). The call
+      // attribution scope stays at the outer function (correct), but
+      // the inline lambda's typed params should still bind so member
+      // calls inside resolve via param-member. Push a paramTypeStack
+      // frame WITHOUT pushing a scopeStack frame.
+      node.type === "arrow_function" ||
+      node.type === "function_expression"
+    ) {
+      const paramFrame = collectParamTypes(
+        node,
+        resolver,
+        moduleNodeName,
+      )
+      // Push even when empty so the matching pop in the cleanup block
+      // doesn't underflow. Empty frames are cheap.
+      resolver.paramTypeStack.push(paramFrame)
     }
 
     // JSX component usage: `<Foo />` or `<Foo>...</Foo>` is semantically
@@ -714,6 +732,13 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
 
     if (enter) {
       scopeStack.pop()
+      resolver.paramTypeStack.pop()
+    } else if (
+      // D35: matching pop for the inline-lambda paramTypeStack push
+      // above. Must mirror the same node-type predicate.
+      node.type === "arrow_function" ||
+      node.type === "function_expression"
+    ) {
       resolver.paramTypeStack.pop()
     }
     if (declared && (declared.kind === "class" || declared.kind === "interface")) {
