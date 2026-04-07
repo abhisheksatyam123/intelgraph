@@ -153,15 +153,24 @@ export const upper = (s: string) => s.toUpperCase()
 `,
   )
 
-  // tsx file with JSX
+  // tsx file with JSX — has both HTML elements and components
   writeFileSync(
     join(tempRoot, "src", "ui.tsx"),
     `
 import React from "react"
-import { entry } from "./module-a"
+import { entry, Greeter } from "./module-a"
+
+function Header() {
+  return <h1>hi</h1>
+}
 
 export function App() {
-  return <div>{entry("world")}</div>
+  return <div>
+    {entry("world")}
+    <Header />
+    <Greeter prefix="formal" />
+    <Header><span>plain</span></Header>
+  </div>
 }
 `,
   )
@@ -471,6 +480,54 @@ describe("ts-core plugin — extraction", () => {
     }
     expect(nsMeta?.resolved).toBe(true)
     expect(nsMeta?.resolutionKind).toBe("namespace-member")
+  })
+
+  it("emits calls edges for JSX component usage with resolutionKind=jsx-component", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const callEdges = sink.allEdges().filter((e) => e.edge_kind === "calls")
+    const jsxEdges = callEdges.filter(
+      (e) =>
+        (e.metadata as { resolutionKind?: string })?.resolutionKind ===
+        "jsx-component",
+    )
+    expect(jsxEdges.length).toBeGreaterThan(0)
+
+    // App uses Header (local) and Greeter (named-import from module-a).
+    // Header is used twice: once self-closing and once as opening.
+    // The FactBus dedups by canonical key (caller+callee+location), so
+    // we should see 2 distinct Header edges (different lines).
+    const fromApp = jsxEdges.filter((e) =>
+      String(e.src_node_id).endsWith("ui.tsx#App"),
+    )
+    expect(fromApp.length).toBeGreaterThanOrEqual(2)
+
+    const targets = new Set(
+      fromApp.map((e) => String(e.dst_node_id)),
+    )
+    expect(
+      [...targets].some((t) => t.endsWith("ui.tsx#Header")),
+    ).toBe(true)
+    expect(
+      [...targets].some((t) => t.endsWith("module-a.ts#Greeter")),
+    ).toBe(true)
+
+    // None of the HTML tags (div, h1, span) should produce edges
+    expect(
+      jsxEdges.some((e) =>
+        ["div", "h1", "span"].includes(
+          (e.metadata as { jsxTag?: string })?.jsxTag ?? "",
+        ),
+      ),
+    ).toBe(false)
   })
 
   it("emits references_type edges for type alias bodies, skipping generics", async () => {

@@ -357,6 +357,20 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("Round D10: JSX component usage emits calls edges with jsx-component", () => {
+      // opencode has React/Ink TUI components. We expect a non-trivial
+      // number of jsx-component call edges across the codebase.
+      const totals = ingest.client.raw
+        .prepare(
+          `SELECT COUNT(*) AS n FROM graph_edges
+           WHERE snapshot_id = ? AND edge_kind = 'calls'
+             AND json_extract(metadata, '$.resolutionKind') = 'jsx-component'`,
+        )
+        .get(ingest.snapshotId) as { n: number }
+      // Soft floor — opencode TUI uses several components.
+      expect(totals.n).toBeGreaterThan(0)
+    })
+
     it("Round D5: this.method() calls land with resolutionKind=this-method", () => {
       // opencode is heavily OO; this.x() inside class methods should
       // produce a substantial number of resolved this-method edges.

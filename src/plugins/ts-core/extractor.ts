@@ -462,6 +462,50 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
       scopeStack.push({ name: fqName, node })
     }
 
+    // JSX component usage: `<Foo />` or `<Foo>...</Foo>` is semantically
+    // a function call to Foo. Emit it as a `calls` edge with resolutionKind
+    // jsx-component so the visualizer can render the component graph.
+    // HTML tags (lowercase first letter) are not components and skipped.
+    // We only handle the opening and self-closing forms — closing tags
+    // would otherwise produce duplicate edges.
+    if (
+      node.type === "jsx_self_closing_element" ||
+      node.type === "jsx_opening_element"
+    ) {
+      const tagName = extractJsxTagName(node)
+      if (tagName && isComponentTagName(tagName)) {
+        const resolved = resolveTypeName(tagName, resolver, moduleNodeName) ?? {
+          name: tagName,
+          kind: "bare",
+        }
+        const callerName = scopeStack.length
+          ? scopeStack[scopeStack.length - 1].name
+          : moduleNodeName
+        yield ctx.edge({
+          payload: {
+            edgeKind: "calls",
+            srcSymbolName: callerName,
+            dstSymbolName: resolved.name,
+            confidence: resolved.kind === "bare" ? 0.7 : 0.95,
+            derivation: "clangd",
+            sourceLocation: {
+              sourceFilePath: file,
+              sourceLineNumber: node.startPosition.row + 1,
+            },
+            metadata: {
+              resolved: resolved.kind !== "bare",
+              resolutionKind: "jsx-component",
+              jsxTag: tagName,
+            },
+            evidence: {
+              sourceKind: "file_line",
+              location: locationOf(file, node),
+            },
+          },
+        })
+      }
+    }
+
     // Call expressions inside the current scope
     if (node.type === "call_expression") {
       const enclosingClassNow = classStack.length
@@ -1338,6 +1382,51 @@ function locationOf(
     line: node.startPosition.row + 1,
     column: node.startPosition.column + 1,
   }
+}
+
+/**
+ * Extract the tag name from a jsx_opening_element or jsx_self_closing_element.
+ * Tree-sitter shape:
+ *   jsx_opening_element / jsx_self_closing_element
+ *     ├─ identifier (the tag, e.g. "Foo" or "div")
+ *     │   OR
+ *     ├─ nested_identifier (e.g. "Namespace.Component")
+ *     │   OR
+ *     ├─ member_expression (e.g. "obj.Component")
+ *     └─ jsx_attribute*
+ */
+function extractJsxTagName(jsxNode: TsNode): string | null {
+  for (let i = 0; i < jsxNode.namedChildCount; i++) {
+    const child = jsxNode.namedChild(i)
+    if (!child) continue
+    if (child.type === "identifier") return child.text
+    if (child.type === "nested_identifier") {
+      // Namespace.Component → take the rightmost segment, but the
+      // resolver wouldn't find it anyway. Return the leftmost identifier
+      // so namespace imports can resolve it.
+      const first = firstNamedChildOfType(child, "identifier")
+      if (first) return first.text
+      return child.text
+    }
+    if (child.type === "member_expression") {
+      const obj = child.childForFieldName("object")
+      if (obj && obj.type === "identifier") return obj.text
+      return null
+    }
+  }
+  return null
+}
+
+/**
+ * React convention: lowercase tag names are HTML elements, uppercase
+ * are components. We also accept `_` and `$` as valid component-name
+ * starts to be safe with mangled or generated code.
+ */
+function isComponentTagName(name: string): boolean {
+  if (!name) return false
+  const c = name.charCodeAt(0)
+  // 'A'..'Z' or '_' or '$'
+  return (c >= 65 && c <= 90) || c === 95 || c === 36
 }
 
 function firstNamedChildOfType(node: TsNode, type: string): TsNode | null {
