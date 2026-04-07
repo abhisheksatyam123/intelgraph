@@ -4,6 +4,12 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { ClangdExtractionAdapter } from "../../../src/intelligence/db/extraction/clangd-extraction-adapter.js"
 import { executeIngestTool, setIngestDeps } from "../../../src/intelligence/tools/ingest-tool.js"
+import type { ILanguageClient } from "../../../src/lsp/types.js"
+import type {
+  GraphWriteBatch,
+  GraphWriteSink,
+} from "../../../src/intelligence/db/neo4j/node-contracts.js"
+import type { ExtractorRunner } from "../../../src/intelligence/extraction/runner.js"
 
 describe("ClangdExtractionAdapter wlan_proc prioritization", () => {
   it("prioritizes wlan/src files before build artifacts when fileLimit is small", async () => {
@@ -48,15 +54,49 @@ describe("executeIngestTool extraction input contract", () => {
     setIngestDeps(null)
   })
 
-  it("passes fileLimit through to extractor phases", async () => {
-    const extractSymbols = vi.fn(async () => ({ symbols: [] }))
-    const extractTypes = vi.fn(async () => ({ types: [], fields: [] }))
-    const extractEdges = vi.fn(async () => ({ edges: [] }))
-    const materializeSnapshot = vi.fn(async () => ({
-      snapshotId: 9,
-      inserted: { symbols: 0, types: 0, fields: 0, edges: 0, runtimeCallers: 0, logs: 0, timerTriggers: 0 },
-      warnings: [],
-    }))
+  it("constructs the runner with the right snapshot, root, and sink", async () => {
+    // Test sink + stub LSP — neither is invoked because the runnerFactory
+    // override returns a stub runner that immediately resolves.
+    const sink: GraphWriteSink = {
+      write: vi.fn(async (_batch: GraphWriteBatch) => {}),
+    }
+    const stubLsp = {} as unknown as ILanguageClient
+
+    // Capture the args the runnerFactory was called with so we can assert
+    // ingest-tool passed the right snapshotId, workspaceRoot, and sink.
+    const runnerFactory = vi.fn((opts: {
+      snapshotId: number
+      workspaceRoot: string
+      sink: GraphWriteSink
+    }): ExtractorRunner => {
+      return {
+        run: async () => ({
+          snapshotId: opts.snapshotId,
+          workspaceRoot: opts.workspaceRoot,
+          totalDurationMs: 0,
+          pluginsRun: 1,
+          pluginsSkipped: 0,
+          pluginsFailed: 0,
+          perPlugin: [],
+          bus: {
+            totalAccepted: 0,
+            totalEmits: 0,
+            byKind: {
+              symbol: 0,
+              type: 0,
+              "aggregate-field": 0,
+              edge: 0,
+              evidence: 0,
+              observation: 0,
+            },
+            byExtractor: {},
+            flushCount: 0,
+            closed: true,
+          },
+          warnings: [],
+        }),
+      } as unknown as ExtractorRunner
+    })
 
     setIngestDeps({
       db: {
@@ -68,12 +108,10 @@ describe("executeIngestTool extraction input contract", () => {
         getLatestReadySnapshot: vi.fn(async () => null),
         withTransaction: vi.fn(async (fn: any) => fn({ query: vi.fn(async () => []) })),
       },
-      extractor: {
-        extractSymbols,
-        extractTypes,
-        extractEdges,
-        materializeSnapshot,
-      },
+      lsp: stubLsp,
+      sink,
+      plugins: [],
+      runnerFactory,
       projection: {
         syncFromAuthoritative: vi.fn(async () => ({ synced: true, nodesUpserted: 0, edgesUpserted: 0 })),
       },
@@ -82,9 +120,13 @@ describe("executeIngestTool extraction input contract", () => {
     const out = await executeIngestTool({ workspaceRoot: "/tmp/wlan_proc", fileLimit: 77 })
     expect(out).toContain("Snapshot committed: id=9 status=ready")
 
-    const expectedInput = { workspaceRoot: "/tmp/wlan_proc", fileLimit: 77 }
-    expect(extractSymbols).toHaveBeenCalledWith(expectedInput)
-    expect(extractTypes).toHaveBeenCalledWith(expectedInput)
-    expect(extractEdges).toHaveBeenCalledWith(expectedInput)
+    expect(runnerFactory).toHaveBeenCalledTimes(1)
+    const call = runnerFactory.mock.calls[0][0]
+    expect(call.snapshotId).toBe(9)
+    expect(call.workspaceRoot).toBe("/tmp/wlan_proc")
+    // The sink passed to the runner is a FunctionSymbolCaptureSink
+    // wrapper around our stub sink. We can't strict-equal it, but we
+    // can verify it's a sink-shaped object.
+    expect(typeof call.sink.write).toBe("function")
   })
 })

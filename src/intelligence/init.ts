@@ -14,6 +14,7 @@ import { getLogger } from "../logging/logger.js"
 import type { ClangdEnricher, CParserEnricher } from "./index.js"
 import type { ILanguageClient } from "../lsp/types.js"
 import { collectIndirectCallers } from "../tools/indirect-callers.js"
+import { BUILT_IN_EXTRACTORS } from "../plugins/index.js"
 
 // ── Module-level backend storage for graceful shutdown ──────────────────────
 let _backend: { close: () => Promise<void> } | null = null
@@ -142,9 +143,50 @@ export async function initIntelligenceBackend(
         }
       : undefined
 
+  // The runner needs a full ILanguageClient. If the caller passed a
+  // narrow LspClientForExtraction (no openFile/prepareCallHierarchy/etc.),
+  // wrap it with no-op stubs so the LspService doesn't crash on first
+  // use. In production the caller passes the real LspClient and this
+  // shim is unused.
+  const lspForRunner: ILanguageClient =
+    fullLspClient ?? (lspClient as unknown as ILanguageClient | undefined) ?? {
+      root: "",
+      indexTracker: {} as never,
+      openFile: async () => false,
+      getDiagnostics: () => new Map<string, unknown[]>(),
+      hover: async () => null,
+      definition: async () => [],
+      declaration: async () => [],
+      typeDefinition: async () => [],
+      references: async () => [],
+      implementation: async () => [],
+      documentHighlight: async () => [],
+      documentSymbol: async () => [],
+      workspaceSymbol: async () => [],
+      foldingRange: async () => [],
+      signatureHelp: async () => null,
+      prepareRename: async () => null,
+      rename: async () => null,
+      formatting: async () => [],
+      rangeFormatting: async () => [],
+      inlayHints: async () => [],
+      prepareCallHierarchy: async () => [],
+      incomingCalls: async () => [],
+      outgoingCalls: async () => [],
+      prepareTypeHierarchy: async () => [],
+      supertypes: async () => [],
+      subtypes: async () => [],
+      codeAction: async () => [],
+      semanticTokensFull: async () => null,
+      serverInfo: async () => null,
+      shutdown: async () => {},
+    } as unknown as ILanguageClient
+
   setIngestDeps({
     db: backend.db,
-    extractor: backend.extractor,
+    lsp: lspForRunner,
+    sink: backend.sink,
+    plugins: BUILT_IN_EXTRACTORS,
     projection: backend.deps.persistence.graphProjection,
     ingestion: backend.ingestion,
     indirectCallerResolver,

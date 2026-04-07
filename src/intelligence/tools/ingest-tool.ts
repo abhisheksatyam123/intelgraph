@@ -1,24 +1,72 @@
 /**
  * ingest-tool.ts
  * MCP tool that triggers the full extraction + ingest pipeline for a workspace.
- * Flow: beginSnapshot → extractSymbols/Types/Edges → materializeSnapshot → commitSnapshot
- *       → (optional) runtime caller ingestion → syncFromAuthoritative → return report
+ *
+ * Flow (post Step 7 of the plugin extractor infrastructure rollout):
+ *   beginSnapshot
+ *     → ExtractorRunner.run() (drives all IExtractor plugins,
+ *       facts pass through FactBus → GraphWriteSink)
+ *     → (optional) runtime caller ingestion via the indirect caller
+ *       resolver, iterating function symbols captured by the sink
+ *       decorator
+ *     → commitSnapshot
+ *     → syncFromAuthoritative
+ *     → return summary
+ *
+ * The legacy IExtractionAdapter.extractSymbols/Types/Edges/materializeSnapshot
+ * pipeline is no longer called from here. The clangd-core plugin under
+ * src/plugins/clangd-core/ is the equivalent of what ClangdExtractionAdapter
+ * used to do, plus everything else any future plugin does, all driven by
+ * the runner.
  */
 import { z } from "zod"
 import type { IDbFoundation } from "../contracts/db-foundation.js"
-import type { IExtractionAdapter } from "../contracts/extraction-adapter.js"
 import type { IIndirectCallerIngestion } from "../contracts/indirect-caller-ingestion.js"
-import type { RuntimeCallerRow } from "../contracts/common.js"
+import type { RuntimeCallerRow, SymbolRow, SourceLocation } from "../contracts/common.js"
 import type { GraphProjectionRepository } from "../contracts/orchestrator.js"
 import type { IndirectCallerGraph } from "../../tools/indirect-callers.js"
+import type { ILanguageClient } from "../../lsp/types.js"
+import type {
+  GraphNodeRow,
+  GraphWriteBatch,
+  GraphWriteSink,
+} from "../db/neo4j/node-contracts.js"
+import type { IExtractor } from "../extraction/contract.js"
+import {
+  ExtractorRunner,
+  type RunnerReport,
+} from "../extraction/runner.js"
 
 // ---------------------------------------------------------------------------
 // Dep singleton
 // ---------------------------------------------------------------------------
 
-interface IngestDeps {
+/**
+ * Inputs the executor needs to construct an ExtractorRunner per snapshot.
+ *
+ * `lsp`, `sink`, and `plugins` are the runner's ingredients. We don't store
+ * a pre-built runner because the runner needs per-snapshot state
+ * (snapshotId, workspaceRoot) that is only known when executeIngestTool
+ * runs. The runner is constructed inline.
+ *
+ * `runnerFactory` is an optional override for tests so they can substitute
+ * a stub runner without having to mock the four services that a real
+ * runner would build.
+ */
+export interface IngestDeps {
   db: IDbFoundation
-  extractor: IExtractionAdapter
+  /** Full LSP client. Used by the runner's LspService. */
+  lsp: ILanguageClient
+  /** Where the FactBus flushes batches. */
+  sink: GraphWriteSink
+  /** Plugins to run. Defaults to BUILT_IN_EXTRACTORS in prod init. */
+  plugins: IExtractor[]
+  /** Optional test override for runner construction. */
+  runnerFactory?: (opts: {
+    snapshotId: number
+    workspaceRoot: string
+    sink: GraphWriteSink
+  }) => ExtractorRunner
   projection: GraphProjectionRepository
   ingestion?: IIndirectCallerIngestion
   indirectCallerResolver?: (sym: { name: string; file?: string; line?: number }) => Promise<IndirectCallerGraph | null>
@@ -44,13 +92,64 @@ export const ingestInputSchema = z.object({
 })
 
 // ---------------------------------------------------------------------------
+// Function symbol capture sink (decorator over the real sink)
+// ---------------------------------------------------------------------------
+
+/**
+ * Wraps a GraphWriteSink to also capture every function symbol that
+ * passes through. The runtime caller phase needs the list of function
+ * symbols to iterate; previously the IExtractionAdapter returned a
+ * SymbolBatch containing them inline, but the new pipeline streams facts
+ * through the bus and discards them after flushing. This decorator is the
+ * cheapest way to get the list back without changing the bus's contract.
+ *
+ * Once Problem 2 lands and the runtime caller phase becomes its own
+ * plugin, this decorator goes away — the new plugin will yield runtime
+ * caller facts directly and there will be no need to round-trip through
+ * function symbols.
+ */
+class FunctionSymbolCaptureSink implements GraphWriteSink {
+  constructor(private readonly inner: GraphWriteSink) {}
+
+  public readonly functionSymbols: SymbolRow[] = []
+
+  async write(batch: GraphWriteBatch): Promise<void> {
+    for (const node of batch.nodes) {
+      if (this.isFunctionNode(node)) {
+        this.functionSymbols.push(this.toSymbolRow(node))
+      }
+    }
+    await this.inner.write(batch)
+  }
+
+  private isFunctionNode(node: GraphNodeRow): boolean {
+    return node.kind === "function"
+  }
+
+  private toSymbolRow(node: GraphNodeRow): SymbolRow {
+    const location: SourceLocation | undefined = node.location
+      ? {
+          filePath: node.location.filePath,
+          line: node.location.line,
+          column: node.location.column,
+        }
+      : undefined
+    return {
+      kind: "function",
+      name: node.canonical_name,
+      location,
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Graph → RuntimeCallerRow conversion
 // ---------------------------------------------------------------------------
 
 /**
  * Convert an IndirectCallerGraph to RuntimeCallerRow[] records for a given
- * target symbol.  One row is emitted per IndirectCallerNode that has at least
- * an enclosing-function name and a file location.
+ * target symbol.  One row is emitted per IndirectCallerNode that has at
+ * least an enclosing-function name and a file location.
  */
 function graphNodesToRuntimeCallerRows(
   targetApi: string,
@@ -109,7 +208,7 @@ export async function executeIngestTool(args: z.infer<typeof ingestInputSchema>)
   if (!INGEST_DEPS) {
     return "intelligence_ingest: backend not initialized. Set INTELLIGENCE_NEO4J_URL to enable."
   }
-  const { db: DB_FOUNDATION, extractor: EXTRACTION_ADAPTER, projection: GRAPH_PROJECTION } = INGEST_DEPS
+  const { db: DB_FOUNDATION, projection: GRAPH_PROJECTION } = INGEST_DEPS
 
   const lines: string[] = []
   const start = performance.now()
@@ -129,33 +228,54 @@ export async function executeIngestTool(args: z.infer<typeof ingestInputSchema>)
     snapshotId = meta.snapshotId
     lines.push(`Snapshot started: id=${snapshotId}`)
 
-    const input = {
-      workspaceRoot: root,
-      fileLimit: args.fileLimit,
+    // Wrap the real sink to also capture function symbols for the
+    // runtime caller phase below.
+    const captureSink = new FunctionSymbolCaptureSink(INGEST_DEPS.sink)
+
+    // Construct the runner — either via the test override factory or
+    // from the production ingredients on INGEST_DEPS.
+    const runner = INGEST_DEPS.runnerFactory
+      ? INGEST_DEPS.runnerFactory({
+          snapshotId,
+          workspaceRoot: root,
+          sink: captureSink,
+        })
+      : new ExtractorRunner({
+          snapshotId,
+          workspaceRoot: root,
+          lsp: INGEST_DEPS.lsp,
+          sink: captureSink,
+          plugins: INGEST_DEPS.plugins,
+        })
+
+    const runReport: RunnerReport = await runner.run()
+    const counts = runReport.bus.byKind
+    lines.push(
+      `Extracted: symbols=${counts.symbol ?? 0} types=${counts.type ?? 0} edges=${counts.edge ?? 0}`,
+    )
+    lines.push(
+      `Persisted: symbols=${counts.symbol ?? 0} types=${counts.type ?? 0} edges=${counts.edge ?? 0}`,
+    )
+    if (runReport.pluginsFailed > 0) {
+      lines.push(
+        `Plugins failed: ${runReport.pluginsFailed} (${runReport.perPlugin
+          .filter((p) => p.status === "error")
+          .map((p) => `${p.name}: ${p.errorMessage}`)
+          .join("; ")})`,
+      )
     }
-
-    const [symbolBatch, typeBatch, edgeBatch] = await Promise.all([
-      EXTRACTION_ADAPTER.extractSymbols(input),
-      EXTRACTION_ADAPTER.extractTypes(input),
-      EXTRACTION_ADAPTER.extractEdges(input),
-    ])
-
-    lines.push(`Extracted: symbols=${symbolBatch.symbols.length} types=${typeBatch.types.length} edges=${edgeBatch.edges.length}`)
-
-    const report = await EXTRACTION_ADAPTER.materializeSnapshot(snapshotId, {
-      symbolBatch,
-      typeBatch,
-      edgeBatch,
-    })
-
-    lines.push(`Persisted: symbols=${report.inserted.symbols} types=${report.inserted.types} edges=${report.inserted.edges}`)
+    if (runReport.warnings.length > 0) {
+      lines.push(`Runner warnings (${runReport.warnings.length}):`)
+      for (const w of runReport.warnings) lines.push(`- ${w}`)
+    }
 
     // Phase 2: Runtime caller ingestion via C-parser + clangd indirect caller resolution
     // Only run if an indirect caller resolver is available
     if (INGEST_DEPS.ingestion && INGEST_DEPS.indirectCallerResolver) {
-      const functionSymbols = symbolBatch.symbols
-        .filter(s => s.kind === "function")
-        .slice(0, args.maxRuntimeTargets ?? 200)
+      const functionSymbols = captureSink.functionSymbols.slice(
+        0,
+        args.maxRuntimeTargets ?? 200,
+      )
 
       let runtimeInserted = 0
       for (const sym of functionSymbols) {
@@ -186,11 +306,6 @@ export async function executeIngestTool(args: z.infer<typeof ingestInputSchema>)
     if (args.syncProjection !== false && GRAPH_PROJECTION) {
       const res = await GRAPH_PROJECTION.syncFromAuthoritative(snapshotId)
       lines.push(`Projection synced: nodes=${res.nodesUpserted} edges=${res.edgesUpserted}`)
-    }
-
-    if (report.warnings.length > 0) {
-      lines.push(`Warnings (${report.warnings.length}):`)
-      for (const w of report.warnings) lines.push(`- ${w}`)
     }
 
     lines.push(`Done in ${(performance.now() - start).toFixed(1)}ms`)

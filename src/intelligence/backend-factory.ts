@@ -6,6 +6,7 @@ import neo4j from "neo4j-driver"
 import { Neo4jGraphProjectionService } from "./db/neo4j/projection-service.js"
 import { Neo4jDbFoundation } from "./db/neo4j/foundation.js"
 import { Neo4jGraphStore } from "./db/neo4j/graph-store.js"
+import type { GraphWriteSink } from "./db/neo4j/node-contracts.js"
 import { IndirectCallerIngestionService } from "./db/ingestion/indirect-caller-ingestion-service.js"
 import type { IExtractionAdapter } from "./contracts/extraction-adapter.js"
 import { ClangdExtractionAdapter } from "./db/extraction/clangd-extraction-adapter.js"
@@ -34,6 +35,8 @@ export interface IntelligenceBackend {
   ingestWriter: ISnapshotIngestWriter
   ingestion: IIndirectCallerIngestion
   extractor: IExtractionAdapter
+  /** Sink the ingest pipeline writes facts through (Neo4jGraphStore in prod). */
+  sink: GraphWriteSink
   close(): Promise<void>
 }
 
@@ -107,6 +110,7 @@ export async function createIntelligenceBackend(
     ingestWriter,
     ingestion,
     extractor,
+    sink: store4j,
     close: async () => {
       await driver.close()
     },
