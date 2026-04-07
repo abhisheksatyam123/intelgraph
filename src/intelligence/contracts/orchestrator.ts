@@ -90,6 +90,8 @@ export const QUERY_INTENTS = [
   "find_module_summary",
   /** All symbols defined in a file (request.filePath), ordered by line number. */
   "find_symbols_in_file",
+  /** Sibling symbols: other children of the requested symbol's parent via contains edges. */
+  "find_sibling_symbols",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

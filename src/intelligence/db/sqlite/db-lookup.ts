@@ -238,6 +238,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.moduleSummary(snapshotId, apiNames[0] ?? "")
       case "find_symbols_in_file":
         return this.symbolsInFile(snapshotId, request.filePath ?? "", limit)
+      case "find_sibling_symbols":
+        return this.siblingSymbols(snapshotId, apiNames[0] ?? "", limit)
       default:
         return []
     }
@@ -995,6 +997,71 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find sibling symbols: peers that share the same parent via
+   * contains edges. When the user clicks on a method, this returns
+   * the other methods of the same class. When the user clicks on a
+   * top-level function, it returns the other top-level symbols in
+   * the same module. The original symbol is excluded.
+   *
+   * Two-step query: a CTE finds the symbol's parent (the src of any
+   * incoming contains edge), then the outer SELECT enumerates that
+   * parent's other children. Uses canonical_name throughout for
+   * legibility.
+   */
+  private siblingSymbols(
+    snapshotId: number,
+    symbolName: string,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (!symbolName) return []
+    const sql = `
+      WITH parent AS (
+        SELECT src.canonical_name AS name
+        FROM graph_edges e
+        INNER JOIN graph_nodes src
+          ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+        INNER JOIN graph_nodes dst
+          ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+        WHERE e.snapshot_id = ?
+          AND e.edge_kind = 'contains'
+          AND dst.canonical_name = ?
+        LIMIT 1
+      )
+      SELECT DISTINCT
+        dst.canonical_name AS canonical_name,
+        dst.kind AS kind,
+        dst.location AS location
+      FROM graph_edges e
+      INNER JOIN graph_nodes src
+        ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+      INNER JOIN graph_nodes dst
+        ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+      INNER JOIN parent p ON src.canonical_name = p.name
+      WHERE e.snapshot_id = ?
+        AND e.edge_kind = 'contains'
+        AND dst.canonical_name != ?
+      ORDER BY json_extract(dst.location, '$.line') ASC, dst.canonical_name ASC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, symbolName, snapshotId, symbolName, limit) as Array<
+      Record<string, unknown>
+    >
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "function",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "contains",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
 
   /**
    * List all symbols defined in a given file, ordered by start line.

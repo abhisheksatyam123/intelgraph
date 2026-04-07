@@ -385,6 +385,62 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_sibling_symbols returns peers sharing a parent", async () => {
+      // Pick any class with multiple methods. After D4, methods are
+      // contained by their class via contains edges.
+      const seed = ingest.client.raw
+        .prepare(
+          `SELECT dst.canonical_name AS method_name, src.canonical_name AS class_name
+           FROM graph_edges e
+           INNER JOIN graph_nodes src
+             ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+           INNER JOIN graph_nodes dst
+             ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+           WHERE e.snapshot_id = ?
+             AND e.edge_kind = 'contains'
+             AND src.kind = 'class'
+             AND dst.kind = 'method'
+             AND src.canonical_name IN (
+               SELECT inner_src.canonical_name
+               FROM graph_edges inner_e
+               INNER JOIN graph_nodes inner_src
+                 ON inner_e.src_node_id = inner_src.node_id
+                 AND inner_e.snapshot_id = inner_src.snapshot_id
+               INNER JOIN graph_nodes inner_dst
+                 ON inner_e.dst_node_id = inner_dst.node_id
+                 AND inner_e.snapshot_id = inner_dst.snapshot_id
+               WHERE inner_e.snapshot_id = ?
+                 AND inner_e.edge_kind = 'contains'
+                 AND inner_src.kind = 'class'
+                 AND inner_dst.kind = 'method'
+               GROUP BY inner_src.canonical_name
+               HAVING COUNT(*) >= 2
+             )
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId, ingest.snapshotId) as
+        | { method_name: string; class_name: string }
+        | undefined
+      if (!seed) return
+
+      const result = await ingest.lookup.lookup({
+        intent: "find_sibling_symbols",
+        snapshotId: ingest.snapshotId,
+        apiName: seed.method_name,
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // Original symbol should NOT appear in results
+      for (const row of result.rows) {
+        expect(row.canonical_name).not.toBe(seed.method_name)
+      }
+      // Siblings of a method should also be methods (other methods of
+      // the same class)
+      const allMethods = result.rows.every((r) => r.kind === "method")
+      expect(allMethods).toBe(true)
+    })
+
     it("find_symbols_in_file returns all symbols in a file ordered by line", async () => {
       // Pick any file path that has multiple symbols.
       const seed = ingest.client.raw
