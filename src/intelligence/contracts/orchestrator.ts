@@ -78,6 +78,8 @@ export const QUERY_INTENTS = [
   "find_symbols_by_name",
   /** All symbols of a given kind (request.pattern = kind name like 'class' / 'interface' / 'function'). */
   "find_symbols_by_kind",
+  /** Transitive imports closure of a module (recursive walk over imports edges). */
+  "find_transitive_dependencies",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

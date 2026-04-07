@@ -385,6 +385,45 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_transitive_dependencies walks the imports closure", async () => {
+      // Pick the most-importing module (highest out-degree on imports)
+      const root = ingest.client.raw
+        .prepare(
+          `SELECT src.canonical_name AS name, COUNT(*) AS n
+           FROM graph_edges e
+           INNER JOIN graph_nodes src
+             ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+           WHERE e.snapshot_id = ?
+             AND e.edge_kind = 'imports'
+             AND src.kind = 'module'
+           GROUP BY src.canonical_name
+           ORDER BY n DESC
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string; n: number } | undefined
+      if (!root) return
+
+      const result = await ingest.lookup.lookup({
+        intent: "find_transitive_dependencies",
+        snapshotId: ingest.snapshotId,
+        apiName: root.name,
+        depth: 5,
+        limit: 100,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // Direct deps should be at depth 1; transitive at higher depths.
+      const depths = result.rows.map((r) => Number(r.transitive_depth))
+      expect(Math.min(...depths)).toBe(1)
+      // Sorted ascending by depth
+      for (let i = 1; i < depths.length; i++) {
+        expect(depths[i - 1]).toBeLessThanOrEqual(depths[i])
+      }
+      // The transitive closure should include modules NOT directly
+      // imported by the root (i.e. some at depth >= 2)
+      expect(Math.max(...depths)).toBeGreaterThanOrEqual(2)
+    })
+
     it("find_symbols_by_kind browses all symbols of a kind", async () => {
       // 'class' returns all class symbols. opencode has at least 12.
       const result = await ingest.lookup.lookup({

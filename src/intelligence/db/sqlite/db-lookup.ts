@@ -216,6 +216,13 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.symbolsByName(snapshotId, request.pattern ?? "", limit)
       case "find_symbols_by_kind":
         return this.symbolsByKind(snapshotId, request.pattern ?? "", limit)
+      case "find_transitive_dependencies":
+        return this.transitiveDependencies(
+          snapshotId,
+          apiNames[0] ?? "",
+          request.depth ?? 10,
+          limit,
+        )
       default:
         return []
     }
@@ -973,6 +980,83 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find the full transitive imports closure of a module — every
+   * module reachable via repeated imports edges, with the depth at
+   * which it was discovered. Cycle prevention via the running path
+   * string. Bounded depth (default 10, clamped to [1, 20]) keeps
+   * the query bounded on huge graphs.
+   *
+   * Returned rows have an extra `transitive_depth` field. The starting
+   * module is at depth 0 (not included in results — the visualizer
+   * already knows the root). Each unique downstream module appears
+   * exactly once at its shortest distance.
+   */
+  private transitiveDependencies(
+    snapshotId: number,
+    rootName: string,
+    depth: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (!rootName) return []
+    const maxDepth = Math.min(Math.max(depth, 1), 20)
+    const sql = `
+      WITH RECURSIVE deps(module_name, depth_n, path) AS (
+        SELECT
+          dst.canonical_name,
+          1,
+          ? || ' -> ' || dst.canonical_name
+        FROM graph_edges e
+        INNER JOIN graph_nodes src
+          ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+        INNER JOIN graph_nodes dst
+          ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+        WHERE e.snapshot_id = ?
+          AND e.edge_kind = 'imports'
+          AND src.canonical_name = ?
+        UNION ALL
+        SELECT
+          dst.canonical_name,
+          d.depth_n + 1,
+          d.path || ' -> ' || dst.canonical_name
+        FROM deps d
+        INNER JOIN graph_edges e
+          ON e.snapshot_id = ?
+          AND e.edge_kind = 'imports'
+        INNER JOIN graph_nodes src
+          ON e.src_node_id = src.node_id
+          AND e.snapshot_id = src.snapshot_id
+          AND src.canonical_name = d.module_name
+        INNER JOIN graph_nodes dst
+          ON e.dst_node_id = dst.node_id
+          AND e.snapshot_id = dst.snapshot_id
+        WHERE d.depth_n < ?
+          AND instr(d.path || ' -> ', dst.canonical_name || ' -> ') = 0
+      )
+      SELECT module_name, MIN(depth_n) AS shortest_depth
+      FROM deps
+      GROUP BY module_name
+      ORDER BY shortest_depth ASC, module_name ASC
+      LIMIT ?
+    `
+    type Row = { module_name: string; shortest_depth: number }
+    const rows = this.raw
+      .prepare(sql)
+      .all(rootName, snapshotId, rootName, snapshotId, maxDepth, limit) as Row[]
+    return rows.map((row) => ({
+      kind: row.module_name.includes("#") ? "symbol" : "module",
+      canonical_name: row.module_name,
+      caller: rootName,
+      callee: row.module_name,
+      edge_kind: "imports",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: null,
+      line_number: null,
+      transitive_depth: row.shortest_depth,
+    }))
+  }
 
   /**
    * Browse all symbols of a given kind in the snapshot. Used by
