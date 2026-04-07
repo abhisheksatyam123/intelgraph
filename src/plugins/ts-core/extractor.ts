@@ -334,6 +334,8 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
             node,
             canonicalName,
             file,
+            resolver,
+            moduleNodeName,
           )) {
             yield ctx.edge({ payload: inheritEdge })
           }
@@ -1116,30 +1118,34 @@ function resolveTypeName(
   return null
 }
 
-function extractInheritanceEdges(
-  classOrIface: TsNode,
-  thisFqName: string,
-  file: string,
-): Array<{
+interface InheritanceEdgePayload {
   edgeKind: "extends" | "implements"
   srcSymbolName: string
   dstSymbolName: string
   confidence: number
   derivation: "clangd" | "llm" | "runtime" | "hybrid"
   sourceLocation: { sourceFilePath: string; sourceLineNumber: number }
-}> {
-  const out: Array<{
-    edgeKind: "extends" | "implements"
-    srcSymbolName: string
-    dstSymbolName: string
-    confidence: number
-    derivation: "clangd" | "llm" | "runtime" | "hybrid"
-    sourceLocation: { sourceFilePath: string; sourceLineNumber: number }
-  }> = []
+  metadata: Record<string, unknown>
+}
+
+function extractInheritanceEdges(
+  classOrIface: TsNode,
+  thisFqName: string,
+  file: string,
+  resolver: FileResolver,
+  moduleNodeName: string,
+): Array<InheritanceEdgePayload> {
+  const out: InheritanceEdgePayload[] = []
   // class_heritage holds extends_clause and implements_clause children.
   // The TS grammar uses `identifier` (a value reference) for the parent
   // class in extends_clause but `type_identifier` (a type reference) for
   // implements_clause and interface heritage. We accept both.
+  //
+  // Targets are resolved through the FileResolver so the destination
+  // canonical_name is the FQ form (e.g. `module:src/x.ts#Greeter`),
+  // not the bare identifier. Without this fix the structural intents
+  // (find_class_inheritance / find_class_subtypes / find_interface_implementors)
+  // would never join to a real graph_node row because the dst was bare.
   const seen = new Set<string>()
   const pushEdge = (
     kind: "extends" | "implements",
@@ -1148,15 +1154,22 @@ function extractInheritanceEdges(
     const key = `${kind}:${target}`
     if (seen.has(key)) return
     seen.add(key)
+    const resolved = resolveTypeName(target, resolver, moduleNodeName)
+    const dst = resolved ? resolved.name : target
     out.push({
       edgeKind: kind,
       srcSymbolName: thisFqName,
-      dstSymbolName: target,
-      confidence: 1,
+      dstSymbolName: dst,
+      confidence: resolved ? 1 : 0.7,
       derivation: "clangd",
       sourceLocation: {
         sourceFilePath: file,
         sourceLineNumber: classOrIface.startPosition.row + 1,
+      },
+      metadata: {
+        resolved: resolved !== null,
+        ...(resolved ? { resolutionKind: resolved.kind } : {}),
+        targetName: target,
       },
     })
   }

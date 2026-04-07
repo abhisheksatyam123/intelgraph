@@ -93,7 +93,7 @@ export interface NamedThing {
   writeFileSync(
     join(tempRoot, "src", "module-b.ts"),
     `
-import { NamedThing } from "./module-a"
+import { NamedThing, Greeter } from "./module-a"
 
 export function greetUser(name: string): string {
   return "Hello, " + name
@@ -385,7 +385,7 @@ describe("ts-core plugin — extraction", () => {
     ).toBe(true)
   })
 
-  it("emits extends edges for class inheritance", async () => {
+  it("emits extends edges with FQ resolved destinations", async () => {
     const sink = new CaptureSink()
     const runner = new ExtractorRunner({
       snapshotId: 1,
@@ -397,16 +397,20 @@ describe("ts-core plugin — extraction", () => {
     await runner.run()
 
     const extendsEdges = sink.allEdges().filter((e) => e.edge_kind === "extends")
-    // FormalGreeter extends Greeter
+    // FormalGreeter extends Greeter (Greeter is imported from module-a)
+    // After the inheritance fix, dst is the resolved FQ name, not bare.
     const formal = extendsEdges.find(
       (e) =>
         String(e.src_node_id).endsWith("#FormalGreeter") &&
-        String(e.dst_node_id).endsWith(":Greeter"),
+        String(e.dst_node_id).endsWith("module-a.ts#Greeter"),
     )
     expect(formal).toBeDefined()
+    const meta = formal?.metadata as { resolved?: boolean; targetName?: string }
+    expect(meta?.resolved).toBe(true)
+    expect(meta?.targetName).toBe("Greeter")
   })
 
-  it("emits implements edges for interface implementation", async () => {
+  it("emits implements edges with FQ resolved destinations", async () => {
     const sink = new CaptureSink()
     const runner = new ExtractorRunner({
       snapshotId: 1,
@@ -420,12 +424,16 @@ describe("ts-core plugin — extraction", () => {
     const implementsEdges = sink
       .allEdges()
       .filter((e) => e.edge_kind === "implements")
+    // FormalGreeter implements NamedThing (NamedThing is imported from
+    // module-a). After the fix, the dst is the FQ form.
     const formal = implementsEdges.find(
       (e) =>
         String(e.src_node_id).endsWith("#FormalGreeter") &&
-        String(e.dst_node_id).endsWith(":NamedThing"),
+        String(e.dst_node_id).endsWith("module-a.ts#NamedThing"),
     )
     expect(formal).toBeDefined()
+    const meta = formal?.metadata as { resolved?: boolean }
+    expect(meta?.resolved).toBe(true)
   })
 
   it("resolves cross-file calls via the import map (named, namespace, local)", async () => {

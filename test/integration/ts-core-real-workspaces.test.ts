@@ -244,6 +244,92 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       expect(result.rows.length).toBeLessThanOrEqual(dependedOnModule.n)
     })
 
+    it("find_class_inheritance returns the parent of an inheriting class", async () => {
+      // Pick any class that has an extends edge in the snapshot.
+      const child = ingest.client.raw
+        .prepare(
+          `SELECT src.canonical_name AS name
+           FROM graph_edges e
+           INNER JOIN graph_nodes src
+             ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+           WHERE e.snapshot_id = ?
+             AND e.edge_kind = 'extends'
+             AND src.kind = 'class'
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string } | undefined
+      if (!child) return // opencode may have no extends edges yet
+      const result = await ingest.lookup.lookup({
+        intent: "find_class_inheritance",
+        snapshotId: ingest.snapshotId,
+        apiName: child.name,
+        limit: 10,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      for (const row of result.rows) {
+        expect(row.edge_kind).toBe("extends")
+      }
+    })
+
+    it("find_class_subtypes finds children that extend a parent", async () => {
+      // Pick the most-extended class (highest in-degree on extends).
+      const parent = ingest.client.raw
+        .prepare(
+          `SELECT dst.canonical_name AS name, COUNT(*) AS n
+           FROM graph_edges e
+           INNER JOIN graph_nodes dst
+             ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+           WHERE e.snapshot_id = ? AND e.edge_kind = 'extends'
+           GROUP BY dst.canonical_name
+           ORDER BY n DESC
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string; n: number } | undefined
+      if (!parent) return
+      const result = await ingest.lookup.lookup({
+        intent: "find_class_subtypes",
+        snapshotId: ingest.snapshotId,
+        apiName: parent.name,
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      expect(result.rows.length).toBeLessThanOrEqual(parent.n)
+      for (const row of result.rows) {
+        expect(row.edge_kind).toBe("extends")
+      }
+    })
+
+    it("find_interface_implementors finds classes that implement an interface", async () => {
+      // Pick the most-implemented interface.
+      const iface = ingest.client.raw
+        .prepare(
+          `SELECT dst.canonical_name AS name, COUNT(*) AS n
+           FROM graph_edges e
+           INNER JOIN graph_nodes dst
+             ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+           WHERE e.snapshot_id = ? AND e.edge_kind = 'implements'
+           GROUP BY dst.canonical_name
+           ORDER BY n DESC
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string; n: number } | undefined
+      if (!iface) return
+      const result = await ingest.lookup.lookup({
+        intent: "find_interface_implementors",
+        snapshotId: ingest.snapshotId,
+        apiName: iface.name,
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      expect(result.rows.length).toBeLessThanOrEqual(iface.n)
+      for (const row of result.rows) {
+        expect(row.edge_kind).toBe("implements")
+      }
+    })
+
     it("Round D1: cross-file call resolution produces FQ dst names", () => {
       // After Round D1, ts-core resolves call sites against the per-file
       // import map. We expect a substantial fraction of call edges to
