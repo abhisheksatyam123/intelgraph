@@ -34,6 +34,12 @@ export type EdgeKind =
   | "uses_macro"
   | "logs_event"
   | "operates_on_struct"
+  // ── language-agnostic structural edges (used by ts-core and future plugins)
+  | "imports" // module A imports module B (file-to-file)
+  | "contains" // module/namespace contains a symbol
+  | "extends" // class extends class, interface extends interface
+  | "implements" // class implements interface
+  | "references_type" // symbol uses a type by name
 
 export type LogLevel = "ERROR" | "WARN" | "INFO" | "DEBUG" | "VERBOSE" | "TRACE" | "UNKNOWN"
 
@@ -55,7 +61,22 @@ export interface LogRow {
 }
 
 export interface SymbolRow {
-  kind: "function" | "struct" | "union" | "enum" | "typedef" | "macro" | "global_var" | "field" | "param"
+  kind:
+    | "function"
+    | "struct"
+    | "union"
+    | "enum"
+    | "typedef"
+    | "macro"
+    | "global_var"
+    | "field"
+    | "param"
+    // ── language-agnostic kinds for non-C plugins
+    | "class"
+    | "interface"
+    | "namespace"
+    | "module"
+    | "method"
   name: string
   qualifiedName?: string
   signature?: string

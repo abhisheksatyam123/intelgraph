@@ -16,9 +16,11 @@
 
 import type { IExtractor } from "../intelligence/extraction/contract.js"
 import { clangdCoreExtractor } from "./clangd-core/index.js"
+import { tsCoreExtractor } from "./ts-core/index.js"
 
 export const BUILT_IN_EXTRACTORS: IExtractor[] = [
   clangdCoreExtractor,
+  tsCoreExtractor,
 ]
 
-export { clangdCoreExtractor }
+export { clangdCoreExtractor, tsCoreExtractor }
