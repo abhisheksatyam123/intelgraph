@@ -498,6 +498,21 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("Round D17: typed parameter member calls resolve to param-member", () => {
+      // Functions like `function f(p: Foo) { p.bar() }` are common in
+      // opencode's effect-style code. After D17 these resolve via the
+      // parameter type annotation.
+      const counts = ingest.client.raw
+        .prepare(
+          `SELECT COUNT(*) AS n FROM graph_edges
+           WHERE snapshot_id = ? AND edge_kind = 'calls'
+             AND json_extract(metadata, '$.resolutionKind') = 'param-member'`,
+        )
+        .get(ingest.snapshotId) as { n: number }
+      // Soft floor — opencode has many typed-parameter functions.
+      expect(counts.n).toBeGreaterThan(50)
+    })
+
     it("Round D15: namedImport.member() and local.member() resolve to FQ destinations", () => {
       // After D15, member-style calls where the receiver is a named
       // import or a local declaration produce FQ-shaped dst names

@@ -206,10 +206,16 @@ interface FileResolver {
    * Top-level typed variables → FQ name of their type. Populated when
    * a global_var declaration is walked. Lets `const x: Foo = ...` followed
    * by `x.method()` resolve to `${FooFq}.method` (kind=var-member).
-   * Function/method parameters are NOT tracked here — they have local
-   * scope and adding scope would require deeper bookkeeping.
    */
   varTypes: Map<string, string>
+  /**
+   * Stack of parameter scopes — one map per enclosing function/method
+   * frame. Populated on entering a function and popped on leaving.
+   * Lookups walk the stack top-down so the innermost binding wins.
+   * Lets `function f(x: Foo) { x.bar() }` resolve x.bar() to
+   * `${FooFq}.bar` (kind=param-member).
+   */
+  paramTypeStack: Array<Map<string, string>>
 }
 
 async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
@@ -231,6 +237,7 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
     namespaceImports: new Map(),
     localSymbols: new Set(),
     varTypes: new Map(),
+    paramTypeStack: [],
   }
 
   // Pre-pass: collect every top-level declaration name into the
@@ -489,6 +496,17 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
         : enter.name
       const fqName = `${moduleNodeName}#${localName}`
       scopeStack.push({ name: fqName, node })
+
+      // Push a fresh parameter type frame and populate it from the
+      // function/method's formal_parameters. Each typed param gets
+      // mapped to its resolved type FQ so member calls inside the
+      // body can resolve via varTypes (param-member kind).
+      const paramFrame = collectParamTypes(
+        node,
+        resolver,
+        moduleNodeName,
+      )
+      resolver.paramTypeStack.push(paramFrame)
     }
 
     // JSX component usage: `<Foo />` or `<Foo>...</Foo>` is semantically
@@ -584,6 +602,7 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
 
     if (enter) {
       scopeStack.pop()
+      resolver.paramTypeStack.pop()
     }
     if (declared && (declared.kind === "class" || declared.kind === "interface")) {
       classStack.pop()
@@ -738,10 +757,20 @@ function extractCalleeWithResolution(
       }
       if (obj.type === "identifier") {
         // Resolution order — most specific (uses type info) to least
-        // specific. typedVar.member() runs first because a global_var
-        // is also in localSymbols, but the type annotation lets us
-        // produce a more useful dst pointing at the actual method.
+        // specific. Param scope wins over typed var which wins over
+        // localSymbols, since the more local binding shadows.
         //
+        // param.member() — receiver is a typed function/method param
+        // in the enclosing scope. The walker stacked a paramTypes
+        // frame on entry; check it innermost-first.
+        const paramType = lookupParamType(resolver, obj.text)
+        if (paramType) {
+          return {
+            name: `${paramType}.${propName}`,
+            resolved: true,
+            kind: "param-member",
+          }
+        }
         // typedVar.member() — receiver is a top-level typed var whose
         // type we know via its annotation. Resolve to the type's FQ
         // name + member. e.g. `const x: Foo = ...; x.method()` →
@@ -864,6 +893,59 @@ function populateResolverFromImport(
       continue
     }
   }
+}
+
+/**
+ * Walk a function/method/arrow node's formal_parameters and build a
+ * map from each typed parameter's local name to its resolved type FQ.
+ * Untyped params and params with unresolvable types are skipped.
+ *
+ * For function_expression / arrow_function, the parameters live on the
+ * node itself; for function_declaration / method_definition, same shape.
+ */
+function collectParamTypes(
+  fnNode: TsNode,
+  resolver: FileResolver,
+  moduleNodeName: string,
+): Map<string, string> {
+  const out = new Map<string, string>()
+  const params = firstNamedChildOfType(fnNode, "formal_parameters")
+  if (!params) return out
+
+  for (let i = 0; i < params.namedChildCount; i++) {
+    const param = params.namedChild(i)
+    if (!param) continue
+    if (param.type !== "required_parameter" && param.type !== "optional_parameter") {
+      continue
+    }
+    // Param shape: required_parameter > [pattern: identifier|object_pattern] [type_annotation]
+    const pattern = param.childForFieldName("pattern")
+    if (!pattern || pattern.type !== "identifier") continue
+    const ann = firstNamedChildOfType(param, "type_annotation")
+    if (!ann) continue
+    const firstType = findFirstDescendantOfType(ann, "type_identifier")
+    if (!firstType) continue
+    const resolved = resolveTypeName(firstType.text, resolver, moduleNodeName)
+    if (!resolved) continue
+    out.set(pattern.text, resolved.name)
+  }
+  return out
+}
+
+/**
+ * Walk the param type stack from innermost to outermost and return the
+ * first match for the given param name. Returns null if not bound.
+ */
+function lookupParamType(
+  resolver: FileResolver,
+  name: string,
+): string | null {
+  for (let i = resolver.paramTypeStack.length - 1; i >= 0; i--) {
+    const frame = resolver.paramTypeStack[i]
+    const t = frame.get(name)
+    if (t) return t
+  }
+  return null
 }
 
 /**

@@ -186,6 +186,12 @@ export const instance: Greeter = new Greeter("hello")
 export function viaInstance() {
   instance.greet("world")
 }
+
+// Round D17: typed parameter + member call. The parameter's type
+// annotation should let p.greet() resolve to Greeter.greet.
+export function viaParam(p: Greeter) {
+  p.greet("param")
+}
 `,
   )
 
@@ -819,6 +825,36 @@ describe("ts-core plugin — extraction", () => {
       String(e.src_node_id).endsWith("module-b.ts#greetUser"),
     )
     expect(fromGreetUser.length).toBe(0)
+  })
+
+  it("resolves typedParam.method() via the parameter's type annotation", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const callEdges = sink.allEdges().filter((e) => e.edge_kind === "calls")
+    const stripPrefix = (id: unknown): string =>
+      String(id).replace(/^graph_node:\d+:symbol:/, "")
+
+    // viaParam(p: Greeter) calls p.greet("param") → param-member
+    const fromViaParam = callEdges.filter((e) =>
+      String(e.src_node_id).endsWith("namespace-fixture.ts#viaParam"),
+    )
+    const paramMember = fromViaParam.find(
+      (e) =>
+        (e.metadata as { resolutionKind?: string })?.resolutionKind ===
+        "param-member",
+    )
+    expect(paramMember).toBeDefined()
+    expect(stripPrefix(paramMember!.dst_node_id)).toBe(
+      "module:src/module-a.ts#Greeter.greet",
+    )
   })
 
   it("resolves typedVar.method() to the var's annotated type's method", async () => {
