@@ -70,6 +70,8 @@ export const QUERY_INTENTS = [
   "find_top_called_functions",
   /** Modules with zero incoming imports — likely entry points / scripts / tests. */
   "find_module_entry_points",
+  /** Exported symbols with zero incoming calls and zero incoming references_type — likely dead public API. */
+  "find_dead_exports",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

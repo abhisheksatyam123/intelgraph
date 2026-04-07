@@ -202,6 +202,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.topByIncoming(snapshotId, "calls", null, limit)
       case "find_module_entry_points":
         return this.moduleEntryPoints(snapshotId, limit)
+      case "find_dead_exports":
+        return this.deadExports(snapshotId, limit)
       default:
         return []
     }
@@ -959,6 +961,63 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find exported symbols (functions/classes/interfaces) with zero
+   * incoming calls AND zero incoming references_type. Likely dead
+   * public API: declared in an `export ...` statement but nobody
+   * actually uses them. Visualizers can surface these as refactor
+   * targets.
+   *
+   * Filters:
+   *   - kind IN (function, class, interface, method)
+   *   - payload.metadata.exported = true (set by D26)
+   *   - NOT EXISTS incoming calls edges
+   *   - NOT EXISTS incoming references_type edges
+   *
+   * Methods inside an exported class don't carry exported=true (the
+   * class does), so this query finds exported top-level functions,
+   * classes, and interfaces specifically.
+   */
+  private deadExports(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        n.canonical_name AS canonical_name,
+        n.kind AS kind,
+        n.location AS location
+      FROM graph_nodes n
+      WHERE n.snapshot_id = ?
+        AND n.kind IN ('function', 'class', 'interface')
+        AND json_extract(n.payload, '$.metadata.exported') = 1
+        AND NOT EXISTS (
+          SELECT 1 FROM graph_edges e
+          INNER JOIN graph_nodes dst
+            ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+          WHERE e.snapshot_id = n.snapshot_id
+            AND e.edge_kind IN ('calls', 'references_type', 'extends', 'implements')
+            AND dst.canonical_name = n.canonical_name
+        )
+      ORDER BY n.canonical_name
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "function",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "contains",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
 
   /**
    * Find modules with zero incoming imports — likely entry points

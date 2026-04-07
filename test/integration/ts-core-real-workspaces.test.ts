@@ -385,6 +385,22 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_dead_exports returns exported symbols with no callers/refs", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_dead_exports",
+        snapshotId: ingest.snapshotId,
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      // opencode has many exports — even a healthy codebase has some
+      // dead ones (recently added APIs, abandoned features, etc.).
+      expect(result.rows.length).toBeGreaterThan(0)
+      for (const row of result.rows) {
+        expect(["function", "class", "interface"]).toContain(String(row.kind))
+        expect(String(row.canonical_name)).toMatch(/^module:/)
+      }
+    })
+
     it("find_module_entry_points returns modules with no incoming imports", async () => {
       const result = await ingest.lookup.lookup({
         intent: "find_module_entry_points",
