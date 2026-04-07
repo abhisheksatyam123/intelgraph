@@ -1197,6 +1197,76 @@ describe("ts-core plugin — extraction", () => {
     }
   })
 
+  it("tracks exported status on top-level declarations", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    // module-a.ts has `export function entry`, `export class Greeter`,
+    // `export interface NamedThing`. All three should carry exported=true.
+    const greeter = sink
+      .allNodes()
+      .find(
+        (n) =>
+          n.kind === "class" &&
+          String(n.canonical_name).endsWith("module-a.ts#Greeter"),
+      )
+    const greeterMeta =
+      ((greeter?.payload as Record<string, unknown>)?.metadata as
+        | Record<string, unknown>
+        | undefined) ?? {}
+    expect(greeterMeta.exported).toBe(true)
+
+    const entry = sink
+      .allNodes()
+      .find(
+        (n) =>
+          n.kind === "function" &&
+          String(n.canonical_name).endsWith("module-a.ts#entry"),
+      )
+    const entryMeta =
+      ((entry?.payload as Record<string, unknown>)?.metadata as
+        | Record<string, unknown>
+        | undefined) ?? {}
+    expect(entryMeta.exported).toBe(true)
+
+    // ui.tsx has `function Header() {}` (no export) and
+    // `export function App() {}`. Header should NOT be exported.
+    const header = sink
+      .allNodes()
+      .find(
+        (n) =>
+          n.kind === "function" &&
+          String(n.canonical_name).endsWith("ui.tsx#Header"),
+      )
+    const headerMeta =
+      ((header?.payload as Record<string, unknown>)?.metadata as
+        | Record<string, unknown>
+        | undefined) ?? {}
+    expect(headerMeta.exported).toBeUndefined()
+
+    // Methods inside an exported class are NOT themselves exported —
+    // the class is. Greeter.greet should not have exported=true.
+    const greet = sink
+      .allNodes()
+      .find(
+        (n) =>
+          n.kind === "method" &&
+          String(n.canonical_name).endsWith("module-a.ts#Greeter.greet"),
+      )
+    const greetMeta =
+      ((greet?.payload as Record<string, unknown>)?.metadata as
+        | Record<string, unknown>
+        | undefined) ?? {}
+    expect(greetMeta.exported).toBeUndefined()
+  })
+
   it("symbols carry endLine and lineCount metadata for size-aware visualization", async () => {
     const sink = new CaptureSink()
     const runner = new ExtractorRunner({

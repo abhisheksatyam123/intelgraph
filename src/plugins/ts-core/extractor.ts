@@ -326,9 +326,16 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
         const endLine = node.endPosition.row + 1
         const startLine = node.startPosition.row + 1
         const lineCount = endLine - startLine + 1
-        const baseMeta = isMember
+        // Detect exported declarations: the declaration node's parent
+        // is export_statement when written as `export class Foo {}`,
+        // `export function foo() {}`, etc. Methods inside exported
+        // classes are not themselves "exported" (the class is); we
+        // skip the check for members.
+        const exported = !isMember && isExportedDeclaration(node)
+        const baseMeta: Record<string, unknown> = isMember
           ? { localName: name, owningClass: enclosingClass }
           : { localName: name }
+        if (exported) baseMeta.exported = true
         yield ctx.symbol({
           payload: {
             kind,
@@ -1755,6 +1762,18 @@ function isComponentTagName(name: string): boolean {
   const c = name.charCodeAt(0)
   // 'A'..'Z' or '_' or '$'
   return (c >= 65 && c <= 90) || c === 95 || c === 36
+}
+
+/**
+ * Returns true when the declaration node is wrapped in an
+ * export_statement (e.g. `export class Foo {}`, `export function foo() {}`,
+ * `export const x = ...`). The declaration node's direct parent is
+ * the export_statement in those cases. Default-default exports
+ * (`export default class Foo {}`) are also recognized — same parent
+ * shape.
+ */
+function isExportedDeclaration(node: TsNode): boolean {
+  return node.parent !== null && node.parent.type === "export_statement"
 }
 
 /**
