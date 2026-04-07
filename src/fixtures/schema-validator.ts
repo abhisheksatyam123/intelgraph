@@ -7,7 +7,7 @@
  *   - Family-specific non-empty bucket rules
  *   - Optional contract field type checks
  *
- * Source of truth: doc/derived/module-wlan-fixture-schema#Frozen schema and contract model
+ * Source of truth: doc/project/data/schema/wlan-fixture-schema#Frozen schema and contract model
  */
 
 import { readFile } from "node:fs/promises"

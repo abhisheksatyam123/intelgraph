@@ -304,12 +304,15 @@ Check:
 
 ## More docs
 
-- `docs/architecture.md` — repo-facing architecture summary
-- `docs/WLAN_ANALYSIS_ARCHITECTURE.md` — **WLAN code analysis pipeline + PostgreSQL schema design**
-- `docs/diagrams/clangd-mcp-architecture.puml` — PlantUML component diagram (basic runtime)
-- `docs/diagrams/clangd-mcp-complete-architecture.puml` — **PlantUML complete architecture (multi-client + PostgreSQL)**
-- `docs/components/daemon-manager.md` — daemon lifecycle reference
-- `docs/LOG_ANALYSIS.md` — logging subsystem reference
+- `doc/project/data/schema/neo4j-graph-schema.md` — **Neo4j intelligence schema** (labels, edge kinds, indexes roadmap)
+- `doc/project/task/todo-neo4j-schema-hardening.md` — **task plan / checklist** for Neo4j hardening
+- `doc/atomic/domain/graph-db/philosophy-graph-instrumentation.md` — **core philosophy**: persistent LSP, graph model, instrumentation (Neo4j intents)
+- `doc/architecture.md` — repo-facing architecture summary
+- `doc/WLAN_ANALYSIS_ARCHITECTURE.md` — **WLAN code analysis pipeline + PostgreSQL schema design**
+- `doc/diagrams/clangd-mcp-architecture.puml` — PlantUML component diagram (basic runtime)
+- `doc/diagrams/clangd-mcp-complete-architecture.puml` — **PlantUML complete architecture (multi-client + PostgreSQL)**
+- `doc/components/daemon-manager.md` — daemon lifecycle reference
+- `doc/LOG_ANALYSIS.md` — logging subsystem reference
 
 ### Render the PlantUML diagrams
 
@@ -317,10 +320,10 @@ If you have PlantUML installed locally:
 
 ```bash
 # Basic runtime architecture
-plantuml docs/diagrams/clangd-mcp-architecture.puml
+plantuml doc/diagrams/clangd-mcp-architecture.puml
 
 # Complete architecture with PostgreSQL intelligence store
-plantuml docs/diagrams/clangd-mcp-complete-architecture.puml
+plantuml doc/diagrams/clangd-mcp-complete-architecture.puml
 ```
 
 This generates diagram images next to the `.puml` source files.

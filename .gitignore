@@ -54,6 +54,10 @@ Thumbs.db
 .opencode/
 opencode.json
 
+# Notes vault symlinks (personal Obsidian vault at /home/abhi/notes)
+doc/atomic
+doc/project
+
 # Local intelligence DB data (workspace-local Postgres/Neo4j volumes)
 .intelligence-data/
 

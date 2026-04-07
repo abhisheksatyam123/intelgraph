@@ -181,7 +181,7 @@ const DEFAULT_CONFIG: Partial<ClangdMcpConfig> = {
     maxAttemptsPerModel: 2,
     backoffBaseMs: 500,
     backoffMaxMs: 4000,
-    ruleFile: "doc/skill/indirect-caller-reasoning-rules.md",
+    ruleFile: "doc/atomic/skill/indirect-caller-reasoning-rules.md",
   },
 }
 

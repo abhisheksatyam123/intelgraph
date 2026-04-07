@@ -29,4 +29,7 @@
 - [ ] End-to-end command regenerates tests + reports from WLAN workspace
 - [ ] Comparator catches intentional injected mismatches
 - [ ] Confidence report is stable and actionable for release decisions
-EOF
+
+## Related — Neo4j intelligence graph
+
+- Tracked in **`doc/project/task/todo-neo4j-schema-hardening.md`** (indexes, constraints, ingest batching, projection).

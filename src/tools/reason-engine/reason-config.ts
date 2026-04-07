@@ -12,6 +12,6 @@ export function readReasoningConfig(workspaceRoot: string) {
     maxAttemptsPerModel: cfg.llmReasoning?.maxAttemptsPerModel ?? 2,
     backoffBaseMs: cfg.llmReasoning?.backoffBaseMs ?? 500,
     backoffMaxMs: cfg.llmReasoning?.backoffMaxMs ?? 4000,
-    ruleFile: cfg.llmReasoning?.ruleFile ?? "doc/skill/indirect-caller-reasoning-rules.md",
+    ruleFile: cfg.llmReasoning?.ruleFile ?? "doc/atomic/skill/indirect-caller-reasoning-rules.md",
   }
 }

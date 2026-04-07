@@ -3,7 +3,7 @@
  *
  * These are WLAN-specific test fixtures used to validate the reason engine
  * against known ground-truth. They are NOT the reasoning rules — those live
- * in doc/skill/indirect-caller-reasoning-rules.md and are generic.
+ * in doc/atomic/skill/indirect-caller-reasoning-rules.md and are generic.
  *
  * Each entry records the verified invocation reason for a real WLAN BPF API
  * so the test harness can assert the engine produces structurally correct

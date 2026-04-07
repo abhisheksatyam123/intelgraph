@@ -15,6 +15,16 @@ Name automated tests `*.test.ts`. Put fast isolated coverage in `test/unit`, cro
 ## Commit & Pull Request Guidelines
 Follow the existing conventional style: `feat:`, `fix:`, `refactor:`, and `test:` with an imperative summary. Keep commits focused on one behavior change. Pull requests should describe the problem, note affected runtime modes or MCP tools, link related issues, and list the validation commands you ran. If tool responses or daemon behavior changed, include a short request/response sample or log excerpt instead of screenshots.
 
+## Documentation & Notes Vault
+This repo's `doc/` is two symlinks into a personal Obsidian vault at `~/notes/`. The symlinks are gitignored — recreate them on a fresh clone with `scripts/setup-notes-vault.sh`.
+
+- **`doc/atomic/`** — universal durable knowledge shared across every project. Read `doc/atomic/skill/notes-workflow.md` for the workflow contract and `doc/atomic/skill/weekly-review.md` for the maintenance ritual. Domain-bound atoms live under `doc/atomic/domain/<subfield>/` (e.g. `doc/atomic/domain/graph-db/`).
+- **`doc/project/`** — clangd-mcp-specific notes only. Subfolders answer five questions: `architecture/` (how it's built), `module/` (code parts), `data/` (schemas, fixtures, contracts under `data/schema/`, `data/fixture/`, etc.), `decision/` (ADRs), `skill/` (project runbooks). Plus `derived/` (machine-generated module notes), `diagram/` (.puml), and `task/` (active work).
+- **Quick capture**: `scripts/note new <type> <slug>` creates a note from the matching template under the vault and prints its path.
+- **Frontmatter is required** on every note — schema in `~/notes/_templates/_frontmatter-standard.md`. Lifecycle is `seedling → growing → evergreen → superseded → archived`; bump `status:` and `updated:` whenever you touch a note.
+- **When you learn something**: a universal pattern → new note in `doc/atomic/concept|skill|pattern/`. A domain insight → new note in `doc/atomic/domain/<subfield>/`. A project fact → update or create a note under `doc/project/<area>/`. Never duplicate; link with `[[wikilinks]]`.
+- **Source code referencing notes**: use `doc/atomic/...` or `doc/project/...` paths so symlink resolution works. Don't reference the vault path directly.
+
 ## WLAN Graph Fixture Design
 When extending `test/fixtures/wlan-ground-truth.json`, treat each `verificationTarget` as a graph contract for one primary API node. For each target, include a `graphContract` section and keep it synchronized with `queryCases`.
 

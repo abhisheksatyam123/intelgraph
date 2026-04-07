@@ -380,8 +380,8 @@ function escapeRegex(s: string): string {
 function loadRuleText(ruleFile?: string): string {
   const candidates = [
     ruleFile,
-    path.join(process.cwd(), "doc/skill/indirect-caller-reasoning-rules.md"),
-    path.join(path.dirname(new URL(import.meta.url).pathname), "../../../doc/skill/indirect-caller-reasoning-rules.md"),
+    path.join(process.cwd(), "doc/atomic/skill/indirect-caller-reasoning-rules.md"),
+    path.join(path.dirname(new URL(import.meta.url).pathname), "../../../doc/atomic/skill/indirect-caller-reasoning-rules.md"),
   ].filter(Boolean) as string[]
 
   for (const p of candidates) {
