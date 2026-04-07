@@ -202,6 +202,14 @@ interface FileResolver {
   namespaceImports: Map<string, string>
   /** Locally declared top-level symbols, populated as the walk progresses. */
   localSymbols: Set<string>
+  /**
+   * Top-level typed variables → FQ name of their type. Populated when
+   * a global_var declaration is walked. Lets `const x: Foo = ...` followed
+   * by `x.method()` resolve to `${FooFq}.method` (kind=var-member).
+   * Function/method parameters are NOT tracked here — they have local
+   * scope and adding scope would require deeper bookkeeping.
+   */
+  varTypes: Map<string, string>
 }
 
 async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
@@ -222,6 +230,7 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
     defaultImports: new Map(),
     namespaceImports: new Map(),
     localSymbols: new Set(),
+    varTypes: new Map(),
   }
 
   // Pre-pass: collect every top-level declaration name into the
@@ -394,20 +403,38 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
         // Top-level typed variable: walk its variable_declarator's
         // type_annotation. The annotation lives one level down inside
         // the lexical_declaration → variable_declarator subtree, so we
-        // pass that container to the walker.
+        // pass that container to the walker. Also record the var → type
+        // mapping in resolver.varTypes so subsequent member calls on
+        // the var can resolve to the type's FQ name.
         if (kind === "global_var") {
           const declarator = firstNamedChildOfType(node, "variable_declarator")
           if (declarator) {
-            for (const ref of extractTypeReferencesFromAnnotations(
-              [firstNamedChildOfType(declarator, "type_annotation")].filter(
-                (a): a is TsNode => a !== null,
-              ),
-              canonicalName,
-              resolver,
-              moduleNodeName,
-              file,
-            )) {
-              yield ctx.edge({ payload: ref })
+            const ann = firstNamedChildOfType(declarator, "type_annotation")
+            if (ann) {
+              // Find the FIRST type_identifier in the annotation. For
+              // simple `: Foo` this is Foo. For `: Foo | null` it's
+              // still Foo. For `: Promise<Foo>` it's Promise (which is
+              // built-in and won't resolve, so we drop it).
+              const firstType = findFirstDescendantOfType(ann, "type_identifier")
+              if (firstType) {
+                const resolved = resolveTypeName(
+                  firstType.text,
+                  resolver,
+                  moduleNodeName,
+                )
+                if (resolved) {
+                  resolver.varTypes.set(name, resolved.name)
+                }
+              }
+              for (const ref of extractTypeReferencesFromAnnotations(
+                [ann],
+                canonicalName,
+                resolver,
+                moduleNodeName,
+                file,
+              )) {
+                yield ctx.edge({ payload: ref })
+              }
             }
           }
         }
@@ -710,6 +737,23 @@ function extractCalleeWithResolution(
         }
       }
       if (obj.type === "identifier") {
+        // Resolution order — most specific (uses type info) to least
+        // specific. typedVar.member() runs first because a global_var
+        // is also in localSymbols, but the type annotation lets us
+        // produce a more useful dst pointing at the actual method.
+        //
+        // typedVar.member() — receiver is a top-level typed var whose
+        // type we know via its annotation. Resolve to the type's FQ
+        // name + member. e.g. `const x: Foo = ...; x.method()` →
+        // `${FooFq}.method`.
+        const varType = resolver.varTypes.get(obj.text)
+        if (varType) {
+          return {
+            name: `${varType}.${propName}`,
+            resolved: true,
+            kind: "var-member",
+          }
+        }
         // namespace.member → look up the namespace in import map
         const ns = resolver.namespaceImports.get(obj.text)
         if (ns) {
@@ -1490,6 +1534,23 @@ function firstNamedChildOfType(node: TsNode, type: string): TsNode | null {
   for (let i = 0; i < node.namedChildCount; i++) {
     const child = node.namedChild(i)
     if (child && child.type === type) return child
+  }
+  return null
+}
+
+/**
+ * Depth-first search for the first descendant of `node` whose type
+ * matches. Used by D16 to extract a typed-var's primary type from a
+ * type_annotation (which may wrap the type in union_type, generic_type,
+ * etc.).
+ */
+function findFirstDescendantOfType(node: TsNode, type: string): TsNode | null {
+  for (let i = 0; i < node.namedChildCount; i++) {
+    const child = node.namedChild(i)
+    if (!child) continue
+    if (child.type === type) return child
+    const found = findFirstDescendantOfType(child, type)
+    if (found) return found
   }
   return null
 }

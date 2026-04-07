@@ -177,6 +177,15 @@ export function caller() {
   // localNs.helper() — localNs is a local declaration → local-member
   localNs.helper()
 }
+
+// Round D16: typed top-level variable + member call.
+// instance: Greeter is a typed var; instance.greet() should resolve
+// to module:src/module-a.ts#Greeter.greet via varTypes lookup.
+export const instance: Greeter = new Greeter("hello")
+
+export function viaInstance() {
+  instance.greet("world")
+}
 `,
   )
 
@@ -810,6 +819,38 @@ describe("ts-core plugin — extraction", () => {
       String(e.src_node_id).endsWith("module-b.ts#greetUser"),
     )
     expect(fromGreetUser.length).toBe(0)
+  })
+
+  it("resolves typedVar.method() to the var's annotated type's method", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const callEdges = sink.allEdges().filter((e) => e.edge_kind === "calls")
+    const stripPrefix = (id: unknown): string =>
+      String(id).replace(/^graph_node:\d+:symbol:/, "")
+
+    // viaInstance() calls instance.greet(). instance: Greeter, so dst
+    // should be `module:src/module-a.ts#Greeter.greet` (the type's
+    // method, not a bare property name).
+    const fromViaInstance = callEdges.filter((e) =>
+      String(e.src_node_id).endsWith("namespace-fixture.ts#viaInstance"),
+    )
+    const varMember = fromViaInstance.find(
+      (e) =>
+        (e.metadata as { resolutionKind?: string })?.resolutionKind ===
+        "var-member",
+    )
+    expect(varMember).toBeDefined()
+    expect(stripPrefix(varMember!.dst_node_id)).toBe(
+      "module:src/module-a.ts#Greeter.greet",
+    )
   })
 
   it("resolves namedImport.member() and local.member() to FQ destinations", async () => {
