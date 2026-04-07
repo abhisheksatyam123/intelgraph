@@ -205,6 +205,14 @@ export function viaInferred() {
 export function makeOne(): Greeter {
   return new Greeter("standalone")
 }
+
+// Round D29: cast-based var typing.
+// 'casted' has no annotation but 'as Greeter' makes its type knowable.
+export const casted = JSON.parse("{}") as Greeter
+
+export function viaCasted() {
+  casted.greet("from-cast")
+}
 `,
   )
 
@@ -924,6 +932,59 @@ describe("ts-core plugin — extraction", () => {
         String(e.dst_node_id).endsWith("anon-class.ts#default"),
     )
     expect(anonClassContains).toBeDefined()
+  })
+
+  it("infers var type from `expr as Foo` casts and resolves member calls", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    // `casted` is declared as `JSON.parse("{}") as Greeter` and should
+    // become a global_var symbol with varTypes mapping to Greeter.
+    const castedNode = sink
+      .allNodes()
+      .find(
+        (n) =>
+          n.kind === "global_var" &&
+          String(n.canonical_name).endsWith("namespace-fixture.ts#casted"),
+      )
+    expect(castedNode).toBeDefined()
+
+    // A references_type edge from casted → Greeter should land with
+    // metadata.inferredFromCast=true
+    const refEdges = sink
+      .allEdges()
+      .filter((e) => e.edge_kind === "references_type")
+    const fromCasted = refEdges.find(
+      (e) =>
+        String(e.src_node_id).endsWith("namespace-fixture.ts#casted") &&
+        (e.metadata as { inferredFromCast?: boolean })?.inferredFromCast === true,
+    )
+    expect(fromCasted).toBeDefined()
+    expect(String(fromCasted!.dst_node_id)).toMatch(/module-a\.ts#Greeter$/)
+
+    // viaCasted() calls casted.greet() → var-member to Greeter.greet
+    const callEdges = sink.allEdges().filter((e) => e.edge_kind === "calls")
+    const stripPrefix = (id: unknown): string =>
+      String(id).replace(/^graph_node:\d+:symbol:/, "")
+    const fromViaCasted = callEdges.filter((e) =>
+      String(e.src_node_id).endsWith("namespace-fixture.ts#viaCasted"),
+    )
+    const varMember = fromViaCasted.find(
+      (e) =>
+        (e.metadata as { resolutionKind?: string })?.resolutionKind ===
+        "var-member",
+    )
+    expect(varMember).toBeDefined()
+    expect(stripPrefix(varMember!.dst_node_id)).toBe(
+      "module:src/module-a.ts#Greeter.greet",
+    )
   })
 
   it("emits a constructor calls edge for bare `new Foo()` expressions", async () => {

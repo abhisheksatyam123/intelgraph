@@ -467,45 +467,37 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
                 yield ctx.edge({ payload: ref })
               }
             } else {
-              // Path 2: untyped declarator with a new_expression value.
-              // The constructor identifier is the implied type. Only
-              // simple `new Foo()` shape is recognized — chained or
-              // member-expression constructors fall through.
+              // Path 2: untyped declarator with an inferable value.
+              // Two recognized forms:
+              //   - new_expression: the constructor identifier is the type
+              //   - as_expression:  the cast target is the type
               const value = declarator.childForFieldName("value")
-              if (value && value.type === "new_expression") {
-                const ctor = value.namedChild(0)
-                if (ctor && ctor.type === "identifier") {
-                  const resolved = resolveTypeName(
-                    ctor.text,
-                    resolver,
-                    moduleNodeName,
-                  )
-                  if (resolved) {
-                    resolver.varTypes.set(name, resolved.name)
-                    // Also emit a references_type edge from the var
-                    // to its inferred type so the visualizer can find
-                    // it.
-                    yield ctx.edge({
-                      payload: {
-                        edgeKind: "references_type",
-                        srcSymbolName: canonicalName,
-                        dstSymbolName: resolved.name,
-                        confidence: 0.9,
-                        derivation: "clangd",
-                        sourceLocation: {
-                          sourceFilePath: file,
-                          sourceLineNumber: value.startPosition.row + 1,
-                        },
-                        metadata: {
-                          resolved: true,
-                          resolutionKind: resolved.kind,
-                          typeName: ctor.text,
-                          inferredFromNew: true,
-                        },
-                      },
-                    })
-                  }
-                }
+              const inferred = inferVarTypeFromValue(
+                value,
+                resolver,
+                moduleNodeName,
+              )
+              if (inferred) {
+                resolver.varTypes.set(name, inferred.fq)
+                yield ctx.edge({
+                  payload: {
+                    edgeKind: "references_type",
+                    srcSymbolName: canonicalName,
+                    dstSymbolName: inferred.fq,
+                    confidence: 0.9,
+                    derivation: "clangd",
+                    sourceLocation: {
+                      sourceFilePath: file,
+                      sourceLineNumber: (value ?? declarator).startPosition.row + 1,
+                    },
+                    metadata: {
+                      resolved: true,
+                      resolutionKind: inferred.resolutionKind,
+                      typeName: inferred.typeName,
+                      [inferred.via]: true,
+                    },
+                  },
+                })
               }
             }
           }
@@ -802,6 +794,11 @@ function extractDeclaration(
       if (value && value.type === "new_expression") {
         return { name: nameNode.text, kind: "global_var" }
       }
+      // `const x = expr as Foo` — global_var, type recovered from
+      // the cast target in the global_var emit block.
+      if (value && value.type === "as_expression") {
+        return { name: nameNode.text, kind: "global_var" }
+      }
       return null
     }
     default:
@@ -1021,6 +1018,54 @@ function populateResolverFromImport(
       continue
     }
   }
+}
+
+/**
+ * Infer a global_var's type from its initializer value when no
+ * explicit type annotation is present. Two recognized shapes:
+ *   - new_expression: `const x = new Foo()` → type Foo (via=inferredFromNew)
+ *   - as_expression:  `const x = expr as Foo` → type Foo (via=inferredFromCast)
+ *
+ * Returns null when the value can't be inferred.
+ */
+function inferVarTypeFromValue(
+  value: TsNode | null,
+  resolver: FileResolver,
+  moduleNodeName: string,
+): {
+  fq: string
+  typeName: string
+  resolutionKind: string
+  via: "inferredFromNew" | "inferredFromCast"
+} | null {
+  if (!value) return null
+  if (value.type === "new_expression") {
+    const ctor = value.namedChild(0)
+    if (!ctor || ctor.type !== "identifier") return null
+    const resolved = resolveTypeName(ctor.text, resolver, moduleNodeName)
+    if (!resolved) return null
+    return {
+      fq: resolved.name,
+      typeName: ctor.text,
+      resolutionKind: resolved.kind,
+      via: "inferredFromNew",
+    }
+  }
+  if (value.type === "as_expression") {
+    // Find the type_identifier child (the cast target). It's a direct
+    // named child of as_expression after the value.
+    const typeNode = findFirstDescendantOfType(value, "type_identifier")
+    if (!typeNode) return null
+    const resolved = resolveTypeName(typeNode.text, resolver, moduleNodeName)
+    if (!resolved) return null
+    return {
+      fq: resolved.name,
+      typeName: typeNode.text,
+      resolutionKind: resolved.kind,
+      via: "inferredFromCast",
+    }
+  }
+  return null
 }
 
 /**
