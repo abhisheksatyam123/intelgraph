@@ -1185,6 +1185,263 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       expect(orphanRate).toBeLessThan(0.4)
     })
 
+    it("Meta: every structural intent runs without error on the snapshot", async () => {
+      // Self-discover sensible inputs for the intents that need them.
+      // This single test verifies that the entire query surface area
+      // is functional end-to-end, catching the kind of regression
+      // where one intent silently breaks across a refactor.
+
+      // Pick a module with both incoming and outgoing imports
+      const seedModule = ingest.client.raw
+        .prepare(
+          `SELECT canonical_name FROM graph_nodes
+           WHERE snapshot_id = ? AND kind = 'module'
+             AND canonical_name LIKE 'module:%/'
+             OR canonical_name LIKE 'module:src/%'
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { canonical_name: string } | undefined
+
+      // Pick a class symbol
+      const seedClass = ingest.client.raw
+        .prepare(
+          `SELECT canonical_name FROM graph_nodes
+           WHERE snapshot_id = ? AND kind = 'class'
+             AND canonical_name LIKE 'module:%'
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { canonical_name: string } | undefined
+
+      // Pick an interface symbol
+      const seedInterface = ingest.client.raw
+        .prepare(
+          `SELECT canonical_name FROM graph_nodes
+           WHERE snapshot_id = ? AND kind = 'interface'
+             AND canonical_name LIKE 'module:%'
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { canonical_name: string } | undefined
+
+      // Pick a function symbol
+      const seedFunction = ingest.client.raw
+        .prepare(
+          `SELECT canonical_name FROM graph_nodes
+           WHERE snapshot_id = ? AND kind IN ('function', 'method')
+             AND canonical_name LIKE 'module:%'
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { canonical_name: string } | undefined
+
+      // Pick a 2-cycle pair for find_import_cycles_deep
+      const seedCycleMember = ingest.client.raw
+        .prepare(
+          `SELECT src.canonical_name AS name
+           FROM graph_edges e1
+           INNER JOIN graph_nodes src
+             ON e1.src_node_id = src.node_id AND e1.snapshot_id = src.snapshot_id
+           INNER JOIN graph_edges e2
+             ON e2.snapshot_id = e1.snapshot_id
+             AND e2.src_node_id = e1.dst_node_id
+             AND e2.dst_node_id = e1.src_node_id
+           WHERE e1.snapshot_id = ?
+             AND e1.edge_kind = 'imports'
+             AND e2.edge_kind = 'imports'
+             AND src.kind = 'module'
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string } | undefined
+
+      // Pick a function with a known callee for call_chain
+      const seedChain = ingest.client.raw
+        .prepare(
+          `SELECT
+             a.canonical_name AS src,
+             b.canonical_name AS dst
+           FROM graph_edges e
+           INNER JOIN graph_nodes a
+             ON e.src_node_id = a.node_id AND e.snapshot_id = a.snapshot_id
+           INNER JOIN graph_nodes b
+             ON e.dst_node_id = b.node_id AND e.snapshot_id = b.snapshot_id
+           WHERE e.snapshot_id = ?
+             AND e.edge_kind = 'calls'
+             AND a.canonical_name LIKE 'module:%'
+             AND b.canonical_name LIKE 'module:%#%'
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { src: string; dst: string } | undefined
+
+      // Pick a file:line for symbol_at_location
+      const seedLocation = ingest.client.raw
+        .prepare(
+          `SELECT
+             json_extract(location, '$.filePath') AS file,
+             json_extract(location, '$.line') AS line
+           FROM graph_nodes
+           WHERE snapshot_id = ?
+             AND kind = 'function'
+             AND json_extract(payload, '$.metadata.endLine') IS NOT NULL
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { file: string; line: number } | undefined
+
+      // Build the test cases. Each entry: [intent name, request shape].
+      // Cases gracefully skip when their seed isn't available.
+      type TestCase = {
+        intent: string
+        request: Record<string, unknown>
+        skip?: boolean
+      }
+      const cases: TestCase[] = [
+        // Per-symbol intents
+        {
+          intent: "find_module_imports",
+          request: { apiName: seedModule?.canonical_name },
+          skip: !seedModule,
+        },
+        {
+          intent: "find_module_dependents",
+          request: { apiName: seedModule?.canonical_name },
+          skip: !seedModule,
+        },
+        {
+          intent: "find_module_symbols",
+          request: { apiName: seedModule?.canonical_name },
+          skip: !seedModule,
+        },
+        {
+          intent: "find_class_inheritance",
+          request: { apiName: seedClass?.canonical_name },
+          skip: !seedClass,
+        },
+        {
+          intent: "find_class_subtypes",
+          request: { apiName: seedClass?.canonical_name },
+          skip: !seedClass,
+        },
+        {
+          intent: "find_interface_implementors",
+          request: { apiName: seedInterface?.canonical_name },
+          skip: !seedInterface,
+        },
+        {
+          intent: "find_type_dependencies",
+          request: { apiName: seedFunction?.canonical_name },
+          skip: !seedFunction,
+        },
+        {
+          intent: "find_type_consumers",
+          request: { apiName: seedClass?.canonical_name },
+          skip: !seedClass,
+        },
+        {
+          intent: "find_sibling_symbols",
+          request: { apiName: seedFunction?.canonical_name },
+          skip: !seedFunction,
+        },
+        {
+          intent: "find_module_summary",
+          request: { apiName: seedModule?.canonical_name },
+          skip: !seedModule,
+        },
+        {
+          intent: "find_module_top_exports",
+          request: { apiName: seedModule?.canonical_name },
+          skip: !seedModule,
+        },
+        // Whole-snapshot intents
+        { intent: "find_import_cycles", request: {} },
+        { intent: "find_top_imported_modules", request: {} },
+        { intent: "find_top_called_functions", request: {} },
+        { intent: "find_module_entry_points", request: {} },
+        { intent: "find_dead_exports", request: {} },
+        { intent: "find_long_functions", request: { depth: 50 } },
+        { intent: "find_external_imports", request: {} },
+        // Search & browse
+        {
+          intent: "find_symbols_by_name",
+          request: { pattern: "session" },
+        },
+        {
+          intent: "find_symbols_by_kind",
+          request: { pattern: "class" },
+        },
+        {
+          intent: "find_symbols_in_file",
+          request: { filePath: seedLocation?.file },
+          skip: !seedLocation,
+        },
+        // Path & traversal
+        {
+          intent: "find_call_chain",
+          request: {
+            srcApi: seedChain?.src,
+            dstApi: seedChain?.dst,
+            depth: 3,
+          },
+          skip: !seedChain,
+        },
+        {
+          intent: "find_transitive_dependencies",
+          request: { apiName: seedModule?.canonical_name, depth: 3 },
+          skip: !seedModule,
+        },
+        {
+          intent: "find_symbol_at_location",
+          request: {
+            filePath: seedLocation?.file,
+            lineNumber: seedLocation?.line ? seedLocation.line + 1 : undefined,
+          },
+          skip: !seedLocation,
+        },
+        {
+          intent: "find_import_cycles_deep",
+          request: { apiName: seedCycleMember?.name, depth: 3 },
+          skip: !seedCycleMember,
+        },
+        // Legacy intents (also work for ts-core)
+        {
+          intent: "who_calls_api",
+          request: { apiName: seedFunction?.canonical_name },
+          skip: !seedFunction,
+        },
+        {
+          intent: "what_api_calls",
+          request: { apiName: seedFunction?.canonical_name },
+          skip: !seedFunction,
+        },
+      ]
+
+      // Run every intent and assert the lookup returns a valid
+      // LookupResult shape. Doesn't assert hit=true because some
+      // intents may legitimately return empty for the seed inputs.
+      const failures: Array<{ intent: string; error: string }> = []
+      for (const tc of cases) {
+        if (tc.skip) continue
+        try {
+          const result = await ingest.lookup.lookup({
+            intent: tc.intent as never,
+            snapshotId: ingest.snapshotId,
+            limit: 10,
+            ...tc.request,
+          })
+          // Shape check: result must have an intent string and a rows array
+          expect(result.intent).toBe(tc.intent)
+          expect(Array.isArray(result.rows)).toBe(true)
+          expect(typeof result.snapshotId).toBe("number")
+        } catch (err) {
+          failures.push({
+            intent: tc.intent,
+            error: err instanceof Error ? err.message : String(err),
+          })
+        }
+      }
+
+      if (failures.length > 0) {
+        console.error("Intent failures:", failures)
+      }
+      expect(failures).toEqual([])
+    })
+
     it("Histogram: every resolution kind has at least one representative", () => {
       // Catches the class of regression where an entire resolution
       // path silently breaks. Asserts that each kind in the
