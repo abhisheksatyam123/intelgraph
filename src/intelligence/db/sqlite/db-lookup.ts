@@ -212,6 +212,8 @@ export class SqliteDbLookup implements DbLookupRepository {
           request.depth ?? 6,
           limit,
         )
+      case "find_symbols_by_name":
+        return this.symbolsByName(snapshotId, request.pattern ?? "", limit)
       default:
         return []
     }
@@ -969,6 +971,48 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Substring search across graph_nodes by canonical_name. Used by
+   * visualizer search boxes — returns all symbols whose name
+   * contains the given pattern (case-insensitive in SQLite by
+   * default for ASCII). Sorts alphabetically for deterministic
+   * pagination.
+   */
+  private symbolsByName(
+    snapshotId: number,
+    pattern: string,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (!pattern || pattern.length === 0) return []
+    const sql = `
+      SELECT
+        canonical_name,
+        kind,
+        location
+      FROM graph_nodes
+      WHERE snapshot_id = ?
+        AND canonical_name LIKE ?
+      ORDER BY canonical_name
+      LIMIT ?
+    `
+    // Escape any LIKE wildcards in the user pattern
+    const safe = pattern.replace(/[\\%_]/g, "\\$&")
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, `%${safe}%`, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "function",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "contains",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
 
   /**
    * Find a shortest call chain from srcApi to dstApi via a bounded

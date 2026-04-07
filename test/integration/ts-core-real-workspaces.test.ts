@@ -385,6 +385,27 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_symbols_by_name does substring search across canonical_names", async () => {
+      // 'session' should match many opencode symbols (session.ts, session
+      // namespace, session.sql.ts, etc.).
+      const result = await ingest.lookup.lookup({
+        intent: "find_symbols_by_name",
+        snapshotId: ingest.snapshotId,
+        pattern: "session",
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // Every result should have 'session' somewhere in its name
+      for (const row of result.rows) {
+        expect(String(row.canonical_name).toLowerCase()).toContain("session")
+      }
+      // Results should be alphabetically ordered
+      const names = result.rows.map((r) => String(r.canonical_name))
+      const sorted = [...names].sort()
+      expect(names).toEqual(sorted)
+    })
+
     it("find_call_chain returns a shortest BFS path between two symbols", async () => {
       // Self-discovery: pick any 2-hop call chain in the snapshot
       // (a calls b, b calls c) to give the query a known src/dst.

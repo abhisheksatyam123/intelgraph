@@ -74,6 +74,8 @@ export const QUERY_INTENTS = [
   "find_dead_exports",
   /** Shortest call chain from srcApi → dstApi (BFS over calls edges, bounded depth). */
   "find_call_chain",
+  /** Substring search across symbol canonical_name (request.pattern). */
+  "find_symbols_by_name",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
