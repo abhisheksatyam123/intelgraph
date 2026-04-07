@@ -385,6 +385,46 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_module_top_exports ranks a module's exports by usage", async () => {
+      // Pick the module with the most exported symbols (so we have
+      // multiple exports to rank). Falls back gracefully if none.
+      const seed = ingest.client.raw
+        .prepare(
+          `SELECT parent.canonical_name AS name, COUNT(*) AS n
+           FROM graph_edges e
+           INNER JOIN graph_nodes parent
+             ON e.src_node_id = parent.node_id AND e.snapshot_id = parent.snapshot_id
+           INNER JOIN graph_nodes child
+             ON e.dst_node_id = child.node_id AND e.snapshot_id = child.snapshot_id
+           WHERE e.snapshot_id = ?
+             AND e.edge_kind = 'contains'
+             AND parent.kind = 'module'
+             AND json_extract(child.payload, '$.metadata.exported') = 1
+           GROUP BY parent.canonical_name
+           HAVING n > 2
+           ORDER BY n DESC LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string; n: number } | undefined
+      if (!seed) return
+
+      const result = await ingest.lookup.lookup({
+        intent: "find_module_top_exports",
+        snapshotId: ingest.snapshotId,
+        apiName: seed.name,
+        limit: 20,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // Each row should have a usage_count
+      const counts = result.rows.map(
+        (r) => Number((r as { usage_count?: number }).usage_count),
+      )
+      // Sorted descending
+      for (let i = 1; i < counts.length; i++) {
+        expect(counts[i - 1]).toBeGreaterThanOrEqual(counts[i])
+      }
+    })
+
     it("find_sibling_symbols returns peers sharing a parent", async () => {
       // Pick any class with multiple methods. After D4, methods are
       // contained by their class via contains edges.

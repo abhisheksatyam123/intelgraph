@@ -92,6 +92,8 @@ export const QUERY_INTENTS = [
   "find_symbols_in_file",
   /** Sibling symbols: other children of the requested symbol's parent via contains edges. */
   "find_sibling_symbols",
+  /** Exported symbols of a module ranked by total incoming usage (calls + references_type). */
+  "find_module_top_exports",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

@@ -240,6 +240,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.symbolsInFile(snapshotId, request.filePath ?? "", limit)
       case "find_sibling_symbols":
         return this.siblingSymbols(snapshotId, apiNames[0] ?? "", limit)
+      case "find_module_top_exports":
+        return this.moduleTopExports(snapshotId, apiNames[0] ?? "", limit)
       default:
         return []
     }
@@ -997,6 +999,67 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * For a given module, return its exported symbols ranked by total
+   * incoming usage (calls + references_type). Useful for "the most-used
+   * exports of this module" views in API health dashboards.
+   *
+   * Implementation: a join between graph_nodes (the module's contained
+   * symbols where exported=true) and a count of incoming usage edges.
+   * Symbols are ordered DESC by usage_count, with ties broken
+   * alphabetically.
+   */
+  private moduleTopExports(
+    snapshotId: number,
+    moduleName: string,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (!moduleName) return []
+    const sql = `
+      SELECT
+        n.canonical_name AS canonical_name,
+        n.kind AS kind,
+        n.location AS location,
+        (
+          SELECT COUNT(*) FROM graph_edges e
+          INNER JOIN graph_nodes dst
+            ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+          WHERE e.snapshot_id = n.snapshot_id
+            AND e.edge_kind IN ('calls', 'references_type')
+            AND dst.canonical_name = n.canonical_name
+        ) AS usage_count
+      FROM graph_nodes n
+      INNER JOIN graph_edges contains
+        ON contains.dst_node_id = n.node_id
+        AND contains.snapshot_id = n.snapshot_id
+        AND contains.edge_kind = 'contains'
+      INNER JOIN graph_nodes parent
+        ON contains.src_node_id = parent.node_id
+        AND contains.snapshot_id = parent.snapshot_id
+      WHERE n.snapshot_id = ?
+        AND parent.canonical_name = ?
+        AND parent.kind = 'module'
+        AND json_extract(n.payload, '$.metadata.exported') = 1
+      ORDER BY usage_count DESC, n.canonical_name ASC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, moduleName, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "function",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "contains",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+      usage_count: toNumber(obj.usage_count),
+    }))
+  }
 
   /**
    * Find sibling symbols: peers that share the same parent via
