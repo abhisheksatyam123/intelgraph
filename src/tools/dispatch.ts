@@ -6,7 +6,7 @@
 
 import { z } from "zod"
 import { readFileSync } from "fs"
-import type { LspClient } from "../lsp/index.js"
+import type { ILanguageClient } from "../lsp/types.js"
 import type { IndexTracker } from "../tracking/index.js"
 import type { UnifiedBackend } from "../backend/unified-backend.js"
 import type { OrchestratorRunnerDeps } from "../intelligence/index.js"
@@ -55,7 +55,7 @@ export function inflightIndirectCallerKey(workspaceRoot: string, cacheKey: strin
 }
 
 export async function withFile(
-  client: LspClient,
+  client: ILanguageClient,
   filePath: string,
   fn: () => Promise<string>,
 ): Promise<string> {
@@ -64,7 +64,7 @@ export async function withFile(
     const isFirstOpen = await client.openFile(filePath, text)
     if (isFirstOpen) await new Promise((r) => setTimeout(r, 300))
   } catch {
-    // proceed anyway — clangd may have it indexed
+    // Proceed anyway — the language server may already have it indexed.
   }
   return fn()
 }

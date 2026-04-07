@@ -18,6 +18,7 @@ import { randomUUID } from "crypto"
 import { TOOLS } from "../tools/index.js"
 import { setUnifiedBackend } from "../tools/index.js"
 import { log, logError } from "../logging/logger.js"
+import { shutdownIntelligenceBackend } from "../intelligence/init.js"
 import { z } from "zod"
 import type { BackendDeps } from "./types.js"
 
@@ -109,7 +110,8 @@ export async function startStdio(deps: BackendDeps): Promise<void> {
 
 // How long the HTTP daemon stays alive with zero active sessions before auto-exiting.
 // This prevents permanent daemon accumulation when all clients disconnect.
-const HTTP_IDLE_TIMEOUT_MS = 30 * 60 * 1000 // 30 minutes
+// Reduced to 5 minutes so the Neo4j backend doesn't remain a long-lived daemon.
+const HTTP_IDLE_TIMEOUT_MS = 5 * 60 * 1000 // 5 minutes
 
 export async function startHttp(
   deps: BackendDeps,
@@ -122,14 +124,26 @@ export async function startHttp(
   // ── Idle auto-exit: shut down when no sessions remain for too long ──────
   let idleTimer: ReturnType<typeof setTimeout> | null = null
 
+  // Graceful shutdown: close Neo4j backend before exiting
+  const gracefulExit = async (reason: string): Promise<void> => {
+    log("INFO", `HTTP daemon ${reason} — closing intelligence backend`, {
+      port, pid: process.pid,
+    })
+    try {
+      await shutdownIntelligenceBackend()
+    } catch (err) {
+      log("WARN", "Error closing intelligence backend during graceful exit", {
+        err: err instanceof Error ? err.message : String(err),
+      })
+    }
+    process.exit(0)
+  }
+
   const resetIdleTimer = () => {
     if (idleTimer) clearTimeout(idleTimer)
     if (sessions.size === 0) {
       idleTimer = setTimeout(() => {
-        log("INFO", "HTTP daemon idle timeout — no active sessions, exiting", {
-          port, pid: process.pid, timeoutMs: HTTP_IDLE_TIMEOUT_MS,
-        })
-        process.exit(0)
+        gracefulExit("idle timeout — no active sessions")
       }, HTTP_IDLE_TIMEOUT_MS)
     } else {
       idleTimer = null
@@ -137,6 +151,10 @@ export async function startHttp(
   }
   // Start the idle timer immediately — if no client ever connects, exit after timeout
   resetIdleTimer()
+
+  // Graceful shutdown on termination signals
+  process.once("SIGTERM", () => gracefulExit("SIGTERM received"))
+  process.once("SIGINT", () => gracefulExit("SIGINT received"))
 
   const httpServer = createServer(async (req: IncomingMessage, res: ServerResponse) => {
     const url = new URL(req.url ?? "/", `http://localhost:${port}`)

@@ -7,7 +7,7 @@
  * All MCP sessions in the same daemon process share this facade.
  */
 
-import type { LspClient } from "../lsp/index.js"
+import type { ILanguageClient } from "../lsp/types.js"
 import type { IndexTracker } from "../tracking/index.js"
 import { computeCacheKey, readCache, writeCache } from "../tools/indirect-caller-cache.js"
 import { collectIndirectCallers, formatIndirectCallerTree } from "../tools/indirect-callers.js"
@@ -15,7 +15,7 @@ import { runReasonEngine, type ReasonEngineInput } from "../tools/reason-engine/
 import type { LlmReasoningConfig } from "../tools/reason-engine/llm-advisor.js"
 
 export interface UnifiedBackend {
-  getClient(): Promise<LspClient>
+  getClient(): Promise<ILanguageClient>
   tracker: IndexTracker
   indirectCallerCache: {
     computeKey(file: string, line: number, character: number): string
@@ -28,7 +28,7 @@ export interface UnifiedBackend {
   }
   reasonEngine: {
     run: (
-      client: LspClient,
+      client: ILanguageClient,
       input: ReasonEngineInput,
       llmConfig?: LlmReasoningConfig,
     ) => ReturnType<typeof runReasonEngine>
@@ -36,7 +36,7 @@ export interface UnifiedBackend {
 }
 
 export function createUnifiedBackend(
-  getClient: () => Promise<LspClient>,
+  getClient: () => Promise<ILanguageClient>,
   tracker: IndexTracker,
 ): UnifiedBackend {
   return {

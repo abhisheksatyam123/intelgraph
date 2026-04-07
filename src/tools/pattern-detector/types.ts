@@ -2,7 +2,7 @@
  * pattern-detector/types.ts — Types for the parser-based indirect caller detector.
  */
 
-import type { LspClient } from "../../lsp/index.js"
+import type { ILanguageClient } from "../../lsp/types.js"
 import type { FunctionCall } from "./c-parser.js"
 
 /** Connection kind — how the callback is invoked at runtime. */
@@ -115,7 +115,7 @@ export interface DetectorInput {
 /** Dependencies injected into the detector. */
 export interface DetectorDeps {
   /** LSP client for references() and prepareCallHierarchy(). */
-  lspClient: Pick<LspClient, "references" | "prepareCallHierarchy">
+  lspClient: Pick<ILanguageClient, "references" | "prepareCallHierarchy">
   /** Read a FULL source file (for parser-based enclosing call detection). */
   readFile: (filePath: string) => string
   /**

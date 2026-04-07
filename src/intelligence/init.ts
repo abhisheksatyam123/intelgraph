@@ -12,8 +12,22 @@ import { setIntelligenceDeps } from "../tools/index.js"
 import { setDbFoundation, setIngestDeps } from "./tools/index.js"
 import { getLogger } from "../logging/logger.js"
 import type { ClangdEnricher, CParserEnricher } from "./index.js"
-import type { LspClient } from "../lsp/index.js"
+import type { ILanguageClient } from "../lsp/types.js"
 import { collectIndirectCallers } from "../tools/indirect-callers.js"
+
+// ── Module-level backend storage for graceful shutdown ──────────────────────
+let _backend: { close: () => Promise<void> } | null = null
+
+/**
+ * Gracefully shut down the Neo4j intelligence backend.
+ * Called when the HTTP daemon is idle or receives a termination signal.
+ */
+export async function shutdownIntelligenceBackend(): Promise<void> {
+  if (!_backend) return
+  const b = _backend
+  _backend = null
+  await b.close()
+}
 
 function shouldRetryNeo4jInit(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err)
@@ -101,19 +115,22 @@ export async function initIntelligenceBackend(
     }
   }
 
+  // Store backend for graceful shutdown on daemon idle/exit
+  _backend = backend
+
   setIntelligenceDeps(backend.deps)
   setDbFoundation(backend.db)
 
-  // Build an indirect caller resolver closure only when a real LspClient is
+  // Build an indirect caller resolver closure only when a real language client is
   // available — it needs prepareCallHierarchy and references in addition to
   // the three methods declared in LspClientForExtraction.
-  const fullLspClient = lspClient as (LspClient | undefined)
+  const fullLspClient = lspClient as (ILanguageClient | undefined)
   const indirectCallerResolver =
     fullLspClient && typeof (fullLspClient as any).prepareCallHierarchy === "function"
       ? async (sym: { name: string; file?: string; line?: number }) => {
           if (!sym.file || !sym.line) return null
           try {
-            return await collectIndirectCallers(fullLspClient as LspClient, {
+            return await collectIndirectCallers(fullLspClient as ILanguageClient, {
               file: sym.file,
               line: sym.line,
               character: 1,

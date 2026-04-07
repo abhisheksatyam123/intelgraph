@@ -1,4 +1,4 @@
-import type { LspClient } from "../../lsp/index.js"
+import type { ILanguageClient } from "../../lsp/types.js"
 import { requestReasonProposals, type LlmReasoningConfig } from "./llm-advisor.js"
 import { validateReasonProposals } from "./proposal-validator.js"
 import type { ReasonPath } from "./contracts.js"
@@ -16,7 +16,7 @@ export interface ReasonEngineInput {
 }
 
 export async function runReasonEngine(
-  client: LspClient,
+  client: ILanguageClient,
   input: ReasonEngineInput,
   llmConfig?: LlmReasoningConfig,
 ): Promise<{

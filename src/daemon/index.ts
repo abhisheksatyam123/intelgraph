@@ -59,16 +59,16 @@ export interface DaemonState {
   version: number
   /** PID of the bridge process (the one that owns the TCP server) */
   bridgePid: number
-  /** PID of the clangd process (child of the bridge) */
-  clangdPid: number
+  /** PID of the language server process (child of the bridge) */
+  serverPid: number
   /** TCP port the bridge is listening on */
   port: number
   /** Absolute path to the workspace root */
   root: string
-  /** clangd binary path used */
-  clangdBin: string
-  /** clangd args used */
-  clangdArgs: string[]
+  /** Language server binary path used */
+  serverBin: string
+  /** Language server args used */
+  serverArgs: string[]
   /** ISO timestamp of when the daemon was started */
   startedAt: string
   /** HTTP MCP daemon port (absent = not running) */
@@ -134,7 +134,7 @@ export function writeState(root: string, state: DaemonState): void {
     path: fp,
     port: state.port,
     bridgePid: state.bridgePid,
-    clangdPid: state.clangdPid,
+    serverPid: state.serverPid,
     httpPort: state.httpPort,
     httpPid: state.httpPid,
   })
@@ -350,8 +350,8 @@ export function findFreePort(): Promise<number> {
 
 export interface SpawnDaemonOptions {
   root: string
-  clangdBin: string
-  clangdArgs: string[]
+  serverBin: string
+  serverArgs: string[]
   /** Path to the compiled bridge script (dist/bridge.js) */
   bridgeScript: string
 }
@@ -371,11 +371,11 @@ export async function spawnDaemon(opts: SpawnDaemonOptions): Promise<DaemonState
 
   const port = await findFreePort()
 
-  log("INFO", "Spawning clangd bridge daemon", {
+  log("INFO", "Spawning language server bridge daemon", {
     port,
     bridgeScript: opts.bridgeScript,
-    clangdBin: opts.clangdBin,
-    clangdArgs: opts.clangdArgs,
+    serverBin: opts.serverBin,
+    serverArgs: opts.serverArgs,
     root,
   })
 
@@ -386,10 +386,11 @@ export async function spawnDaemon(opts: SpawnDaemonOptions): Promise<DaemonState
     opts.bridgeScript,
     "--port", String(port),
     "--root", root,
-    "--clangd", opts.clangdBin,
-    "--clangd-args", opts.clangdArgs.join(","),
+    "--server", opts.serverBin,
+    opts.serverArgs.length > 0 ? "--server-args" : null,
+    opts.serverArgs.length > 0 ? opts.serverArgs.join(",") : null,
     "--log", bridgeLog,
-  ]
+  ].filter(v => v !== null) as string[]
 
   // Spawn bridge as a detached process with stdio ignored so it becomes a
   // true daemon — it will outlive the MCP server process.
@@ -432,11 +433,11 @@ export async function spawnDaemon(opts: SpawnDaemonOptions): Promise<DaemonState
   log("INFO", "Bridge is ready and accepting connections", { port, bridgePid: bridge.pid })
 
   // We don't know clangd's PID from here (it's a grandchild), so we store 0.
-  // The bridge writes its own PID to the state file once clangd is up.
+  // The bridge writes its own PID to the state file once the language server is up.
   // We read it back after the bridge is ready.
   // IMPORTANT: Also preserve httpPort/httpPid if they exist (HTTP daemon may have written them first).
   const stateAfter = readState(root)
-  const clangdPid = stateAfter?.clangdPid ?? 0
+  const serverPid = stateAfter?.serverPid ?? 0
   
   log("DEBUG", "spawnDaemon: read existing state before writing", {
     stateAfter,
@@ -447,11 +448,11 @@ export async function spawnDaemon(opts: SpawnDaemonOptions): Promise<DaemonState
   const state: DaemonState = {
     version: STATE_VERSION,
     bridgePid: bridge.pid,
-    clangdPid,
+    serverPid,
     port,
     root,
-    clangdBin: opts.clangdBin,
-    clangdArgs: opts.clangdArgs,
+    serverBin: opts.serverBin,
+    serverArgs: opts.serverArgs,
     startedAt: new Date().toISOString(),
     // Preserve httpPort and httpPid if they were written by the HTTP daemon
     httpPort: stateAfter?.httpPort,
@@ -459,7 +460,7 @@ export async function spawnDaemon(opts: SpawnDaemonOptions): Promise<DaemonState
   }
 
   writeState(root, state)
-  log("INFO", "Daemon state written", { port, bridgePid: bridge.pid, clangdPid, httpPort: state.httpPort, httpPid: state.httpPid })
+  log("INFO", "Daemon state written", { port, bridgePid: bridge.pid, serverPid, httpPort: state.httpPort, httpPid: state.httpPid })
   return state
 }
 
@@ -496,8 +497,8 @@ export function resolveBridgeScript(): string {
 
 export interface SpawnHttpDaemonOptions {
   root: string
-  clangdBin: string
-  clangdArgs: string[]
+  serverBin: string
+  serverArgs: string[]
   /** Path to the compiled bridge script (dist/bridge.js) — index.js is derived from it */
   bridgeScript: string
 }
@@ -568,17 +569,17 @@ export async function spawnHttpDaemon(
       "--http-daemon",
       "--http-port", String(httpPort),
       "--root", root,
-      "--clangd", opts.clangdBin,
+      "--server", opts.serverBin,
     ]
-    if (opts.clangdArgs.length) {
-      args.push("--clangd-args", opts.clangdArgs.join(","))
+    if (opts.serverArgs.length) {
+      args.push("--server-args", opts.serverArgs.join(","))
     }
 
     log("INFO", "Spawning HTTP MCP daemon process (detached)", {
       httpPort,
       indexScript,
-      clangdBin: opts.clangdBin,
-      clangdArgs: opts.clangdArgs,
+      serverBin: opts.serverBin,
+      serverArgs: opts.serverArgs,
       root,
     })
 

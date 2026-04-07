@@ -11,9 +11,15 @@ import { log } from "../logging/logger.js"
 
 export interface WorkspaceConfig {
   root?: string
+  /** Generic server path. Replaces clangd (backward-compat alias). */
+  server?: string
+  /** Backward-compat alias for server. */
   clangd?: string
+  /** Server arguments. */
   args?: string[]
   enabled?: boolean
+  /** Language hint (e.g., "c", "cpp", "rust", "python"). Defaults to "c" for backward compat. */
+  language?: string
   compileCommandsCleaning?: {
     preflightPolicy?: "reject" | "fix" | "remap"
   }
@@ -53,8 +59,12 @@ export function parseArgs(argv: string[]): {
   httpDaemonMode: boolean
   httpDaemon: boolean
   httpPort: number | undefined
-  clangdPath: string | undefined
-  clangdArgs: string[] | undefined
+  serverPath: string | undefined
+  serverArgs: string[] | undefined
+  /** Backward-compat alias for serverPath */
+  clangdPath?: string | undefined
+  /** Backward-compat alias for serverArgs */
+  clangdArgs?: string[] | undefined
 } {
   const args = argv.slice(2) // strip "node" and script path
 
@@ -64,8 +74,8 @@ export function parseArgs(argv: string[]): {
   let httpDaemonMode = false
   let httpDaemon = false
   let httpPort: number | undefined
-  let clangdPath: string | undefined
-  let clangdArgs: string[] | undefined
+  let serverPath: string | undefined
+  let serverArgs: string[] | undefined
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i]
@@ -88,22 +98,35 @@ export function parseArgs(argv: string[]): {
       port = parseInt(args[++i] ?? "7777", 10)
     } else if (arg.startsWith("--port=")) {
       port = parseInt(arg.slice("--port=".length), 10)
+    } else if (arg === "--server") {
+      serverPath = args[++i]
+    } else if (arg.startsWith("--server=")) {
+      serverPath = arg.slice("--server=".length)
+    } else if (arg === "--server-args") {
+      serverArgs = (args[++i] ?? "").split(",").filter(Boolean)
+    } else if (arg.startsWith("--server-args=")) {
+      serverArgs = arg.slice("--server-args=".length).split(",").filter(Boolean)
     } else if (arg === "--clangd") {
-      clangdPath = args[++i]
+      // Backward-compat: --clangd maps to --server
+      serverPath = args[++i]
     } else if (arg.startsWith("--clangd=")) {
-      clangdPath = arg.slice("--clangd=".length)
+      // Backward-compat: --clangd= maps to --server=
+      serverPath = arg.slice("--clangd=".length)
     } else if (arg === "--clangd-args") {
-      clangdArgs = (args[++i] ?? "").split(",").filter(Boolean)
+      // Backward-compat: --clangd-args maps to --server-args
+      serverArgs = (args[++i] ?? "").split(",").filter(Boolean)
     } else if (arg.startsWith("--clangd-args=")) {
-      clangdArgs = arg.slice("--clangd-args=".length).split(",").filter(Boolean)
+      // Backward-compat: --clangd-args= maps to --server-args=
+      serverArgs = arg.slice("--clangd-args=".length).split(",").filter(Boolean)
     } else if (arg === "--help" || arg === "-h") {
       printHelp()
       process.exit(0)
     }
   }
 
-  return { root, stdio, port, httpDaemonMode, httpDaemon, httpPort, clangdPath, clangdArgs }
+  return { root, stdio, port, httpDaemonMode, httpDaemon, httpPort, serverPath, serverArgs, clangdPath: serverPath, clangdArgs: serverArgs }
 }
+
 
 export function printHelp(): void {
   process.stderr.write(`
@@ -119,8 +142,10 @@ Options:
   --root <path>         Workspace root (default: value in .clangd-mcp.json, then process.cwd()).
   --stdio               Use direct stdio transport (single-client debug mode).
   --port <number>       Use HTTP/StreamableHTTP transport on this port.
-  --clangd <path>       Path to clangd binary (default: "clangd" from PATH).
-  --clangd-args <args>  Extra args for clangd, comma-separated.
+  --server <path>       Path to language server binary (default: "clangd" from PATH).
+  --server-args <args>  Extra args for language server, comma-separated.
+  --clangd <path>       (Deprecated alias for --server)
+  --clangd-args <args>  (Deprecated alias for --server-args)
 
 Default (no flags):
   Runs in multi-client mode: a short-lived stdio proxy that ensures a persistent
@@ -135,10 +160,11 @@ Persistent daemon:
 
 .clangd-mcp.json (place at project root, all fields optional):
   {
-    "root":    "/path/to/project",
-    "clangd":  "/usr/local/bin/clangd-20",
-    "args":    ["--background-index", "--query-driver=/usr/bin/arm-none-eabi-gcc", "--log=error"],
-    "enabled": true
+    "root":     "/path/to/project",
+    "server":   "/usr/local/bin/clangd-20",
+    "language": "c",
+    "args":     ["--background-index", "--query-driver=/usr/bin/arm-none-eabi-gcc", "--log=error"],
+    "enabled":  true
   }
 
 Examples:

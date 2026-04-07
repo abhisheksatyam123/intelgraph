@@ -35,8 +35,10 @@ import { createUnifiedBackend } from "../backend/unified-backend.js"
 export interface LifecycleConfig {
   root: string
   workspaceId: string
-  clangdPath: string
-  clangdArgs: string[]
+  serverPath: string
+  serverArgs: string[]
+  /** Language hint (defaults to "c") */
+  language?: string
   wsCompileCommandsPolicy?: "reject" | "fix" | "remap"
 }
 
@@ -54,21 +56,21 @@ export interface LifecycleConfig {
 export async function getOrStartDaemon(
   config: LifecycleConfig,
 ): Promise<{ port: number; isNew: boolean }> {
-  const { root, workspaceId, clangdPath, clangdArgs, wsCompileCommandsPolicy } = config
+  const { root, workspaceId, serverPath, serverArgs, language, wsCompileCommandsPolicy } = config
   const state = readState(root)
 
   if (state) {
     log("INFO", "Found existing daemon state — checking liveness", {
       port: state.port,
       bridgePid: state.bridgePid,
-      clangdPid: state.clangdPid,
+      serverPid: state.serverPid,
       httpPort: state.httpPort,
       httpPid: state.httpPid,
       startedAt: state.startedAt,
     })
     const alive = await checkDaemonAlive(state, root)
     if (alive) {
-      log("INFO", "Reusing existing clangd daemon", { port: state.port, bridgePid: state.bridgePid })
+      log("INFO", "Reusing existing language server daemon", { port: state.port, bridgePid: state.bridgePid })
       return { port: state.port, isNew: false }
     }
     // Only clear state if httpPort is not present (otherwise we'd lose the HTTP daemon info)
@@ -85,12 +87,14 @@ export async function getOrStartDaemon(
       })
     }
   } else {
-    log("INFO", "No existing daemon state — spawning fresh clangd daemon", { root })
+    log("INFO", "No existing daemon state — spawning fresh language server daemon", { root })
   }
 
-  // ── Clean compile_commands.json before spawning ──────────────────────────
+  // ── Clean compile_commands.json before spawning (C/C++ only) ──────────────────────────
+  // Only run for C/C++ codebases by default (other languages don't use compile_commands)
+  const isCLanguage = language === "c" || language === "cpp" || !language // default to c for backward compat
   const cleaningConfig = readCleaningConfig(root)
-  if (cleaningConfig.enabled !== false) {
+  if (isCLanguage && cleaningConfig.enabled !== false) {
     // Default: enabled unless explicitly disabled
     try {
       const result = await cleanCompileCommands(root, {
@@ -174,15 +178,15 @@ export async function getOrStartDaemon(
 
   const newState: DaemonState = await spawnDaemon({
     root,
-    clangdBin: clangdPath,
-    clangdArgs,
+    serverBin: serverPath,
+    serverArgs,
     bridgeScript,
   })
 
   log("INFO", "New daemon started", {
     port: newState.port,
     bridgePid: newState.bridgePid,
-    clangdPid: newState.clangdPid,
+    serverPid: newState.serverPid,
     httpPort: newState.httpPort,
     httpPid: newState.httpPid,
     startedAt: newState.startedAt,
@@ -193,10 +197,10 @@ export async function getOrStartDaemon(
 // ── Connection management ─────────────────────────────────────────────────────
 
 /**
- * Connect (or reconnect) to the clangd daemon.
+ * Connect (or reconnect) to the language server daemon.
  * Handles the case where the TCP connection drops (e.g. bridge restarted).
  *
- * @param config       Lifecycle config (root, clangd path/args, etc.)
+ * @param config       Lifecycle config (root, server path/args, etc.)
  * @param tracker      Index readiness tracker
  * @param onReconnect  Called when a new client is established after a drop
  * @param retryFn      Retry-with-backoff function (injected for testability)
@@ -210,8 +214,8 @@ export async function connectToClangd(
   const { root } = config
   const { port: daemonPort, isNew } = await getOrStartDaemon(config)
 
-  log("INFO", "Connecting to clangd daemon via TCP", { daemonPort, isNew, root })
-  // skipInit=true when reconnecting to an already-initialized clangd instance
+  log("INFO", "Connecting to language server daemon via TCP", { daemonPort, isNew, root })
+  // skipInit=true when reconnecting to an already-initialized language server instance
   const client = await LspClient.createFromSocket(daemonPort, root, tracker, !isNew)
   if (!isNew) {
     tracker.markReady()
@@ -219,7 +223,7 @@ export async function connectToClangd(
   } else {
     log("INFO", "LSP initialize handshake sent to fresh daemon", { daemonPort })
   }
-  log("INFO", "Connected to clangd daemon successfully", { daemonPort, isNew })
+  log("INFO", "Connected to language server daemon successfully", { daemonPort, isNew })
 
   // Watch for connection drops — reconnect automatically with backoff.
   // IMPORTANT: debounce the reconnect by RECONNECT_DEBOUNCE_MS.
@@ -303,23 +307,24 @@ export async function startAsHttpDaemon(
   httpPort: number,
   root: string,
   workspaceId: string,
-  clangdPath: string,
-  clangdArgs: string[],
+  serverPath: string,
+  serverArgs: string[],
+  language?: string,
 ): Promise<void> {
   log("INFO", "Starting HTTP MCP daemon", { httpPort, root, pid: process.pid })
 
   // Write (or update) the state file so other processes can discover this daemon.
-  // Merge with any existing state to preserve bridgePid/clangdPid if present.
+  // Merge with any existing state to preserve bridgePid/serverPid if present.
   const existingState = readState(root)
   writeState(root, {
     version: 1,
     bridgePid: existingState?.bridgePid ?? 0,
-    clangdPid: existingState?.clangdPid ?? 0,
+    serverPid: existingState?.serverPid ?? 0,
     port: existingState?.port ?? 0,
     root,
     workspaceId,
-    clangdBin: clangdPath,
-    clangdArgs,
+    serverBin: serverPath,
+    serverArgs,
     startedAt: existingState?.startedAt ?? new Date().toISOString(),
     httpPort,
     httpPid: process.pid,
@@ -340,8 +345,9 @@ export async function startAsHttpDaemon(
 export async function startAsStdioProxy(
   root: string,
   workspaceId: string,
-  clangdPath: string,
-  clangdArgs: string[],
+  serverPath: string,
+  serverArgs: string[],
+  language?: string,
 ): Promise<void> {
   log("INFO", "Starting stdio proxy mode", { root, pid: process.pid })
 
@@ -377,8 +383,8 @@ export async function startAsStdioProxy(
     try {
       spawnResult = await spawnHttpDaemon({
         root,
-        clangdBin: clangdPath,
-        clangdArgs,
+        serverBin: serverPath,
+        serverArgs,
         bridgeScript,
       })
       log("INFO", "HTTP daemon spawned successfully", {

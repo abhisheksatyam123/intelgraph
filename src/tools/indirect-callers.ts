@@ -10,7 +10,7 @@
 import { readFileSync } from "fs"
 import { fileURLToPath } from "url"
 import path from "path"
-import type { LspClient } from "../lsp/index.js"
+import type { ILanguageClient } from "../lsp/types.js"
 import { findEnclosingCall, findEnclosingConstruct } from "./pattern-detector/index.js"
 import { CALL_PATTERNS, INIT_PATTERNS } from "./pattern-detector/index.js"
 import type { FunctionCall } from "./pattern-detector/index.js"
@@ -64,7 +64,7 @@ export interface IndirectCallerGraph {
  * it by call name lookup in the pattern registry.
  */
 export async function collectIndirectCallers(
-  client: LspClient,
+  client: ILanguageClient,
   args: { file: string; line: number; character: number; maxNodes?: number; resolve?: boolean },
 ): Promise<IndirectCallerGraph> {
   const maxNodes = args.maxNodes ?? 50
@@ -519,7 +519,7 @@ function findFunctionNameChar(line: string): number {
  * First waits for the file to enter a non-idle state (parsing/building AST),
  * then waits for it to return to idle.
  */
-async function waitForFileReady(client: LspClient, filePath: string, timeoutMs: number): Promise<void> {
+async function waitForFileReady(client: ILanguageClient, filePath: string, timeoutMs: number): Promise<void> {
   const deadline = Date.now() + timeoutMs
 
   // Phase 1: wait for clangd to start parsing (up to 3s)

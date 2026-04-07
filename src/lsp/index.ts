@@ -17,21 +17,152 @@ import {
 } from "vscode-jsonrpc/node.js"
 import { IndexTracker } from "../tracking/index.js"
 import { log, logError } from "../logging/logger.js"
+import type { ILanguageClient } from "./types.js"
+
+export type { ILanguageClient } from "./types.js"
 
 // ── Language extension → LSP languageId map ──────────────────────────────────
-const LANGUAGE_EXTENSIONS: Record<string, string> = {
-  ".c": "c",
-  ".h": "c",
-  ".cpp": "cpp",
-  ".cc": "cpp",
-  ".cxx": "cpp",
-  ".hpp": "cpp",
-  ".hxx": "cpp",
-  ".hh": "cpp",
-  ".cu": "cuda",
-  ".cuh": "cuda",
-  ".m": "objective-c",
-  ".mm": "objective-cpp",
+// Default extension table covering common languages. Adapters can override or
+// extend this through `LspClientOptions.languageExtensions` if their LSP server
+// uses non-standard languageIds.
+const DEFAULT_LANGUAGE_EXTENSIONS: Record<string, string> = {
+  // C / C++ / CUDA / Objective-C
+  ".c": "c", ".h": "c",
+  ".cpp": "cpp", ".cc": "cpp", ".cxx": "cpp",
+  ".hpp": "cpp", ".hxx": "cpp", ".hh": "cpp",
+  ".cu": "cuda", ".cuh": "cuda",
+  ".m": "objective-c", ".mm": "objective-cpp",
+  // Rust
+  ".rs": "rust",
+  // Go
+  ".go": "go",
+  // Python
+  ".py": "python", ".pyi": "python",
+  // TypeScript / JavaScript
+  ".ts": "typescript", ".tsx": "typescriptreact",
+  ".js": "javascript", ".jsx": "javascriptreact", ".mjs": "javascript", ".cjs": "javascript",
+  // Java / Kotlin / Scala
+  ".java": "java",
+  ".kt": "kotlin", ".kts": "kotlin",
+  ".scala": "scala", ".sc": "scala",
+  // Other common languages
+  ".rb": "ruby",
+  ".php": "php",
+  ".swift": "swift",
+  ".cs": "csharp",
+  ".lua": "lua",
+  ".dart": "dart",
+  ".zig": "zig",
+}
+
+/**
+ * Standard LSP capabilities advertised by this client.
+ *
+ * Shared between `LspClient.create()` (stdio spawn) and
+ * `LspClient.createFromSocket()` (TCP reconnect) so the two paths
+ * never drift apart.
+ */
+const LSP_CAPABILITIES = {
+  window: { workDoneProgress: true },
+  workspace: {
+    configuration: true,
+    didChangeWatchedFiles: { dynamicRegistration: true },
+    symbol: { resolveSupport: { properties: ["location.range"] } },
+    workspaceEdit: {
+      documentChanges: true,
+      resourceOperations: ["create", "rename", "delete"],
+    },
+  },
+  textDocument: {
+    synchronization: { didOpen: true, didChange: true, didClose: true },
+    publishDiagnostics: { versionSupport: true, relatedInformation: true },
+    hover: { contentFormat: ["plaintext", "markdown"] },
+    definition: { linkSupport: true },
+    declaration: { linkSupport: true },
+    typeDefinition: { linkSupport: true },
+    references: {},
+    implementation: { linkSupport: true },
+    documentHighlight: {},
+    callHierarchy: { dynamicRegistration: true },
+    typeHierarchy: { dynamicRegistration: true },
+    documentSymbol: { hierarchicalDocumentSymbolSupport: true },
+    foldingRange: { dynamicRegistration: true, lineFoldingOnly: true },
+    selectionRange: { dynamicRegistration: true },
+    signatureHelp: {
+      dynamicRegistration: true,
+      signatureInformation: {
+        documentationFormat: ["plaintext", "markdown"],
+        parameterInformation: { labelOffsetSupport: true },
+        activeParameterSupport: true,
+      },
+      contextSupport: true,
+    },
+    rename: { dynamicRegistration: true, prepareSupport: true },
+    formatting: { dynamicRegistration: true },
+    rangeFormatting: { dynamicRegistration: true },
+    semanticTokens: {
+      dynamicRegistration: true,
+      requests: { full: true, range: true },
+      tokenTypes: [],
+      tokenModifiers: [],
+      formats: ["relative"],
+    },
+    codeAction: {
+      dynamicRegistration: true,
+      codeActionLiteralSupport: {
+        codeActionKind: { valueSet: ["quickfix", "refactor", "source"] },
+      },
+      resolveSupport: { properties: ["edit"] },
+    },
+    inlayHint: {
+      dynamicRegistration: true,
+      resolveSupport: { properties: [] },
+    },
+  },
+} as const
+
+/**
+ * Wire the standard LSP server-side request and notification handlers
+ * (progress, file status, configuration, workspace folders) on a freshly
+ * created JSON-RPC connection. Used by both stdio and socket factories.
+ */
+function wireServerHandlers(
+  conn: MessageConnection,
+  tracker: IndexTracker,
+  root: string,
+): void {
+  conn.onRequest("window/workDoneProgress/create", (params: any) => {
+    tracker.onProgressCreate(params.token)
+    return null
+  })
+  conn.onNotification("$/progress", (params: any) => {
+    tracker.onProgress(params.token, params.value)
+  })
+  // Per-file parse state (clangd extension — harmless if unused by other servers)
+  conn.onNotification("clangd/fileStatus", (params: any) => {
+    if (params?.uri && params?.state) {
+      tracker.onFileStatus(params.uri, params.state)
+    }
+  })
+  conn.onRequest("workspace/configuration", () => [{}])
+  conn.onRequest("client/registerCapability", () => {})
+  conn.onRequest("client/unregisterCapability", () => {})
+  conn.onRequest("workspace/workspaceFolders", () => [
+    { name: "workspace", uri: pathToFileURL(root).href },
+  ])
+}
+
+/**
+ * Build the standard LSP `initialize` request params for a given workspace.
+ */
+function buildInitializeParams(root: string, processId: number | null) {
+  return {
+    rootUri: pathToFileURL(root).href,
+    processId,
+    workspaceFolders: [{ name: "workspace", uri: pathToFileURL(root).href }],
+    initializationOptions: {},
+    capabilities: LSP_CAPABILITIES,
+  }
 }
 
 export interface LspClientOptions {
@@ -47,7 +178,7 @@ export interface LspClientOptions {
   indexTracker?: IndexTracker
 }
 
-export class LspClient {
+export class LspClient implements ILanguageClient {
   private _proc: ChildProcess
   private _conn: MessageConnection
   private _openFiles = new Map<string, number>()   // path → version
@@ -139,100 +270,14 @@ export class LspClient {
     const tracker = opts.indexTracker ?? new IndexTracker()
 
     // ── Wire up server-side requests / notifications ──────────────────────────
-    conn.onRequest("window/workDoneProgress/create", (params: any) => {
-      tracker.onProgressCreate(params.token)
-      return null
-    })
-    conn.onNotification("$/progress", (params: any) => {
-      tracker.onProgress(params.token, params.value)
-    })
-    // Per-file parse state (clangd extension)
-    conn.onNotification("clangd/fileStatus", (params: any) => {
-      if (params?.uri && params?.state) {
-        tracker.onFileStatus(params.uri, params.state)
-      }
-    })
-    conn.onRequest("workspace/configuration", () => [{}])
-    conn.onRequest("client/registerCapability", () => {})
-    conn.onRequest("client/unregisterCapability", () => {})
-    conn.onRequest("workspace/workspaceFolders", () => [
-      { name: "workspace", uri: pathToFileURL(opts.root).href },
-    ])
+    wireServerHandlers(conn, tracker, opts.root)
 
     conn.listen()
     log("INFO", "JSON-RPC connection listening")
 
     // ── Initialize ────────────────────────────────────────────────────────────
     log("INFO", "Sending LSP initialize request…")
-    await conn.sendRequest("initialize", {
-      rootUri: pathToFileURL(opts.root).href,
-      processId: proc.pid ?? null,
-      workspaceFolders: [
-        { name: "workspace", uri: pathToFileURL(opts.root).href },
-      ],
-      initializationOptions: {},
-      capabilities: {
-        window: { workDoneProgress: true },
-        workspace: {
-          configuration: true,
-          didChangeWatchedFiles: { dynamicRegistration: true },
-          symbol: { resolveSupport: { properties: ["location.range"] } },
-          workspaceEdit: {
-            documentChanges: true,
-            resourceOperations: ["create", "rename", "delete"],
-          },
-        },
-        textDocument: {
-          synchronization: { didOpen: true, didChange: true, didClose: true },
-          publishDiagnostics: { versionSupport: true, relatedInformation: true },
-          hover: { contentFormat: ["plaintext", "markdown"] },
-          definition: { linkSupport: true },
-          declaration: { linkSupport: true },
-          typeDefinition: { linkSupport: true },
-          references: {},
-          implementation: { linkSupport: true },
-          documentHighlight: {},
-          callHierarchy: { dynamicRegistration: true },
-          typeHierarchy: { dynamicRegistration: true },
-          documentSymbol: { hierarchicalDocumentSymbolSupport: true },
-          foldingRange: { dynamicRegistration: true, lineFoldingOnly: true },
-          selectionRange: { dynamicRegistration: true },
-          signatureHelp: {
-            dynamicRegistration: true,
-            signatureInformation: {
-              documentationFormat: ["plaintext", "markdown"],
-              parameterInformation: { labelOffsetSupport: true },
-              activeParameterSupport: true,
-            },
-            contextSupport: true,
-          },
-          rename: {
-            dynamicRegistration: true,
-            prepareSupport: true,
-          },
-          formatting: { dynamicRegistration: true },
-          rangeFormatting: { dynamicRegistration: true },
-          semanticTokens: {
-            dynamicRegistration: true,
-            requests: { full: true, range: true },
-            tokenTypes: [],
-            tokenModifiers: [],
-            formats: ["relative"],
-          },
-          codeAction: {
-            dynamicRegistration: true,
-            codeActionLiteralSupport: {
-              codeActionKind: { valueSet: ["quickfix", "refactor", "source"] },
-            },
-            resolveSupport: { properties: ["edit"] },
-          },
-          inlayHint: {
-            dynamicRegistration: true,
-            resolveSupport: { properties: [] },
-          },
-        },
-      },
-    })
+    await conn.sendRequest("initialize", buildInitializeParams(opts.root, proc.pid ?? null))
 
     await conn.sendNotification("initialized", {})
     log("INFO", "LSP initialized successfully")
@@ -337,99 +382,18 @@ export class LspClient {
     const tracker = indexTracker ?? new IndexTracker()
 
     // Wire up server-side requests / notifications (same as stdio path)
-    conn.onRequest("window/workDoneProgress/create", (params: any) => {
-      tracker.onProgressCreate(params.token)
-      return null
-    })
-    conn.onNotification("$/progress", (params: any) => {
-      tracker.onProgress(params.token, params.value)
-    })
-    conn.onNotification("clangd/fileStatus", (params: any) => {
-      if (params?.uri && params?.state) {
-        tracker.onFileStatus(params.uri, params.state)
-      }
-    })
-    conn.onRequest("workspace/configuration", () => [{}])
-    conn.onRequest("client/registerCapability", () => {})
-    conn.onRequest("client/unregisterCapability", () => {})
-    conn.onRequest("workspace/workspaceFolders", () => [
-      { name: "workspace", uri: pathToFileURL(root).href },
-    ])
+    wireServerHandlers(conn, tracker, root)
 
     conn.listen()
     log("INFO", "JSON-RPC connection listening (socket)")
 
     if (!skipInit) {
       log("INFO", "Sending LSP initialize request (socket)…")
-      await conn.sendRequest("initialize", {
-        rootUri: pathToFileURL(root).href,
-        processId: null,
-        workspaceFolders: [{ name: "workspace", uri: pathToFileURL(root).href }],
-        initializationOptions: {},
-        capabilities: {
-          window: { workDoneProgress: true },
-          workspace: {
-            configuration: true,
-            didChangeWatchedFiles: { dynamicRegistration: true },
-            symbol: { resolveSupport: { properties: ["location.range"] } },
-            workspaceEdit: {
-              documentChanges: true,
-              resourceOperations: ["create", "rename", "delete"],
-            },
-          },
-          textDocument: {
-            synchronization: { didOpen: true, didChange: true, didClose: true },
-            publishDiagnostics: { versionSupport: true, relatedInformation: true },
-            hover: { contentFormat: ["plaintext", "markdown"] },
-            definition: { linkSupport: true },
-            declaration: { linkSupport: true },
-            typeDefinition: { linkSupport: true },
-            references: {},
-            implementation: { linkSupport: true },
-            documentHighlight: {},
-            callHierarchy: { dynamicRegistration: true },
-            typeHierarchy: { dynamicRegistration: true },
-            documentSymbol: { hierarchicalDocumentSymbolSupport: true },
-            foldingRange: { dynamicRegistration: true, lineFoldingOnly: true },
-            selectionRange: { dynamicRegistration: true },
-            signatureHelp: {
-              dynamicRegistration: true,
-              signatureInformation: {
-                documentationFormat: ["plaintext", "markdown"],
-                parameterInformation: { labelOffsetSupport: true },
-                activeParameterSupport: true,
-              },
-              contextSupport: true,
-            },
-            rename: { dynamicRegistration: true, prepareSupport: true },
-            formatting: { dynamicRegistration: true },
-            rangeFormatting: { dynamicRegistration: true },
-            semanticTokens: {
-              dynamicRegistration: true,
-              requests: { full: true, range: true },
-              tokenTypes: [],
-              tokenModifiers: [],
-              formats: ["relative"],
-            },
-            codeAction: {
-              dynamicRegistration: true,
-              codeActionLiteralSupport: {
-                codeActionKind: { valueSet: ["quickfix", "refactor", "source"] },
-              },
-              resolveSupport: { properties: ["edit"] },
-            },
-            inlayHint: {
-              dynamicRegistration: true,
-              resolveSupport: { properties: [] },
-            },
-          },
-        },
-      })
-
+      await conn.sendRequest("initialize", buildInitializeParams(root, null))
       await conn.sendNotification("initialized", {})
       log("INFO", "LSP initialized successfully (socket)")
     } else {
-      log("INFO", "Skipping LSP initialize (reconnecting to already-initialized clangd)")
+      log("INFO", "Skipping LSP initialize (reconnecting to already-initialized server)")
     }
 
     // createFromSocket has no ChildProcess — pass a dummy proc object
@@ -482,7 +446,7 @@ export class LspClient {
   async openFile(filePath: string, text: string): Promise<boolean> {
     const uri = pathToFileURL(filePath).href
     const ext = path.extname(filePath)
-    const languageId = LANGUAGE_EXTENSIONS[ext] ?? "cpp"
+    const languageId = DEFAULT_LANGUAGE_EXTENSIONS[ext] ?? "plaintext"
 
     const version = this._openFiles.get(filePath)
     if (version !== undefined) {
@@ -826,8 +790,18 @@ export class LspClient {
       .catch(() => null)
   }
 
-  async clangdInfo(): Promise<any> {
+  /**
+   * Server-specific status info. For clangd this calls `$/clangd/info`,
+   * which returns background-index stats and memory usage. Other LSP
+   * servers will return null (request will fail and be swallowed).
+   */
+  async serverInfo(): Promise<any> {
     return this._conn.sendRequest("$/clangd/info", {}).catch(() => null)
+  }
+
+  /** @deprecated Use `serverInfo()` instead. Kept for backward compatibility. */
+  async clangdInfo(): Promise<any> {
+    return this.serverInfo()
   }
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────

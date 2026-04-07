@@ -3,7 +3,7 @@ import { generateText, tool } from "ai"
 import { existsSync, readFileSync } from "node:fs"
 import path from "node:path"
 import { execSync, execFileSync } from "node:child_process"
-import type { LspClient } from "../../lsp/index.js"
+import type { ILanguageClient } from "../../lsp/types.js"
 import { z } from "zod"
 import { getLogger } from "../../logging/logger.js"
 
@@ -77,7 +77,7 @@ export function normalizeModelIdForOpenAICompatible(model: string): string {
 }
 
 export interface LlmToolContext {
-  client: LspClient
+  client: ILanguageClient
   workspaceRoot: string
 }
 

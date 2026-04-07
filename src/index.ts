@@ -100,8 +100,9 @@ async function main(): Promise<void> {
   // in the real project root, not inside .git/.
   const root = normaliseRoot(cli.root || ws.root || cwd)
   const workspaceId = computeWorkspaceId(root)
-  const clangdPath = cli.clangdPath || ws.clangd || "clangd"
-  const clangdArgs = cli.clangdArgs || ws.args || []
+  const serverPath = cli.serverPath || ws.server || ws.clangd || "clangd"
+  const serverArgs = cli.serverArgs || ws.args || []
+  const language = ws.language ?? "c" // default to c for backward compat
   const port = cli.port
 
   // ── Multi-client sharing by default ──────────────────────────────────────────
@@ -142,8 +143,9 @@ async function main(): Promise<void> {
   const lifecycleConfig: LifecycleConfig = {
     root,
     workspaceId,
-    clangdPath,
-    clangdArgs,
+    serverPath,
+    serverArgs,
+    language,
     wsCompileCommandsPolicy: ws.compileCommandsCleaning?.preflightPolicy,
   }
 
@@ -185,8 +187,9 @@ async function main(): Promise<void> {
     root,
     workspaceId,
     mode: resolvedMode,
-    clangdBin: clangdPath,
-    clangdArgs,
+    serverBin: serverPath,
+    serverArgs,
+    language,
     logFile: getLogFile(),
     wsConfigFound: Object.keys(ws).length > 0,
     cliFlags: {
@@ -278,14 +281,14 @@ async function main(): Promise<void> {
     // Serve MCP over HTTP and stay alive indefinitely (HTTP server holds event loop).
     await startAsHttpDaemon(
       getClient, tracker, cli.httpPort ?? 7777,
-      root, workspaceId, clangdPath, clangdArgs,
+      root, workspaceId, serverPath, serverArgs, language,
     )
 
   } else if (httpDaemonMode) {
     // ── Stdio proxy mode (default) ────────────────────────────────────────────
     // Short-lived stdio process. Ensures the HTTP daemon is running for this
     // workspace, then proxies all MCP tool calls from stdio → HTTP daemon.
-    await startAsStdioProxy(root, workspaceId, clangdPath, clangdArgs)
+    await startAsStdioProxy(root, workspaceId, serverPath, serverArgs, language)
 
   } else if (port !== undefined) {
     // ── Legacy explicit HTTP mode (--port N) ──────────────────────────────────

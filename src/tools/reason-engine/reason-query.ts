@@ -1,5 +1,5 @@
 import { readFileSync } from "fs"
-import type { LspClient } from "../../lsp/index.js"
+import type { ILanguageClient } from "../../lsp/types.js"
 import type { UnifiedBackend } from "../../backend/unified-backend.js"
 
 export interface ReasonQueryInput {
@@ -25,7 +25,7 @@ export interface ReasonPreparedQuery {
  */
 export async function prepareReasonQuery(
   backend: UnifiedBackend,
-  client: LspClient,
+  client: ILanguageClient,
   args: ReasonQueryInput,
 ): Promise<ReasonPreparedQuery> {
   const lines = readFileSync(args.file, "utf8").split(/\r?\n/)

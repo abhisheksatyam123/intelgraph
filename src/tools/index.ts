@@ -562,7 +562,7 @@ export const TOOLS: ToolDef[] = [
     inputSchema: z.object({}),
     execute: async (_args, client, tracker) => {
       const state = tracker.state
-      const info  = await client.clangdInfo()
+      const info  = await client.serverInfo()
       const lines = [
         `Index ready:  ${state.isReady}`,
         `Progress:     ${state.percentage}%`,

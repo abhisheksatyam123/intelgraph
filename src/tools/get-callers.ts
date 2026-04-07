@@ -16,7 +16,7 @@
  * C firmware alias variants (_foo, __foo, foo___RAM, _foo___RAM, foo___ROM, _foo___ROM).
  */
 
-import type { LspClient } from "../lsp/index.js"
+import type { ILanguageClient } from "../lsp/types.js"
 import type { IndexTracker } from "../tracking/index.js"
 import type { UnifiedBackend } from "../backend/unified-backend.js"
 import type { OrchestratorRunnerDeps } from "../intelligence/index.js"
@@ -179,7 +179,7 @@ export function symbolAliasVariants(name: string): string[] {
 // ── Waterfall implementation ──────────────────────────────────────────────────
 
 export async function resolveCallers(
-  client: LspClient,
+  client: ILanguageClient,
   tracker: IndexTracker,
   backend: UnifiedBackend | null,
   intelligenceDeps: OrchestratorRunnerDeps | null,
@@ -457,7 +457,7 @@ async function resolveImmediateInvokerName(
   immediateInvoker: string,
   dispatchChain: string[],
   dispatchSite: { file: string; line: number } | undefined,
-  client: LspClient | null,
+  client: ILanguageClient | null,
 ): Promise<string> {
   const trimmed = immediateInvoker.trim()
   // Already a valid C identifier — use as-is
@@ -507,7 +507,7 @@ async function resolveImmediateInvokerName(
 async function runtimeFlowToCallers(
   payload: import("./reason-engine/runtime-flow-output.js").RuntimeFlowPayload,
   source: WaterfallStep,
-  client: LspClient | null,
+  client: ILanguageClient | null,
 ): Promise<CallerEntry[]> {
   const out: CallerEntry[] = []
   const seen = new Set<string>()
