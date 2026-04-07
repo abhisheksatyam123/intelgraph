@@ -36,32 +36,16 @@ import type {
   TypeFact,
 } from "./facts.js"
 import type { SourceLocation } from "../contracts/common.js"
+import type {
+  LspService,
+  TreeSitterService,
+  RipgrepService,
+  WorkspaceService,
+} from "./services/index.js"
 
-// ---------------------------------------------------------------------------
-// Service interfaces (full implementations land in Step 2)
-// ---------------------------------------------------------------------------
-//
-// These are forward declarations so the ExtractionContext type compiles in
-// Step 1. Each becomes a real class in Step 2 with a richer surface; the
-// interfaces here only state the shape the rest of the plugin runtime
-// depends on.
-
-export interface LspService {
-  /** Marker — full method surface added in Step 2. */
-  readonly _kind: "lsp-service"
-}
-
-export interface TreeSitterService {
-  readonly _kind: "treesitter-service"
-}
-
-export interface RipgrepService {
-  readonly _kind: "ripgrep-service"
-}
-
-export interface WorkspaceService {
-  readonly _kind: "workspace-service"
-}
+// Re-export the service interfaces so consumers of context.ts get the
+// whole ctx surface from one import.
+export type { LspService, TreeSitterService, RipgrepService, WorkspaceService }
 
 // ---------------------------------------------------------------------------
 // Operational helpers exposed on ctx
