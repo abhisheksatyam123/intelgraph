@@ -658,6 +658,12 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
         const callerName = scopeStack.length
           ? scopeStack[scopeStack.length - 1].name
           : moduleNodeName // top-level call
+        // Tagged template literal detection: a call_expression whose
+        // second positional named child is a template_string instead
+        // of arguments. e.g. sql`SELECT *` or styled.div`color: red`.
+        // Visualizers can highlight DSL usage distinctly from regular
+        // function calls.
+        const isTaggedTemplate = isTaggedTemplateCall(node)
         yield ctx.edge({
           payload: {
             edgeKind: "calls",
@@ -672,6 +678,7 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
             metadata: {
               resolved: callee.resolved,
               resolutionKind: callee.kind,
+              ...(isTaggedTemplate ? { taggedTemplate: true } : {}),
             },
             evidence: {
               sourceKind: "file_line",
@@ -1856,6 +1863,20 @@ function isComponentTagName(name: string): boolean {
  */
 function isExportedDeclaration(node: TsNode): boolean {
   return node.parent !== null && node.parent.type === "export_statement"
+}
+
+/**
+ * A tagged template literal call (e.g. sql`SELECT *`) parses as a
+ * call_expression whose second named child is a template_string
+ * instead of an arguments node. Detect by walking the named children
+ * for any template_string.
+ */
+function isTaggedTemplateCall(callNode: TsNode): boolean {
+  for (let i = 0; i < callNode.namedChildCount; i++) {
+    const child = callNode.namedChild(i)
+    if (child && child.type === "template_string") return true
+  }
+  return false
 }
 
 /**

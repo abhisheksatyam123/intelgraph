@@ -168,6 +168,7 @@ export const upper = (s: string) => s.toUpperCase()
     join(tempRoot, "src", "namespace-fixture.ts"),
     `
 import { Greeter } from "./module-a"
+import { sql } from "./util"
 
 export function localNs() { return "ns" }
 
@@ -176,6 +177,8 @@ export function caller() {
   Greeter.makeFormal()
   // localNs.helper() — localNs is a local declaration → local-member
   localNs.helper()
+  // Round D31: tagged template literal — should mark taggedTemplate=true
+  const q = sql\`SELECT * FROM users\`
 }
 
 // Round D16: typed top-level variable + member call.
@@ -932,6 +935,33 @@ describe("ts-core plugin — extraction", () => {
         String(e.dst_node_id).endsWith("anon-class.ts#default"),
     )
     expect(anonClassContains).toBeDefined()
+  })
+
+  it("tags tagged-template-literal calls with metadata.taggedTemplate", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const callEdges = sink.allEdges().filter((e) => e.edge_kind === "calls")
+
+    // caller() makes a sql`...` tagged template call. The edge should
+    // have metadata.taggedTemplate=true.
+    const fromCaller = callEdges.filter((e) =>
+      String(e.src_node_id).endsWith("namespace-fixture.ts#caller"),
+    )
+    const tagged = fromCaller.find(
+      (e) => (e.metadata as { taggedTemplate?: boolean })?.taggedTemplate === true,
+    )
+    expect(tagged).toBeDefined()
+    // The callee should be `sql` (named-import or bare)
+    const meta = tagged!.metadata as { resolutionKind?: string }
+    expect(meta.resolutionKind).toBeDefined()
   })
 
   it("infers var type from `expr as Foo` casts and resolves member calls", async () => {
