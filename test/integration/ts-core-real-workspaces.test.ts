@@ -385,6 +385,51 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_symbol_degree returns incoming/outgoing edge counts by kind", async () => {
+      // Pick a module with both incoming and outgoing imports.
+      const seed = ingest.client.raw
+        .prepare(
+          `SELECT src.canonical_name AS name
+           FROM graph_edges e1
+           INNER JOIN graph_nodes src
+             ON e1.src_node_id = src.node_id AND e1.snapshot_id = src.snapshot_id
+           WHERE e1.snapshot_id = ?
+             AND e1.edge_kind = 'imports'
+             AND src.kind = 'module'
+             AND EXISTS (
+               SELECT 1 FROM graph_edges e2
+               WHERE e2.snapshot_id = e1.snapshot_id
+                 AND e2.edge_kind = 'imports'
+                 AND e2.dst_node_id = e1.src_node_id
+             )
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string } | undefined
+      if (!seed) return
+
+      const result = await ingest.lookup.lookup({
+        intent: "find_symbol_degree",
+        snapshotId: ingest.snapshotId,
+        apiName: seed.name,
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+
+      // Should have both directions present
+      const directions = new Set(
+        result.rows.map((r) => String((r as { direction?: string }).direction)),
+      )
+      expect(directions.has("incoming")).toBe(true)
+      expect(directions.has("outgoing")).toBe(true)
+
+      // Each row should have a positive degree_count
+      for (const row of result.rows) {
+        const dc = Number((row as { degree_count?: number }).degree_count)
+        expect(dc).toBeGreaterThan(0)
+      }
+    })
+
     it("find_import_cycles_deep walks cycles starting from a given module", async () => {
       // Pick a module known to participate in a 2-cycle so we have a
       // safe starting point. The deep walk should at least re-find
@@ -1397,6 +1442,11 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
           intent: "find_import_cycles_deep",
           request: { apiName: seedCycleMember?.name, depth: 3 },
           skip: !seedCycleMember,
+        },
+        {
+          intent: "find_symbol_degree",
+          request: { apiName: seedFunction?.canonical_name },
+          skip: !seedFunction,
         },
         // Legacy intents (also work for ts-core)
         {

@@ -249,6 +249,8 @@ export class SqliteDbLookup implements DbLookupRepository {
           request.depth ?? 5,
           limit,
         )
+      case "find_symbol_degree":
+        return this.symbolDegree(snapshotId, apiNames[0] ?? "")
       default:
         return []
     }
@@ -1006,6 +1008,60 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Return degree counts for a single symbol: total incoming and
+   * outgoing edges, plus per-edge_kind breakdowns. Visualizers use
+   * this to render fan-in/fan-out badges next to a symbol.
+   *
+   * Returns one row per (direction, edge_kind) pair so the
+   * visualizer can pivot client-side. The first column says whether
+   * the count is incoming or outgoing.
+   */
+  private symbolDegree(
+    snapshotId: number,
+    symbolName: string,
+  ): Array<Record<string, unknown>> {
+    if (!symbolName) return []
+    const sql = `
+      SELECT 'outgoing' AS direction, e.edge_kind, COUNT(*) AS count
+      FROM graph_edges e
+      INNER JOIN graph_nodes src
+        ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+      WHERE e.snapshot_id = ?
+        AND src.canonical_name = ?
+      GROUP BY e.edge_kind
+      UNION ALL
+      SELECT 'incoming' AS direction, e.edge_kind, COUNT(*) AS count
+      FROM graph_edges e
+      INNER JOIN graph_nodes dst
+        ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+      WHERE e.snapshot_id = ?
+        AND dst.canonical_name = ?
+      GROUP BY e.edge_kind
+      ORDER BY direction, count DESC
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, symbolName, snapshotId, symbolName) as Array<{
+      direction: string
+      edge_kind: string
+      count: number
+    }>
+    return rows.map((row) => ({
+      kind: "edge_count",
+      canonical_name: symbolName,
+      caller: row.direction === "incoming" ? null : symbolName,
+      callee: row.direction === "outgoing" ? null : symbolName,
+      edge_kind: row.edge_kind,
+      confidence: 1,
+      derivation: "clangd",
+      file_path: null,
+      line_number: null,
+      direction: row.direction,
+      degree_count: toNumber(row.count),
+    }))
+  }
 
   /**
    * Find cycles in the imports graph that pass through a specific

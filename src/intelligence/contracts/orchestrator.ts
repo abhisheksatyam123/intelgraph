@@ -96,6 +96,8 @@ export const QUERY_INTENTS = [
   "find_module_top_exports",
   /** Cycles in the imports graph of length 3 to `depth` (recursive CTE, returns one row per cycle). */
   "find_import_cycles_deep",
+  /** Degree counts for a symbol: incoming/outgoing edges grouped by edge_kind. */
+  "find_symbol_degree",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
