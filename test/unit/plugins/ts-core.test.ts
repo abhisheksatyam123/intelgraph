@@ -76,7 +76,10 @@ export function entry(name: string): string {
 export class Greeter {
   constructor(private prefix: string) {}
   greet(name: string): string {
-    return this.prefix + " " + greetUser(name)
+    return this.format(this.prefix + " " + greetUser(name))
+  }
+  format(s: string): string {
+    return s.trim()
   }
 }
 
@@ -435,6 +438,35 @@ describe("ts-core plugin — extraction", () => {
     }
     expect(nsMeta?.resolved).toBe(true)
     expect(nsMeta?.resolutionKind).toBe("namespace-member")
+  })
+
+  it("resolves this.method() calls to the enclosing class's method", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const callEdges = sink.allEdges().filter((e) => e.edge_kind === "calls")
+    const stripPrefix = (id: unknown): string =>
+      String(id).replace(/^graph_node:\d+:symbol:/, "")
+
+    // Greeter.greet calls this.format() → should resolve to
+    // module:src/module-a.ts#Greeter.format with kind: this-method
+    const fromGreeterGreet = callEdges.filter((e) =>
+      String(e.src_node_id).endsWith("#Greeter.greet"),
+    )
+    const thisCall = fromGreeterGreet.find((e) =>
+      stripPrefix(e.dst_node_id).endsWith("module-a.ts#Greeter.format"),
+    )
+    expect(thisCall).toBeDefined()
+    const meta = thisCall?.metadata as { resolved?: boolean; resolutionKind?: string }
+    expect(meta?.resolved).toBe(true)
+    expect(meta?.resolutionKind).toBe("this-method")
   })
 
   it("methods are qualified with their class and contains anchors at the class", async () => {

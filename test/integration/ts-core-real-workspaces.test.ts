@@ -311,8 +311,38 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
           "default-import",
           "namespace-member",
           "local",
+          "this-method",
         ]).toContain(meta?.resolutionKind)
       }
+    })
+
+    it("Round D5: this.method() calls land with resolutionKind=this-method", () => {
+      // opencode is heavily OO; this.x() inside class methods should
+      // produce a substantial number of resolved this-method edges.
+      const counts = ingest.client.raw
+        .prepare(
+          `SELECT COUNT(*) AS n FROM graph_edges
+           WHERE snapshot_id = ? AND edge_kind = 'calls'
+             AND json_extract(metadata, '$.resolutionKind') = 'this-method'`,
+        )
+        .get(ingest.snapshotId) as { n: number }
+      // Soft floor — opencode has hundreds of this.x() call sites in
+      // its class-heavy modules. We assert just enough to catch a
+      // regression that breaks resolution entirely.
+      expect(counts.n).toBeGreaterThan(5)
+
+      // Spot-check that destinations look like Class.method
+      const sample = ingest.client.raw
+        .prepare(
+          `SELECT dst_node_id FROM graph_edges
+           WHERE snapshot_id = ? AND edge_kind = 'calls'
+             AND json_extract(metadata, '$.resolutionKind') = 'this-method'
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { dst_node_id: string } | undefined
+      expect(sample).toBeDefined()
+      // dst_node_id has the form `graph_node:<sid>:symbol:module:...#Class.method`
+      expect(sample!.dst_node_id).toMatch(/#[A-Za-z_$][A-Za-z0-9_$]*\.[A-Za-z_$]/)
     })
   },
 )

@@ -385,7 +385,15 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
 
     // Call expressions inside the current scope
     if (node.type === "call_expression") {
-      const callee = extractCalleeWithResolution(node, resolver, moduleNodeName)
+      const enclosingClassNow = classStack.length
+        ? classStack[classStack.length - 1]
+        : null
+      const callee = extractCalleeWithResolution(
+        node,
+        resolver,
+        moduleNodeName,
+        enclosingClassNow,
+      )
       if (callee) {
         const callerName = scopeStack.length
           ? scopeStack[scopeStack.length - 1].name
@@ -520,14 +528,20 @@ function extractCallee(callExpr: TsNode): string | null {
  *   - { name, resolved: true, kind: "named-import" }    cross-file via named import
  *   - { name, resolved: true, kind: "default-import" }  cross-file via default import
  *   - { name, resolved: true, kind: "namespace-member"} cross-file via namespace import
+ *   - { name, resolved: true, kind: "this-method" }     this.x() → enclosing class
  *   - { name, resolved: true, kind: "local" }           same-file declaration
  *   - { name, resolved: false, kind: "bare" }           unresolved fallback
  *   - null if no callee text could be extracted
+ *
+ * @param enclosingClass local name of the class currently being walked,
+ *   or null if not inside a class. Used to resolve `this.x()` to
+ *   `module:foo.ts#Class.x`.
  */
 function extractCalleeWithResolution(
   callExpr: TsNode,
   resolver: FileResolver,
   moduleNodeName: string,
+  enclosingClass: string | null,
 ): { name: string; resolved: boolean; kind: string } | null {
   const fn = callExpr.childForFieldName("function")
   if (!fn) return null
@@ -553,15 +567,25 @@ function extractCalleeWithResolution(
     const property = fn.childForFieldName("property")
     if (!property) return null
     const propName = property.text
-    // namespace.member → look up the namespace in import map
-    if (obj && obj.type === "identifier") {
-      const ns = resolver.namespaceImports.get(obj.text)
-      if (ns) {
-        // ns is "module:src/x.ts"; member is `format`
+    if (obj) {
+      // this.method() → resolve to enclosing class's method, when in scope
+      if (obj.type === "this" && enclosingClass) {
         return {
-          name: `${ns}#${propName}`,
+          name: `${moduleNodeName}#${enclosingClass}.${propName}`,
           resolved: true,
-          kind: "namespace-member",
+          kind: "this-method",
+        }
+      }
+      // namespace.member → look up the namespace in import map
+      if (obj.type === "identifier") {
+        const ns = resolver.namespaceImports.get(obj.text)
+        if (ns) {
+          // ns is "module:src/x.ts"; member is `format`
+          return {
+            name: `${ns}#${propName}`,
+            resolved: true,
+            kind: "namespace-member",
+          }
         }
       }
     }
