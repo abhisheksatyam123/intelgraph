@@ -385,6 +385,29 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_symbols_by_kind browses all symbols of a kind", async () => {
+      // 'class' returns all class symbols. opencode has at least 12.
+      const result = await ingest.lookup.lookup({
+        intent: "find_symbols_by_kind",
+        snapshotId: ingest.snapshotId,
+        pattern: "class",
+        limit: 100,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(5)
+      for (const row of result.rows) {
+        expect(row.kind).toBe("class")
+      }
+      // 'namespace' returns namespace symbols (opencode is heavy on these)
+      const nsResult = await ingest.lookup.lookup({
+        intent: "find_symbols_by_kind",
+        snapshotId: ingest.snapshotId,
+        pattern: "namespace",
+        limit: 100,
+      })
+      expect(nsResult.rows.length).toBeGreaterThan(50)
+    })
+
     it("find_symbols_by_name does substring search across canonical_names", async () => {
       // 'session' should match many opencode symbols (session.ts, session
       // namespace, session.sql.ts, etc.).

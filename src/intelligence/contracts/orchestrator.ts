@@ -76,6 +76,8 @@ export const QUERY_INTENTS = [
   "find_call_chain",
   /** Substring search across symbol canonical_name (request.pattern). */
   "find_symbols_by_name",
+  /** All symbols of a given kind (request.pattern = kind name like 'class' / 'interface' / 'function'). */
+  "find_symbols_by_kind",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

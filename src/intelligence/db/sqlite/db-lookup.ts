@@ -214,6 +214,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         )
       case "find_symbols_by_name":
         return this.symbolsByName(snapshotId, request.pattern ?? "", limit)
+      case "find_symbols_by_kind":
+        return this.symbolsByKind(snapshotId, request.pattern ?? "", limit)
       default:
         return []
     }
@@ -971,6 +973,45 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Browse all symbols of a given kind in the snapshot. Used by
+   * visualizer kind-filtered views ("show me all classes", "show
+   * me all interfaces"). Sorts alphabetically for deterministic
+   * pagination.
+   */
+  private symbolsByKind(
+    snapshotId: number,
+    kind: string,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (!kind || kind.length === 0) return []
+    const sql = `
+      SELECT
+        canonical_name,
+        kind,
+        location
+      FROM graph_nodes
+      WHERE snapshot_id = ?
+        AND kind = ?
+      ORDER BY canonical_name
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, kind, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? kind,
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "contains",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
 
   /**
    * Substring search across graph_nodes by canonical_name. Used by
