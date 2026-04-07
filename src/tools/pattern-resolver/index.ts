@@ -140,6 +140,17 @@ function errorMessage(err: unknown): string {
   return err instanceof Error ? err.message : String(err)
 }
 
+// NOTE: timedPrepareCallHierarchy and timedIncomingCalls below are the
+// original implementations. As of Step 8 of the plugin extractor
+// infrastructure rollout, the same logic also lives in
+// src/intelligence/extraction/services/lsp-service.ts (LspServiceImpl)
+// where it is exposed to plugin extractors via ctx.lsp. The two
+// implementations are kept independent for now because pattern-resolver
+// uses a ResolverDeps DI shape that is incompatible with LspService's
+// constructor — they will be merged in Problem 2 when the WLAN-specific
+// shortcuts in this file move out and pattern-resolver becomes a thin
+// caller of the new service. Until then, both implementations are
+// expected to behave identically.
 async function timedPrepareCallHierarchy(
   deps: ResolverDeps,
   filePath: string,

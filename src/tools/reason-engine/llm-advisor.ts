@@ -6,6 +6,7 @@ import { execSync, execFileSync } from "node:child_process"
 import type { ILanguageClient } from "../../lsp/types.js"
 import { z } from "zod"
 import { getLogger } from "../../logging/logger.js"
+import { RipgrepServiceImpl } from "../../intelligence/extraction/services/ripgrep-service.js"
 
 /**
  * Bypass self-signed certificate errors for the duration of a callback.
@@ -277,28 +278,26 @@ function deriveRegistrarFromWorkspace(
   workspaceRoot: string,
   targetSymbol: string,
 ): { registrarFn: string; registrationApi: string; file: string; line: number; snippet: string } | null {
+  // Migrated to RipgrepService in Step 8 of the plugin extractor
+  // infrastructure rollout. The previous implementation shelled out to
+  // `rg --json` directly; the service centralizes that pattern with
+  // typed RipgrepMatch results, glob defaults, and graceful handling
+  // of "rg not on PATH".
   const candidates: Array<{ registrarFn: string; registrationApi: string; file: string; line: number; snippet: string }> = []
   try {
-    const raw = execFileSync("rg", [
-      "--json", "-n", targetSymbol, workspaceRoot,
-      "--glob", "*.{c,h}", "--max-count", "200",
-    ], { stdio: "pipe", timeout: 15000 }).toString()
-    for (const row of raw.split("\n")) {
-      if (!row.trim()) continue
-      let parsed: any
-      try {
-        parsed = JSON.parse(row)
-      } catch {
-        continue
-      }
-      if (parsed.type !== "match") continue
-      const file = parsed.data?.path?.text as string
-      const line = parsed.data?.line_number as number
-      if (!file || !line) continue
-      const hit = deriveRegistrarFromFileAtHint(file, targetSymbol, line)
+    const rg = new RipgrepServiceImpl(workspaceRoot)
+    const matches = rg.search(targetSymbol, {
+      glob: "*.{c,h}",
+      maxCount: 200,
+      timeoutMs: 15000,
+    })
+    for (const match of matches) {
+      const hit = deriveRegistrarFromFileAtHint(match.filePath, targetSymbol, match.line)
       if (hit) candidates.push(hit)
     }
   } catch {
+    // RipgrepUnavailable falls through here, matching the previous
+    // try/catch behavior of returning null when rg is missing.
     return null
   }
   if (!candidates.length) return null
