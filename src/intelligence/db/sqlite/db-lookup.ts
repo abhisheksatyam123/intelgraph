@@ -251,6 +251,13 @@ export class SqliteDbLookup implements DbLookupRepository {
         )
       case "find_symbol_degree":
         return this.symbolDegree(snapshotId, apiNames[0] ?? "")
+      case "find_module_interactions":
+        return this.moduleInteractions(
+          snapshotId,
+          request.srcApi ?? "",
+          request.dstApi ?? "",
+          limit,
+        )
       default:
         return []
     }
@@ -1008,6 +1015,77 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find all calls + references_type edges between symbols in two
+   * modules. Visualizers use this to render "how do these two modules
+   * interact" views — typically a focused subgraph showing every
+   * cross-talk site.
+   *
+   * Module membership is determined by canonical_name prefix matching.
+   * A symbol with canonical_name `module:src/foo.ts#bar` belongs to
+   * module `module:src/foo.ts`. The query also matches the module's
+   * own symbol (for cases where the edge is module → module rather
+   * than symbol → symbol).
+   *
+   * Required: srcApi and dstApi must be module canonical_names.
+   */
+  private moduleInteractions(
+    snapshotId: number,
+    srcModule: string,
+    dstModule: string,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (!srcModule || !dstModule) return []
+    // Escape LIKE wildcards in the module names so they're treated
+    // literally
+    const escape = (s: string): string => s.replace(/[\\%_]/g, "\\$&")
+    const srcPrefix = `${escape(srcModule)}#%`
+    const dstPrefix = `${escape(dstModule)}#%`
+    const sql = `
+      SELECT
+        src.canonical_name AS caller,
+        dst.canonical_name AS callee,
+        e.edge_kind AS edge_kind,
+        e.confidence AS confidence,
+        e.derivation AS derivation,
+        src.location AS location,
+        e.metadata AS metadata
+      FROM graph_edges e
+      INNER JOIN graph_nodes src
+        ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+      INNER JOIN graph_nodes dst
+        ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+      WHERE e.snapshot_id = ?
+        AND e.edge_kind IN ('calls', 'references_type')
+        AND (src.canonical_name = ? OR src.canonical_name LIKE ? ESCAPE '\\')
+        AND (dst.canonical_name = ? OR dst.canonical_name LIKE ? ESCAPE '\\')
+      ORDER BY e.edge_kind, src.canonical_name, dst.canonical_name
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(
+        snapshotId,
+        srcModule,
+        srcPrefix,
+        dstModule,
+        dstPrefix,
+        limit,
+      ) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: "edge",
+      canonical_name: obj.caller,
+      caller: obj.caller,
+      callee: obj.callee,
+      edge_kind: obj.edge_kind,
+      confidence: toNumber(obj.confidence),
+      derivation: obj.derivation,
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+      metadata: parseJson(obj.metadata),
+    }))
+  }
 
   /**
    * Return degree counts for a single symbol: total incoming and

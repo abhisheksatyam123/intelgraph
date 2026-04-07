@@ -98,6 +98,8 @@ export const QUERY_INTENTS = [
   "find_import_cycles_deep",
   /** Degree counts for a symbol: incoming/outgoing edges grouped by edge_kind. */
   "find_symbol_degree",
+  /** All calls + references_type edges between symbols in two modules (srcApi → dstApi). */
+  "find_module_interactions",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

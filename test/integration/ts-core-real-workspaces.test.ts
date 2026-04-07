@@ -385,6 +385,62 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_module_interactions returns edges between two modules", async () => {
+      // Pick any two modules where one calls into the other.
+      const seed = ingest.client.raw
+        .prepare(
+          `SELECT
+             json_extract(src.payload, '$.metadata.modulePath') AS src_path,
+             json_extract(dst.payload, '$.metadata.modulePath') AS dst_path,
+             SUBSTR(src.canonical_name, 1, INSTR(src.canonical_name, '#') - 1) AS src_module,
+             SUBSTR(dst.canonical_name, 1, INSTR(dst.canonical_name, '#') - 1) AS dst_module
+           FROM graph_edges e
+           INNER JOIN graph_nodes src
+             ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+           INNER JOIN graph_nodes dst
+             ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+           WHERE e.snapshot_id = ?
+             AND e.edge_kind = 'calls'
+             AND src.canonical_name LIKE 'module:%#%'
+             AND dst.canonical_name LIKE 'module:%#%'
+             AND INSTR(src.canonical_name, '#') > 0
+             AND INSTR(dst.canonical_name, '#') > 0
+             AND SUBSTR(src.canonical_name, 1, INSTR(src.canonical_name, '#') - 1)
+                 != SUBSTR(dst.canonical_name, 1, INSTR(dst.canonical_name, '#') - 1)
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as
+        | { src_module: string; dst_module: string }
+        | undefined
+      if (!seed) return
+
+      const result = await ingest.lookup.lookup({
+        intent: "find_module_interactions",
+        snapshotId: ingest.snapshotId,
+        srcApi: seed.src_module,
+        dstApi: seed.dst_module,
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // Every edge should be calls or references_type
+      for (const row of result.rows) {
+        expect(["calls", "references_type"]).toContain(String(row.edge_kind))
+        // Caller belongs to src module
+        const callerStr = String(row.caller)
+        expect(
+          callerStr === seed.src_module ||
+            callerStr.startsWith(seed.src_module + "#"),
+        ).toBe(true)
+        // Callee belongs to dst module
+        const calleeStr = String(row.callee)
+        expect(
+          calleeStr === seed.dst_module ||
+            calleeStr.startsWith(seed.dst_module + "#"),
+        ).toBe(true)
+      }
+    })
+
     it("find_symbol_degree returns incoming/outgoing edge counts by kind", async () => {
       // Pick a module with both incoming and outgoing imports.
       const seed = ingest.client.raw
@@ -1447,6 +1503,14 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
           intent: "find_symbol_degree",
           request: { apiName: seedFunction?.canonical_name },
           skip: !seedFunction,
+        },
+        {
+          intent: "find_module_interactions",
+          request: {
+            srcApi: seedModule?.canonical_name,
+            dstApi: seedModule?.canonical_name,
+          },
+          skip: !seedModule,
         },
         // Legacy intents (also work for ts-core)
         {
