@@ -32,7 +32,7 @@
  */
 
 import type { ILanguageClient } from "../../lsp/types.js"
-import type { GraphWriteSink } from "../db/neo4j/node-contracts.js"
+import type { GraphWriteSink } from "../db/graph-rows.js"
 import type { IExtractor, WorkspaceProbe } from "./contract.js"
 import type { Fact, FactKind } from "./facts.js"
 import { FactBus, type FactBusReport } from "./fact-bus.js"

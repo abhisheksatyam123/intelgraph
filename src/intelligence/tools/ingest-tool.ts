@@ -30,7 +30,7 @@ import type {
   GraphNodeRow,
   GraphWriteBatch,
   GraphWriteSink,
-} from "../db/neo4j/node-contracts.js"
+} from "../db/graph-rows.js"
 import type { IExtractor } from "../extraction/contract.js"
 import {
   ExtractorRunner,

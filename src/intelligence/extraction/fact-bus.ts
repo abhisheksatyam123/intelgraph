@@ -41,8 +41,8 @@ import type {
   GraphObservationRow,
   GraphWriteBatch,
   GraphWriteSink,
-} from "../db/neo4j/node-contracts.js"
-import { edgeRow, evidenceRow, symbolNode } from "../db/neo4j/node-contracts.js"
+} from "../db/graph-rows.js"
+import { edgeRow, evidenceRow, symbolNode } from "../db/graph-rows.js"
 import {
   type Fact,
   type FactKind,

@@ -6,7 +6,7 @@ import type {
   RuntimeGraphParticipantRow,
   SourceLocation,
   SymbolRow,
-} from "../../contracts/common.js"
+} from "../contracts/common.js"
 
 export interface GraphNodeRow {
   snapshot_id: number
@@ -153,7 +153,7 @@ function participantsForRuntimeRow(row: RuntimeCallerRow): RuntimeGraphParticipa
     ? row.dispatchChain
     : [row.immediateInvoker, row.targetApi]
 
-  chain.forEach((name, index) => {
+  chain.forEach((name: string, index: number) => {
     if (participantsByName.has(name)) return
     const role =
       name === row.targetApi

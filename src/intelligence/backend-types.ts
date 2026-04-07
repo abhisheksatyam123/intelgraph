@@ -1,0 +1,39 @@
+/**
+ * backend-types.ts — storage-agnostic types for the intelligence backend.
+ *
+ * Used to live inside backend-factory.ts (which was Neo4j-specific). After
+ * the SQLite migration these types stay relevant: they describe the
+ * IntelligenceBackend shape every storage implementation must satisfy and
+ * the narrow LSP client surface that ingest paths actually depend on.
+ */
+
+import type { IDbFoundation, ISnapshotIngestWriter } from "./contracts/db-foundation.js"
+import type { IExtractionAdapter } from "./contracts/extraction-adapter.js"
+import type { IIndirectCallerIngestion } from "./contracts/indirect-caller-ingestion.js"
+import type { OrchestratorRunnerDeps } from "./orchestrator-runner.js"
+import type { GraphWriteSink } from "./db/graph-rows.js"
+
+export interface LspClientForExtraction {
+  documentSymbol: (filePath: string) => Promise<Record<string, unknown>[]>
+  incomingCalls: (
+    filePath: string,
+    line: number,
+    char: number,
+  ) => Promise<Record<string, unknown>[]>
+  outgoingCalls: (
+    filePath: string,
+    line: number,
+    char: number,
+  ) => Promise<Record<string, unknown>[]>
+}
+
+export interface IntelligenceBackend {
+  deps: OrchestratorRunnerDeps
+  db: IDbFoundation
+  ingestWriter: ISnapshotIngestWriter
+  ingestion: IIndirectCallerIngestion
+  extractor: IExtractionAdapter
+  /** Sink the ingest pipeline writes facts through. */
+  sink: GraphWriteSink
+  close(): Promise<void>
+}

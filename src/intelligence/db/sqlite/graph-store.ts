@@ -26,7 +26,7 @@ import type {
   GraphObservationRow,
   GraphWriteBatch,
   GraphWriteSink,
-} from "../neo4j/node-contracts.js"
+} from "../graph-rows.js"
 import type { SymbolFinder } from "../ingestion/indirect-caller-ingestion-service.js"
 import type { SourceLocation } from "../../contracts/common.js"
 import * as schema from "./schema.js"

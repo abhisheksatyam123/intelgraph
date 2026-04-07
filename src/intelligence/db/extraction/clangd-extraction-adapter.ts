@@ -14,7 +14,7 @@ import {
   evidenceRow,
   symbolNode,
   type GraphWriteSink,
-} from "../neo4j/node-contracts.js"
+} from "../graph-rows.js"
 
 // ---------------------------------------------------------------------------
 // Clangd LSP client interface (minimal surface we need)

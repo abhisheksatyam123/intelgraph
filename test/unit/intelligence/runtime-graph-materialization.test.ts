@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 import { IndirectCallerIngestionService } from "../../../src/intelligence/db/ingestion/indirect-caller-ingestion-service.js"
-import { runtimeRows } from "../../../src/intelligence/db/neo4j/node-contracts.js"
+import { runtimeRows } from "../../../src/intelligence/db/graph-rows.js"
 import type { RuntimeCallerRow } from "../../../src/intelligence/contracts/common.js"
 
 function signalDispatchRow(): RuntimeCallerRow {

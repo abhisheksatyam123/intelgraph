@@ -24,7 +24,7 @@ import type {
   GraphNodeRow,
   GraphObservationRow,
   GraphWriteBatch,
-} from "../../../src/intelligence/db/neo4j/node-contracts.js"
+} from "../../../src/intelligence/db/graph-rows.js"
 
 // ---------------------------------------------------------------------------
 // Scaffolding

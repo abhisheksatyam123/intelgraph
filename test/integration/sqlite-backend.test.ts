@@ -22,7 +22,7 @@ import { openSqlite, type SqliteClient } from "../../src/intelligence/db/sqlite/
 import { SqliteDbFoundation } from "../../src/intelligence/db/sqlite/foundation.js"
 import { SqliteGraphStore } from "../../src/intelligence/db/sqlite/graph-store.js"
 import { SqliteDbLookup } from "../../src/intelligence/db/sqlite/db-lookup.js"
-import type { GraphEdgeRow, GraphNodeRow } from "../../src/intelligence/db/neo4j/node-contracts.js"
+import type { GraphEdgeRow, GraphNodeRow } from "../../src/intelligence/db/graph-rows.js"
 import type { QueryRequest } from "../../src/intelligence/contracts/orchestrator.js"
 
 // ---------------------------------------------------------------------------

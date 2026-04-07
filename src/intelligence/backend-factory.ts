@@ -1,58 +1,75 @@
 /**
- * Intelligence backend factory — wires all concrete adapters into
- * OrchestratorRunnerDeps ready for executeOrchestratedQuery.
+ * backend-factory.ts — wires up an IntelligenceBackend backed by
+ * SQLite (via Drizzle + better-sqlite3).
+ *
+ * After Phase 7 of the Neo4j → SQLite migration, this is the only
+ * backend factory. The Neo4j-based factory was deleted along with
+ * src/intelligence/db/neo4j/ — clangd-mcp now has zero external
+ * service dependencies for its intelligence layer.
+ *
+ * The backend talks to a local .clangd-mcp/intelligence.db file (or
+ * :memory: in tests). The path is configured via the SqliteBackendConfig
+ * passed in by init.ts, which reads INTELLIGENCE_DB_PATH from env.
  */
-import neo4j from "neo4j-driver"
-import { Neo4jGraphProjectionService } from "./db/neo4j/projection-service.js"
-import { Neo4jDbFoundation } from "./db/neo4j/foundation.js"
-import { Neo4jGraphStore } from "./db/neo4j/graph-store.js"
-import type { GraphWriteSink } from "./db/neo4j/node-contracts.js"
-import { IndirectCallerIngestionService } from "./db/ingestion/indirect-caller-ingestion-service.js"
+
+import type { IntelligenceBackend, LspClientForExtraction } from "./backend-types.js"
+import type { OrchestratorRunnerDeps } from "./orchestrator-runner.js"
 import type { IExtractionAdapter } from "./contracts/extraction-adapter.js"
 import { ClangdExtractionAdapter } from "./db/extraction/clangd-extraction-adapter.js"
-import type { OrchestratorRunnerDeps } from "./orchestrator-runner.js"
-import type { IDbFoundation, ISnapshotIngestWriter } from "./contracts/db-foundation.js"
+import { openSqlite, type SqliteClient } from "./db/sqlite/client.js"
+import { SqliteDbFoundation } from "./db/sqlite/foundation.js"
+import { SqliteGraphStore } from "./db/sqlite/graph-store.js"
+import { SqliteDbLookup } from "./db/sqlite/db-lookup.js"
+import { SqliteGraphProjectionService } from "./db/sqlite/projection-service.js"
+import { IndirectCallerIngestionService } from "./db/ingestion/indirect-caller-ingestion-service.js"
 import type { IIndirectCallerIngestion } from "./contracts/indirect-caller-ingestion.js"
-import type { AggregateFieldRow, EdgeRow, IngestReport, SymbolRow, TypeRow } from "./contracts/common.js"
+import type { IDbFoundation, ISnapshotIngestWriter } from "./contracts/db-foundation.js"
+import type {
+  AggregateFieldRow,
+  EdgeRow,
+  IngestReport,
+  SymbolRow,
+  TypeRow,
+} from "./contracts/common.js"
 import type { EnrichmentResult, QueryRequest } from "./contracts/orchestrator.js"
-import { Neo4jDbLookup } from "./db/neo4j/db-lookup.js"
 
-export interface BackendConfig {
-  neo4jUrl: string
-  neo4jUser: string
-  neo4jPassword: string
+export type { IntelligenceBackend, LspClientForExtraction }
+
+export interface SqliteBackendConfig {
+  /**
+   * Path to the sqlite database file, or ":memory:" for tests.
+   * Defaults to ".clangd-mcp/intelligence.db" relative to cwd when
+   * constructed via init.ts; callers may pass an absolute path.
+   */
+  dbPath: string
 }
 
-export interface LspClientForExtraction {
-  documentSymbol: (filePath: string) => Promise<any[]>
-  incomingCalls: (filePath: string, line: number, char: number) => Promise<any[]>
-  outgoingCalls: (filePath: string, line: number, char: number) => Promise<any[]>
-}
-
-export interface IntelligenceBackend {
-  deps: OrchestratorRunnerDeps
-  db: IDbFoundation
-  ingestWriter: ISnapshotIngestWriter
-  ingestion: IIndirectCallerIngestion
-  extractor: IExtractionAdapter
-  /** Sink the ingest pipeline writes facts through (Neo4jGraphStore in prod). */
-  sink: GraphWriteSink
-  close(): Promise<void>
-}
-
+/**
+ * SnapshotIngestWriter — used by IndirectCallerIngestionService's
+ * persistRuntimeChains path. Delegates to an IExtractionAdapter, which
+ * is still ClangdExtractionAdapter for now. This will move to its own
+ * plugin once the indirect-caller phase is converted to the new
+ * IExtractor contract.
+ */
 class SnapshotIngestWriter implements ISnapshotIngestWriter {
   constructor(private extractor: IExtractionAdapter) {}
 
-  async writeSnapshotBatch(snapshotId: number, batch: {
-    symbols?: unknown[]
-    types?: unknown[]
-    fields?: unknown[]
-    edges?: unknown[]
-    runtimeCallers?: unknown[]
-  }): Promise<IngestReport> {
+  async writeSnapshotBatch(
+    snapshotId: number,
+    batch: {
+      symbols?: unknown[]
+      types?: unknown[]
+      fields?: unknown[]
+      edges?: unknown[]
+      runtimeCallers?: unknown[]
+    },
+  ): Promise<IngestReport> {
     const report = await this.extractor.materializeSnapshot(snapshotId, {
       symbolBatch: { symbols: (batch.symbols ?? []) as SymbolRow[] },
-      typeBatch: { types: (batch.types ?? []) as TypeRow[], fields: (batch.fields ?? []) as AggregateFieldRow[] },
+      typeBatch: {
+        types: (batch.types ?? []) as TypeRow[],
+        fields: (batch.fields ?? []) as AggregateFieldRow[],
+      },
       edgeBatch: { edges: (batch.edges ?? []) as EdgeRow[] },
     })
     return {
@@ -64,36 +81,58 @@ class SnapshotIngestWriter implements ISnapshotIngestWriter {
 }
 
 class NoopAuthoritativeStore {
-  async persistEnrichment(_request: QueryRequest, result: EnrichmentResult): Promise<number> {
+  async persistEnrichment(
+    _request: QueryRequest,
+    result: EnrichmentResult,
+  ): Promise<number> {
     return result.persistedRows
   }
 }
 
-export async function createIntelligenceBackend(
-  cfg: BackendConfig,
-  enrichers: Pick<OrchestratorRunnerDeps, "clangdEnricher" | "cParserEnricher" | "llmEnricher">,
-  lspClient?: LspClientForExtraction,
-): Promise<IntelligenceBackend> {
-  const driver = neo4j.driver(
-    cfg.neo4jUrl,
-    neo4j.auth.basic(cfg.neo4jUser, cfg.neo4jPassword),
-  )
+/**
+ * Extended IntelligenceBackend shape that carries the SqliteClient
+ * handle so init.ts can close it on shutdown.
+ */
+export interface SqliteIntelligenceBackend extends IntelligenceBackend {
+  readonly sqliteClient: SqliteClient
+}
 
-  const db = new Neo4jDbFoundation(driver)
-  const store4j = new Neo4jGraphStore(driver)
-  const extractor = new ClangdExtractionAdapter(
+export async function createIntelligenceBackend(
+  cfg: SqliteBackendConfig,
+  enrichers: Pick<
+    OrchestratorRunnerDeps,
+    "clangdEnricher" | "cParserEnricher" | "llmEnricher"
+  >,
+  lspClient?: LspClientForExtraction,
+): Promise<SqliteIntelligenceBackend> {
+  const sqliteClient = openSqlite({ path: cfg.dbPath })
+  const db = new SqliteDbFoundation(sqliteClient.db, sqliteClient.raw)
+  await db.initSchema()
+
+  const sink = new SqliteGraphStore(sqliteClient.db)
+  const lookup = new SqliteDbLookup(sqliteClient.db, sqliteClient.raw)
+  const projection = new SqliteGraphProjectionService()
+
+  // ClangdExtractionAdapter still used by SnapshotIngestWriter for
+  // the indirect-caller batch persistence path. Its own ingest output
+  // goes nowhere in the new pipeline — the FactBus-backed ExtractorRunner
+  // is what feeds the snapshot. Kept here to satisfy the shim.
+  const extractor: IExtractionAdapter = new ClangdExtractionAdapter(
     lspClient ?? {
       documentSymbol: async () => [],
       incomingCalls: async () => [],
       outgoingCalls: async () => [],
     },
-    store4j,
+    sink,
   )
   const ingestWriter = new SnapshotIngestWriter(extractor)
-  const lookup = new Neo4jDbLookup(driver)
+
+  // The indirect-caller ingestion service needs a SymbolFinder (hasSymbol)
+  // and a GraphWriteSink. SqliteGraphStore implements both, same as
+  // Neo4jGraphStore.
+  const ingestion = new IndirectCallerIngestionService(sink, sink)
+
   const store = new NoopAuthoritativeStore()
-  const projection = new Neo4jGraphProjectionService(driver)
-  const ingestion = new IndirectCallerIngestionService(store4j, store4j)
 
   const deps: OrchestratorRunnerDeps = {
     persistence: {
@@ -106,21 +145,14 @@ export async function createIntelligenceBackend(
 
   return {
     deps,
-    db,
+    db: db as IDbFoundation,
     ingestWriter,
-    ingestion,
+    ingestion: ingestion as IIndirectCallerIngestion,
     extractor,
-    sink: store4j,
+    sink,
+    sqliteClient,
     close: async () => {
-      await driver.close()
+      sqliteClient.close()
     },
   }
-}
-
-export async function createNeo4jIntelligenceBackend(
-  cfg: BackendConfig,
-  enrichers: Pick<OrchestratorRunnerDeps, "clangdEnricher" | "cParserEnricher" | "llmEnricher">,
-  lspClient?: LspClientForExtraction,
-): Promise<IntelligenceBackend> {
-  return createIntelligenceBackend(cfg, enrichers, lspClient)
 }

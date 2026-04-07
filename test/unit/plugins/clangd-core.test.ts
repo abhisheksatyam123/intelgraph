@@ -17,7 +17,7 @@ import { clangdCoreExtractor } from "../../../src/plugins/index.js"
 import type {
   GraphWriteBatch,
   GraphWriteSink,
-} from "../../../src/intelligence/db/neo4j/node-contracts.js"
+} from "../../../src/intelligence/db/graph-rows.js"
 import type { ILanguageClient } from "../../../src/lsp/types.js"
 
 // ---------------------------------------------------------------------------

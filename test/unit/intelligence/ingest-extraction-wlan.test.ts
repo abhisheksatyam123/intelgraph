@@ -8,7 +8,7 @@ import type { ILanguageClient } from "../../../src/lsp/types.js"
 import type {
   GraphWriteBatch,
   GraphWriteSink,
-} from "../../../src/intelligence/db/neo4j/node-contracts.js"
+} from "../../../src/intelligence/db/graph-rows.js"
 import type { ExtractorRunner } from "../../../src/intelligence/extraction/runner.js"
 
 describe("ClangdExtractionAdapter wlan_proc prioritization", () => {

@@ -5,7 +5,7 @@ import type {
   LinkReport,
 } from "../../contracts/indirect-caller-ingestion.js"
 import type { IngestReport, RuntimeCallerRow } from "../../contracts/common.js"
-import { runtimeRows, type GraphWriteSink } from "../neo4j/node-contracts.js"
+import { runtimeRows, type GraphWriteSink } from "../graph-rows.js"
 
 export interface SymbolFinder {
   hasSymbol(snapshotId: number, name: string): Promise<boolean>

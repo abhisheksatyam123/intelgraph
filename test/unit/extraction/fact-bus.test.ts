@@ -20,7 +20,7 @@ import {
 import type {
   GraphWriteBatch,
   GraphWriteSink,
-} from "../../../src/intelligence/db/neo4j/node-contracts.js"
+} from "../../../src/intelligence/db/graph-rows.js"
 
 // ---------------------------------------------------------------------------
 // Test sink — captures every batch handed to write()
