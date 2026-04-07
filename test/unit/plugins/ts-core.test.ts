@@ -133,6 +133,11 @@ import type { Greeting } from "./module-b"
 export const defaultGreeter: Greeter = new Greeter("hi")
 export const fallback: Greeting = "hello"
 export const noTypeAnnotation = 42
+
+// Round D9: type alias bodies referencing other types
+export type GreeterOrNull = Greeter | null
+export type Boxed<T> = { value: T; greeter: Greeter }
+export type GreetingMap = Record<string, Greeting>
 `,
   )
 
@@ -466,6 +471,51 @@ describe("ts-core plugin — extraction", () => {
     }
     expect(nsMeta?.resolved).toBe(true)
     expect(nsMeta?.resolutionKind).toBe("namespace-member")
+  })
+
+  it("emits references_type edges for type alias bodies, skipping generics", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const refEdges = sink
+      .allEdges()
+      .filter((e) => e.edge_kind === "references_type")
+    const aliasRefs = refEdges.filter(
+      (e) => (e.metadata as { aliasRef?: boolean })?.aliasRef === true,
+    )
+    expect(aliasRefs.length).toBeGreaterThan(0)
+
+    // GreeterOrNull = Greeter | null  → 1 edge (Greeter)
+    const fromGreeterOrNull = aliasRefs.filter((e) =>
+      String(e.src_node_id).endsWith("services.ts#GreeterOrNull"),
+    )
+    expect(fromGreeterOrNull.length).toBe(1)
+    expect(String(fromGreeterOrNull[0].dst_node_id)).toMatch(/module-a\.ts#Greeter$/)
+
+    // Boxed<T> = { value: T; greeter: Greeter }
+    //   → 1 edge to Greeter; T is a generic parameter, must not appear
+    const fromBoxed = aliasRefs.filter((e) =>
+      String(e.src_node_id).endsWith("services.ts#Boxed"),
+    )
+    expect(fromBoxed.length).toBe(1)
+    expect(String(fromBoxed[0].dst_node_id)).toMatch(/module-a\.ts#Greeter$/)
+    // No edge to T (the generic parameter)
+    expect(fromBoxed.some((e) => String(e.dst_node_id).endsWith("#T"))).toBe(false)
+
+    // GreetingMap = Record<string, Greeting>
+    //   → 1 edge to Greeting; Record is built-in, dropped
+    const fromGreetingMap = aliasRefs.filter((e) =>
+      String(e.src_node_id).endsWith("services.ts#GreetingMap"),
+    )
+    expect(fromGreetingMap.length).toBe(1)
+    expect(String(fromGreetingMap[0].dst_node_id)).toMatch(/module-b\.ts#Greeting$/)
   })
 
   it("emits typed top-level variables as global_var symbols with references_type", async () => {

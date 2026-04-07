@@ -371,6 +371,24 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
           }
         }
 
+        // Type alias body references. `type X = User | Result` should
+        // emit references_type edges from X to both User and Result.
+        // We collect generic parameter names first so they're excluded
+        // from the body walk (e.g. `type Box<T> = T | null` should
+        // not emit Box → T).
+        if (kind === "typedef") {
+          for (const ref of extractTypeAliasBodyReferences(
+            node,
+            canonicalName,
+            name,
+            resolver,
+            moduleNodeName,
+            file,
+          )) {
+            yield ctx.edge({ payload: ref })
+          }
+        }
+
         // Top-level typed variable: walk its variable_declarator's
         // type_annotation. The annotation lives one level down inside
         // the lexical_declaration → variable_declarator subtree, so we
@@ -873,6 +891,80 @@ function extractTypeReferencesFromAnnotations(
           resolved: true,
           resolutionKind: resolved.kind,
           typeName,
+        },
+      })
+    }
+  }
+  return out
+}
+
+/**
+ * Walk a type_alias_declaration body and emit references_type edges
+ * for each named type that resolves through the FileResolver. Excludes
+ * the alias's own name and any generic type parameters.
+ *
+ * AST: type_alias_declaration → [type_identifier (name)] [type_parameters?] [body]
+ *   body can be union_type, object_type, function_type, type_identifier, etc.
+ *   All named type references throughout the body are type_identifier nodes.
+ */
+function extractTypeAliasBodyReferences(
+  aliasNode: TsNode,
+  thisFqName: string,
+  aliasLocalName: string,
+  resolver: FileResolver,
+  moduleNodeName: string,
+  file: string,
+): Array<TypeRefEdgePayload> {
+  // Collect generic parameter names so we don't emit edges to them.
+  const skipNames = new Set<string>([aliasLocalName])
+  const params = firstNamedChildOfType(aliasNode, "type_parameters")
+  if (params) {
+    for (let i = 0; i < params.namedChildCount; i++) {
+      const tparam = params.namedChild(i)
+      if (!tparam) continue
+      // type_parameter → type_identifier (the parameter name)
+      const id = firstNamedChildOfType(tparam, "type_identifier")
+      if (id) skipNames.add(id.text)
+    }
+  }
+
+  const out: TypeRefEdgePayload[] = []
+  const seen = new Set<string>()
+
+  // Walk every child of the alias EXCEPT type_parameters and the
+  // alias's own name node (the first type_identifier child).
+  // Everything else is the body.
+  let aliasNameSeen = false
+  for (let i = 0; i < aliasNode.namedChildCount; i++) {
+    const child = aliasNode.namedChild(i)
+    if (!child) continue
+    if (child.type === "type_parameters") continue
+    if (!aliasNameSeen && child.type === "type_identifier") {
+      // The alias's own name comes first in document order.
+      aliasNameSeen = true
+      continue
+    }
+    for (const typeName of namedDescendantTexts(child, "type_identifier")) {
+      if (skipNames.has(typeName)) continue
+      if (seen.has(typeName)) continue
+      const resolved = resolveTypeName(typeName, resolver, moduleNodeName)
+      if (!resolved) continue
+      seen.add(typeName)
+      out.push({
+        edgeKind: "references_type",
+        srcSymbolName: thisFqName,
+        dstSymbolName: resolved.name,
+        confidence: 0.95,
+        derivation: "clangd",
+        sourceLocation: {
+          sourceFilePath: file,
+          sourceLineNumber: child.startPosition.row + 1,
+        },
+        metadata: {
+          resolved: true,
+          resolutionKind: resolved.kind,
+          typeName,
+          aliasRef: true,
         },
       })
     }
