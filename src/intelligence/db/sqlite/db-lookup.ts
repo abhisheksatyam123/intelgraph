@@ -196,6 +196,10 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.incomingByEdgeKind(snapshotId, apiNames, "references_type", limit)
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
+      case "find_top_imported_modules":
+        return this.topByIncoming(snapshotId, "imports", "module", limit)
+      case "find_top_called_functions":
+        return this.topByIncoming(snapshotId, "calls", null, limit)
       default:
         return []
     }
@@ -953,6 +957,58 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find the top-N nodes ranked by their incoming-edge count for a
+   * given edge_kind. Useful for "hot spots" / hubs / most-X views in
+   * visualizers. Optionally filters the dst node kind (e.g. only
+   * count incoming edges to modules, or only to functions).
+   *
+   * Result rows include `incoming_count` so the visualizer can
+   * render the in-degree alongside the symbol.
+   */
+  private topByIncoming(
+    snapshotId: number,
+    edgeKind: string,
+    dstKind: string | null,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const kindFilter = dstKind ? "AND dst.kind = ?" : ""
+    const sql = `
+      SELECT
+        dst.canonical_name AS canonical_name,
+        dst.kind AS kind,
+        dst.location AS location,
+        COUNT(*) AS incoming_count
+      FROM graph_edges e
+      INNER JOIN graph_nodes dst
+        ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+      WHERE e.snapshot_id = ?
+        AND e.edge_kind = ?
+        ${kindFilter}
+      GROUP BY dst.canonical_name, dst.kind, dst.location
+      ORDER BY incoming_count DESC
+      LIMIT ?
+    `
+    const params: Array<string | number> = [snapshotId, edgeKind]
+    if (dstKind) params.push(dstKind)
+    params.push(limit)
+    const rows = this.raw
+      .prepare(sql)
+      .all(...params) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "module",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: edgeKind,
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+      incoming_count: toNumber(obj.incoming_count),
+    }))
+  }
 
   /**
    * Find pairs of modules that mutually import each other (2-cycles

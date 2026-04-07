@@ -64,6 +64,10 @@ export const QUERY_INTENTS = [
   "find_type_consumers",
   /** Pairs of modules that import each other (2-cycles in the imports graph). */
   "find_import_cycles",
+  /** Top-N modules ranked by incoming imports edges (busy hubs). */
+  "find_top_imported_modules",
+  /** Top-N functions/methods ranked by incoming calls edges (most-called). */
+  "find_top_called_functions",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

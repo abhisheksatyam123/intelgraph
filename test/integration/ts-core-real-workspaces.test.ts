@@ -385,6 +385,43 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_top_imported_modules ranks busy hub modules", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_top_imported_modules",
+        snapshotId: ingest.snapshotId,
+        limit: 10,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // Each row carries an incoming_count
+      const counts = result.rows.map((r) => Number(r.incoming_count))
+      for (const c of counts) {
+        expect(c).toBeGreaterThan(0)
+      }
+      // Result is ordered descending
+      for (let i = 1; i < counts.length; i++) {
+        expect(counts[i - 1]).toBeGreaterThanOrEqual(counts[i])
+      }
+      // Top hub on opencode should have non-trivial in-degree
+      expect(counts[0]).toBeGreaterThan(2)
+    })
+
+    it("find_top_called_functions ranks the most-called functions", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_top_called_functions",
+        snapshotId: ingest.snapshotId,
+        limit: 10,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      const counts = result.rows.map((r) => Number(r.incoming_count))
+      for (let i = 1; i < counts.length; i++) {
+        expect(counts[i - 1]).toBeGreaterThanOrEqual(counts[i])
+      }
+      // Top called symbol on opencode should have a substantial count
+      expect(counts[0]).toBeGreaterThan(10)
+    })
+
     it("find_import_cycles surfaces 2-cycles in the imports graph", async () => {
       // opencode has real 2-cycles (provider/transform, session.sql,
       // tool/notes/todo, etc.). The intent should return at least one
