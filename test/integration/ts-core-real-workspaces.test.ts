@@ -385,6 +385,55 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_import_cycles_deep walks cycles starting from a given module", async () => {
+      // Pick a module known to participate in a 2-cycle so we have a
+      // safe starting point. The deep walk should at least re-find
+      // the 2-cycle (length 2).
+      const cycle = ingest.client.raw
+        .prepare(
+          `SELECT src.canonical_name AS name
+           FROM graph_edges e1
+           INNER JOIN graph_nodes src
+             ON e1.src_node_id = src.node_id AND e1.snapshot_id = src.snapshot_id
+           INNER JOIN graph_nodes dst
+             ON e1.dst_node_id = dst.node_id AND e1.snapshot_id = dst.snapshot_id
+           INNER JOIN graph_edges e2
+             ON e2.snapshot_id = e1.snapshot_id
+             AND e2.src_node_id = e1.dst_node_id
+             AND e2.dst_node_id = e1.src_node_id
+           WHERE e1.snapshot_id = ?
+             AND e1.edge_kind = 'imports'
+             AND e2.edge_kind = 'imports'
+             AND src.kind = 'module'
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string } | undefined
+      if (!cycle) return
+
+      const result = await ingest.lookup.lookup({
+        intent: "find_import_cycles_deep",
+        snapshotId: ingest.snapshotId,
+        apiName: cycle.name,
+        depth: 4,
+        limit: 20,
+      })
+      expect(result.intent).toBe("find_import_cycles_deep")
+      // Should find at least the 2-cycle that includes this module
+      expect(result.rows.length).toBeGreaterThan(0)
+      for (const row of result.rows) {
+        const cycleLen = Number((row as { cycle_length?: number }).cycle_length)
+        expect(cycleLen).toBeGreaterThanOrEqual(2)
+        expect(cycleLen).toBeLessThanOrEqual(4)
+        const path = String((row as { path?: string }).path)
+        const segments = path.split(" -> ")
+        // First and last segment must match (closed loop)
+        expect(segments[0]).toBe(segments[segments.length - 1])
+        // The starting module is always the first node
+        expect(segments[0]).toBe(cycle.name)
+        expect(row.edge_kind).toBe("imports")
+      }
+    })
+
     it("find_module_top_exports ranks a module's exports by usage", async () => {
       // Pick the module with the most exported symbols (so we have
       // multiple exports to rank). Falls back gracefully if none.

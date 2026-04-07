@@ -242,6 +242,13 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.siblingSymbols(snapshotId, apiNames[0] ?? "", limit)
       case "find_module_top_exports":
         return this.moduleTopExports(snapshotId, apiNames[0] ?? "", limit)
+      case "find_import_cycles_deep":
+        return this.importCyclesDeep(
+          snapshotId,
+          apiNames[0] ?? "",
+          request.depth ?? 5,
+          limit,
+        )
       default:
         return []
     }
@@ -999,6 +1006,115 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find cycles in the imports graph that pass through a specific
+   * starting module, of length 3 to `depth`. Uses a recursive CTE
+   * that walks forward only from the requested module, which bounds
+   * the search to the local neighborhood instead of exploring the
+   * entire graph (which would be exponential on a 600-module project).
+   *
+   * Each cycle returns one row whose `path` field contains the full
+   * sequence of module names involved (e.g.
+   * `module:src/a.ts -> module:src/b.ts -> module:src/c.ts -> module:src/a.ts`).
+   *
+   * Cycles are de-duped by their canonical (sorted) member set — the
+   * same cycle starting at a different rotation only appears once.
+   * The first row's `path` shows the canonical traversal.
+   *
+   * Required: apiName must be the canonical_name of a module. Without
+   * a starting module the query would explode combinatorially.
+   */
+  private importCyclesDeep(
+    snapshotId: number,
+    rootName: string,
+    depth: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (!rootName) return []
+    const maxDepth = Math.min(Math.max(depth, 3), 8)
+    const sql = `
+      WITH RECURSIVE walks(start_name, current_name, depth_n, path) AS (
+        SELECT
+          src.canonical_name,
+          dst.canonical_name,
+          1,
+          src.canonical_name || ' -> ' || dst.canonical_name
+        FROM graph_edges e
+        INNER JOIN graph_nodes src
+          ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+        INNER JOIN graph_nodes dst
+          ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+        WHERE e.snapshot_id = ?
+          AND e.edge_kind = 'imports'
+          AND src.kind = 'module'
+          AND dst.kind = 'module'
+          AND src.canonical_name = ?
+        UNION ALL
+        SELECT
+          w.start_name,
+          dst.canonical_name,
+          w.depth_n + 1,
+          w.path || ' -> ' || dst.canonical_name
+        FROM walks w
+        INNER JOIN graph_edges e
+          ON e.snapshot_id = ?
+          AND e.edge_kind = 'imports'
+        INNER JOIN graph_nodes src
+          ON e.src_node_id = src.node_id
+          AND e.snapshot_id = src.snapshot_id
+          AND src.canonical_name = w.current_name
+        INNER JOIN graph_nodes dst
+          ON e.dst_node_id = dst.node_id
+          AND e.snapshot_id = dst.snapshot_id
+        WHERE w.depth_n < ?
+          -- prevent revisiting nodes other than the start
+          AND (
+            dst.canonical_name = w.start_name
+            OR instr(w.path || ' -> ', dst.canonical_name || ' -> ') = 0
+          )
+      )
+      SELECT DISTINCT
+        depth_n + 1 AS cycle_length,
+        path
+      FROM walks
+      WHERE current_name = start_name
+        AND depth_n >= 2
+      ORDER BY cycle_length ASC, path ASC
+      LIMIT ?
+    `
+    type Row = { cycle_length: number; path: string }
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, rootName, snapshotId, maxDepth, limit) as Row[]
+    // De-dup cycles by their canonical (sorted) member set so the same
+    // cycle starting from different nodes only appears once.
+    const seen = new Set<string>()
+    const out: Array<Record<string, unknown>> = []
+    for (const row of rows) {
+      const segments = row.path.split(" -> ")
+      // The path always closes back to the start, so the last segment
+      // duplicates the first. Strip it for the canonical key.
+      const ring = segments.slice(0, -1)
+      const key = [...ring].sort().join("|")
+      if (seen.has(key)) continue
+      seen.add(key)
+      out.push({
+        kind: "module",
+        canonical_name: ring[0],
+        caller: ring[0],
+        callee: ring[ring.length - 1],
+        edge_kind: "imports",
+        confidence: 1,
+        derivation: "clangd",
+        file_path: null,
+        line_number: null,
+        cycle_length: row.cycle_length - 1, // edges = nodes (since cycle closes)
+        path: row.path,
+      })
+    }
+    return out
+  }
 
   /**
    * For a given module, return its exported symbols ranked by total
