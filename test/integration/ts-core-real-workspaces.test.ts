@@ -498,6 +498,28 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("KPI: ≥45% of calls edges are resolved (regression guard for D1–D19)", () => {
+      // Cumulative resolution rate across every kind:
+      //   named-import / default-import / namespace-member /
+      //   named-member / local-member / var-member / param-member /
+      //   this-method / local / jsx-component
+      // Excludes the lossy `member`, `bare`, and `raw` fallbacks.
+      const totals = ingest.client.raw
+        .prepare(
+          `SELECT
+             SUM(CASE WHEN json_extract(metadata, '$.resolved') = 1 THEN 1 ELSE 0 END) AS resolved,
+             COUNT(*) AS total
+           FROM graph_edges
+           WHERE snapshot_id = ? AND edge_kind = 'calls'`,
+        )
+        .get(ingest.snapshotId) as { resolved: number; total: number }
+      expect(totals.total).toBeGreaterThan(0)
+      const rate = totals.resolved / totals.total
+      // Soft floor — currently sits around 53% on opencode after D1–D19.
+      // Drop below 45% means a resolution path regressed.
+      expect(rate).toBeGreaterThan(0.45)
+    })
+
     it("Round D17: typed parameter member calls resolve to param-member", () => {
       // Functions like `function f(p: Foo) { p.bar() }` are common in
       // opencode's effect-style code. After D17 these resolve via the
