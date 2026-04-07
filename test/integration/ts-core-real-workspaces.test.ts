@@ -244,6 +244,61 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       expect(result.rows.length).toBeLessThanOrEqual(dependedOnModule.n)
     })
 
+    it("who_calls_api works for a ts-core function with known callers", async () => {
+      // Pick the most-called function in the snapshot — by definition
+      // it has incoming `calls` edges, so who_calls_api must return rows.
+      const target = ingest.client.raw
+        .prepare(
+          `SELECT dst.canonical_name AS name, COUNT(*) AS n
+           FROM graph_edges e
+           INNER JOIN graph_nodes dst
+             ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+           WHERE e.snapshot_id = ? AND e.edge_kind = 'calls'
+             AND dst.kind IN ('function', 'method')
+             AND dst.canonical_name LIKE 'module:%'
+           GROUP BY dst.canonical_name
+           ORDER BY n DESC
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string; n: number } | undefined
+      if (!target) return
+      const result = await ingest.lookup.lookup({
+        intent: "who_calls_api",
+        snapshotId: ingest.snapshotId,
+        apiName: target.name,
+        limit: 100,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+    })
+
+    it("what_api_calls works for a ts-core function with known callees", async () => {
+      // Pick the function with the most outgoing calls.
+      const source = ingest.client.raw
+        .prepare(
+          `SELECT src.canonical_name AS name, COUNT(*) AS n
+           FROM graph_edges e
+           INNER JOIN graph_nodes src
+             ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+           WHERE e.snapshot_id = ? AND e.edge_kind = 'calls'
+             AND src.kind IN ('function', 'method')
+             AND src.canonical_name LIKE 'module:%'
+           GROUP BY src.canonical_name
+           ORDER BY n DESC
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string; n: number } | undefined
+      if (!source) return
+      const result = await ingest.lookup.lookup({
+        intent: "what_api_calls",
+        snapshotId: ingest.snapshotId,
+        apiName: source.name,
+        limit: 100,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+    })
+
     it("find_class_inheritance returns the parent of an inheriting class", async () => {
       // Pick any class that has an extends edge in the snapshot.
       const child = ingest.client.raw
