@@ -579,6 +579,36 @@ describe("ts-core plugin — extraction", () => {
     expect(nsMeta?.resolutionKind).toBe("namespace-member")
   })
 
+  it("captures JSX prop names on component calls (D32)", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const callEdges = sink.allEdges().filter((e) => e.edge_kind === "calls")
+
+    // App renders <Greeter prefix="formal" /> — should capture
+    // metadata.props = ["prefix"]
+    const fromApp = callEdges.filter(
+      (e) =>
+        String(e.src_node_id).endsWith("ui.tsx#App") &&
+        (e.metadata as { resolutionKind?: string })?.resolutionKind ===
+          "jsx-component",
+    )
+    const greeterEdge = fromApp.find(
+      (e) => (e.metadata as { jsxTag?: string })?.jsxTag === "Greeter",
+    )
+    expect(greeterEdge).toBeDefined()
+    const meta = greeterEdge!.metadata as { props?: string[] }
+    expect(meta.props).toBeDefined()
+    expect(meta.props).toContain("prefix")
+  })
+
   it("emits calls edges for JSX component usage with resolutionKind=jsx-component", async () => {
     const sink = new CaptureSink()
     const runner = new ExtractorRunner({

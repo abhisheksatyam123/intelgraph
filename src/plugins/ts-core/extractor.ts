@@ -581,6 +581,9 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
         const callerName = scopeStack.length
           ? scopeStack[scopeStack.length - 1].name
           : moduleNodeName
+        // D32: collect prop names from jsx_attribute children. Spread
+        // props don't have a name, so we tag hasSpread separately.
+        const propsInfo = collectJsxProps(node)
         yield ctx.edge({
           payload: {
             edgeKind: "calls",
@@ -596,6 +599,8 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
               resolved: ref.resolved,
               resolutionKind: ref.kind,
               jsxTag: ref.jsxTag,
+              ...(propsInfo.props.length > 0 ? { props: propsInfo.props } : {}),
+              ...(propsInfo.hasSpread ? { hasSpread: true } : {}),
             },
             evidence: {
               sourceKind: "file_line",
@@ -1839,6 +1844,37 @@ function extractJsxComponentRef(
     kind: "jsx-component",
     jsxTag: tagNode.text,
   }
+}
+
+/**
+ * Walk a jsx_self_closing_element / jsx_opening_element's named
+ * children for jsx_attribute (named props) and jsx_expression nodes
+ * containing spread_element (`{...rest}`). Returns an array of
+ * literal prop names plus a flag indicating whether any spread
+ * props are present.
+ */
+function collectJsxProps(jsxNode: TsNode): {
+  props: string[]
+  hasSpread: boolean
+} {
+  const props: string[] = []
+  let hasSpread = false
+  for (let i = 0; i < jsxNode.namedChildCount; i++) {
+    const child = jsxNode.namedChild(i)
+    if (!child) continue
+    if (child.type === "jsx_attribute") {
+      // jsx_attribute's first named child is property_identifier
+      const nameNode = child.namedChild(0)
+      if (nameNode && nameNode.type === "property_identifier") {
+        props.push(nameNode.text)
+      }
+    } else if (child.type === "jsx_expression") {
+      // jsx_expression containing spread_element = {...rest}
+      const spread = firstNamedChildOfType(child, "spread_element")
+      if (spread) hasSpread = true
+    }
+  }
+  return { props, hasSpread }
 }
 
 /**
