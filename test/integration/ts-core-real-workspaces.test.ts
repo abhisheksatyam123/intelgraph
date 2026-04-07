@@ -385,6 +385,49 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_symbol_at_location returns the innermost containing symbol", async () => {
+      // Pick any function/method symbol with both location and endLine
+      // — we know it has a real range we can probe.
+      const seed = ingest.client.raw
+        .prepare(
+          `SELECT
+             canonical_name,
+             json_extract(location, '$.filePath') AS file,
+             json_extract(location, '$.line') AS start_line,
+             json_extract(payload, '$.metadata.endLine') AS end_line
+           FROM graph_nodes
+           WHERE snapshot_id = ?
+             AND kind IN ('function', 'method')
+             AND json_extract(payload, '$.metadata.endLine') >
+                 json_extract(location, '$.line')
+             AND canonical_name LIKE 'module:%'
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as
+        | { canonical_name: string; file: string; start_line: number; end_line: number }
+        | undefined
+      if (!seed) return
+
+      // Probe the middle line of the symbol's range
+      const probeLine = Math.floor((seed.start_line + seed.end_line) / 2)
+      const result = await ingest.lookup.lookup({
+        intent: "find_symbol_at_location",
+        snapshotId: ingest.snapshotId,
+        filePath: seed.file,
+        lineNumber: probeLine,
+        limit: 5,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // The first (innermost) result should be the seed symbol or a
+      // tighter scope inside it
+      const innermost = result.rows[0]
+      const innermostStart = Number(innermost.line_number)
+      const innermostEnd = Number((innermost as { end_line?: number }).end_line)
+      expect(innermostStart).toBeLessThanOrEqual(probeLine)
+      expect(innermostEnd).toBeGreaterThanOrEqual(probeLine)
+    })
+
     it("find_transitive_dependencies walks the imports closure", async () => {
       // Pick the most-importing module (highest out-degree on imports)
       const root = ingest.client.raw

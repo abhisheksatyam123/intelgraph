@@ -223,6 +223,13 @@ export class SqliteDbLookup implements DbLookupRepository {
           request.depth ?? 10,
           limit,
         )
+      case "find_symbol_at_location":
+        return this.symbolAtLocation(
+          snapshotId,
+          request.filePath ?? "",
+          request.lineNumber ?? 0,
+          limit,
+        )
       default:
         return []
     }
@@ -980,6 +987,63 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find the innermost symbol whose source range contains a given
+   * file/line. Used by visualizers for click-to-symbol navigation.
+   *
+   * Range check uses location.line (start) and metadata.endLine (set
+   * by D25). The result is ORDER BY (endLine - startLine) ASC so the
+   * smallest containing scope wins — a method inside a class returns
+   * the method, not the class.
+   *
+   * Returns up to `limit` rows (usually 1 is enough but allowing more
+   * lets the visualizer show all containing scopes if it wants).
+   */
+  private symbolAtLocation(
+    snapshotId: number,
+    filePath: string,
+    lineNumber: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (!filePath || lineNumber <= 0) return []
+    const sql = `
+      SELECT
+        canonical_name,
+        kind,
+        location,
+        json_extract(payload, '$.metadata.endLine') AS end_line,
+        json_extract(location, '$.line') AS start_line
+      FROM graph_nodes
+      WHERE snapshot_id = ?
+        AND json_extract(location, '$.filePath') = ?
+        AND json_extract(location, '$.line') <= ?
+        AND COALESCE(json_extract(payload, '$.metadata.endLine'), json_extract(location, '$.line')) >= ?
+        AND kind != 'module'
+      ORDER BY
+        (COALESCE(json_extract(payload, '$.metadata.endLine'), json_extract(location, '$.line'))
+          - json_extract(location, '$.line')) ASC,
+        json_extract(location, '$.line') DESC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, filePath, lineNumber, lineNumber, limit) as Array<
+      Record<string, unknown>
+    >
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "function",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "contains",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: toNumberOrNull(obj.start_line),
+      end_line: toNumberOrNull(obj.end_line),
+    }))
+  }
 
   /**
    * Find the full transitive imports closure of a module — every

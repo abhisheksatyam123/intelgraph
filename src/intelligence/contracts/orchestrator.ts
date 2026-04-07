@@ -80,6 +80,8 @@ export const QUERY_INTENTS = [
   "find_symbols_by_kind",
   /** Transitive imports closure of a module (recursive walk over imports edges). */
   "find_transitive_dependencies",
+  /** Innermost symbol whose source range contains the given filePath + lineNumber. */
+  "find_symbol_at_location",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
@@ -105,6 +107,10 @@ export interface QueryRequest {
   dstApi?: string
   depth?: number
   limit?: number
+  /** File path (used by find_symbol_at_location for click-to-symbol). */
+  filePath?: string
+  /** 1-based line number (used by find_symbol_at_location). */
+  lineNumber?: number
   timeRange?: { from?: string; to?: string }
 }
 
