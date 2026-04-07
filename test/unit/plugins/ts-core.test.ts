@@ -93,15 +93,26 @@ export interface NamedThing {
   writeFileSync(
     join(tempRoot, "src", "module-b.ts"),
     `
+import { NamedThing } from "./module-a"
+
 export function greetUser(name: string): string {
   return "Hello, " + name
 }
 
 export type Greeting = string
 
+// Hoisting: User is referenced here but declared further down.
+export function describe(u: User): Greeting {
+  return greetUser(u.name)
+}
+
+export class User {
+  constructor(public name: string) {}
+}
+
 export class FormalGreeter extends Greeter implements NamedThing {
   name = "formal"
-  greet(name: string) {
+  greet(name: string): Greeting {
     return greetUser(name).toUpperCase()
   }
 }
@@ -438,6 +449,51 @@ describe("ts-core plugin — extraction", () => {
     }
     expect(nsMeta?.resolved).toBe(true)
     expect(nsMeta?.resolutionKind).toBe("namespace-member")
+  })
+
+  it("emits references_type edges for function signature types", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const refEdges = sink
+      .allEdges()
+      .filter((e) => e.edge_kind === "references_type")
+    expect(refEdges.length).toBeGreaterThan(0)
+
+    // describe(u: User): Greeting → references local User AND local Greeting
+    // (both declared in module-b.ts; User is hoisted from below)
+    const fromDescribe = refEdges.filter((e) =>
+      String(e.src_node_id).endsWith("module-b.ts#describe"),
+    )
+    expect(fromDescribe.length).toBeGreaterThanOrEqual(2)
+
+    const dsts = new Set(
+      fromDescribe.map((e) => String(e.dst_node_id)),
+    )
+    expect([...dsts].some((d) => d.endsWith("module-b.ts#User"))).toBe(true)
+    expect([...dsts].some((d) => d.endsWith("module-b.ts#Greeting"))).toBe(true)
+
+    // Resolution metadata is set
+    const sample = fromDescribe[0]
+    const meta = sample.metadata as { resolved?: boolean; resolutionKind?: string }
+    expect(meta?.resolved).toBe(true)
+    expect(["named-import", "default-import", "local"]).toContain(
+      meta?.resolutionKind,
+    )
+
+    // Built-in types like `string` should NOT produce references_type edges.
+    // greetUser(name: string): string → no references emitted at all.
+    const fromGreetUser = refEdges.filter((e) =>
+      String(e.src_node_id).endsWith("module-b.ts#greetUser"),
+    )
+    expect(fromGreetUser.length).toBe(0)
   })
 
   it("resolves this.method() calls to the enclosing class's method", async () => {

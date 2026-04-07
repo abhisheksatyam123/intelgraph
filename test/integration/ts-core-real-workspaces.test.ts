@@ -316,6 +316,37 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("Round D6: references_type edges link signatures to imported types", () => {
+      // opencode is type-heavy. Function and method signatures
+      // referencing imported types should produce a substantial number
+      // of references_type edges.
+      const totals = ingest.client.raw
+        .prepare(
+          `SELECT COUNT(*) AS n FROM graph_edges
+           WHERE snapshot_id = ? AND edge_kind = 'references_type'`,
+        )
+        .get(ingest.snapshotId) as { n: number }
+      expect(totals.n).toBeGreaterThan(50)
+
+      // All references_type edges should resolve (we drop unresolved
+      // types like Promise/string at extraction time).
+      const sample = ingest.client.raw
+        .prepare(
+          `SELECT metadata FROM graph_edges
+           WHERE snapshot_id = ? AND edge_kind = 'references_type'
+           LIMIT 5`,
+        )
+        .all(ingest.snapshotId) as Array<{ metadata: string | null }>
+      expect(sample.length).toBeGreaterThan(0)
+      for (const row of sample) {
+        const meta = row.metadata ? JSON.parse(row.metadata) : null
+        expect(meta?.resolved).toBe(true)
+        expect(["named-import", "default-import", "local"]).toContain(
+          meta?.resolutionKind,
+        )
+      }
+    })
+
     it("Round D5: this.method() calls land with resolutionKind=this-method", () => {
       // opencode is heavily OO; this.x() inside class methods should
       // produce a substantial number of resolved this-method edges.

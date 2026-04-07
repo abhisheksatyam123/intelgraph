@@ -224,6 +224,14 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
     localSymbols: new Set(),
   }
 
+  // Pre-pass: collect every top-level declaration name into the
+  // resolver's localSymbols set BEFORE the recursive walk begins. This
+  // mirrors TypeScript's hoisting semantics — `function foo(b: Bar)`
+  // followed later by `class Bar {}` should still resolve `Bar` to the
+  // local class. Without this pass, type references on signatures emit
+  // before the class declaration is reached, missing local resolutions.
+  prepopulateLocalSymbols(tree.rootNode, resolver)
+
   // Walk the tree in document order so we can push/pop scope based on
   // node start/end positions. We use the iterative walkTree generator
   // and a parallel scope stack keyed by endIndex.
@@ -328,6 +336,22 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
             file,
           )) {
             yield ctx.edge({ payload: inheritEdge })
+          }
+        }
+
+        // references_type edges: walk parameter and return type
+        // annotations on this function/method and emit one edge per
+        // resolved type. Built-in types (Promise, string, …) miss the
+        // resolver and are dropped to avoid noise.
+        if (kind === "function" || kind === "method") {
+          for (const ref of extractTypeReferences(
+            node,
+            canonicalName,
+            resolver,
+            moduleNodeName,
+            file,
+          )) {
+            yield ctx.edge({ payload: ref })
           }
         }
       }
@@ -663,6 +687,156 @@ function populateResolverFromImport(
       continue
     }
   }
+}
+
+/**
+ * Single non-yielding pass over the program's top-level statements to
+ * collect every declared name into resolver.localSymbols. Walks one
+ * level into export_statement so `export class Foo {}` is captured.
+ * Skips declarations inside class bodies — methods are not in the
+ * bare-call/type namespace.
+ */
+function prepopulateLocalSymbols(
+  rootNode: TsNode,
+  resolver: FileResolver,
+): void {
+  for (let i = 0; i < rootNode.namedChildCount; i++) {
+    const stmt = rootNode.namedChild(i)
+    if (!stmt) continue
+    visitTopLevel(stmt)
+  }
+
+  function visitTopLevel(node: TsNode): void {
+    // Unwrap export_statement to find the inner declaration
+    if (node.type === "export_statement") {
+      for (let i = 0; i < node.namedChildCount; i++) {
+        const child = node.namedChild(i)
+        if (!child) continue
+        visitTopLevel(child)
+      }
+      return
+    }
+    const declared = extractDeclaration(node)
+    if (declared && declared.kind !== "method") {
+      resolver.localSymbols.add(declared.name)
+    }
+  }
+}
+
+/**
+ * Walk a function/method declaration's signature (parameters + return
+ * type) and emit a `references_type` edge for each named type that
+ * resolves through the FileResolver. Built-in types (Promise, string,
+ * number, …) and unresolved type names are dropped to avoid noise — we
+ * only emit references that point at a real graph node.
+ *
+ * AST shape (typescript grammar):
+ *   function_declaration / method_definition
+ *     ├─ formal_parameters
+ *     │   └─ required_parameter / optional_parameter
+ *     │       └─ type_annotation
+ *     │           └─ type_identifier  (or generic_type → type_identifier+)
+ *     └─ type_annotation               ← return type
+ *         └─ type_identifier  (or generic_type → type_identifier+)
+ *
+ * Generic instantiations like `Promise<User>` produce two type_identifiers
+ * (`Promise` and `User`); we collect both, but `Promise` won't resolve and
+ * is dropped.
+ */
+function extractTypeReferences(
+  fnNode: TsNode,
+  thisFqName: string,
+  resolver: FileResolver,
+  moduleNodeName: string,
+  file: string,
+): Array<{
+  edgeKind: "references_type"
+  srcSymbolName: string
+  dstSymbolName: string
+  confidence: number
+  derivation: "clangd" | "llm" | "runtime" | "hybrid"
+  sourceLocation: { sourceFilePath: string; sourceLineNumber: number }
+  metadata: Record<string, unknown>
+}> {
+  const out: Array<{
+    edgeKind: "references_type"
+    srcSymbolName: string
+    dstSymbolName: string
+    confidence: number
+    derivation: "clangd" | "llm" | "runtime" | "hybrid"
+    sourceLocation: { sourceFilePath: string; sourceLineNumber: number }
+    metadata: Record<string, unknown>
+  }> = []
+  const seen = new Set<string>()
+
+  const annotations: TsNode[] = []
+
+  // Parameter type annotations
+  const params = firstNamedChildOfType(fnNode, "formal_parameters")
+  if (params) {
+    for (let i = 0; i < params.namedChildCount; i++) {
+      const param = params.namedChild(i)
+      if (!param) continue
+      // required_parameter / optional_parameter both contain a
+      // type_annotation as a direct child.
+      const ann = firstNamedChildOfType(param, "type_annotation")
+      if (ann) annotations.push(ann)
+    }
+  }
+
+  // Return type annotation: a direct type_annotation child of the
+  // function/method (NOT inside formal_parameters or statement_block).
+  for (let i = 0; i < fnNode.namedChildCount; i++) {
+    const child = fnNode.namedChild(i)
+    if (child && child.type === "type_annotation") {
+      annotations.push(child)
+    }
+  }
+
+  for (const ann of annotations) {
+    for (const typeName of namedDescendantTexts(ann, "type_identifier")) {
+      if (seen.has(typeName)) continue
+      const resolved = resolveTypeName(typeName, resolver, moduleNodeName)
+      if (!resolved) continue // built-in or unknown — drop
+      seen.add(typeName)
+      out.push({
+        edgeKind: "references_type",
+        srcSymbolName: thisFqName,
+        dstSymbolName: resolved.name,
+        confidence: 0.95,
+        derivation: "clangd",
+        sourceLocation: {
+          sourceFilePath: file,
+          sourceLineNumber: ann.startPosition.row + 1,
+        },
+        metadata: {
+          resolved: true,
+          resolutionKind: resolved.kind,
+          typeName,
+        },
+      })
+    }
+  }
+  return out
+}
+
+/**
+ * Resolve a bare type identifier against the FileResolver. Returns null
+ * for built-ins / unknowns so callers can drop them.
+ */
+function resolveTypeName(
+  name: string,
+  resolver: FileResolver,
+  moduleNodeName: string,
+): { name: string; kind: string } | null {
+  const named = resolver.namedImports.get(name)
+  if (named) return { name: named, kind: "named-import" }
+  const def = resolver.defaultImports.get(name)
+  if (def) return { name: def, kind: "default-import" }
+  if (resolver.localSymbols.has(name)) {
+    return { name: `${moduleNodeName}#${name}`, kind: "local" }
+  }
+  return null
 }
 
 function extractInheritanceEdges(
