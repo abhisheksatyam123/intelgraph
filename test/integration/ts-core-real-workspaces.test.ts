@@ -647,6 +647,35 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       expect(orphanRate).toBeLessThan(0.4)
     })
 
+    it("Histogram: every resolution kind has at least one representative", () => {
+      // Catches the class of regression where an entire resolution
+      // path silently breaks. Asserts that each kind in the
+      // expected-on-opencode list has ≥1 row. The KPI test catches
+      // big rate drops; this test catches whole-path failures.
+      const expected = [
+        "named-import", // imports across files
+        "namespace-member", // import * as ns; ns.x()
+        "named-member", // import { Effect }; Effect.sync()
+        "local-member", // local namespace function calls
+        "local", // same-file declaration calls
+        "this-method", // this.x() inside class methods
+        "param-member", // function f(x: Foo) { x.y() }
+        "var-member", // const x: Foo = ...; x.y()
+        "jsx-component", // <Foo />
+        "constructor", // new Foo()
+      ]
+      for (const kind of expected) {
+        const row = ingest.client.raw
+          .prepare(
+            `SELECT COUNT(*) AS n FROM graph_edges
+             WHERE snapshot_id = ? AND edge_kind = 'calls'
+               AND json_extract(metadata, '$.resolutionKind') = ?`,
+          )
+          .get(ingest.snapshotId, kind) as { n: number }
+        expect.soft(row.n, `resolutionKind=${kind} on opencode`).toBeGreaterThan(0)
+      }
+    })
+
     it("KPI: ≥40% of calls edges are resolved (regression guard for the resolver chain)", () => {
       // Cumulative resolution rate across every kind:
       //   named-import / default-import / namespace-member /
