@@ -1197,6 +1197,49 @@ describe("ts-core plugin — extraction", () => {
     }
   })
 
+  it("symbols carry endLine and lineCount metadata for size-aware visualization", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    // The Greeter class spans multiple lines in module-a.ts. Its symbol
+    // should have lineCount > 1 and endLine > startLine.
+    const greeterClass = sink
+      .allNodes()
+      .find(
+        (n) =>
+          n.kind === "class" &&
+          String(n.canonical_name).endsWith("module-a.ts#Greeter"),
+      )
+    expect(greeterClass).toBeDefined()
+    const payload = greeterClass!.payload as Record<string, unknown>
+    const meta = payload.metadata as Record<string, unknown>
+    expect(typeof meta.endLine).toBe("number")
+    expect(typeof meta.lineCount).toBe("number")
+    expect(meta.endLine).toBeGreaterThan(greeterClass!.location?.line ?? 0)
+    expect(meta.lineCount).toBeGreaterThan(1)
+
+    // Module symbols also carry endLine, set to the file's last line.
+    const moduleA = sink
+      .allNodes()
+      .find(
+        (n) =>
+          n.kind === "module" &&
+          String(n.canonical_name).endsWith("module-a.ts"),
+      )
+    expect(moduleA).toBeDefined()
+    const modPayload = moduleA!.payload as Record<string, unknown>
+    const modMeta = modPayload.metadata as Record<string, unknown>
+    expect(typeof modMeta.endLine).toBe("number")
+    expect(modMeta.endLine).toBeGreaterThan(1)
+  })
+
   it("auto-tags every emitted fact with producedBy=ts-core", async () => {
     const sink = new CaptureSink()
     const runner = new ExtractorRunner({

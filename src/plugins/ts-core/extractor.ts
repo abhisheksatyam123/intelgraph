@@ -136,13 +136,19 @@ const tsCoreExtractor = defineExtractor({
       // graph-rows.symbolNode() builder uses qualifiedName ?? name as
       // the canonical_name; setting both to the FQ id avoids collisions
       // when two files declare the same local symbol.
+      const moduleEndLine = tree.rootNode.endPosition.row + 1
       yield ctx.symbol({
         payload: {
           kind: "module",
           name: moduleNodeName,
           qualifiedName: moduleNodeName,
           location: { filePath: file, line: 1, column: 1 },
-          metadata: { language, modulePath: moduleName },
+          metadata: {
+            language,
+            modulePath: moduleName,
+            endLine: moduleEndLine,
+            lineCount: moduleEndLine,
+          },
         },
       })
 
@@ -315,6 +321,14 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
 
       if (!seenSymbols.has(canonicalName)) {
         seenSymbols.add(canonicalName)
+        // Compute span for size-aware visualization. endLine is on
+        // payload.metadata since SourceLocation only has line/column.
+        const endLine = node.endPosition.row + 1
+        const startLine = node.startPosition.row + 1
+        const lineCount = endLine - startLine + 1
+        const baseMeta = isMember
+          ? { localName: name, owningClass: enclosingClass }
+          : { localName: name }
         yield ctx.symbol({
           payload: {
             kind,
@@ -324,9 +338,11 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
             name: canonicalName,
             qualifiedName: canonicalName,
             location: locationOf(file, node),
-            metadata: isMember
-              ? { localName: name, owningClass: enclosingClass }
-              : { localName: name },
+            metadata: {
+              ...baseMeta,
+              endLine,
+              lineCount,
+            },
           },
         })
         // contains edge: module → symbol, OR class → method
