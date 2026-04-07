@@ -216,6 +216,11 @@ export const casted = JSON.parse("{}") as Greeter
 export function viaCasted() {
   casted.greet("from-cast")
 }
+
+// Round D33: awaited call sites.
+export async function asyncCaller() {
+  await localNs.helper()
+}
 `,
   )
 
@@ -965,6 +970,30 @@ describe("ts-core plugin — extraction", () => {
         String(e.dst_node_id).endsWith("anon-class.ts#default"),
     )
     expect(anonClassContains).toBeDefined()
+  })
+
+  it("tags awaited call sites with metadata.awaited", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const callEdges = sink.allEdges().filter((e) => e.edge_kind === "calls")
+
+    // asyncCaller has `await localNs.helper()` — the call should be
+    // tagged metadata.awaited=true.
+    const fromAsync = callEdges.filter((e) =>
+      String(e.src_node_id).endsWith("namespace-fixture.ts#asyncCaller"),
+    )
+    const awaited = fromAsync.find(
+      (e) => (e.metadata as { awaited?: boolean })?.awaited === true,
+    )
+    expect(awaited).toBeDefined()
   })
 
   it("tags tagged-template-literal calls with metadata.taggedTemplate", async () => {

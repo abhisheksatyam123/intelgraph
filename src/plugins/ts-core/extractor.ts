@@ -669,6 +669,10 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
         // Visualizers can highlight DSL usage distinctly from regular
         // function calls.
         const isTaggedTemplate = isTaggedTemplateCall(node)
+        // D33: detect await wrapping. `await foo()` parses as
+        // await_expression > call_expression so we check the parent.
+        const isAwaited =
+          node.parent !== null && node.parent.type === "await_expression"
         yield ctx.edge({
           payload: {
             edgeKind: "calls",
@@ -684,6 +688,7 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
               resolved: callee.resolved,
               resolutionKind: callee.kind,
               ...(isTaggedTemplate ? { taggedTemplate: true } : {}),
+              ...(isAwaited ? { awaited: true } : {}),
             },
             evidence: {
               sourceKind: "file_line",
