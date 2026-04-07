@@ -82,6 +82,8 @@ export const QUERY_INTENTS = [
   "find_transitive_dependencies",
   /** Innermost symbol whose source range contains the given filePath + lineNumber. */
   "find_symbol_at_location",
+  /** Functions/methods exceeding `depth` lines (default 50), ordered DESC by lineCount. */
+  "find_long_functions",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

@@ -385,6 +385,31 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_long_functions ranks functions by line count", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_long_functions",
+        snapshotId: ingest.snapshotId,
+        depth: 50,
+        limit: 20,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // Every result should be a function or method
+      for (const row of result.rows) {
+        expect(["function", "method"]).toContain(String(row.kind))
+        // line_count is on the row
+        const lc = Number((row as { line_count?: number }).line_count)
+        expect(lc).toBeGreaterThanOrEqual(50)
+      }
+      // Sorted descending by line_count
+      const counts = result.rows.map(
+        (r) => Number((r as { line_count?: number }).line_count),
+      )
+      for (let i = 1; i < counts.length; i++) {
+        expect(counts[i - 1]).toBeGreaterThanOrEqual(counts[i])
+      }
+    })
+
     it("find_symbol_at_location returns the innermost containing symbol", async () => {
       // Pick any function/method symbol with both location and endLine
       // — we know it has a real range we can probe.

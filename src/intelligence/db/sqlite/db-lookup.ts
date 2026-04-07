@@ -230,6 +230,8 @@ export class SqliteDbLookup implements DbLookupRepository {
           request.lineNumber ?? 0,
           limit,
         )
+      case "find_long_functions":
+        return this.longFunctions(snapshotId, request.depth ?? 50, limit)
       default:
         return []
     }
@@ -987,6 +989,52 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find functions/methods exceeding a line-count threshold. Uses
+   * the metadata.lineCount field set by D25. Visualizers can use
+   * this to show "this function is too big" hints or rank symbols
+   * by complexity proxy.
+   *
+   * The threshold comes from request.depth (a slight overload of
+   * the depth field for size-based queries — naming a separate
+   * minLineCount field would be cleaner but adding fields to
+   * QueryRequest each round adds clutter). Default 50 lines.
+   */
+  private longFunctions(
+    snapshotId: number,
+    minLines: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        canonical_name,
+        kind,
+        location,
+        json_extract(payload, '$.metadata.lineCount') AS line_count
+      FROM graph_nodes
+      WHERE snapshot_id = ?
+        AND kind IN ('function', 'method')
+        AND CAST(json_extract(payload, '$.metadata.lineCount') AS INTEGER) >= ?
+      ORDER BY CAST(json_extract(payload, '$.metadata.lineCount') AS INTEGER) DESC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, minLines, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "function",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "contains",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+      line_count: toNumberOrNull(obj.line_count),
+    }))
+  }
 
   /**
    * Find the innermost symbol whose source range contains a given
