@@ -561,12 +561,8 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
       node.type === "jsx_self_closing_element" ||
       node.type === "jsx_opening_element"
     ) {
-      const tagName = extractJsxTagName(node)
-      if (tagName && isComponentTagName(tagName)) {
-        const resolved = resolveTypeName(tagName, resolver, moduleNodeName) ?? {
-          name: tagName,
-          kind: "bare",
-        }
+      const ref = extractJsxComponentRef(node, resolver, moduleNodeName)
+      if (ref) {
         const callerName = scopeStack.length
           ? scopeStack[scopeStack.length - 1].name
           : moduleNodeName
@@ -574,17 +570,17 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
           payload: {
             edgeKind: "calls",
             srcSymbolName: callerName,
-            dstSymbolName: resolved.name,
-            confidence: resolved.kind === "bare" ? 0.7 : 0.95,
+            dstSymbolName: ref.name,
+            confidence: ref.resolved ? 0.95 : 0.7,
             derivation: "clangd",
             sourceLocation: {
               sourceFilePath: file,
               sourceLineNumber: node.startPosition.row + 1,
             },
             metadata: {
-              resolved: resolved.kind !== "bare",
-              resolutionKind: "jsx-component",
-              jsxTag: tagName,
+              resolved: ref.resolved,
+              resolutionKind: ref.kind,
+              jsxTag: ref.jsxTag,
             },
             evidence: {
               sourceKind: "file_line",
@@ -1627,36 +1623,110 @@ function locationOf(
 }
 
 /**
- * Extract the tag name from a jsx_opening_element or jsx_self_closing_element.
+ * Extract a JSX component reference from a jsx_opening_element /
+ * jsx_self_closing_element node and resolve it through the FileResolver.
+ *
+ * Returns null when the tag is an HTML element (lowercase) or unknown.
+ *
  * Tree-sitter shape:
  *   jsx_opening_element / jsx_self_closing_element
- *     ├─ identifier (the tag, e.g. "Foo" or "div")
+ *     ├─ identifier (the tag, e.g. "Foo")
  *     │   OR
- *     ├─ nested_identifier (e.g. "Namespace.Component")
+ *     ├─ member_expression (e.g. "Tabs.Item" — the typescript tsx grammar
+ *     │   uses member_expression for both jsx and js property access)
  *     │   OR
- *     ├─ member_expression (e.g. "obj.Component")
+ *     ├─ nested_identifier (rarer; same shape as a chain of identifiers)
  *     └─ jsx_attribute*
+ *
+ * Resolution:
+ *   - Plain identifier: same path as call_expression's identifier branch
+ *     (named import → default → local → bare)
+ *   - Member: resolve the leftmost object via the FileResolver, append
+ *     the property to produce `${objFq}.${prop}` with kind=jsx-namespace-component
  */
-function extractJsxTagName(jsxNode: TsNode): string | null {
+function extractJsxComponentRef(
+  jsxNode: TsNode,
+  resolver: FileResolver,
+  moduleNodeName: string,
+): { name: string; resolved: boolean; kind: string; jsxTag: string } | null {
+  let tagNode: TsNode | null = null
   for (let i = 0; i < jsxNode.namedChildCount; i++) {
     const child = jsxNode.namedChild(i)
     if (!child) continue
-    if (child.type === "identifier") return child.text
-    if (child.type === "nested_identifier") {
-      // Namespace.Component → take the rightmost segment, but the
-      // resolver wouldn't find it anyway. Return the leftmost identifier
-      // so namespace imports can resolve it.
-      const first = firstNamedChildOfType(child, "identifier")
-      if (first) return first.text
-      return child.text
-    }
-    if (child.type === "member_expression") {
-      const obj = child.childForFieldName("object")
-      if (obj && obj.type === "identifier") return obj.text
-      return null
+    if (
+      child.type === "identifier" ||
+      child.type === "member_expression" ||
+      child.type === "nested_identifier"
+    ) {
+      tagNode = child
+      break
     }
   }
-  return null
+  if (!tagNode) return null
+
+  // Plain identifier — single component name like <Foo />
+  if (tagNode.type === "identifier") {
+    const name = tagNode.text
+    if (!isComponentTagName(name)) return null
+    const resolved = resolveTypeName(name, resolver, moduleNodeName)
+    return {
+      name: resolved ? resolved.name : name,
+      resolved: resolved !== null,
+      kind: "jsx-component",
+      jsxTag: name,
+    }
+  }
+
+  // Member-expression tag — <Tabs.Item />, <pkg.Component />
+  if (tagNode.type === "member_expression") {
+    const obj = tagNode.childForFieldName("object")
+    const prop = tagNode.childForFieldName("property")
+    if (!obj || !prop) return null
+    const propName = prop.text
+    // The component check applies to the LAST segment (the actual
+    // rendered element); HTML lowercase tags don't appear here in
+    // practice, but check anyway.
+    if (!isComponentTagName(propName) && obj.type === "identifier" &&
+        !isComponentTagName(obj.text)) {
+      return null
+    }
+    if (obj.type === "identifier") {
+      const objFq = resolveTypeName(obj.text, resolver, moduleNodeName)
+      if (objFq) {
+        return {
+          name: `${objFq.name}.${propName}`,
+          resolved: true,
+          kind: "jsx-namespace-component",
+          jsxTag: `${obj.text}.${propName}`,
+        }
+      }
+      return {
+        name: `${obj.text}.${propName}`,
+        resolved: false,
+        kind: "jsx-namespace-component",
+        jsxTag: `${obj.text}.${propName}`,
+      }
+    }
+    // Deeper member chains: leave as the property name only.
+    return {
+      name: propName,
+      resolved: false,
+      kind: "jsx-namespace-component",
+      jsxTag: tagNode.text,
+    }
+  }
+
+  // nested_identifier fallback — rare; treat as a chain.
+  const first = firstNamedChildOfType(tagNode, "identifier")
+  const text = first?.text ?? tagNode.text
+  if (!isComponentTagName(text)) return null
+  const resolved = resolveTypeName(text, resolver, moduleNodeName)
+  return {
+    name: resolved ? resolved.name : text,
+    resolved: resolved !== null,
+    kind: "jsx-component",
+    jsxTag: tagNode.text,
+  }
 }
 
 /**

@@ -240,6 +240,8 @@ export function App() {
     <Header />
     <Greeter prefix="formal" />
     <Header><span>plain</span></Header>
+    {/* Round D21: member-expression tag form */}
+    <Greeter.Inner />
   </div>
 }
 `,
@@ -606,6 +608,20 @@ describe("ts-core plugin — extraction", () => {
         ),
       ),
     ).toBe(false)
+
+    // Round D21: <Greeter.Inner /> should resolve to the named-import
+    // Greeter, then .Inner appended → kind=jsx-namespace-component.
+    // (Note: jsxEdges only filters jsx-component, so we look in
+    // callEdges directly for the namespace variant.)
+    const namespaceComp = callEdges.find(
+      (e) =>
+        (e.metadata as { resolutionKind?: string })?.resolutionKind ===
+        "jsx-namespace-component",
+    )
+    expect(namespaceComp).toBeDefined()
+    expect(String(namespaceComp!.dst_node_id)).toMatch(
+      /module-a\.ts#Greeter\.Inner$/,
+    )
   })
 
   it("emits references_type edges for type alias bodies, skipping generics", async () => {
