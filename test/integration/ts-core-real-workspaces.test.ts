@@ -243,6 +243,50 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       expect(result.rows.length).toBeGreaterThan(0)
       expect(result.rows.length).toBeLessThanOrEqual(dependedOnModule.n)
     })
+
+    it("Round D1: cross-file call resolution produces FQ dst names", () => {
+      // After Round D1, ts-core resolves call sites against the per-file
+      // import map. We expect a substantial fraction of call edges to
+      // have a dst_node_id that ends with `module:...#name` (resolved)
+      // rather than just a bare local identifier.
+      const totals = ingest.client.raw
+        .prepare(
+          `SELECT
+             SUM(CASE WHEN dst_node_id LIKE '%module:%#%' THEN 1 ELSE 0 END) AS resolved,
+             COUNT(*) AS total
+           FROM graph_edges
+           WHERE snapshot_id = ? AND edge_kind = 'calls'`,
+        )
+        .get(ingest.snapshotId) as { resolved: number; total: number }
+      expect(totals.total).toBeGreaterThan(0)
+      // Expect at least 10% of calls to resolve to FQ names. opencode
+      // imports heavily so the actual ratio is much higher; we assert
+      // a soft floor that won't flap on workspace changes.
+      const ratio = totals.resolved / totals.total
+      expect(ratio).toBeGreaterThan(0.1)
+    })
+
+    it("Round D1: resolved call edges carry resolutionKind metadata", () => {
+      const sample = ingest.client.raw
+        .prepare(
+          `SELECT metadata FROM graph_edges
+           WHERE snapshot_id = ? AND edge_kind = 'calls'
+             AND dst_node_id LIKE '%module:%#%'
+           LIMIT 5`,
+        )
+        .all(ingest.snapshotId) as Array<{ metadata: string | null }>
+      expect(sample.length).toBeGreaterThan(0)
+      for (const row of sample) {
+        const meta = row.metadata ? JSON.parse(row.metadata) : null
+        expect(meta?.resolved).toBe(true)
+        expect([
+          "named-import",
+          "default-import",
+          "namespace-member",
+          "local",
+        ]).toContain(meta?.resolutionKind)
+      }
+    })
   },
 )
 

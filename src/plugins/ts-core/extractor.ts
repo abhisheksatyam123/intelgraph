@@ -173,6 +173,37 @@ interface WalkArgs {
   workspaceRoot: string
 }
 
+/**
+ * Per-file resolver state. Built incrementally as the AST walk visits
+ * import_statements and declarations. Used to resolve call_expression
+ * callees from a bare local name to a fully-qualified module symbol.
+ *
+ * Resolution order for a bare identifier `greetUser`:
+ *   1. namedImports.get("greetUser") → cross-file FQ name
+ *   2. defaultImports.get("greetUser") → that module's default export
+ *   3. localSymbols.has("greetUser") → this file's declaration
+ *   4. fallback: bare identifier (current behavior)
+ *
+ * For member expressions like `util.format`:
+ *   1. namespaceImports.get("util") → resolved to module:path
+ *   2. → emit dst as `${that-module}#format`
+ *   3. else → emit `format` (lossy fallback)
+ *
+ * Imports always appear at the top of TS files in document order, so
+ * by the time we walk into function bodies the resolver is fully
+ * populated.
+ */
+interface FileResolver {
+  /** `import { foo, bar as baz } from "./x"` → foo → module:x#foo, baz → module:x#bar */
+  namedImports: Map<string, string>
+  /** `import x from "./y"` → x → module:y (we can't recover the original export name) */
+  defaultImports: Map<string, string>
+  /** `import * as ns from "./z"` → ns → module:z (whole-module reference) */
+  namespaceImports: Map<string, string>
+  /** Locally declared top-level symbols, populated as the walk progresses. */
+  localSymbols: Set<string>
+}
+
 async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
   const { ctx, tree, file, moduleNodeName, workspaceRoot } = args
 
@@ -180,6 +211,13 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
   // sites to their enclosing declaration.
   const scopeStack: Array<{ name: string; node: TsNode }> = []
   const seenSymbols = new Set<string>()
+
+  const resolver: FileResolver = {
+    namedImports: new Map(),
+    defaultImports: new Map(),
+    namespaceImports: new Map(),
+    localSymbols: new Set(),
+  }
 
   // Walk the tree in document order so we can push/pop scope based on
   // node start/end positions. We use the iterative walkTree generator
@@ -226,6 +264,10 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
     if (declared) {
       const { name, kind } = declared
       const canonicalName = `${moduleNodeName}#${name}`
+      // Track for intra-file resolution. We add the LOCAL name (not the
+      // FQ name) so call sites can look it up by what the source code
+      // actually wrote.
+      resolver.localSymbols.add(name)
       if (!seenSymbols.has(canonicalName)) {
         seenSymbols.add(canonicalName)
         yield ctx.symbol({
@@ -271,7 +313,13 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
     // Imports
     if (node.type === "import_statement") {
       const importEdge = extractImportEdge(node, moduleNodeName, file, workspaceRoot)
-      if (importEdge) yield ctx.edge({ payload: importEdge })
+      if (importEdge) {
+        yield ctx.edge({ payload: importEdge })
+        // Populate the resolver from the same import_statement so call
+        // sites later in the file can resolve cross-file references.
+        // The dst FQ module is in importEdge.dstSymbolName ("module:...").
+        populateResolverFromImport(node, importEdge.dstSymbolName, resolver)
+      }
     }
 
     // Scope management for call_expression attribution
@@ -284,8 +332,8 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
 
     // Call expressions inside the current scope
     if (node.type === "call_expression") {
-      const calleeName = extractCallee(node)
-      if (calleeName) {
+      const callee = extractCalleeWithResolution(node, resolver, moduleNodeName)
+      if (callee) {
         const callerName = scopeStack.length
           ? scopeStack[scopeStack.length - 1].name
           : moduleNodeName // top-level call
@@ -293,12 +341,16 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
           payload: {
             edgeKind: "calls",
             srcSymbolName: callerName,
-            dstSymbolName: calleeName,
-            confidence: 0.8,
+            dstSymbolName: callee.name,
+            confidence: callee.resolved ? 0.95 : 0.7,
             derivation: "clangd",
             sourceLocation: {
               sourceFilePath: file,
               sourceLineNumber: node.startPosition.row + 1,
+            },
+            metadata: {
+              resolved: callee.resolved,
+              resolutionKind: callee.kind,
             },
             evidence: {
               sourceKind: "file_line",
@@ -401,6 +453,136 @@ function extractCallee(callExpr: TsNode): string | null {
   const text = fn.text
   if (text && text.length < 200) return text
   return null
+}
+
+/**
+ * Variant of extractCallee that uses a per-file FileResolver to map a
+ * bare identifier or namespace.member to a fully-qualified module
+ * symbol when possible.
+ *
+ * Returns:
+ *   - { name, resolved: true, kind: "named-import" }    cross-file via named import
+ *   - { name, resolved: true, kind: "default-import" }  cross-file via default import
+ *   - { name, resolved: true, kind: "namespace-member"} cross-file via namespace import
+ *   - { name, resolved: true, kind: "local" }           same-file declaration
+ *   - { name, resolved: false, kind: "bare" }           unresolved fallback
+ *   - null if no callee text could be extracted
+ */
+function extractCalleeWithResolution(
+  callExpr: TsNode,
+  resolver: FileResolver,
+  moduleNodeName: string,
+): { name: string; resolved: boolean; kind: string } | null {
+  const fn = callExpr.childForFieldName("function")
+  if (!fn) return null
+
+  if (fn.type === "identifier") {
+    const local = fn.text
+    // 1. named import wins (most precise)
+    const named = resolver.namedImports.get(local)
+    if (named) return { name: named, resolved: true, kind: "named-import" }
+    // 2. default import (less precise — points at the whole module)
+    const def = resolver.defaultImports.get(local)
+    if (def) return { name: def, resolved: true, kind: "default-import" }
+    // 3. local declaration in this file
+    if (resolver.localSymbols.has(local)) {
+      return { name: `${moduleNodeName}#${local}`, resolved: true, kind: "local" }
+    }
+    // 4. unresolved (built-in, npm, dynamic, etc.)
+    return { name: local, resolved: false, kind: "bare" }
+  }
+
+  if (fn.type === "member_expression") {
+    const obj = fn.childForFieldName("object")
+    const property = fn.childForFieldName("property")
+    if (!property) return null
+    const propName = property.text
+    // namespace.member → look up the namespace in import map
+    if (obj && obj.type === "identifier") {
+      const ns = resolver.namespaceImports.get(obj.text)
+      if (ns) {
+        // ns is "module:src/x.ts"; member is `format`
+        return {
+          name: `${ns}#${propName}`,
+          resolved: true,
+          kind: "namespace-member",
+        }
+      }
+    }
+    // other member expressions: lossy fallback to property name
+    return { name: propName, resolved: false, kind: "member" }
+  }
+
+  // Other forms (computed access, generic instantiation): use raw text
+  const text = fn.text
+  if (text && text.length < 200) {
+    return { name: text, resolved: false, kind: "raw" }
+  }
+  return null
+}
+
+/**
+ * Walk an `import_statement` node and populate the resolver with each
+ * binding it introduces. This is what makes cross-file call resolution
+ * possible: by the time the AST walk reaches a function body, the
+ * import map for the current file is fully populated.
+ *
+ * Tree-sitter typescript shape for import_statement:
+ *   import_statement
+ *     ├─ import_clause
+ *     │   ├─ identifier (default import)         `import x`
+ *     │   ├─ namespace_import                    `import * as ns`
+ *     │   │   └─ identifier
+ *     │   └─ named_imports                       `import { a, b as c }`
+ *     │       └─ import_specifier
+ *     │           ├─ identifier (name)
+ *     │           └─ identifier (alias, optional)
+ *     └─ string (source)                         `from "./x"`
+ */
+function populateResolverFromImport(
+  importNode: TsNode,
+  dstFqModule: string,
+  resolver: FileResolver,
+): void {
+  // Find the import_clause child
+  const clause = firstNamedChildOfType(importNode, "import_clause")
+  if (!clause) return
+
+  for (let i = 0; i < clause.namedChildCount; i++) {
+    const child = clause.namedChild(i)
+    if (!child) continue
+
+    if (child.type === "identifier") {
+      // default import: `import x from "./y"`
+      resolver.defaultImports.set(child.text, dstFqModule)
+      continue
+    }
+
+    if (child.type === "namespace_import") {
+      // `import * as ns from "./y"`
+      const id = firstNamedChildOfType(child, "identifier")
+      if (id) {
+        resolver.namespaceImports.set(id.text, dstFqModule)
+      }
+      continue
+    }
+
+    if (child.type === "named_imports") {
+      // `import { a, b as c } from "./y"`
+      for (let j = 0; j < child.namedChildCount; j++) {
+        const spec = child.namedChild(j)
+        if (!spec || spec.type !== "import_specifier") continue
+        // import_specifier has: name (the original) and optionally alias
+        const nameNode = spec.childForFieldName("name")
+        const aliasNode = spec.childForFieldName("alias")
+        if (!nameNode) continue
+        const sourceName = nameNode.text
+        const localName = aliasNode ? aliasNode.text : sourceName
+        resolver.namedImports.set(localName, `${dstFqModule}#${sourceName}`)
+      }
+      continue
+    }
+  }
 }
 
 function extractInheritanceEdges(

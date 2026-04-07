@@ -311,14 +311,23 @@ describe("ts-core plugin — extraction", () => {
       String(e.src_node_id).endsWith("#entry"),
     )
     expect(fromEntry.length).toBeGreaterThanOrEqual(2)
-    // dst_node_id has the form `graph_node:<sid>:symbol:<name>`. We
-    // check the suffix.
-    const calleeNames = new Set(
-      fromEntry.map((e) => String(e.dst_node_id).split(":").pop() ?? ""),
-    )
-    expect(calleeNames.has("greetUser")).toBe(true)
-    // member access — we record the property name
-    expect(calleeNames.has("format")).toBe(true)
+    // dst_node_id has the form `graph_node:<sid>:symbol:<canonical>`.
+    // After Round D1's cross-file resolver:
+    //   - `greetUser` is a named import from module-b.ts → dst should
+    //     be `module:src/module-b.ts#greetUser`
+    //   - `util.format` is a namespace_import member → dst should be
+    //     `module:src/util.ts#format`
+    const dstSuffixes = fromEntry.map((e) => {
+      const dst = String(e.dst_node_id)
+      // Strip the graph_node:<sid>:symbol: prefix
+      return dst.replace(/^graph_node:\d+:symbol:/, "")
+    })
+    expect(
+      dstSuffixes.some((d) => d.endsWith("module-b.ts#greetUser")),
+    ).toBe(true)
+    expect(
+      dstSuffixes.some((d) => d.endsWith("util.ts#format")),
+    ).toBe(true)
   })
 
   it("emits extends edges for class inheritance", async () => {
@@ -362,6 +371,58 @@ describe("ts-core plugin — extraction", () => {
         String(e.dst_node_id).endsWith(":NamedThing"),
     )
     expect(formal).toBeDefined()
+  })
+
+  it("resolves cross-file calls via the import map (named, namespace, local)", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const callEdges = sink.allEdges().filter((e) => e.edge_kind === "calls")
+    const stripPrefix = (id: unknown): string =>
+      String(id).replace(/^graph_node:\d+:symbol:/, "")
+
+    // Greeter.greet calls greetUser (named import from ./module-b)
+    const greeterCalls = callEdges.filter((e) =>
+      String(e.src_node_id).endsWith("#greet"),
+    )
+    expect(
+      greeterCalls.some((e) =>
+        stripPrefix(e.dst_node_id).endsWith("module-b.ts#greetUser"),
+      ),
+    ).toBe(true)
+
+    // Verify the resolution metadata is present
+    const namedImportEdge = greeterCalls.find((e) =>
+      stripPrefix(e.dst_node_id).endsWith("module-b.ts#greetUser"),
+    )
+    const meta = namedImportEdge?.metadata as {
+      resolved?: boolean
+      resolutionKind?: string
+    }
+    expect(meta?.resolved).toBe(true)
+    expect(meta?.resolutionKind).toBe("named-import")
+
+    // entry calls util.format → namespace-member resolution
+    const entryCalls = callEdges.filter((e) =>
+      String(e.src_node_id).endsWith("#entry"),
+    )
+    const namespaceCall = entryCalls.find((e) =>
+      stripPrefix(e.dst_node_id).endsWith("util.ts#format"),
+    )
+    expect(namespaceCall).toBeDefined()
+    const nsMeta = namespaceCall?.metadata as {
+      resolved?: boolean
+      resolutionKind?: string
+    }
+    expect(nsMeta?.resolved).toBe(true)
+    expect(nsMeta?.resolutionKind).toBe("namespace-member")
   })
 
   it("auto-tags every emitted fact with producedBy=ts-core", async () => {
