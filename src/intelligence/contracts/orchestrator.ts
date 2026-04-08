@@ -157,6 +157,13 @@ export const QUERY_INTENTS = [
   //              "A.b: B and B.a: A" antipattern that the existing
   //              intent misses.
   "find_struct_cycles",
+  // ── Phase 3l: transitive data footprint. BFS-walks calls edges
+  //              from a starting API and collects every field
+  //              touched by any reachable method (reads_field +
+  //              writes_field). Answers "what data does login()
+  //              ultimately touch via its call chain", not just
+  //              what login() literally writes itself.
+  "find_api_data_footprint",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

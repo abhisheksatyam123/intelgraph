@@ -1496,3 +1496,230 @@ export class Container {
     }
   })
 })
+
+// ── Phase 3l: find_api_data_footprint ───────────────────────────────────────
+//
+// BFS-walks calls edges from a starting api and collects every
+// reads_field/writes_field touched by any reachable method. Answers
+// "what data does this api ultimately touch via its call chain",
+// not just what the literal method writes itself.
+
+describe("intelligence_query MCP tool — find_api_data_footprint (Phase 3l)", () => {
+  it("collects fields touched by direct + transitive callees", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3l-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3l" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      // Auth.login() doesn't touch any field directly. It calls
+      // validate() which writes attempts AND reads passwordHash.
+      // The transitive footprint of login() must include both
+      // attempts (write) and passwordHash (read), even though
+      // login() itself does neither.
+      writeFileSync(
+        join(tempRoot, "src", "auth.ts"),
+        `export class Auth {
+  attempts = 0
+  passwordHash = ""
+  login(): boolean {
+    return this.validate()
+  }
+  validate(): boolean {
+    this.attempts = this.attempts + 1
+    return this.passwordHash.length > 0
+  }
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3l",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      // Query against login() — its DIRECT footprint is empty, but
+      // its TRANSITIVE footprint via validate() must include both
+      // attempts (write) and passwordHash (read).
+      const raw = await tool!.execute(
+        {
+          intent: "find_api_data_footprint",
+          snapshotId,
+          apiName: "module:src/auth.ts#Auth.login",
+          depth: 6,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const res = JSON.parse(raw) as FlatResponse
+      expect(res.status).toBe("hit")
+      const names = res.data.nodes.map((n) => String(n.canonical_name))
+      expect(names.some((n) => n.endsWith("#Auth.attempts"))).toBe(true)
+      expect(names.some((n) => n.endsWith("#Auth.passwordHash"))).toBe(true)
+      // Every returned node has kind=field
+      for (const node of res.data.nodes) {
+        expect(node.kind).toBe("field")
+      }
+
+      // Direct query against validate() must also work
+      const validateRaw = await tool!.execute(
+        {
+          intent: "find_api_data_footprint",
+          snapshotId,
+          apiName: "module:src/auth.ts#Auth.validate",
+          depth: 6,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const validateRes = JSON.parse(validateRaw) as FlatResponse
+      expect(validateRes.status).toBe("hit")
+      const validateNames = validateRes.data.nodes.map((n) =>
+        String(n.canonical_name),
+      )
+      expect(validateNames.some((n) => n.endsWith("#Auth.attempts"))).toBe(true)
+      expect(validateNames.some((n) => n.endsWith("#Auth.passwordHash"))).toBe(
+        true,
+      )
+
+      client.close()
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+
+  it("returns empty when the api has no field accesses anywhere in its call closure", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3l-pure-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3l-pure" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      writeFileSync(
+        join(tempRoot, "src", "math.ts"),
+        `export function double(n: number): number {
+  return n + n
+}
+export function quad(n: number): number {
+  return double(double(n))
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3l-pure",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const raw = await tool!.execute(
+        {
+          intent: "find_api_data_footprint",
+          snapshotId,
+          apiName: "module:src/math.ts#quad",
+          depth: 6,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const res = JSON.parse(raw) as FlatResponse
+      // Pure chain → no field touches
+      expect(res.data.nodes.length).toBe(0)
+
+      client.close()
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+})

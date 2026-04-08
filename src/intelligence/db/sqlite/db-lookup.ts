@@ -247,6 +247,13 @@ export class SqliteDbLookup implements DbLookupRepository {
         )
       case "find_struct_cycles":
         return this.structCycles(snapshotId, limit)
+      case "find_api_data_footprint":
+        return this.apiDataFootprint(
+          snapshotId,
+          apiNames[0] ?? "",
+          request.depth ?? 6,
+          limit,
+        )
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
       case "find_top_imported_modules":
@@ -2801,6 +2808,123 @@ export class SqliteDbLookup implements DbLookupRepository {
       derivation: "clangd",
       file_path: extractFilePath(obj.location),
       line_number: extractLine(obj.location),
+    }))
+  }
+
+  /**
+   * Phase 3l: transitive data footprint. BFS-walks `calls` edges
+   * from a starting API, collects every method reachable within
+   * `depth` hops, then unions every reads_field/writes_field edge
+   * outgoing from any such method. Answers "what data does login()
+   * ultimately touch" — including all the helpers it delegates to,
+   * not just the literal field accesses in its own body.
+   *
+   * Two-phase implementation:
+   *   1. Recursive CTE walks calls forward from `apiName`, building
+   *      a closed set of reachable method canonical names. Cycle
+   *      prevention via instr() on the path string mirrors the
+   *      callChain / dataPath helpers.
+   *   2. Outer SELECT joins that set against graph_edges with
+   *      edge_kind IN ('reads_field', 'writes_field') and returns
+   *      one row per unique (api, field, op) tuple — so a method
+   *      that reads the same field via three call paths shows up
+   *      once.
+   *
+   * Returns rows with:
+   *   - api: the touching method's canonical name (the original
+   *     starting api OR any reachable callee)
+   *   - canonical_name: the touched field
+   *   - kind: "field"
+   *   - edge_kind: "reads_field" or "writes_field" — preserved so
+   *     the visualizer can render reads/writes with distinct colors
+   *   - hop_distance: how many calls hops away the touching method
+   *     is from the starting api (0 = api itself)
+   */
+  private apiDataFootprint(
+    snapshotId: number,
+    apiName: string,
+    depth: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (!apiName) return []
+    const maxDepth = Math.min(Math.max(depth, 1), 20)
+    // Recursive CTE: walk calls forward from apiName, tracking the
+    // hop distance from the seed. The starting node is at distance
+    // 0 so its own field accesses are picked up by the outer JOIN
+    // alongside its callees.
+    const sql = `
+      WITH RECURSIVE reachable(api_name, hop_distance, path) AS (
+        SELECT
+          ?,
+          0,
+          ? || ' -> '
+        UNION ALL
+        SELECT
+          dst.canonical_name,
+          r.hop_distance + 1,
+          r.path || dst.canonical_name || ' -> '
+        FROM reachable r
+        INNER JOIN graph_edges e
+          ON e.snapshot_id = ?
+          AND e.edge_kind = 'calls'
+        INNER JOIN graph_nodes src
+          ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+          AND src.canonical_name = r.api_name
+        INNER JOIN graph_nodes dst
+          ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+        WHERE r.hop_distance < ?
+          -- avoid revisiting nodes already on this path (cycle prevention)
+          AND instr(r.path, dst.canonical_name || ' -> ') = 0
+      )
+      SELECT DISTINCT
+        r.api_name AS api,
+        r.hop_distance AS hop_distance,
+        field.canonical_name AS canonical_name,
+        field.kind AS kind,
+        field.location AS location,
+        e.edge_kind AS edge_kind
+      FROM reachable r
+      INNER JOIN graph_nodes touching
+        ON touching.canonical_name = r.api_name
+        AND touching.snapshot_id = ?
+      INNER JOIN graph_edges e
+        ON e.src_node_id = touching.node_id
+        AND e.snapshot_id = touching.snapshot_id
+        AND e.edge_kind IN ('reads_field', 'writes_field')
+      INNER JOIN graph_nodes field
+        ON e.dst_node_id = field.node_id
+        AND e.snapshot_id = field.snapshot_id
+      ORDER BY r.hop_distance ASC, e.edge_kind ASC, field.canonical_name ASC
+      LIMIT ?
+    `
+    type Row = {
+      api: string
+      hop_distance: number
+      canonical_name: string
+      kind: string
+      location: string | null
+      edge_kind: string
+    }
+    const rows = this.raw
+      .prepare(sql)
+      .all(
+        apiName,
+        apiName,
+        snapshotId,
+        maxDepth,
+        snapshotId,
+        limit,
+      ) as Row[]
+    return rows.map((row) => ({
+      kind: row.kind ?? "field",
+      canonical_name: row.canonical_name,
+      api: row.api,
+      hop_distance: row.hop_distance,
+      edge_kind: row.edge_kind,
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(row.location),
+      line_number: extractLine(row.location),
     }))
   }
 

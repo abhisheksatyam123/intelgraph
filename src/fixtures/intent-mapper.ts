@@ -99,6 +99,8 @@ export function mapIntentToArray(intent: QueryIntent): RelationArrayName {
     find_data_path: "structures",
     // Phase 3i: structural cycles via field_of_type / aggregates
     find_struct_cycles: "structures",
+    // Phase 3l: transitive data footprint via calls + reads/writes BFS
+    find_api_data_footprint: "structures",
   }
 
   return mapping[intent] || "uses"

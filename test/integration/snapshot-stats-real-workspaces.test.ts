@@ -1171,6 +1171,60 @@ for (const wcase of CASES) {
         expect(result.rows[result.rows.length - 1].dst).toBe(seed.dst)
       })
 
+      // ── Phase 3l: find_api_data_footprint on real workspace data ──
+      it("phase 3l: find_api_data_footprint resolves a transitive field set", async () => {
+        // Self-discover any method that has a writes_field outgoing
+        // edge AND has at least one inbound calls edge — that gives
+        // us a 1-hop transitive scenario where a caller's footprint
+        // must include the writer's field touches.
+        const seed = ingest.client.raw
+          .prepare(
+            `SELECT
+               caller.canonical_name AS caller_name
+             FROM graph_edges call_edge
+             INNER JOIN graph_nodes caller
+               ON call_edge.src_node_id = caller.node_id
+               AND call_edge.snapshot_id = caller.snapshot_id
+             INNER JOIN graph_nodes callee
+               ON call_edge.dst_node_id = callee.node_id
+               AND call_edge.snapshot_id = callee.snapshot_id
+             INNER JOIN graph_edges write_edge
+               ON write_edge.snapshot_id = call_edge.snapshot_id
+               AND write_edge.src_node_id = callee.node_id
+               AND write_edge.edge_kind = 'writes_field'
+             WHERE call_edge.snapshot_id = ?
+               AND call_edge.edge_kind = 'calls'
+               AND caller.canonical_name LIKE 'module:%'
+               AND callee.canonical_name LIKE 'module:%'
+               AND caller.canonical_name != callee.canonical_name
+             LIMIT 1`,
+          )
+          .get(ingest.snapshotId) as { caller_name: string } | undefined
+        if (!seed) return // workspace has no caller→writer chain — skip
+
+        const result = await ingest.lookup.lookup({
+          intent: "find_api_data_footprint",
+          snapshotId: ingest.snapshotId,
+          apiName: seed.caller_name,
+          depth: 6,
+          limit: 100,
+        })
+        expect(result.hit).toBe(true)
+        // Caller transitively reaches a writer → at least one row
+        expect(result.rows.length).toBeGreaterThan(0)
+        // Every row is a field with one of the two access kinds
+        for (const row of result.rows) {
+          expect(row.kind).toBe("field")
+          expect(["reads_field", "writes_field"]).toContain(String(row.edge_kind))
+          expect(typeof row.hop_distance).toBe("number")
+          expect(Number(row.hop_distance)).toBeGreaterThanOrEqual(0)
+        }
+        // At least one row must have hop_distance > 0 (the actual
+        // transitive reach we asked for — we picked a caller that
+        // hits a writer 1 hop away)
+        expect(result.rows.some((r) => Number(r.hop_distance) > 0)).toBe(true)
+      })
+
       // ── Phase 3i: find_struct_cycles on real workspace data ────
       it("phase 3i: find_struct_cycles runs without error on a real workspace", async () => {
         // We don't assert that real workspaces actually contain
