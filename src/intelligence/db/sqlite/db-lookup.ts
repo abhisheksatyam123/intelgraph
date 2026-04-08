@@ -254,6 +254,8 @@ export class SqliteDbLookup implements DbLookupRepository {
           request.depth ?? 6,
           limit,
         )
+      case "find_top_touched_types":
+        return this.topTouchedTypes(snapshotId, limit)
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
       case "find_top_imported_modules":
@@ -2925,6 +2927,101 @@ export class SqliteDbLookup implements DbLookupRepository {
       derivation: "clangd",
       file_path: extractFilePath(row.location),
       line_number: extractLine(row.location),
+    }))
+  }
+
+  /**
+   * Phase 3m: data-side analog of find_top_called_functions. Ranks
+   * types (struct/class/interface) by the number of DISTINCT APIs
+   * that read or write any of their fields. This surfaces "the
+   * central pieces of state" — User, Session, Config — the types
+   * the codebase actually revolves around. Visualizers can use
+   * this to populate a "top types" panel symmetric to the
+   * existing "top called functions" hub list.
+   *
+   * Two-step join:
+   *   1. Find every (parent type, field) pair via contains edges
+   *      where the contained kind is "field".
+   *   2. Count DISTINCT touching APIs across all of a parent's
+   *      fields by joining against reads_field/writes_field
+   *      edges. Each touching API counts once per parent even
+   *      when it touches multiple fields of that parent.
+   *
+   * Returns one row per type ordered by toucher count desc, with:
+   *   - canonical_name = the type
+   *   - kind = struct / class / interface (preserved)
+   *   - toucher_count = the distinct API count
+   *   - field_count = how many fields the type has (so the visualizer
+   *     can show density: "User has 5 fields touched by 27 APIs")
+   */
+  private topTouchedTypes(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      WITH owned_fields AS (
+        SELECT
+          parent.canonical_name AS parent_name,
+          parent.kind AS parent_kind,
+          parent.location AS parent_location,
+          field.node_id AS field_id
+        FROM graph_edges e
+        INNER JOIN graph_nodes parent
+          ON e.src_node_id = parent.node_id AND e.snapshot_id = parent.snapshot_id
+        INNER JOIN graph_nodes field
+          ON e.dst_node_id = field.node_id AND e.snapshot_id = field.snapshot_id
+        WHERE e.snapshot_id = ?
+          AND e.edge_kind = 'contains'
+          AND field.kind = 'field'
+          AND parent.kind IN ('struct', 'class', 'interface')
+      ),
+      touchers AS (
+        SELECT
+          o.parent_name,
+          o.parent_kind,
+          o.parent_location,
+          touching.canonical_name AS toucher
+        FROM owned_fields o
+        INNER JOIN graph_edges access
+          ON access.snapshot_id = ?
+          AND access.dst_node_id = o.field_id
+          AND access.edge_kind IN ('reads_field', 'writes_field')
+        INNER JOIN graph_nodes touching
+          ON access.src_node_id = touching.node_id
+          AND access.snapshot_id = touching.snapshot_id
+      )
+      SELECT
+        t.parent_name AS canonical_name,
+        t.parent_kind AS kind,
+        t.parent_location AS location,
+        COUNT(DISTINCT t.toucher) AS toucher_count,
+        (
+          SELECT COUNT(DISTINCT field_id)
+          FROM owned_fields
+          WHERE parent_name = t.parent_name
+        ) AS field_count
+      FROM touchers t
+      GROUP BY t.parent_name, t.parent_kind, t.parent_location
+      ORDER BY toucher_count DESC, t.parent_name ASC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "struct",
+      canonical_name: obj.canonical_name,
+      toucher_count: Number(obj.toucher_count ?? 0),
+      field_count: Number(obj.field_count ?? 0),
+      // The visualizer's hub-panel renderer reads incoming_count for
+      // its existing top-N lists; expose toucher_count under that
+      // alias too so the same renderer works without a new code path.
+      incoming_count: Number(obj.toucher_count ?? 0),
+      edge_kind: "touched_by",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
     }))
   }
 

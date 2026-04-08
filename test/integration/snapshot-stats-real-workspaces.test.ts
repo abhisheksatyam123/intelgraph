@@ -1171,6 +1171,38 @@ for (const wcase of CASES) {
         expect(result.rows[result.rows.length - 1].dst).toBe(seed.dst)
       })
 
+      // ── Phase 3m: find_top_touched_types on real workspace data ──
+      it("phase 3m: find_top_touched_types ranks the central state types", async () => {
+        // Real TS workspaces have classes with methods reading and
+        // writing their own fields (this.x = ...). The top-touched
+        // ranking should turn up at least a few types.
+        const result = await ingest.lookup.lookup({
+          intent: "find_top_touched_types",
+          snapshotId: ingest.snapshotId,
+          limit: 20,
+        })
+        // The set of types that get touched is workspace-specific —
+        // some codebases use plain object literals more than classes.
+        // The contract is just "shape is right + sorted by toucher count".
+        for (const row of result.rows) {
+          expect(["struct", "class", "interface"]).toContain(String(row.kind))
+          expect(row.edge_kind).toBe("touched_by")
+          expect(typeof row.toucher_count).toBe("number")
+          expect(typeof row.field_count).toBe("number")
+          expect(typeof row.incoming_count).toBe("number")
+          expect(Number(row.toucher_count)).toBeGreaterThan(0)
+          // incoming_count is the alias for toucher_count so the
+          // viewer's hub-panel renderer works without a new code path
+          expect(Number(row.incoming_count)).toBe(Number(row.toucher_count))
+        }
+        // Sort verification: rows must be in non-increasing toucher_count order
+        for (let i = 1; i < result.rows.length; i++) {
+          expect(Number(result.rows[i - 1].toucher_count)).toBeGreaterThanOrEqual(
+            Number(result.rows[i].toucher_count),
+          )
+        }
+      })
+
       // ── Phase 3l: find_api_data_footprint on real workspace data ──
       it("phase 3l: find_api_data_footprint resolves a transitive field set", async () => {
         // Self-discover any method that has a writes_field outgoing

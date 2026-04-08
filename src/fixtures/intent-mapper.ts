@@ -101,6 +101,8 @@ export function mapIntentToArray(intent: QueryIntent): RelationArrayName {
     find_struct_cycles: "structures",
     // Phase 3l: transitive data footprint via calls + reads/writes BFS
     find_api_data_footprint: "structures",
+    // Phase 3m: top-N types ranked by distinct API touchers
+    find_top_touched_types: "structures",
   }
 
   return mapping[intent] || "uses"

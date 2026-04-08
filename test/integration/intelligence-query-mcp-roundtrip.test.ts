@@ -1723,3 +1723,219 @@ export function quad(n: number): number {
     }
   })
 })
+
+// ── Phase 3m: find_top_touched_types ────────────────────────────────────────
+//
+// Data-side analog of find_top_called_functions. Ranks types by
+// the number of DISTINCT APIs that read or write any of their
+// fields. Surfaces the central pieces of state that the codebase
+// revolves around.
+
+describe("intelligence_query MCP tool — find_top_touched_types (Phase 3m)", () => {
+  it("ranks types by distinct API touchers", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3m-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3m" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      // User has 2 fields touched by 3 distinct methods (load reads
+      // name + email, rename writes name, audit reads name).
+      // Config has 1 field touched by 1 method.
+      // → User should outrank Config (3 > 1).
+      // Methods are placed inside the class whose fields they touch
+      // because Phase 3g reads_field extraction works on `this.field`
+      // direct access (the simpler, common case).
+      writeFileSync(
+        join(tempRoot, "src", "model.ts"),
+        `export class User {
+  name = ""
+  email = ""
+  load(): void {
+    const x = this.name
+    const y = this.email
+  }
+  rename(): void {
+    this.name = "new"
+  }
+  audit(): string {
+    return this.name
+  }
+}
+export class Config {
+  level = 0
+  read(): number {
+    return this.level
+  }
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3m",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const raw = await tool!.execute(
+        {
+          intent: "find_top_touched_types",
+          snapshotId,
+          limit: 10,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const res = JSON.parse(raw) as FlatResponse
+      expect(res.status).toBe("hit")
+      expect(res.data.nodes.length).toBeGreaterThan(0)
+      const names = res.data.nodes.map((n) => String(n.canonical_name))
+      // User must rank above Config (more touchers) — find their indices
+      const userIdx = names.findIndex((n) => n.endsWith("#User"))
+      const configIdx = names.findIndex((n) => n.endsWith("#Config"))
+      // User exists; Config may or may not depending on extractor accuracy
+      expect(userIdx).toBeGreaterThanOrEqual(0)
+      if (configIdx >= 0) {
+        // If Config is in the result, User must come first (more touchers)
+        expect(userIdx).toBeLessThan(configIdx)
+      }
+      // Every row must be a struct/class/interface kind
+      for (const node of res.data.nodes) {
+        expect(["struct", "class", "interface"]).toContain(String(node.kind))
+      }
+
+      client.close()
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+
+  it("returns empty when no types have any field touchers", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3m-empty-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3m-empty" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      // Pure functions only, no classes / no fields.
+      writeFileSync(
+        join(tempRoot, "src", "math.ts"),
+        `export function add(a: number, b: number): number { return a + b }
+export function mul(a: number, b: number): number { return a * b }
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3m-empty",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const raw = await tool!.execute(
+        {
+          intent: "find_top_touched_types",
+          snapshotId,
+          limit: 10,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const res = JSON.parse(raw) as FlatResponse
+      expect(res.data.nodes.length).toBe(0)
+
+      client.close()
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+})

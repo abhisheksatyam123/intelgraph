@@ -164,6 +164,12 @@ export const QUERY_INTENTS = [
   //              ultimately touch via its call chain", not just
   //              what login() literally writes itself.
   "find_api_data_footprint",
+  // ── Phase 3m: data-side analog of find_top_called_functions.
+  //              Ranks types by the number of DISTINCT APIs that
+  //              read or write any of their fields. Surfaces the
+  //              central pieces of state — the types the codebase
+  //              actually revolves around.
+  "find_top_touched_types",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
