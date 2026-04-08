@@ -620,6 +620,109 @@ for (const wcase of CASES) {
         // Truncation actually happened: this workspace has > 50 nodes
         expect(capped.total_nodes).toBeGreaterThan(50)
       })
+
+      it("centerDirection narrows the BFS walk on real data", () => {
+        // Three direction variants centered on the same hub symbol.
+        // Both directional walks must be proper subsets of the
+        // undirected walk, since 'both' is the union of the two.
+        const both = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+          {
+            centerOf: wcase.centerSymbol,
+            centerHops: 2,
+            centerDirection: "both",
+          },
+        )
+        const outOnly = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+          {
+            centerOf: wcase.centerSymbol,
+            centerHops: 2,
+            centerDirection: "out",
+          },
+        )
+        const inOnly = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+          {
+            centerOf: wcase.centerSymbol,
+            centerHops: 2,
+            centerDirection: "in",
+          },
+        )
+
+        // All three contain the center symbol
+        for (const g of [both, outOnly, inOnly]) {
+          expect(
+            g.nodes.some((n) => n.id.endsWith("#" + wcase.centerSymbol)),
+          ).toBe(true)
+        }
+
+        // Set membership: every node in outOnly + inOnly must also
+        // be in both. (Subset property — the directional walks are
+        // always proper subsets of the undirected walk.)
+        const bothIds = new Set(both.nodes.map((n) => n.id))
+        for (const n of outOnly.nodes) {
+          expect(bothIds.has(n.id)).toBe(true)
+        }
+        for (const n of inOnly.nodes) {
+          expect(bothIds.has(n.id)).toBe(true)
+        }
+
+        // Counts also satisfy the subset invariant
+        expect(outOnly.nodes.length).toBeLessThanOrEqual(both.nodes.length)
+        expect(inOnly.nodes.length).toBeLessThanOrEqual(both.nodes.length)
+
+        // Edge integrity in each variant
+        for (const g of [both, outOnly, inOnly]) {
+          const ids = new Set(g.nodes.map((n) => n.id))
+          for (const edge of g.edges) {
+            expect(ids.has(edge.src)).toBe(true)
+            expect(ids.has(edge.dst)).toBe(true)
+          }
+        }
+      })
+
+      it("centerDirection works through the intelligence_graph MCP path", async () => {
+        const directions: Array<"in" | "out" | "both"> = ["in", "out", "both"]
+        const results: Record<string, { nodes: Array<{ id: string }> }> = {}
+        for (const dir of directions) {
+          const raw = await graphTool!.execute(
+            {
+              snapshotId: ingest.snapshotId,
+              workspaceRoot: wcase.path,
+              centerOf: wcase.centerSymbol,
+              centerHops: 2,
+              centerDirection: dir,
+            },
+            stubClient,
+            stubTracker,
+          )
+          results[dir] = JSON.parse(raw) as { nodes: Array<{ id: string }> }
+        }
+
+        // 'both' is the superset
+        expect(results.out.nodes.length).toBeLessThanOrEqual(
+          results.both.nodes.length,
+        )
+        expect(results.in.nodes.length).toBeLessThanOrEqual(
+          results.both.nodes.length,
+        )
+
+        // Center symbol present in all three
+        for (const dir of directions) {
+          expect(
+            results[dir].nodes.some((n) =>
+              n.id.endsWith("#" + wcase.centerSymbol),
+            ),
+          ).toBe(true)
+        }
+      })
     },
   )
 }
