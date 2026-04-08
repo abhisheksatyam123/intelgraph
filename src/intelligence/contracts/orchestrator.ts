@@ -110,6 +110,8 @@ export const QUERY_INTENTS = [
   "find_symbols_by_doc",
   /** Module pairs ranked by total inter-module edges (calls + references_type). Refactor candidates. */
   "find_tightly_coupled_modules",
+  /** Classes ranked DESC by method count — surfaces god objects / refactor candidates. */
+  "find_classes_by_method_count",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

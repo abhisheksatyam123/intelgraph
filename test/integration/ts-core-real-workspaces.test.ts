@@ -385,6 +385,33 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_classes_by_method_count surfaces god objects", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_classes_by_method_count",
+        snapshotId: ingest.snapshotId,
+        limit: 10,
+      })
+      // opencode is namespace-heavy not class-heavy, so result MAY
+      // be small. Just assert the shape is valid when matches exist.
+      expect(result.intent).toBe("find_classes_by_method_count")
+      const counts = result.rows.map(
+        (r) => Number((r as { method_count?: number }).method_count),
+      )
+      // Each class has at least one method (otherwise it wouldn't
+      // appear in the result)
+      for (const c of counts) {
+        expect(c).toBeGreaterThan(0)
+      }
+      // Sorted descending
+      for (let i = 1; i < counts.length; i++) {
+        expect(counts[i - 1]).toBeGreaterThanOrEqual(counts[i])
+      }
+      // All result rows are class kind
+      for (const row of result.rows) {
+        expect(row.kind).toBe("class")
+      }
+    })
+
     it("find_tightly_coupled_modules ranks module pairs by coupling count", async () => {
       const result = await ingest.lookup.lookup({
         intent: "find_tightly_coupled_modules",
@@ -1611,6 +1638,7 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
           request: { pattern: "the" },
         },
         { intent: "find_tightly_coupled_modules", request: {} },
+        { intent: "find_classes_by_method_count", request: {} },
         // Search & browse
         {
           intent: "find_symbols_by_name",

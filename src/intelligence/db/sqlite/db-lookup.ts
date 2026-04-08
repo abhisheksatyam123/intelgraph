@@ -272,6 +272,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.symbolsByDoc(snapshotId, request.pattern ?? "", limit)
       case "find_tightly_coupled_modules":
         return this.tightlyCoupledModules(snapshotId, limit)
+      case "find_classes_by_method_count":
+        return this.classesByMethodCount(snapshotId, limit)
       default:
         return []
     }
@@ -1029,6 +1031,56 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Rank classes by their method count. After D4 methods are anchored
+   * at the class via contains edges, so this is just a GROUP BY on
+   * the contains edges where src is a class and dst is a method.
+   *
+   * Surfaces god objects — classes with disproportionately many
+   * methods that are often refactor candidates. Visualizers can
+   * highlight these for "split this class" suggestions.
+   *
+   * Each row carries a method_count field.
+   */
+  private classesByMethodCount(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        src.canonical_name AS canonical_name,
+        src.location AS location,
+        COUNT(*) AS method_count
+      FROM graph_edges e
+      INNER JOIN graph_nodes src
+        ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+      INNER JOIN graph_nodes dst
+        ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+      WHERE e.snapshot_id = ?
+        AND e.edge_kind = 'contains'
+        AND src.kind = 'class'
+        AND dst.kind = 'method'
+      GROUP BY src.canonical_name, src.location
+      ORDER BY method_count DESC, src.canonical_name ASC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: "class",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "contains",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+      method_count: toNumber(obj.method_count),
+    }))
+  }
 
   /**
    * Find module pairs ranked by total inter-module edges (calls +
