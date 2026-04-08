@@ -258,6 +258,10 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.topTouchedTypes(snapshotId, limit)
       case "find_call_cycles":
         return this.callCycles(snapshotId, limit)
+      case "find_top_field_writers":
+        return this.topFieldAccessors(snapshotId, "writes_field", limit)
+      case "find_top_field_readers":
+        return this.topFieldAccessors(snapshotId, "reads_field", limit)
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
       case "find_top_imported_modules":
@@ -3079,6 +3083,64 @@ export class SqliteDbLookup implements DbLookupRepository {
       caller: obj.caller,
       callee: obj.callee,
       edge_kind: "call_cycle",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
+
+  /**
+   * Phase 3o: top APIs ranked by the number of DISTINCT fields they
+   * write or read. The methodological analog of find_top_touched_types
+   * — from the API side instead of the data side. Surfaces "the
+   * methods doing the most state mutation" (writers) or "the methods
+   * reading the most state" (readers).
+   *
+   * Single helper parameterized by edge_kind so the writers and
+   * readers intents share the implementation. The COUNT(DISTINCT
+   * dst_node_id) means a method that writes the same field via
+   * multiple syntactic paths counts that field once — the result
+   * answers "how many distinct fields does this method touch", not
+   * "how many access sites does it have".
+   *
+   * Endpoint must be a function or method (not a class/interface
+   * since you can't write a field from a class declaration). The
+   * incoming_count alias mirrors find_top_touched_types so the
+   * viewer's existing hub-panel renderer works without a new code
+   * path.
+   */
+  private topFieldAccessors(
+    snapshotId: number,
+    edgeKind: "reads_field" | "writes_field",
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        api.canonical_name AS canonical_name,
+        api.kind AS kind,
+        api.location AS location,
+        COUNT(DISTINCT e.dst_node_id) AS field_count
+      FROM graph_edges e
+      INNER JOIN graph_nodes api
+        ON e.src_node_id = api.node_id AND e.snapshot_id = api.snapshot_id
+      WHERE e.snapshot_id = ?
+        AND e.edge_kind = ?
+        AND api.kind IN ('function', 'method')
+      GROUP BY api.canonical_name, api.kind, api.location
+      ORDER BY field_count DESC, api.canonical_name ASC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, edgeKind, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "function",
+      canonical_name: obj.canonical_name,
+      field_count: Number(obj.field_count ?? 0),
+      // Alias for the viewer's hub-panel renderer (see Phase 3m)
+      incoming_count: Number(obj.field_count ?? 0),
+      edge_kind: edgeKind,
       confidence: 1,
       derivation: "clangd",
       file_path: extractFilePath(obj.location),

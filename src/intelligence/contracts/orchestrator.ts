@@ -175,6 +175,14 @@ export const QUERY_INTENTS = [
   //              cycle-detection family alongside find_import_cycles,
   //              find_type_cycles, and find_struct_cycles.
   "find_call_cycles",
+  // ── Phase 3o: top APIs ranked by the number of DISTINCT fields
+  //              they write / read. The methodological analog of
+  //              find_top_touched_types — from the API side instead
+  //              of the data side. Surfaces "the methods doing the
+  //              most state mutation" and "the methods reading the
+  //              most state".
+  "find_top_field_writers",
+  "find_top_field_readers",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

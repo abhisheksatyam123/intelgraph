@@ -105,6 +105,9 @@ export function mapIntentToArray(intent: QueryIntent): RelationArrayName {
     find_top_touched_types: "structures",
     // Phase 3n: direct mutual recursion (A calls B and B calls A)
     find_call_cycles: "uses",
+    // Phase 3o: top APIs ranked by distinct field writes / reads
+    find_top_field_writers: "structures",
+    find_top_field_readers: "structures",
   }
 
   return mapping[intent] || "uses"

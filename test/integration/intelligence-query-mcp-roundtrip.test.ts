@@ -2133,3 +2133,157 @@ export function a(): number { return b() }
     }
   })
 })
+
+// ── Phase 3o: find_top_field_writers / find_top_field_readers ───────────────
+//
+// Methodological analog of find_top_touched_types — from the API
+// side. Ranks methods by the count of DISTINCT fields they write
+// or read. Surfaces "the methods doing the most state mutation"
+// and "the methods reading the most state".
+
+describe("intelligence_query MCP tool — find_top_field_writers/readers (Phase 3o)", () => {
+  it("ranks methods by distinct fields they write or read", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3o-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3o" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      // resetAll writes 3 fields, single writes 1, none writes 0.
+      // → resetAll outranks single. readAll reads 3, readOne reads 1.
+      writeFileSync(
+        join(tempRoot, "src", "store.ts"),
+        `export class Store {
+  a = 0
+  b = 0
+  c = 0
+  resetAll(): void {
+    this.a = 0
+    this.b = 0
+    this.c = 0
+  }
+  single(): void {
+    this.a = 1
+  }
+  none(): number {
+    return 42
+  }
+  readAll(): number {
+    return this.a + this.b + this.c
+  }
+  readOne(): number {
+    return this.a
+  }
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3o",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      // Top writers: resetAll first, single second
+      const writersRaw = await tool!.execute(
+        {
+          intent: "find_top_field_writers",
+          snapshotId,
+          limit: 10,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const writers = JSON.parse(writersRaw) as FlatResponse
+      expect(writers.status).toBe("hit")
+      const writerNames = writers.data.nodes.map((n) =>
+        String(n.canonical_name),
+      )
+      const resetIdx = writerNames.findIndex((n) => n.endsWith("#Store.resetAll"))
+      const singleIdx = writerNames.findIndex((n) => n.endsWith("#Store.single"))
+      expect(resetIdx).toBeGreaterThanOrEqual(0)
+      // resetAll must outrank single (3 writes > 1 write)
+      if (singleIdx >= 0) {
+        expect(resetIdx).toBeLessThan(singleIdx)
+      }
+      // Methods with no writes must NOT appear
+      expect(writerNames.some((n) => n.endsWith("#Store.none"))).toBe(false)
+      expect(writerNames.some((n) => n.endsWith("#Store.readAll"))).toBe(false)
+
+      // Top readers: readAll first, readOne second
+      const readersRaw = await tool!.execute(
+        {
+          intent: "find_top_field_readers",
+          snapshotId,
+          limit: 10,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const readers = JSON.parse(readersRaw) as FlatResponse
+      expect(readers.status).toBe("hit")
+      const readerNames = readers.data.nodes.map((n) =>
+        String(n.canonical_name),
+      )
+      const readAllIdx = readerNames.findIndex((n) => n.endsWith("#Store.readAll"))
+      const readOneIdx = readerNames.findIndex((n) => n.endsWith("#Store.readOne"))
+      expect(readAllIdx).toBeGreaterThanOrEqual(0)
+      // readAll must outrank readOne (3 reads > 1 read)
+      if (readOneIdx >= 0) {
+        expect(readAllIdx).toBeLessThan(readOneIdx)
+      }
+      // Methods with no reads must NOT appear
+      expect(readerNames.some((n) => n.endsWith("#Store.none"))).toBe(false)
+      expect(readerNames.some((n) => n.endsWith("#Store.resetAll"))).toBe(false)
+
+      client.close()
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+})

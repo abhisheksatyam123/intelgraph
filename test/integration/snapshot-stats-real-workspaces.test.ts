@@ -1257,6 +1257,50 @@ for (const wcase of CASES) {
         expect(result.rows.some((r) => Number(r.hop_distance) > 0)).toBe(true)
       })
 
+      // ── Phase 3o: find_top_field_writers / readers on real data ──
+      it("phase 3o: find_top_field_writers ranks the top mutators", async () => {
+        const result = await ingest.lookup.lookup({
+          intent: "find_top_field_writers",
+          snapshotId: ingest.snapshotId,
+          limit: 20,
+        })
+        for (const row of result.rows) {
+          expect(["function", "method"]).toContain(String(row.kind))
+          expect(row.edge_kind).toBe("writes_field")
+          expect(typeof row.field_count).toBe("number")
+          expect(typeof row.incoming_count).toBe("number")
+          // The two columns are aliases — must always agree
+          expect(Number(row.field_count)).toBe(Number(row.incoming_count))
+          expect(Number(row.field_count)).toBeGreaterThan(0)
+        }
+        // Sort verification: rows must be in non-increasing field_count
+        for (let i = 1; i < result.rows.length; i++) {
+          expect(Number(result.rows[i - 1].field_count)).toBeGreaterThanOrEqual(
+            Number(result.rows[i].field_count),
+          )
+        }
+      })
+
+      it("phase 3o: find_top_field_readers ranks the top readers", async () => {
+        const result = await ingest.lookup.lookup({
+          intent: "find_top_field_readers",
+          snapshotId: ingest.snapshotId,
+          limit: 20,
+        })
+        for (const row of result.rows) {
+          expect(["function", "method"]).toContain(String(row.kind))
+          expect(row.edge_kind).toBe("reads_field")
+          expect(typeof row.field_count).toBe("number")
+          expect(Number(row.field_count)).toBeGreaterThan(0)
+        }
+        // Sort verification
+        for (let i = 1; i < result.rows.length; i++) {
+          expect(Number(result.rows[i - 1].field_count)).toBeGreaterThanOrEqual(
+            Number(result.rows[i].field_count),
+          )
+        }
+      })
+
       // ── Phase 3n: find_call_cycles on real workspace data ─────
       it("phase 3n: find_call_cycles runs without error on a real workspace", async () => {
         // We don't assert that real workspaces actually contain mutual
