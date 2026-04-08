@@ -106,6 +106,8 @@ export const QUERY_INTENTS = [
   "find_type_cycles",
   /** Longest call chain reachable from a starting symbol (recursive walk over calls edges). */
   "find_deepest_call_chain",
+  /** Search symbols by their JSDoc text (request.pattern, LIKE-matched against payload.metadata.doc). */
+  "find_symbols_by_doc",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

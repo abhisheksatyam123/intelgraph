@@ -385,6 +385,24 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_symbols_by_doc searches documentation content", async () => {
+      // Pick any pattern that's likely to appear in opencode JSDoc
+      const result = await ingest.lookup.lookup({
+        intent: "find_symbols_by_doc",
+        snapshotId: ingest.snapshotId,
+        pattern: "the",
+        limit: 20,
+      })
+      // Skip if no doc-bearing symbols exist (some snapshots may
+      // have empty docstring metadata)
+      if (!result.hit || result.rows.length === 0) return
+      // Every result should have a doc field containing the pattern
+      for (const row of result.rows) {
+        const doc = String((row as { doc?: string }).doc ?? "")
+        expect(doc.toLowerCase()).toContain("the")
+      }
+    })
+
     it("find_deepest_call_chain returns the longest reachable chain", async () => {
       // Pick a function whose outgoing call resolves to a real
       // graph_node (i.e. an FQ symbol that exists in graph_nodes).
@@ -1562,6 +1580,10 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
           intent: "find_deepest_call_chain",
           request: { apiName: seedFunction?.canonical_name, depth: 4 },
           skip: !seedFunction,
+        },
+        {
+          intent: "find_symbols_by_doc",
+          request: { pattern: "the" },
         },
         // Search & browse
         {

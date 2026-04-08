@@ -268,6 +268,8 @@ export class SqliteDbLookup implements DbLookupRepository {
           apiNames[0] ?? "",
           request.depth ?? 8,
         )
+      case "find_symbols_by_doc":
+        return this.symbolsByDoc(snapshotId, request.pattern ?? "", limit)
       default:
         return []
     }
@@ -1025,6 +1027,50 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Search symbols by their JSDoc text. Builds on D59 which stores
+   * the doc string at payload.metadata.doc. Useful for finding
+   * deprecated APIs (search for "@deprecated"), TODO/FIXME comments,
+   * or any documentation pattern across the codebase.
+   *
+   * Returns matching symbols ordered alphabetically by canonical_name.
+   */
+  private symbolsByDoc(
+    snapshotId: number,
+    pattern: string,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (!pattern || pattern.length === 0) return []
+    const safe = pattern.replace(/[\\%_]/g, "\\$&")
+    const sql = `
+      SELECT
+        canonical_name,
+        kind,
+        location,
+        json_extract(payload, '$.metadata.doc') AS doc
+      FROM graph_nodes
+      WHERE snapshot_id = ?
+        AND json_extract(payload, '$.metadata.doc') LIKE ? ESCAPE '\\'
+      ORDER BY canonical_name
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, `%${safe}%`, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "function",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "contains",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+      doc: obj.doc,
+    }))
+  }
 
   /**
    * Find the deepest call chain reachable from a starting symbol.
