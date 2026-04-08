@@ -266,6 +266,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.unusedFields(snapshotId, limit)
       case "find_top_hot_fields":
         return this.topHotFields(snapshotId, limit)
+      case "find_classes_by_field_count":
+        return this.classesByFieldCount(snapshotId, limit)
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
       case "find_top_imported_modules":
@@ -1431,6 +1433,63 @@ export class SqliteDbLookup implements DbLookupRepository {
       file_path: extractFilePath(obj.location),
       line_number: extractLine(obj.location),
       method_count: toNumber(obj.method_count),
+    }))
+  }
+
+  /**
+   * Phase 3u: god-class detector by state size. Sister of
+   * find_classes_by_method_count which ranks by behavior. Ranks
+   * classes (and structs/interfaces) by the number of contained
+   * field nodes — surfaces types with too much state.
+   *
+   * State-size ranking complements method-count ranking because
+   * the two anti-patterns can show up independently:
+   *   - High method count, low field count: behavior god class
+   *     (Service, Manager, Controller types)
+   *   - High field count, low method count: data god class
+   *     (large config bags, DTOs, denormalized records)
+   *   - Both high: classic god class (refactor target #1)
+   *
+   * Includes struct + interface in addition to class so the
+   * Rust + TS interface variants get caught too.
+   */
+  private classesByFieldCount(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        src.canonical_name AS canonical_name,
+        src.kind AS kind,
+        src.location AS location,
+        COUNT(*) AS field_count
+      FROM graph_edges e
+      INNER JOIN graph_nodes src
+        ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+      INNER JOIN graph_nodes dst
+        ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+      WHERE e.snapshot_id = ?
+        AND e.edge_kind = 'contains'
+        AND src.kind IN ('class', 'struct', 'interface')
+        AND dst.kind = 'field'
+      GROUP BY src.canonical_name, src.kind, src.location
+      ORDER BY field_count DESC, src.canonical_name ASC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "class",
+      canonical_name: obj.canonical_name,
+      field_count: toNumber(obj.field_count),
+      // Alias for the viewer's hub-panel renderer
+      incoming_count: toNumber(obj.field_count),
+      edge_kind: "contains_field",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
     }))
   }
 

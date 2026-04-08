@@ -1257,6 +1257,30 @@ for (const wcase of CASES) {
         expect(result.rows.some((r) => Number(r.hop_distance) > 0)).toBe(true)
       })
 
+      // ── Phase 3u: find_classes_by_field_count on real data ────
+      it("phase 3u: find_classes_by_field_count ranks god classes by state", async () => {
+        const result = await ingest.lookup.lookup({
+          intent: "find_classes_by_field_count",
+          snapshotId: ingest.snapshotId,
+          limit: 20,
+        })
+        for (const row of result.rows) {
+          expect(["class", "struct", "interface"]).toContain(String(row.kind))
+          expect(row.edge_kind).toBe("contains_field")
+          expect(typeof row.field_count).toBe("number")
+          expect(typeof row.incoming_count).toBe("number")
+          expect(Number(row.field_count)).toBeGreaterThan(0)
+          // The two columns are aliases
+          expect(Number(row.field_count)).toBe(Number(row.incoming_count))
+        }
+        // Sort verification
+        for (let i = 1; i < result.rows.length; i++) {
+          expect(Number(result.rows[i - 1].field_count)).toBeGreaterThanOrEqual(
+            Number(result.rows[i].field_count),
+          )
+        }
+      })
+
       // ── Phase 3t: find_top_hot_fields on real workspace data ────
       it("phase 3t: find_top_hot_fields ranks the most contended fields", async () => {
         const result = await ingest.lookup.lookup({

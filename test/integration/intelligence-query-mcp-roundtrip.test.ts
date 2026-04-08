@@ -2673,3 +2673,115 @@ describe("intelligence_query MCP tool — find_top_hot_fields (Phase 3t)", () =>
     }
   })
 })
+
+// ── Phase 3u: find_classes_by_field_count ───────────────────────────────────
+//
+// God-class detector by state size. Sister of
+// find_classes_by_method_count which ranks by behavior.
+
+describe("intelligence_query MCP tool — find_classes_by_field_count (Phase 3u)", () => {
+  it("ranks classes by contained field count", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3u-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3u" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      // Big has 5 fields, Small has 1, Empty has 0
+      // → Big outranks Small; Empty must NOT appear (no fields)
+      writeFileSync(
+        join(tempRoot, "src", "model.ts"),
+        `export class Big {
+  a = 0
+  b = 0
+  c = 0
+  d = 0
+  e = 0
+}
+export class Small {
+  x = 0
+}
+export class Empty {
+  doSomething(): void {}
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3u",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const raw = await tool!.execute(
+        {
+          intent: "find_classes_by_field_count",
+          snapshotId,
+          limit: 10,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const res = JSON.parse(raw) as FlatResponse
+      expect(res.status).toBe("hit")
+      expect(res.data.nodes.length).toBeGreaterThan(0)
+      const names = res.data.nodes.map((n) => String(n.canonical_name))
+      const bigIdx = names.findIndex((n) => n.endsWith("#Big"))
+      const smallIdx = names.findIndex((n) => n.endsWith("#Small"))
+      expect(bigIdx).toBeGreaterThanOrEqual(0)
+      // Big outranks Small (5 fields > 1)
+      if (smallIdx >= 0) {
+        expect(bigIdx).toBeLessThan(smallIdx)
+      }
+      // Empty has no fields → must not appear
+      expect(names.some((n) => n.endsWith("#Empty"))).toBe(false)
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+})

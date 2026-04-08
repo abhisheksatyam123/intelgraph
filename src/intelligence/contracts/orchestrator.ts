@@ -193,6 +193,11 @@ export const QUERY_INTENTS = [
   //              distinct method touchers — finds the read-write
   //              hot spots inside a popular type.
   "find_top_hot_fields",
+  // ── Phase 3u: god-class detector by state size. Sister of
+  //              find_classes_by_method_count which ranks by
+  //              behavior. Ranks classes by the number of contained
+  //              field nodes — surfaces types with too much state.
+  "find_classes_by_field_count",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

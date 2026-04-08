@@ -112,6 +112,8 @@ export function mapIntentToArray(intent: QueryIntent): RelationArrayName {
     find_unused_fields: "structures",
     // Phase 3t: field-level hot-spot ranking
     find_top_hot_fields: "structures",
+    // Phase 3u: god-class detector by state size
+    find_classes_by_field_count: "structures",
   }
 
   return mapping[intent] || "uses"
