@@ -116,6 +116,8 @@ export const QUERY_INTENTS = [
   "find_widely_referenced_types",
   /** Exported symbols (functions/classes/interfaces) without JSDoc — documentation gaps. */
   "find_undocumented_exports",
+  /** Interfaces ranked DESC by implementor count — core abstractions of the codebase. */
+  "find_top_implemented_interfaces",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

@@ -278,6 +278,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.widelyReferencedTypes(snapshotId, limit)
       case "find_undocumented_exports":
         return this.undocumentedExports(snapshotId, limit)
+      case "find_top_implemented_interfaces":
+        return this.topByIncoming(snapshotId, "implements", "interface", limit)
       default:
         return []
     }

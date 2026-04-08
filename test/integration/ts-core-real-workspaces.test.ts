@@ -385,6 +385,32 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_top_implemented_interfaces ranks interfaces by implementor count", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_top_implemented_interfaces",
+        snapshotId: ingest.snapshotId,
+        limit: 10,
+      })
+      // opencode is namespace-heavy not class-heavy, so result MAY
+      // be small. Just assert the row shape when matches exist.
+      expect(result.intent).toBe("find_top_implemented_interfaces")
+      const counts = result.rows.map(
+        (r) => Number((r as { incoming_count?: number }).incoming_count),
+      )
+      // Each row has positive incoming_count (it's the implementor count)
+      for (const c of counts) {
+        expect(c).toBeGreaterThan(0)
+      }
+      // Sorted descending
+      for (let i = 1; i < counts.length; i++) {
+        expect(counts[i - 1]).toBeGreaterThanOrEqual(counts[i])
+      }
+      // All result rows are interface kind
+      for (const row of result.rows) {
+        expect(row.kind).toBe("interface")
+      }
+    })
+
     it("find_undocumented_exports surfaces public APIs missing JSDoc", async () => {
       const result = await ingest.lookup.lookup({
         intent: "find_undocumented_exports",
@@ -1683,6 +1709,7 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
         { intent: "find_classes_by_method_count", request: {} },
         { intent: "find_widely_referenced_types", request: {} },
         { intent: "find_undocumented_exports", request: {} },
+        { intent: "find_top_implemented_interfaces", request: {} },
         // Search & browse
         {
           intent: "find_symbols_by_name",
