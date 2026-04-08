@@ -120,6 +120,8 @@ export function mapIntentToArray(intent: QueryIntent): RelationArrayName {
     find_unique_callers: "uses",
     // Phase 3x: direct self-recursion detector
     find_recursive_methods: "uses",
+    // Phase 3y: combined-complexity god-method detector
+    find_god_methods: "uses",
   }
 
   return mapping[intent] || "uses"

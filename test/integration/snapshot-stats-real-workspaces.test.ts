@@ -9,7 +9,7 @@
  *
  * Targets:
  *   - /home/abhi/qprojects/opencode (Bun monorepo, packages/opencode/src)
- *   - /home/abhi/qprojects/qcode (TS/React project)
+ *   - /home/abhi/qprojects/openclaude (TS/React project)
  *
  * Both tests skip cleanly when the workspace path doesn't exist on the
  * host. Skips intentionally let CI environments without those checkouts
@@ -66,7 +66,7 @@ const stubTracker = {} as Parameters<typeof graphTool.execute>[2]
 
 
 const OPENCODE_ROOT = "/home/abhi/qprojects/opencode/packages/opencode"
-const QCODE_ROOT = "/home/abhi/qprojects/qcode"
+const OPENCLAUDE_ROOT = "/home/abhi/qprojects/openclaude"
 
 interface WorkspaceCase {
   name: string
@@ -96,8 +96,8 @@ const CASES: WorkspaceCase[] = [
     centerSymbol: "cmd",
   },
   {
-    name: "qcode",
-    path: QCODE_ROOT,
+    name: "openclaude",
+    path: OPENCLAUDE_ROOT,
     minNodes: 200,
     minEdges: 200,
     expectedSubstring: "src/",
@@ -424,7 +424,7 @@ for (const wcase of CASES) {
       it("maxNodes caps the unfiltered graph to a tractable size", () => {
         // The "production readiness" case: any workspace should
         // collapse to N nodes when maxNodes=N is requested. For
-        // qcode this is the only way to make the
+        // openclaude this is the only way to make the
         // 20K-node graph tractable for the HTML force layout.
         const CAP = 300
         const full = loadGraphJsonFromDb(
@@ -865,7 +865,7 @@ for (const wcase of CASES) {
 
 
       it("loadGraphJsonFromDb completes within the performance budget", () => {
-        // The full unfiltered graph build for qcode
+        // The full unfiltered graph build for openclaude
         // (~20K nodes, ~100K edges) takes ~5s in CI; opencode is
         // ~2s. Budget is 15s — generous enough that flaky CI machines
         // don't fail spuriously, tight enough that any 3x regression
@@ -915,7 +915,7 @@ for (const wcase of CASES) {
         const aggEdges = graph.edges.filter((e) => e.kind === "aggregates")
 
         // Real TS workspaces have lots of class fields and interface
-        // properties — both opencode and qcode clear
+        // properties — both opencode and openclaude clear
         // 100 field nodes easily.
         expect(fields.length).toBeGreaterThan(100)
         // The field_of_type edges only fire when a field's type
@@ -1257,6 +1257,40 @@ for (const wcase of CASES) {
         expect(result.rows.some((r) => Number(r.hop_distance) > 0)).toBe(true)
       })
 
+      // ── Phase 3y: find_god_methods on real data ────────────────
+      it("phase 3y: find_god_methods ranks combined complexity hot spots", async () => {
+        const result = await ingest.lookup.lookup({
+          intent: "find_god_methods",
+          snapshotId: ingest.snapshotId,
+          limit: 20,
+        })
+        expect(result.hit).toBe(true)
+        expect(result.rows.length).toBeGreaterThan(0)
+        for (const row of result.rows) {
+          expect(["function", "method"]).toContain(String(row.kind))
+          expect(row.edge_kind).toBe("god_method")
+          expect(typeof row.fan_in).toBe("number")
+          expect(typeof row.fan_out).toBe("number")
+          expect(typeof row.field_touches).toBe("number")
+          expect(typeof row.complexity_score).toBe("number")
+          // Score is the sum of the three components — invariant
+          expect(Number(row.complexity_score)).toBe(
+            Number(row.fan_in) +
+              Number(row.fan_out) +
+              Number(row.field_touches),
+          )
+          expect(Number(row.complexity_score)).toBeGreaterThan(0)
+          // Alias agrees with score
+          expect(Number(row.incoming_count)).toBe(Number(row.complexity_score))
+        }
+        // Sort verification
+        for (let i = 1; i < result.rows.length; i++) {
+          expect(Number(result.rows[i - 1].complexity_score)).toBeGreaterThanOrEqual(
+            Number(result.rows[i].complexity_score),
+          )
+        }
+      })
+
       // ── Phase 3x: find_recursive_methods on real data ─────────
       it("phase 3x: find_recursive_methods surfaces self-recursive functions", async () => {
         const result = await ingest.lookup.lookup({
@@ -1289,7 +1323,7 @@ for (const wcase of CASES) {
           limit: 50,
         })
         expect(result.hit).toBe(true)
-        // Both opencode and qcode should have at least a few inline
+        // Both opencode and openclaude should have at least a few inline
         // candidates — almost any TS codebase does
         expect(result.rows.length).toBeGreaterThan(0)
         for (const row of result.rows) {

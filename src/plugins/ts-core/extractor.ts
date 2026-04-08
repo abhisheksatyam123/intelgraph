@@ -86,8 +86,8 @@ const tsCoreExtractor = defineExtractor({
       // Active when the workspace looks like a TS/JS project. The
       // common markers are package.json/tsconfig.json/etc., but we
       // also do a one-level filesystem scan as a fallback for source
-      // snapshots that don't ship a manifest (e.g. qcode, which is a
-      // security research mirror).
+      // snapshots that don't ship a manifest (e.g. openclaude, which
+      // is a security research mirror).
       const root = probe.workspaceRoot
       if (
         existsSync(join(root, "package.json")) ||

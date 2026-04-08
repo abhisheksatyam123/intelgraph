@@ -274,6 +274,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.uniqueCallers(snapshotId, limit)
       case "find_recursive_methods":
         return this.recursiveMethods(snapshotId, limit)
+      case "find_god_methods":
+        return this.godMethods(snapshotId, limit)
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
       case "find_top_imported_modules":
@@ -3530,6 +3532,110 @@ export class SqliteDbLookup implements DbLookupRepository {
       caller: obj.canonical_name,
       callee: obj.canonical_name,
       edge_kind: "self_recursion",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
+
+  /**
+   * Phase 3y: combined-complexity god-method detector. Ranks
+   * methods by fan-in (callers) + fan-out (callees) + distinct
+   * field touches, summed into a single complexity score.
+   *
+   * Why combined ranking matters: each existing single-axis
+   * ranking misses a different shape of god method:
+   *   - find_top_called_functions catches utility hubs with
+   *     many incoming callers but ignores what they do
+   *   - find_top_field_writers/readers catches state mutators
+   *     but ignores how many callers depend on them
+   *   - find_classes_by_method_count is class-level, not method
+   *
+   * The combined score surfaces methods that score moderately
+   * on every dimension — the "this method does everything"
+   * shape that's the worst code-smell of all because it has no
+   * single dimension to refactor along.
+   *
+   * Score components are added with equal weight (no scaling)
+   * because empirically the three counts have similar ranges
+   * in real codebases. The user can sort by any individual
+   * component using the existing intents if they want a
+   * different lens.
+   */
+  private godMethods(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    // Three CTEs aggregate the per-method counts independently with
+    // GROUP BY on the relevant edge column. The outer query LEFT
+    // JOINs them to recover (canonical_name, kind, location). This
+    // avoids the per-row correlated subquery shape that SQLite's
+    // planner can't optimize on big snapshots — the original draft
+    // hung indefinitely on a ~2000-file workspace. Each CTE is a single
+    // index-friendly scan, and the LEFT JOINs are keyed by node_id
+    // so the planner can hash-join cleanly.
+    const sql = `
+      WITH fan_in_counts AS (
+        SELECT
+          dst_node_id AS node_id,
+          COUNT(DISTINCT src_node_id) AS n
+        FROM graph_edges
+        WHERE snapshot_id = ?
+          AND edge_kind = 'calls'
+        GROUP BY dst_node_id
+      ),
+      fan_out_counts AS (
+        SELECT
+          src_node_id AS node_id,
+          COUNT(DISTINCT dst_node_id) AS n
+        FROM graph_edges
+        WHERE snapshot_id = ?
+          AND edge_kind = 'calls'
+        GROUP BY src_node_id
+      ),
+      field_touch_counts AS (
+        SELECT
+          src_node_id AS node_id,
+          COUNT(DISTINCT dst_node_id) AS n
+        FROM graph_edges
+        WHERE snapshot_id = ?
+          AND edge_kind IN ('reads_field', 'writes_field')
+        GROUP BY src_node_id
+      )
+      SELECT
+        m.canonical_name AS canonical_name,
+        m.kind AS kind,
+        m.location AS location,
+        COALESCE(fi.n, 0) AS fan_in,
+        COALESCE(fo.n, 0) AS fan_out,
+        COALESCE(ft.n, 0) AS field_touches,
+        (COALESCE(fi.n, 0) + COALESCE(fo.n, 0) + COALESCE(ft.n, 0)) AS complexity_score
+      FROM graph_nodes m
+      LEFT JOIN fan_in_counts fi ON fi.node_id = m.node_id
+      LEFT JOIN fan_out_counts fo ON fo.node_id = m.node_id
+      LEFT JOIN field_touch_counts ft ON ft.node_id = m.node_id
+      WHERE m.snapshot_id = ?
+        AND m.kind IN ('function', 'method')
+        AND (COALESCE(fi.n, 0) + COALESCE(fo.n, 0) + COALESCE(ft.n, 0)) > 0
+      ORDER BY complexity_score DESC, m.canonical_name ASC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, snapshotId, snapshotId, snapshotId, limit) as Array<
+      Record<string, unknown>
+    >
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "function",
+      canonical_name: obj.canonical_name,
+      fan_in: Number(obj.fan_in ?? 0),
+      fan_out: Number(obj.fan_out ?? 0),
+      field_touches: Number(obj.field_touches ?? 0),
+      complexity_score: Number(obj.complexity_score ?? 0),
+      // Alias for the viewer's hub-panel renderer
+      incoming_count: Number(obj.complexity_score ?? 0),
+      edge_kind: "god_method",
       confidence: 1,
       derivation: "clangd",
       file_path: extractFilePath(obj.location),

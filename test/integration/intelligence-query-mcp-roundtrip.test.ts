@@ -3174,3 +3174,123 @@ export function c(): number { return 42 }
     }
   })
 })
+
+// ── Phase 3y: find_god_methods — combined-complexity god-method ranking ─────
+
+describe("intelligence_query MCP tool — find_god_methods (Phase 3y)", () => {
+  it("ranks methods by combined fan-in + fan-out + field touches", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3y-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3y" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      // god method: orchestrate has fan_out=2 (calls 2 helpers) +
+      //             field_touches=2 (writes a, b) = score 4
+      //             plus fan_in=1 (called by main)
+      //             → total complexity 5
+      // helper1/helper2: fan_in=1, fan_out=0, field_touches=0 = 1 each
+      // pure: no incoming, no outgoing, no fields = 0 (excluded)
+      writeFileSync(
+        join(tempRoot, "src", "store.ts"),
+        `export class Store {
+  a = 0
+  b = 0
+  helper1(): number { return 1 }
+  helper2(): number { return 2 }
+  orchestrate(): void {
+    this.a = this.helper1()
+    this.b = this.helper2()
+  }
+  main(): void { this.orchestrate() }
+  pure(n: number): number { return n + 1 }
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3y",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const result = await lookup.lookup({
+        intent: "find_god_methods",
+        snapshotId,
+        limit: 10,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      const names = result.rows.map((r) => String(r.canonical_name))
+      // orchestrate must rank first (highest combined score)
+      const orchIdx = names.findIndex((n) => n.endsWith("#Store.orchestrate"))
+      expect(orchIdx).toBeGreaterThanOrEqual(0)
+      // pure has no fan-in, no fan-out, no fields → must NOT appear
+      expect(names.some((n) => n.endsWith("#Store.pure"))).toBe(false)
+      // Each row has the breakdown fields populated
+      for (const row of result.rows) {
+        expect(typeof row.fan_in).toBe("number")
+        expect(typeof row.fan_out).toBe("number")
+        expect(typeof row.field_touches).toBe("number")
+        expect(typeof row.complexity_score).toBe("number")
+        expect(Number(row.complexity_score)).toBe(
+          Number(row.fan_in) + Number(row.fan_out) + Number(row.field_touches),
+        )
+        expect(Number(row.complexity_score)).toBeGreaterThan(0)
+      }
+      // Sort verification
+      for (let i = 1; i < result.rows.length; i++) {
+        expect(Number(result.rows[i - 1].complexity_score)).toBeGreaterThanOrEqual(
+          Number(result.rows[i].complexity_score),
+        )
+      }
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+})

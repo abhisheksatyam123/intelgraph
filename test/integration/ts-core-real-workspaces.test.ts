@@ -7,7 +7,7 @@
  *
  * Targets:
  *   - /home/abhi/qprojects/opencode (Bun monorepo, packages/opencode/src)
- *   - /home/abhi/qprojects/qcode (TS/React project)
+ *   - /home/abhi/qprojects/openclaude (TS/React project)
  *
  * Both tests skip cleanly when the workspace path doesn't exist on the
  * host (so CI environments without those checkouts still pass).
@@ -2016,18 +2016,18 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
 )
 
 // ---------------------------------------------------------------------------
-// qcode workspace
+// openclaude workspace
 // ---------------------------------------------------------------------------
 
-const QCODE_ROOT = "/home/abhi/qprojects/qcode"
+const OPENCLAUDE_ROOT = "/home/abhi/qprojects/openclaude"
 
-describe.skipIf(!existsSync(QCODE_ROOT))(
-  "ts-core integration — qcode",
+describe.skipIf(!existsSync(OPENCLAUDE_ROOT))(
+  "ts-core integration — openclaude",
   () => {
     let ingest: IngestedWorkspace
 
     beforeAll(async () => {
-      ingest = await ingestWorkspace(QCODE_ROOT)
+      ingest = await ingestWorkspace(OPENCLAUDE_ROOT)
     }, 120_000)
 
     afterAll(() => {
@@ -2075,7 +2075,7 @@ describe.skipIf(!existsSync(QCODE_ROOT))(
     })
 
     it("KPI: ≥30% of calls edges resolve (lower floor for unfamiliar shape)", () => {
-      // qcode is a mirror project — its coding style
+      // openclaude is a mirror project — its coding style
       // is different from opencode (no Effect, less namespace-heavy).
       // The resolution rate is lower because there's less for our
       // namespace-style heuristics to grab. We assert a softer 30%
@@ -2096,7 +2096,7 @@ describe.skipIf(!existsSync(QCODE_ROOT))(
 
     it("Property: workspace-internal edge dsts must reference real graph_nodes", () => {
       // Same property check as opencode — catches D12-style bugs
-      // where extends/implements use bare dst names. qcode is a
+      // where extends/implements use bare dst names. openclaude is a
       // different shape so this provides cross-workspace validation.
       const workspaceModules = new Set(
         (

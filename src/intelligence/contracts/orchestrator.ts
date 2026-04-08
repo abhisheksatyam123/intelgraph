@@ -218,6 +218,15 @@ export const QUERY_INTENTS = [
   //              (which excludes self-recursion). Useful for
   //              spotting recursive algorithms in the codebase.
   "find_recursive_methods",
+  // ── Phase 3y: combined-complexity god-method detector.
+  //              Ranks methods by fan-in (callers) + fan-out
+  //              (callees) + distinct field touches, summed
+  //              into a single complexity score. Surfaces "this
+  //              method does everything" candidates that
+  //              single-axis rankings (top called functions,
+  //              top field writers, etc.) miss because each
+  //              one only scores one dimension.
+  "find_god_methods",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
