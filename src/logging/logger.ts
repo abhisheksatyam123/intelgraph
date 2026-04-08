@@ -2,6 +2,7 @@
  * logger.ts — Main logger interface with multiple appenders
  */
 
+import { existsSync } from "fs"
 import { homedir } from "os"
 import path from "path"
 import { LogLevel, LogLevelName, parseLogLevel, shouldLog } from "./log-levels.js"
@@ -44,20 +45,35 @@ export class Logger {
   }
 
   private resolveLogDir(customDir?: string): string {
-    // Priority: custom > env var > ~/.local/share/clangd-mcp/logs > /tmp/clangd-mcp
+    // Priority: custom > INTELGRAPH_LOG_DIR > legacy CLANGD_MCP_LOG_DIR
+    //   > ~/.local/share/intelgraph/logs (or legacy clangd-mcp dir if it
+    //     already exists) > /tmp/intelgraph
     if (customDir) {
       return customDir
     }
 
+    // New env var name takes priority
+    if (process.env["INTELGRAPH_LOG_DIR"]) {
+      return process.env["INTELGRAPH_LOG_DIR"]
+    }
+    // Legacy env var still works
     if (process.env["CLANGD_MCP_LOG_DIR"]) {
       return process.env["CLANGD_MCP_LOG_DIR"]
     }
 
     try {
       const home = homedir()
-      return path.join(home, ".local", "share", "clangd-mcp", "logs")
+      // Prefer the new ~/.local/share/intelgraph/logs path. Fall back to
+      // the legacy clangd-mcp directory if it already exists on disk so
+      // upgraded users keep writing to their existing log location.
+      const newDir = path.join(home, ".local", "share", "intelgraph", "logs")
+      const legacyDir = path.join(home, ".local", "share", "clangd-mcp", "logs")
+      if (existsSync(legacyDir) && !existsSync(newDir)) {
+        return legacyDir
+      }
+      return newDir
     } catch {
-      return "/tmp/clangd-mcp"
+      return "/tmp/intelgraph"
     }
   }
 

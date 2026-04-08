@@ -111,6 +111,18 @@ const langInitFailed = new Set<SupportedLanguage>()
 const PARSER_INIT_TIMEOUT_MS = 10_000
 
 /**
+ * Read the treesitter debug flag from env. Reads both the new
+ * INTELGRAPH_DEBUG_TREESITTER and the legacy CLANGD_MCP_DEBUG_TREESITTER
+ * for backwards compat — either being set turns debug logging on.
+ */
+function debugTreesitter(): boolean {
+  return Boolean(
+    process.env.INTELGRAPH_DEBUG_TREESITTER ||
+      process.env.CLANGD_MCP_DEBUG_TREESITTER,
+  )
+}
+
+/**
  * Idempotent global init for web-tree-sitter. Must complete before any
  * Language.load() call. Returns the imported Parser/Language tuple, or
  * null on failure.
@@ -150,7 +162,7 @@ async function initWebTreeSitter(): Promise<{
     return (await parserInitPromise) as { Parser: any; Language: any }
   } catch (err) {
     parserInitFailed = true
-    if (process.env.CLANGD_MCP_DEBUG_TREESITTER) {
+    if (debugTreesitter()) {
       // eslint-disable-next-line no-console
       console.error("[treesitter-registry] global init failed:", err)
     }
@@ -175,7 +187,7 @@ export async function getParser(lang: SupportedLanguage): Promise<unknown | null
     const langWasm = wasmPathFor(lang)
     if (!existsSync(langWasm)) {
       langInitFailed.add(lang)
-      if (process.env.CLANGD_MCP_DEBUG_TREESITTER) {
+      if (debugTreesitter()) {
         // eslint-disable-next-line no-console
         console.error(`[treesitter-registry] grammar wasm not found: ${langWasm}`)
       }
@@ -188,7 +200,7 @@ export async function getParser(lang: SupportedLanguage): Promise<unknown | null
     return parser
   } catch (err) {
     langInitFailed.add(lang)
-    if (process.env.CLANGD_MCP_DEBUG_TREESITTER) {
+    if (debugTreesitter()) {
       // eslint-disable-next-line no-console
       console.error(`[treesitter-registry] failed to load ${lang}:`, err)
     }
