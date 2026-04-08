@@ -796,6 +796,8 @@ export function graphJsonToHtml(graph: GraphJson): string {
   .link.hit { stroke: var(--link-active); stroke-opacity: 0.85; }
   .arrowhead { fill-opacity: 0.5; }
   .arrowhead.hit { fill: var(--link-active); fill-opacity: 0.85; }
+  .link.cycle { stroke: #ff5b6b; stroke-opacity: 0.85; stroke-width: 1.6; }
+  .node.cycle { stroke: #ff5b6b; stroke-width: 1.5; }
   #sidebar input[type="range"] {
     width: 100%; box-sizing: border-box;
     accent-color: var(--accent);
@@ -846,6 +848,13 @@ export function graphJsonToHtml(graph: GraphJson): string {
       <span>1 hop</span>
       <span id="hop-value">1</span>
       <span>4 hops</span>
+    </div>
+
+    <h2>Cycles</h2>
+    <div class="legend-item" id="cycle-toggle">
+      <div class="swatch" style="background:#ff5b6b"></div>
+      <div>highlight 2-cycles</div>
+      <div class="count" id="cycle-count">0</div>
     </div>
 
     <h2>Symbol kinds</h2>
@@ -973,9 +982,34 @@ function neighborhood(rootId, hops) {
 document.getElementById("stat-nodes").textContent = data.nodes.length;
 document.getElementById("stat-edges").textContent = links.length;
 
+// Detect 2-cycles by edge_kind: any pair (a,b) where a→b AND b→a via
+// the same kind. Reported as a Set of "kind|a|b" strings (a < b
+// lexicographically, so each cycle appears once). We detect across
+// every edge_kind so the user sees imports cycles, calls cycles, and
+// references_type cycles uniformly. Used to color the offending nodes
+// and edges in red.
+const cycleNodes = new Set();
+const cycleEdgeKeys = new Set();
+{
+  const keyOf = (kind, s, t) => kind + "|" + s + "|" + t;
+  const have = new Set();
+  for (const l of links) have.add(keyOf(l.kind, l.source, l.target));
+  for (const l of links) {
+    if (have.has(keyOf(l.kind, l.target, l.source))) {
+      // Mark both directions as cycle edges
+      cycleEdgeKeys.add(keyOf(l.kind, l.source, l.target));
+      cycleEdgeKeys.add(keyOf(l.kind, l.target, l.source));
+      cycleNodes.add(l.source);
+      cycleNodes.add(l.target);
+    }
+  }
+}
+document.getElementById("cycle-count").textContent = cycleNodes.size;
+
 // Active filters
 const activeKinds = new Set(data.nodes.map((n) => n.kind));
 const activeEdgeKinds = new Set(links.map((l) => l.kind));
+let cyclesOn = false;
 
 const sim = d3.forceSimulation(data.nodes)
   .force("link", d3.forceLink(links).id((d) => d.id).distance(40).strength(0.5))
@@ -1017,7 +1051,12 @@ function render() {
     .selectAll("line")
     .data(visibleLinks, (d) => (typeof d.source === "object" ? d.source.id : d.source) + "→" + (typeof d.target === "object" ? d.target.id : d.target) + ":" + d.kind)
     .join("line")
-    .attr("class", "link")
+    .attr("class", (d) => {
+      const s = typeof d.source === "object" ? d.source.id : d.source;
+      const t = typeof d.target === "object" ? d.target.id : d.target;
+      const isCycle = cyclesOn && cycleEdgeKeys.has(d.kind + "|" + s + "|" + t);
+      return "link" + (isCycle ? " cycle" : "");
+    })
     .attr("stroke", (d) => colorFor(d.kind, EDGE_COLORS, "#5a6378"))
     .attr("stroke-width", (d) => (d.kind === "calls" ? 1.2 : 0.8))
     .attr("marker-end", (d) =>
@@ -1027,7 +1066,8 @@ function render() {
     .selectAll("circle")
     .data(visibleNodes, (d) => d.id)
     .join("circle")
-    .attr("class", "node")
+    .attr("class", (d) =>
+      "node" + (cyclesOn && cycleNodes.has(d.id) ? " cycle" : ""))
     .attr("r", radiusFor)
     .attr("fill", (d) => colorFor(d.kind, KIND_COLORS, "#a3a8b8"))
     .on("click", onClick)
@@ -1088,6 +1128,18 @@ hopSlider.addEventListener("input", (ev) => {
   hopValue.textContent = String(hopDepth);
   if (focused) applyFocus();
 });
+
+// Cycle-highlight toggle — re-renders so node + link classes pick up
+// the cycle marking. The cycle sets are precomputed once at init,
+// the toggle just controls whether the .cycle class is applied.
+const cycleToggle = document.getElementById("cycle-toggle");
+cycleToggle.addEventListener("click", () => {
+  cyclesOn = !cyclesOn;
+  cycleToggle.classList.toggle("disabled", !cyclesOn);
+  render();
+});
+// Start in the disabled visual state so users see the count first
+cycleToggle.classList.add("disabled");
 
 function applyFocus() {
   if (!focused) {

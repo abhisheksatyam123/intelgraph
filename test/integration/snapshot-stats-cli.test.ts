@@ -281,6 +281,25 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     // Directed adjacency: successors / predecessors maps.
     expect(html).toContain("const successors")
     expect(html).toContain("const predecessors")
+
+    // Cycle highlighting: detection runs at init, toggle wires it,
+    // and the .cycle CSS classes are present.
+    expect(html).toContain("cycleNodes")
+    expect(html).toContain("cycleEdgeKeys")
+    expect(html).toContain('id="cycle-toggle"')
+    expect(html).toContain('id="cycle-count"')
+    expect(html).toContain(".link.cycle")
+    expect(html).toContain(".node.cycle")
+
+    // Inlined script must parse as valid JS. Catches the class of bug
+    // where a stray backtick inside a comment closes the outer
+    // template literal and corrupts the rest of the document.
+    const start = html.indexOf("<script>")
+    const end = html.indexOf("</script>", start)
+    expect(start).toBeGreaterThan(0)
+    expect(end).toBeGreaterThan(start)
+    const inlined = html.substring(start + "<script>".length, end)
+    expect(() => new Function("document", "window", "d3", inlined)).not.toThrow()
   })
 
   it("graphJsonToHtml propagates --filter-edge-kind subsets", async () => {
