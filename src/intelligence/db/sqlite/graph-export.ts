@@ -78,10 +78,19 @@ export interface GraphJsonFilters {
    */
   centerOf?: string
   /**
-   * Hop budget for centerOf. Defaults to 2. Undirected (walks the
-   * union of successors and predecessors).
+   * Hop budget for centerOf. Defaults to 2.
    */
   centerHops?: number
+  /**
+   * Direction the centerOf BFS walks:
+   *   - "both" (default): undirected — successors ∪ predecessors.
+   *     Answers "everything related to X".
+   *   - "out": forward — successors only. Answers "what does X
+   *     depend on" / "what does X reach".
+   *   - "in": backward — predecessors only. Answers "what depends
+   *     on X" / "what reaches X".
+   */
+  centerDirection?: "in" | "out" | "both"
   /**
    * If set, cap the result to the top N nodes by total degree
    * (incoming + outgoing edges), plus the edges connecting them.
@@ -259,7 +268,12 @@ export function loadGraphJsonFromDb(
   // call. The function is pure on the GraphJson and is also exported
   // for callers that have a graph in hand (e.g. tests).
   if (filters.centerOf) {
-    result = centerSubgraph(result, filters.centerOf, filters.centerHops ?? 2)
+    result = centerSubgraph(
+      result,
+      filters.centerOf,
+      filters.centerHops ?? 2,
+      filters.centerDirection ?? "both",
+    )
   }
   // maxNodes is applied LAST so it caps whatever the prior filters
   // produced. For unfiltered or lightly-filtered runs on big
@@ -338,11 +352,18 @@ export function resolveCenterSymbol(
 }
 
 /**
- * Reduce a graph to nodes within `maxHops` undirected steps of a
- * resolved center node. Walks the union of incoming + outgoing edges,
- * so callers get the "everything related to X" view rather than a
- * directed dependency cone. Pure function: returns a new GraphJson
- * with the same workspace + snapshot_id and the subset of nodes/edges.
+ * Reduce a graph to nodes within `maxHops` BFS steps of a resolved
+ * center node, walking edges in the requested direction.
+ *
+ *   - direction="both" → undirected (successors ∪ predecessors),
+ *     "everything related to X"
+ *   - direction="out"  → forward only (successors), "what does X
+ *     reach"
+ *   - direction="in"   → backward only (predecessors), "what
+ *     reaches X"
+ *
+ * Pure function: returns a new GraphJson with the same workspace +
+ * snapshot_id and the subset of nodes/edges.
  *
  * If the center query resolves to no node, returns an empty
  * subgraph (no nodes, no edges) — callers can detect this case and
@@ -352,6 +373,7 @@ export function centerSubgraph(
   graph: GraphJson,
   centerQuery: string,
   maxHops: number,
+  direction: "in" | "out" | "both" = "both",
 ): GraphJson {
   const center = resolveCenterSymbol(graph, centerQuery)
   if (!center) {
@@ -364,8 +386,8 @@ export function centerSubgraph(
       total_edges: graph.total_edges,
     }
   }
-  // Build directed adjacency from the supplied edges (undirected
-  // BFS uses the union below).
+  // Build directed adjacency from the supplied edges. The two
+  // direction-aware BFS variants below pick which side(s) to walk.
   const succ = new Map<string, Set<string>>()
   const pred = new Map<string, Set<string>>()
   for (const n of graph.nodes) {
@@ -376,26 +398,32 @@ export function centerSubgraph(
     succ.get(e.src)?.add(e.dst)
     pred.get(e.dst)?.add(e.src)
   }
+  const walkOut = direction === "out" || direction === "both"
+  const walkIn = direction === "in" || direction === "both"
   const seen = new Set<string>([center])
   let frontier: string[] = [center]
   for (let i = 0; i < maxHops; i++) {
     const next: string[] = []
     for (const id of frontier) {
-      const out = succ.get(id)
-      if (out) {
-        for (const t of out) {
-          if (!seen.has(t)) {
-            seen.add(t)
-            next.push(t)
+      if (walkOut) {
+        const out = succ.get(id)
+        if (out) {
+          for (const t of out) {
+            if (!seen.has(t)) {
+              seen.add(t)
+              next.push(t)
+            }
           }
         }
       }
-      const inn = pred.get(id)
-      if (inn) {
-        for (const t of inn) {
-          if (!seen.has(t)) {
-            seen.add(t)
-            next.push(t)
+      if (walkIn) {
+        const inn = pred.get(id)
+        if (inn) {
+          for (const t of inn) {
+            if (!seen.has(t)) {
+              seen.add(t)
+              next.push(t)
+            }
           }
         }
       }

@@ -728,9 +728,11 @@ export const TOOLS: ToolDef[] = [
       symbolKinds: z.array(z.string()).optional()
         .describe("Keep only nodes whose kind is in this list (e.g. ['module','class']) AND edges where both endpoints survive. Omit for all nodes."),
       centerOf: z.string().optional()
-        .describe("Scope the graph to nodes within `centerHops` undirected hops of a center symbol. Resolved exact / suffix-after-# / substring (e.g. 'Greeter.greet'). Applied AFTER kind filters."),
+        .describe("Scope the graph to nodes within `centerHops` hops of a center symbol. Resolved exact / suffix-after-# / substring (e.g. 'Greeter.greet'). Applied AFTER kind filters."),
       centerHops: z.number().int().positive().optional()
         .describe("Hop budget for centerOf (default 2)."),
+      centerDirection: z.enum(["in", "out", "both"]).optional()
+        .describe("Direction the centerOf BFS walks. 'both' (default) = undirected, 'out' = what X reaches, 'in' = what reaches X."),
       maxNodes: z.number().int().positive().optional()
         .describe("Cap the result to the top-N nodes by total degree. Applied LAST in the filter pipeline. Useful for big workspaces where the unfiltered graph would be too dense."),
     }),
@@ -755,6 +757,7 @@ export const TOOLS: ToolDef[] = [
             symbolKinds?: Set<string>
             centerOf?: string
             centerHops?: number
+            centerDirection?: "in" | "out" | "both"
             maxNodes?: number
           },
         ) => unknown
@@ -773,6 +776,7 @@ export const TOOLS: ToolDef[] = [
           symbolKinds?: Set<string>
           centerOf?: string
           centerHops?: number
+          centerDirection?: "in" | "out" | "both"
           maxNodes?: number
         } = {}
         if (args.edgeKinds && args.edgeKinds.length > 0) {
@@ -783,6 +787,7 @@ export const TOOLS: ToolDef[] = [
         }
         if (args.centerOf) filters.centerOf = args.centerOf
         if (args.centerHops) filters.centerHops = args.centerHops
+        if (args.centerDirection) filters.centerDirection = args.centerDirection
         if (args.maxNodes) filters.maxNodes = args.maxNodes
         const graph = lookup.loadGraphJson(args.snapshotId, args.workspaceRoot, filters)
         return JSON.stringify(graph)

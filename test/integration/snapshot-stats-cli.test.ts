@@ -266,6 +266,64 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(graph.edges.length).toBe(0)
   })
 
+  it("buildGraphJson centerDirection narrows the BFS walk", async () => {
+    // Center on Greeter at depth 1 in each direction. The
+    // forward-only ('out') and backward-only ('in') subgraphs must
+    // each be ≤ the undirected ('both') subgraph, since 'both' is
+    // the union of the two directional walks.
+    const both = await buildGraphJson(tempRoot, {
+      centerOf: "Greeter",
+      centerHops: 1,
+      centerDirection: "both",
+    })
+    const outOnly = await buildGraphJson(tempRoot, {
+      centerOf: "Greeter",
+      centerHops: 1,
+      centerDirection: "out",
+    })
+    const inOnly = await buildGraphJson(tempRoot, {
+      centerOf: "Greeter",
+      centerHops: 1,
+      centerDirection: "in",
+    })
+
+    expect(both.nodes.length).toBeGreaterThan(0)
+    expect(outOnly.nodes.length).toBeGreaterThan(0)
+    expect(inOnly.nodes.length).toBeGreaterThan(0)
+
+    // Both directions must include the center symbol itself
+    for (const g of [both, outOnly, inOnly]) {
+      expect(g.nodes.some((n) => n.id.endsWith("#Greeter"))).toBe(true)
+    }
+
+    // 'both' is the superset of either directional walk
+    expect(outOnly.nodes.length).toBeLessThanOrEqual(both.nodes.length)
+    expect(inOnly.nodes.length).toBeLessThanOrEqual(both.nodes.length)
+
+    // Edge integrity in each variant
+    for (const g of [both, outOnly, inOnly]) {
+      const ids = new Set(g.nodes.map((n) => n.id))
+      for (const edge of g.edges) {
+        expect(ids.has(edge.src)).toBe(true)
+        expect(ids.has(edge.dst)).toBe(true)
+      }
+    }
+  })
+
+  it("buildGraphJson defaults centerDirection to 'both' when omitted", async () => {
+    const explicitBoth = await buildGraphJson(tempRoot, {
+      centerOf: "Greeter",
+      centerHops: 2,
+      centerDirection: "both",
+    })
+    const omitted = await buildGraphJson(tempRoot, {
+      centerOf: "Greeter",
+      centerHops: 2,
+    })
+    expect(omitted.nodes.length).toBe(explicitBoth.nodes.length)
+    expect(omitted.edges.length).toBe(explicitBoth.edges.length)
+  })
+
   it("buildGraphJson maxNodes caps the graph to the top-N nodes by degree", async () => {
     const full = await buildGraphJson(tempRoot)
     // Cap to fewer nodes than the full graph has

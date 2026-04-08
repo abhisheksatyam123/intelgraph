@@ -63,6 +63,8 @@ interface CliOptions {
   centerOf?: string
   /** --center-hops: max hop budget for --center (default 2). */
   centerHops?: number
+  /** --center-direction: in | out | both (default both). */
+  centerDirection?: "in" | "out" | "both"
   /** --max-nodes: cap the result to the top-N nodes by degree. */
   maxNodes?: number
 }
@@ -75,6 +77,7 @@ function parseArgs(): CliOptions {
   let symbolKinds: Set<string> | undefined
   let centerOf: string | undefined
   let centerHops: number | undefined
+  let centerDirection: "in" | "out" | "both" | undefined
   let maxNodes: number | undefined
   for (const arg of args) {
     if (arg === "--json") format = "json"
@@ -92,6 +95,9 @@ function parseArgs(): CliOptions {
     } else if (arg.startsWith("--center-hops=")) {
       const n = Number(arg.replace("--center-hops=", ""))
       if (Number.isFinite(n) && n >= 1) centerHops = Math.floor(n)
+    } else if (arg.startsWith("--center-direction=")) {
+      const v = arg.replace("--center-direction=", "")
+      if (v === "in" || v === "out" || v === "both") centerDirection = v
     } else if (arg.startsWith("--max-nodes=")) {
       const n = Number(arg.replace("--max-nodes=", ""))
       if (Number.isFinite(n) && n >= 1) maxNodes = Math.floor(n)
@@ -113,6 +119,7 @@ function parseArgs(): CliOptions {
     symbolKinds,
     centerOf,
     centerHops,
+    centerDirection,
     maxNodes,
   }
 }
@@ -142,6 +149,10 @@ function printUsage(): void {
       "                             (matched exact / suffix-after-# /",
       "                              substring; e.g. --center=Greeter.greet)",
       "  --center-hops=<n>          hop budget for --center (default 2)",
+      "  --center-direction=<dir>   direction of the BFS walk:",
+      "                             both = everything related to X (default)",
+      "                             out  = what X reaches (forward)",
+      "                             in   = what reaches X (backward)",
       "  --max-nodes=<n>            cap result to top-N nodes by degree",
       "                             (applied last; useful for big workspaces",
       "                              where the unfiltered graph would be too",
@@ -1621,6 +1632,7 @@ async function main(): Promise<void> {
         symbolKinds: options.symbolKinds,
         centerOf: options.centerOf,
         centerHops: options.centerHops,
+        centerDirection: options.centerDirection,
         maxNodes: options.maxNodes,
       })
       console.log(JSON.stringify(graph, null, 2))
@@ -1636,6 +1648,7 @@ async function main(): Promise<void> {
         symbolKinds: options.symbolKinds,
         centerOf: options.centerOf,
         centerHops: options.centerHops,
+        centerDirection: options.centerDirection,
         maxNodes: options.maxNodes,
       })
       console.log(graphJsonToHtml(graph))

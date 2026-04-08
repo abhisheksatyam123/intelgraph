@@ -404,6 +404,53 @@ describe("intelligence_graph MCP tool — round trip", () => {
     }
   })
 
+  it("centerDirection narrows the BFS walk via the MCP tool", async () => {
+    fixture = await buildFixture()
+    const both = JSON.parse(
+      await graphTool!.execute(
+        {
+          snapshotId: fixture.snapshotId,
+          workspaceRoot: fixture.tempRoot,
+          centerOf: "Alpha",
+          centerHops: 1,
+          centerDirection: "both",
+        },
+        stubClient,
+        stubTracker,
+      ),
+    ) as { nodes: unknown[] }
+    const outOnly = JSON.parse(
+      await graphTool!.execute(
+        {
+          snapshotId: fixture.snapshotId,
+          workspaceRoot: fixture.tempRoot,
+          centerOf: "Alpha",
+          centerHops: 1,
+          centerDirection: "out",
+        },
+        stubClient,
+        stubTracker,
+      ),
+    ) as { nodes: unknown[] }
+    const inOnly = JSON.parse(
+      await graphTool!.execute(
+        {
+          snapshotId: fixture.snapshotId,
+          workspaceRoot: fixture.tempRoot,
+          centerOf: "Alpha",
+          centerHops: 1,
+          centerDirection: "in",
+        },
+        stubClient,
+        stubTracker,
+      ),
+    ) as { nodes: unknown[] }
+
+    expect(both.nodes.length).toBeGreaterThan(0)
+    expect(outOnly.nodes.length).toBeLessThanOrEqual(both.nodes.length)
+    expect(inOnly.nodes.length).toBeLessThanOrEqual(both.nodes.length)
+  })
+
   it("centerOf returns an empty graph when the symbol doesn't resolve", async () => {
     fixture = await buildFixture()
     const raw = await graphTool!.execute(
