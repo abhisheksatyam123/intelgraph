@@ -45,10 +45,10 @@ const stubLsp = {
 
 interface CliOptions {
   workspace: string
-  format: "text" | "json" | "markdown" | "graph-json"
-  /** Comma-separated edge_kind filter for --graph-json. */
+  format: "text" | "json" | "markdown" | "graph-json" | "html"
+  /** Comma-separated edge_kind filter for --graph-json / --html. */
   edgeKinds?: Set<string>
-  /** Comma-separated symbol kind filter for --graph-json. */
+  /** Comma-separated symbol kind filter for --graph-json / --html. */
   symbolKinds?: Set<string>
 }
 
@@ -62,6 +62,7 @@ function parseArgs(): CliOptions {
     if (arg === "--json") format = "json"
     else if (arg === "--markdown" || arg === "--md") format = "markdown"
     else if (arg === "--graph-json" || arg === "--graph") format = "graph-json"
+    else if (arg === "--html") format = "html"
     else if (arg.startsWith("--filter-edge-kind=")) {
       const value = arg.replace("--filter-edge-kind=", "")
       edgeKinds = new Set(value.split(",").map((s) => s.trim()).filter(Boolean))
@@ -92,6 +93,7 @@ function printUsage(): void {
       "  --json         summary stats as JSON",
       "  --markdown     PR-pasteable markdown report",
       "  --graph-json   full node-link graph for d3/cytoscape/sigma",
+      "  --html         self-contained HTML viewer (open in browser)",
       "",
       "Graph-json filters (combine to subset the graph):",
       "  --filter-edge-kind=K,K     keep only these edge kinds",
@@ -680,6 +682,451 @@ export function dashboardToMarkdown(d: Dashboard): string {
   return lines.join("\n")
 }
 
+/**
+ * Render a GraphJson as a single self-contained HTML document with
+ * a d3-force layout. Pipe the output into a `.html` file and open
+ * it in a browser — no build step, no dev server, no file:// CORS
+ * issues. d3 is loaded from a pinned CDN URL.
+ *
+ * Interactivity:
+ *   - drag nodes
+ *   - zoom + pan
+ *   - hover for symbol tooltip
+ *   - click a node to highlight its 1-hop neighborhood
+ *   - toggle edge kinds via the legend
+ *   - search by canonical name
+ */
+export function graphJsonToHtml(graph: GraphJson): string {
+  // Inline the graph data as a JSON literal. JSON is a strict
+  // subset of JS, so this is a safe `<script>` body — but we still
+  // escape `</` to defend against script-tag injection from rogue
+  // canonical names.
+  const dataLiteral = JSON.stringify(graph).replace(/<\//g, "<\\/")
+  const title = `intelgraph — ${escapeHtml(graph.workspace)}`
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>${title}</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --panel: #181b24;
+    --border: #2a2f3d;
+    --text: #d8def0;
+    --muted: #8a93a6;
+    --accent: #6ab1ff;
+    --link: #3a4456;
+    --link-active: #ffd86b;
+  }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 13px;
+    overflow: hidden;
+  }
+  #app { display: flex; height: 100vh; }
+  #sidebar {
+    width: 280px;
+    border-right: 1px solid var(--border);
+    background: var(--panel);
+    padding: 12px;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  #sidebar h1 {
+    font-size: 14px;
+    margin: 0 0 4px 0;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  #sidebar .workspace { font-size: 11px; color: var(--muted); word-break: break-all; margin-bottom: 12px; }
+  #sidebar h2 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin: 14px 0 6px 0;
+    font-weight: 600;
+  }
+  #sidebar .stat { display: flex; justify-content: space-between; padding: 2px 0; font-variant-numeric: tabular-nums; }
+  #sidebar .stat .label { color: var(--muted); }
+  #sidebar input[type="search"] {
+    width: 100%; box-sizing: border-box;
+    background: var(--bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 4px;
+    padding: 6px 8px; font-size: 12px;
+    margin-bottom: 8px;
+  }
+  #sidebar .legend-item, #sidebar .edge-toggle {
+    display: flex; align-items: center; gap: 8px;
+    padding: 3px 0; cursor: pointer;
+    user-select: none;
+  }
+  #sidebar .swatch {
+    width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0;
+  }
+  #sidebar .swatch.line {
+    height: 3px;
+  }
+  #sidebar .legend-item .count, #sidebar .edge-toggle .count {
+    margin-left: auto; color: var(--muted); font-variant-numeric: tabular-nums;
+  }
+  #sidebar .disabled { opacity: 0.35; }
+  #info {
+    margin-top: 12px;
+    padding: 8px; border: 1px solid var(--border); border-radius: 4px;
+    font-size: 11px; min-height: 60px;
+    background: var(--bg);
+    word-break: break-all;
+  }
+  #info .empty { color: var(--muted); font-style: italic; }
+  #info .row { margin: 2px 0; }
+  #info .key { color: var(--muted); }
+  #canvas-wrap { flex: 1; position: relative; }
+  svg { width: 100%; height: 100%; display: block; }
+  .node { stroke: #000; stroke-width: 0.5; cursor: pointer; }
+  .node.dim { opacity: 0.12; }
+  .node.hit { stroke: #fff; stroke-width: 1.5; }
+  .link { stroke-opacity: 0.45; }
+  .link.dim { stroke-opacity: 0.04; }
+  .link.hit { stroke: var(--link-active); stroke-opacity: 0.85; }
+  .label {
+    font-size: 9px;
+    fill: var(--text);
+    pointer-events: none;
+    text-shadow: 0 0 2px var(--bg), 0 0 2px var(--bg);
+  }
+  #toolbar {
+    position: absolute; top: 8px; right: 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  #toolbar kbd {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 2px; padding: 1px 4px; font-family: inherit;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <h1>intelgraph</h1>
+    <div class="workspace">${escapeHtml(graph.workspace)}</div>
+
+    <h2>Stats</h2>
+    <div class="stat"><span class="label">nodes</span><span id="stat-nodes">0</span></div>
+    <div class="stat"><span class="label">edges</span><span id="stat-edges">0</span></div>
+    <div class="stat"><span class="label">visible</span><span id="stat-visible">0</span></div>
+
+    <h2>Search</h2>
+    <input id="search" type="search" placeholder="canonical name…" />
+
+    <h2>Symbol kinds</h2>
+    <div id="kind-legend"></div>
+
+    <h2>Edge kinds</h2>
+    <div id="edge-legend"></div>
+
+    <h2>Selection</h2>
+    <div id="info"><span class="empty">click a node</span></div>
+  </aside>
+  <div id="canvas-wrap">
+    <svg id="canvas"></svg>
+    <div id="toolbar">scroll = zoom · drag = pan · click = focus · <kbd>esc</kbd> = clear</div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script>
+const data = ${dataLiteral};
+const KIND_COLORS = {
+  module:     "#6ab1ff",
+  function:   "#9bd17f",
+  method:     "#7fc6c0",
+  class:      "#ffb86b",
+  struct:     "#ff8a65",
+  interface:  "#c792ea",
+  enum:       "#e5c07b",
+  typedef:    "#82aaff",
+  namespace:  "#f78c6c",
+  global_var: "#a3a8b8",
+};
+const EDGE_COLORS = {
+  imports:         "#6ab1ff",
+  contains:        "#5a6378",
+  calls:           "#9bd17f",
+  references_type: "#c792ea",
+  implements:      "#e5c07b",
+  extends:         "#ff8a65",
+};
+function colorFor(kind, table, fallback) {
+  return table[kind] || fallback;
+}
+
+const svg = d3.select("#canvas");
+const wrap = document.getElementById("canvas-wrap");
+const width  = () => wrap.clientWidth;
+const height = () => wrap.clientHeight;
+
+const root = svg.append("g");
+const linkLayer  = root.append("g").attr("class", "links");
+const nodeLayer  = root.append("g").attr("class", "nodes");
+const labelLayer = root.append("g").attr("class", "labels");
+
+const zoom = d3.zoom().scaleExtent([0.1, 8]).on("zoom", (ev) => {
+  root.attr("transform", ev.transform);
+  // hide labels when zoomed out
+  labelLayer.style("display", ev.transform.k > 1.6 ? "block" : "none");
+});
+svg.call(zoom);
+
+// Index nodes by id and build d3 link objects
+const nodeById = new Map(data.nodes.map((n) => [n.id, n]));
+const links = data.edges
+  .filter((e) => nodeById.has(e.src) && nodeById.has(e.dst))
+  .map((e) => ({ source: e.src, target: e.dst, kind: e.kind }));
+
+// Build neighborhood index for click-highlight
+const neighbors = new Map();
+for (const n of data.nodes) neighbors.set(n.id, new Set([n.id]));
+for (const l of links) {
+  neighbors.get(l.source).add(l.target);
+  neighbors.get(l.target).add(l.source);
+}
+
+document.getElementById("stat-nodes").textContent = data.nodes.length;
+document.getElementById("stat-edges").textContent = links.length;
+
+// Active filters
+const activeKinds = new Set(data.nodes.map((n) => n.kind));
+const activeEdgeKinds = new Set(links.map((l) => l.kind));
+
+const sim = d3.forceSimulation(data.nodes)
+  .force("link", d3.forceLink(links).id((d) => d.id).distance(40).strength(0.5))
+  .force("charge", d3.forceManyBody().strength(-90))
+  .force("center", d3.forceCenter(width() / 2, height() / 2))
+  .force("collide", d3.forceCollide().radius(7));
+
+let linkSel = linkLayer.selectAll("line");
+let nodeSel = nodeLayer.selectAll("circle");
+let labelSel = labelLayer.selectAll("text");
+
+function shortName(id) {
+  const hash = id.indexOf("#");
+  if (hash >= 0) return id.substring(hash + 1);
+  const slash = id.lastIndexOf("/");
+  return slash >= 0 ? id.substring(slash + 1) : id;
+}
+
+function radiusFor(d) {
+  if (d.kind === "module") return 6;
+  if (d.kind === "class" || d.kind === "struct" || d.kind === "interface") return 5;
+  return 3.5;
+}
+
+function render() {
+  const visibleNodes = data.nodes.filter((n) => activeKinds.has(n.kind));
+  const visibleNodeIds = new Set(visibleNodes.map((n) => n.id));
+  const visibleLinks = links.filter(
+    (l) =>
+      activeEdgeKinds.has(l.kind) &&
+      visibleNodeIds.has(typeof l.source === "object" ? l.source.id : l.source) &&
+      visibleNodeIds.has(typeof l.target === "object" ? l.target.id : l.target),
+  );
+
+  document.getElementById("stat-visible").textContent =
+    visibleNodes.length + " / " + visibleLinks.length;
+
+  linkSel = linkLayer
+    .selectAll("line")
+    .data(visibleLinks, (d) => (typeof d.source === "object" ? d.source.id : d.source) + "→" + (typeof d.target === "object" ? d.target.id : d.target) + ":" + d.kind)
+    .join("line")
+    .attr("class", "link")
+    .attr("stroke", (d) => colorFor(d.kind, EDGE_COLORS, "#5a6378"))
+    .attr("stroke-width", (d) => (d.kind === "calls" ? 1.2 : 0.8));
+
+  nodeSel = nodeLayer
+    .selectAll("circle")
+    .data(visibleNodes, (d) => d.id)
+    .join("circle")
+    .attr("class", "node")
+    .attr("r", radiusFor)
+    .attr("fill", (d) => colorFor(d.kind, KIND_COLORS, "#a3a8b8"))
+    .on("click", onClick)
+    .on("mouseover", onHover)
+    .call(
+      d3.drag()
+        .on("start", (ev, d) => { if (!ev.active) sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+        .on("drag",  (ev, d) => { d.fx = ev.x; d.fy = ev.y; })
+        .on("end",   (ev, d) => { if (!ev.active) sim.alphaTarget(0); d.fx = null; d.fy = null; }),
+    );
+
+  labelSel = labelLayer
+    .selectAll("text")
+    .data(visibleNodes, (d) => d.id)
+    .join("text")
+    .attr("class", "label")
+    .attr("dx", 7)
+    .attr("dy", 3)
+    .text((d) => shortName(d.id));
+
+  sim.nodes(visibleNodes);
+  sim.force("link").links(visibleLinks);
+  sim.alpha(0.6).restart();
+}
+
+sim.on("tick", () => {
+  linkSel
+    .attr("x1", (d) => d.source.x)
+    .attr("y1", (d) => d.source.y)
+    .attr("x2", (d) => d.target.x)
+    .attr("y2", (d) => d.target.y);
+  nodeSel.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
+  labelSel.attr("x", (d) => d.x).attr("y", (d) => d.y);
+});
+
+let focused = null;
+function onClick(ev, d) {
+  ev.stopPropagation();
+  focused = focused === d.id ? null : d.id;
+  applyFocus();
+  showInfo(d);
+}
+function onHover(ev, d) {
+  if (!focused) showInfo(d);
+}
+svg.on("click", () => { focused = null; applyFocus(); clearInfo(); });
+window.addEventListener("keydown", (ev) => {
+  if (ev.key === "Escape") { focused = null; applyFocus(); clearInfo(); }
+});
+
+function applyFocus() {
+  if (!focused) {
+    nodeSel.classed("dim", false).classed("hit", false);
+    linkSel.classed("dim", false).classed("hit", false);
+    return;
+  }
+  const nbrs = neighbors.get(focused) || new Set([focused]);
+  nodeSel
+    .classed("dim", (d) => !nbrs.has(d.id))
+    .classed("hit", (d) => d.id === focused);
+  linkSel
+    .classed("dim", (l) => {
+      const s = typeof l.source === "object" ? l.source.id : l.source;
+      const t = typeof l.target === "object" ? l.target.id : l.target;
+      return !(s === focused || t === focused);
+    })
+    .classed("hit", (l) => {
+      const s = typeof l.source === "object" ? l.source.id : l.source;
+      const t = typeof l.target === "object" ? l.target.id : l.target;
+      return s === focused || t === focused;
+    });
+}
+
+function showInfo(d) {
+  const info = document.getElementById("info");
+  const rows = [
+    ["id",         d.id],
+    ["kind",       d.kind],
+    ["file",       d.file_path || "—"],
+    ["line",       d.line ?? "—"],
+    ["lines",      d.line_count ?? "—"],
+    ["exported",   d.exported ? "yes" : "no"],
+    ["owning",     d.owning_class || "—"],
+  ];
+  info.innerHTML = rows
+    .map((r) => '<div class="row"><span class="key">' + r[0] + '</span> ' + escapeHtml(String(r[1])) + '</div>')
+    .join("");
+}
+function clearInfo() {
+  document.getElementById("info").innerHTML = '<span class="empty">click a node</span>';
+}
+function escapeHtml(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// Build legends
+function buildKindLegend() {
+  const counts = {};
+  for (const n of data.nodes) counts[n.kind] = (counts[n.kind] || 0) + 1;
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const container = document.getElementById("kind-legend");
+  container.innerHTML = "";
+  for (const [kind, n] of sorted) {
+    const div = document.createElement("div");
+    div.className = "legend-item";
+    div.innerHTML =
+      '<div class="swatch" style="background:' + colorFor(kind, KIND_COLORS, "#a3a8b8") + '"></div>' +
+      '<div>' + escapeHtml(kind) + '</div>' +
+      '<div class="count">' + n + '</div>';
+    div.onclick = () => {
+      if (activeKinds.has(kind)) activeKinds.delete(kind);
+      else activeKinds.add(kind);
+      div.classList.toggle("disabled", !activeKinds.has(kind));
+      render();
+    };
+    container.appendChild(div);
+  }
+}
+function buildEdgeLegend() {
+  const counts = {};
+  for (const l of links) counts[l.kind] = (counts[l.kind] || 0) + 1;
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const container = document.getElementById("edge-legend");
+  container.innerHTML = "";
+  for (const [kind, n] of sorted) {
+    const div = document.createElement("div");
+    div.className = "edge-toggle";
+    div.innerHTML =
+      '<div class="swatch line" style="background:' + colorFor(kind, EDGE_COLORS, "#5a6378") + '"></div>' +
+      '<div>' + escapeHtml(kind) + '</div>' +
+      '<div class="count">' + n + '</div>';
+    div.onclick = () => {
+      if (activeEdgeKinds.has(kind)) activeEdgeKinds.delete(kind);
+      else activeEdgeKinds.add(kind);
+      div.classList.toggle("disabled", !activeEdgeKinds.has(kind));
+      render();
+    };
+    container.appendChild(div);
+  }
+}
+buildKindLegend();
+buildEdgeLegend();
+
+// Search
+document.getElementById("search").addEventListener("input", (ev) => {
+  const q = ev.target.value.trim().toLowerCase();
+  if (!q) { focused = null; applyFocus(); return; }
+  const hit = data.nodes.find((n) => n.id.toLowerCase().includes(q));
+  if (hit) { focused = hit.id; applyFocus(); showInfo(hit); }
+});
+
+window.addEventListener("resize", () => {
+  sim.force("center", d3.forceCenter(width() / 2, height() / 2));
+  sim.alpha(0.3).restart();
+});
+
+render();
+</script>
+</body>
+</html>
+`
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+}
+
 async function main(): Promise<void> {
   const options = parseArgs()
   if (!existsSync(options.workspace)) {
@@ -697,6 +1144,18 @@ async function main(): Promise<void> {
         symbolKinds: options.symbolKinds,
       })
       console.log(JSON.stringify(graph, null, 2))
+      return
+    }
+
+    if (options.format === "html") {
+      // Self-contained HTML viewer — pipe to a .html file and
+      // open it in a browser. Uses the same buildGraphJson +
+      // filter flags as --graph-json.
+      const graph = await buildGraphJson(options.workspace, {
+        edgeKinds: options.edgeKinds,
+        symbolKinds: options.symbolKinds,
+      })
+      console.log(graphJsonToHtml(graph))
       return
     }
 

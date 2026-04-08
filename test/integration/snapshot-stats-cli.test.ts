@@ -24,6 +24,7 @@ import {
   buildDashboard,
   buildGraphJson,
   dashboardToMarkdown,
+  graphJsonToHtml,
 } from "../../src/bin/snapshot-stats.js"
 
 let tempRoot: string
@@ -226,6 +227,56 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     for (const edge of graph.edges) {
       expect(edge.kind).toBe("imports")
     }
+  })
+
+  it("graphJsonToHtml returns a self-contained HTML viewer", async () => {
+    const graph = await buildGraphJson(tempRoot)
+    const html = graphJsonToHtml(graph)
+
+    // Standard document shape
+    expect(html.startsWith("<!doctype html>")).toBe(true)
+    expect(html).toContain("</html>")
+    expect(html).toContain("<svg")
+    expect(html).toContain("d3.forceSimulation")
+
+    // d3 is loaded from the CDN with a pinned version
+    expect(html).toContain("d3@7.9.0")
+
+    // Workspace name in the title and sidebar
+    expect(html).toContain(tempRoot)
+
+    // Graph data is inlined as a JS literal — verify by checking that
+    // a known canonical name from the fixture appears in the body
+    expect(html).toContain("module-a.ts")
+
+    // Legends are wired to the data
+    expect(html).toContain("kind-legend")
+    expect(html).toContain("edge-legend")
+
+    // Defends against script-tag injection from rogue canonical names —
+    // any literal `</` inside the JSON literal should be escaped to `<\/`.
+    // Find the data block and assert no raw `</script` survives within it.
+    const dataMatch = html.match(/const data = (\{[\s\S]*?\});\nconst KIND_COLORS/)
+    expect(dataMatch).not.toBeNull()
+    expect(dataMatch![1]).not.toContain("</script")
+  })
+
+  it("graphJsonToHtml propagates --filter-edge-kind subsets", async () => {
+    // Imports-only subset → the inlined data should NOT contain a
+    // "calls" edge_kind anywhere in the data block.
+    const graph = await buildGraphJson(tempRoot, {
+      edgeKinds: new Set(["imports"]),
+    })
+    const html = graphJsonToHtml(graph)
+    const dataMatch = html.match(/const data = (\{[\s\S]*?\});/)
+    expect(dataMatch).not.toBeNull()
+    const dataBlock = dataMatch![1]
+    // The graph object's edges array carries kind:"imports" only.
+    // We can't perfectly tokenize JSON in regex, but checking that
+    // no `"kind":"calls"` substring appears is a reliable smoke
+    // signal because that's how JSON.stringify renders it.
+    expect(dataBlock).not.toContain('"kind":"calls"')
+    expect(dataBlock).toContain('"kind":"imports"')
   })
 
   it("dashboardToMarkdown renders a valid markdown report", async () => {
