@@ -1,12 +1,13 @@
 /**
- * snapshot-stats — print a per-workspace ts-core snapshot dashboard.
+ * snapshot-stats — print a per-workspace snapshot dashboard.
  *
  * Usage:
  *   bun run src/bin/snapshot-stats.ts <workspace-path>
  *   bun run src/bin/snapshot-stats.ts <workspace-path> --json
  *
- * Walks the workspace using ts-core, then runs the most useful query
- * intents and prints a dashboard summarizing the snapshot:
+ * Walks the workspace using every BUILT_IN extractor whose appliesTo
+ * matches (ts-core, rust-core, clangd-core, …), then runs the most
+ * useful query intents and prints a dashboard summarizing the snapshot:
  *
  *   - edge kind histogram
  *   - call resolution kind histogram
@@ -29,7 +30,7 @@ import { SqliteDbFoundation } from "../intelligence/db/sqlite/foundation.js"
 import { SqliteGraphStore } from "../intelligence/db/sqlite/graph-store.js"
 import { SqliteDbLookup } from "../intelligence/db/sqlite/db-lookup.js"
 import { ExtractorRunner } from "../intelligence/extraction/runner.js"
-import { tsCoreExtractor } from "../plugins/index.js"
+import { BUILT_IN_EXTRACTORS } from "../plugins/index.js"
 import type { ILanguageClient } from "../lsp/types.js"
 
 const stubLsp = {
@@ -148,15 +149,24 @@ export async function buildDashboard(workspace: string): Promise<Dashboard> {
       workspaceRoot: workspace,
       lsp: stubLsp,
       sink: store,
-      plugins: [tsCoreExtractor],
+      plugins: BUILT_IN_EXTRACTORS,
     })
     const report = await runner.run()
     await foundation.commitSnapshot(snapshotId)
 
-    const filesDiscovered =
-      report.perPlugin.find((p) => p.name === "ts-core")?.metrics?.counters?.[
-        "ts.files-discovered"
-      ] ?? 0
+    // Sum files-discovered across every plugin that ran. Each plugin
+    // emits its own counter (ts.files-discovered, rust.files-discovered,
+    // files-discovered for clangd-core), so we accept any counter whose
+    // name ends in "files-discovered".
+    let filesDiscovered = 0
+    for (const plugin of report.perPlugin) {
+      const counters = plugin.metrics?.counters ?? {}
+      for (const [key, value] of Object.entries(counters)) {
+        if (key.endsWith("files-discovered") && typeof value === "number") {
+          filesDiscovered += value
+        }
+      }
+    }
 
     // Total counts
     const totalNodes = (
@@ -357,7 +367,7 @@ export async function buildGraphJson(
       workspaceRoot: workspace,
       lsp: stubLsp,
       sink: store,
-      plugins: [tsCoreExtractor],
+      plugins: BUILT_IN_EXTRACTORS,
     })
     await runner.run()
     await foundation.commitSnapshot(snapshotId)

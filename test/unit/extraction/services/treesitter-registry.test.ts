@@ -56,9 +56,13 @@ describe("treesitter-registry — language inference", () => {
     expect(inferLanguageFromExtension("/x.jsx")).toBe("tsx")
   })
 
+  it("recognizes Rust", () => {
+    expect(inferLanguageFromExtension("/x.rs")).toBe("rust")
+  })
+
   it("returns null for unsupported extensions", () => {
     expect(inferLanguageFromExtension("/x.py")).toBeNull()
-    expect(inferLanguageFromExtension("/x.rs")).toBeNull()
+    expect(inferLanguageFromExtension("/x.go")).toBeNull()
     expect(inferLanguageFromExtension("/x")).toBeNull()
   })
 

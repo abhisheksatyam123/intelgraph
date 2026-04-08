@@ -37,7 +37,7 @@ import { fileURLToPath } from "node:url"
 // ---------------------------------------------------------------------------
 
 /** Supported language id. Add to the LANGUAGE_WASM map below to extend. */
-export type SupportedLanguage = "c" | "typescript" | "tsx"
+export type SupportedLanguage = "c" | "typescript" | "tsx" | "rust"
 
 /**
  * Minimal AST node interface — every tree-sitter Node has these. Plugins
@@ -78,6 +78,7 @@ const LANGUAGE_WASM: Record<SupportedLanguage, string> = {
   c: "tree-sitter-c/tree-sitter-c.wasm",
   typescript: "tree-sitter-typescript/tree-sitter-typescript.wasm",
   tsx: "tree-sitter-typescript/tree-sitter-tsx.wasm",
+  rust: "tree-sitter-rust/tree-sitter-rust.wasm",
 }
 
 function resolveProjectRoot(): string {
@@ -263,6 +264,7 @@ export function inferLanguageFromExtension(filePath: string): SupportedLanguage 
   ) {
     return "typescript"
   }
+  if (lower.endsWith(".rs")) return "rust"
   return null
 }
 
