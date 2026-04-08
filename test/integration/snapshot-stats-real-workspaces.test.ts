@@ -1130,6 +1130,63 @@ for (const wcase of CASES) {
         expect(hasNeighbors).toBe(true)
       })
 
+      it("loadGraphJsonFromDb completes within the performance budget", () => {
+        // The full unfiltered graph build for instructkr-claude-code
+        // (~20K nodes, ~100K edges) takes ~5s in CI; opencode is
+        // ~2s. Budget is 15s — generous enough that flaky CI machines
+        // don't fail spuriously, tight enough that any 3x regression
+        // in the SQL or the post-processing is caught immediately.
+        const PERF_BUDGET_MS = 15_000
+
+        const t0 = performance.now()
+        const full = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        const t1 = performance.now()
+        const fullMs = t1 - t0
+        expect(fullMs).toBeLessThan(PERF_BUDGET_MS)
+        expect(full.nodes.length).toBeGreaterThan(wcase.minNodes)
+
+        // The filtered build (centerOf + maxNodes) does extra work
+        // beyond the SQL: BFS reduction + degree-based topN.
+        // It must still come in under the same budget.
+        const t2 = performance.now()
+        const filtered = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+          {
+            centerOf: wcase.centerSymbol,
+            centerHops: 3,
+            maxNodes: 200,
+          },
+        )
+        const t3 = performance.now()
+        const filteredMs = t3 - t2
+        expect(filteredMs).toBeLessThan(PERF_BUDGET_MS)
+        expect(filtered.nodes.length).toBeGreaterThan(0)
+
+        // Render the truncated graph as HTML and assert it also
+        // completes within budget. graphJsonToHtml is mostly a string
+        // template with a single JSON.stringify, so this is fast even
+        // on the maxNodes=300 instructkr case (~180KB output).
+        const t4 = performance.now()
+        const html = graphJsonToHtml(
+          loadGraphJsonFromDb(
+            ingest.client.raw,
+            ingest.snapshotId,
+            wcase.path,
+            { maxNodes: 300 },
+          ),
+        )
+        const t5 = performance.now()
+        const renderMs = t5 - t4
+        expect(renderMs).toBeLessThan(PERF_BUDGET_MS)
+        expect(html.length).toBeGreaterThan(50_000)
+      })
+
       it("truncated HTML stays under the production size budget", () => {
         // The 20,466-node instructkr-claude-code unfiltered HTML is
         // ~19 MB, which would be both slow to download and impossible
