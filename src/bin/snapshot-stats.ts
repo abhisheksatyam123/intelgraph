@@ -764,6 +764,8 @@ export function graphJsonToHtml(graph: GraphJson): string {
       <span id="hop-value">1</span>
       <span>4 hops</span>
     </div>
+    <button class="preset" id="center-on-focused">Center on focused (live)</button>
+    <button class="preset" id="clear-center">Show full graph</button>
 
     <h2>Cycles</h2>
     <div class="legend-item" id="cycle-toggle">
@@ -1003,8 +1005,19 @@ function radiusFor(d) {
   return 3.5;
 }
 
+// Live center filter: when set, render() drops nodes outside this
+// set in addition to the kind filter. Populated by the "Center on
+// focused" button from the focused node's k-hop neighborhood,
+// where k is the current hop slider value. Cleared by "Show full
+// graph" or by entering a fresh search query.
+let centerSet = null;
+
 function render() {
-  const visibleNodes = data.nodes.filter((n) => activeKinds.has(n.kind));
+  const visibleNodes = data.nodes.filter((n) => {
+    if (!activeKinds.has(n.kind)) return false;
+    if (centerSet && !centerSet.has(n.id)) return false;
+    return true;
+  });
   const visibleNodeIds = new Set(visibleNodes.map((n) => n.id));
   const visibleLinks = links.filter(
     (l) =>
@@ -1119,6 +1132,7 @@ function saveHashState() {
   if (hopDepth !== 1) params.set("h", String(hopDepth));
   if (cyclesOn) params.set("c", "1");
   if (tintOn) params.set("t", "1");
+  if (centerSet) params.set("cm", "1");
   // Only encode kind filters when they don't match the full set
   const allKinds = new Set(data.nodes.map((n) => n.kind));
   if (activeKinds.size !== allKinds.size) {
@@ -1153,6 +1167,14 @@ function loadHashState() {
   if (params.get("t") === "1") {
     tintOn = true;
     document.getElementById("tint-toggle").classList.remove("disabled");
+  }
+  // Live center filter: if cm=1 is in the hash AND f resolved to a
+  // valid node, recompute the centerSet from the focused node's
+  // neighborhood at the current hop depth. We can't store the full
+  // ID set in the URL — it would explode for big graphs — so we
+  // store just the flag and recompute.
+  if (params.get("cm") === "1" && focused) {
+    centerSet = neighborhood(focused, hopDepth);
   }
   const k = params.get("k");
   if (k) {
@@ -1382,6 +1404,30 @@ for (const id of ["path-from", "path-to"]) {
 }
 // Also clear the path when Reset is clicked.
 document.getElementById("preset-reset").addEventListener("click", clearPath);
+
+// Live center filter: take the focused node's k-hop neighborhood
+// and use it as a hard visibility filter. This is the inline
+// counterpart to the CLI / MCP centerOf flag — same effect, but
+// reversible at any time and computed against the inlined data.
+document.getElementById("center-on-focused").addEventListener("click", () => {
+  if (!focused) {
+    document.getElementById("info").innerHTML =
+      '<span class="empty">click a node first, then center</span>';
+    return;
+  }
+  centerSet = neighborhood(focused, hopDepth);
+  render();
+  saveHashState();
+});
+document.getElementById("clear-center").addEventListener("click", () => {
+  centerSet = null;
+  render();
+  saveHashState();
+});
+// Also clear the center filter when "Reset all filters" is clicked.
+document.getElementById("preset-reset").addEventListener("click", () => {
+  centerSet = null;
+});
 
 // ── Live stats badge ────────────────────────────────────────────────────────
 // Updates after every render() so users see exactly how their filter

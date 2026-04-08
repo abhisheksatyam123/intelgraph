@@ -396,6 +396,17 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(html).toContain(".link.path-on")
     expect(html).toContain(".node.path-on")
 
+    // Live center filter (HTML viewer's inline counterpart to the
+    // CLI / MCP centerOf flag).
+    expect(html).toContain("let centerSet")
+    expect(html).toContain('id="center-on-focused"')
+    expect(html).toContain('id="clear-center"')
+    // The filter must be applied inside render(): when centerSet is
+    // set, render() drops nodes outside it.
+    expect(html).toContain("centerSet && !centerSet.has")
+    // URL hash flag for the live center mode
+    expect(html).toContain('"cm"')
+
     // Inlined script must parse as valid JS. Catches the class of bug
     // where a stray backtick inside a comment closes the outer
     // template literal and corrupts the rest of the document.
