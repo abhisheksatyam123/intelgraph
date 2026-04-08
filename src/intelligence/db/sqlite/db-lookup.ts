@@ -224,6 +224,19 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.outgoingByEdgeKind(snapshotId, apiNames, "aggregates", limit)
       case "find_type_aggregators":
         return this.incomingByEdgeKind(snapshotId, apiNames, "aggregates", limit)
+      // Phase 3g: language-agnostic field-access intents.
+      // These delegate to the existing apiStructAccess / structAccess
+      // helpers which were already SQL-generic over edge_kind. The
+      // older find_api_struct_* / find_struct_* names are kept for
+      // C/C++ back-compat but these four are recommended for TS/Rust.
+      case "find_api_field_writes":
+        return this.apiStructAccess(snapshotId, apiNames, "writes_field", limit)
+      case "find_api_field_reads":
+        return this.apiStructAccess(snapshotId, apiNames, "reads_field", limit)
+      case "find_field_writers":
+        return this.structAccess(snapshotId, apiNames, "writes_field", limit)
+      case "find_field_readers":
+        return this.structAccess(snapshotId, apiNames, "reads_field", limit)
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
       case "find_top_imported_modules":

@@ -133,6 +133,19 @@ export const QUERY_INTENTS = [
   "find_type_aggregates",
   /** Reverse direction — types that aggregate this one. */
   "find_type_aggregators",
+  // ── Phase 3g: field-access intents (cleaner aliases for the
+  //              language-agnostic case — the older find_api_struct_*
+  //              and find_struct_* names are kept for back-compat
+  //              but suggested for C/C++. These four use TS/Rust-
+  //              friendly naming.)
+  /** Fields written by this API/method (outgoing writes_field edges). */
+  "find_api_field_writes",
+  /** Fields read by this API/method (outgoing reads_field edges). */
+  "find_api_field_reads",
+  /** APIs/methods that write to this field (incoming writes_field edges). */
+  "find_field_writers",
+  /** APIs/methods that read from this field (incoming reads_field edges). */
+  "find_field_readers",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

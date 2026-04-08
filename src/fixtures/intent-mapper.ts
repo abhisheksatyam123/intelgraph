@@ -89,6 +89,11 @@ export function mapIntentToArray(intent: QueryIntent): RelationArrayName {
     find_type_fields: "structures",
     find_type_aggregates: "structures",
     find_type_aggregators: "structures",
+    // Phase 3g: language-agnostic field-access intents
+    find_api_field_writes: "structures",
+    find_api_field_reads: "structures",
+    find_field_writers: "structures",
+    find_field_readers: "structures",
   }
 
   return mapping[intent] || "uses"

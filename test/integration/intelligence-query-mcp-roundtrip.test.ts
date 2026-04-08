@@ -995,4 +995,166 @@ describe("intelligence_query MCP tool — data-structure intents (Phase 3e)", ()
     const sources = res.data.nodes.map((n) => String(n.canonical_name))
     expect(sources.some((s) => s.endsWith("#Box"))).toBe(true)
   })
+
+  // ── Phase 3g: language-agnostic field-access aliases ──────────────
+  // The fixture's Box class has reads_field/writes_field edges from
+  // its methods to its fields (via the existing ts-core extraction).
+  // We need to extend the fixture so the four field-access intents
+  // have something to find — `Box.greet` reads `Box.owner` and
+  // writes `Box.count`.
+  it("find_api_field_reads / find_api_field_writes / find_field_readers / find_field_writers — synthetic data flow fixture", async () => {
+    // Build a small fixture with explicit reads/writes via this.foo
+    // and confirm all four intents find the right rows.
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3g-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3g" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      writeFileSync(
+        join(tempRoot, "src", "counter.ts"),
+        `export class Counter {
+  count = 0
+  name = "init"
+  reset(): void {
+    this.count = 0
+  }
+  bump(): void {
+    this.count = this.count + 1
+  }
+  label(): string {
+    return this.name
+  }
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3g",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      // 1. find_api_field_writes(Counter.bump) → Counter.count
+      const apiWritesRaw = await tool!.execute(
+        {
+          intent: "find_api_field_writes",
+          snapshotId,
+          apiName: "module:src/counter.ts#Counter.bump",
+        },
+        stubClient,
+        stubTracker,
+      )
+      const apiWrites = JSON.parse(apiWritesRaw) as FlatResponse
+      expect(apiWrites.status).toBe("hit")
+      expect(
+        apiWrites.data.nodes.some((n) =>
+          String(n.canonical_name).endsWith("#Counter.count"),
+        ),
+      ).toBe(true)
+
+      // 2. find_api_field_reads(Counter.label) → Counter.name
+      const apiReadsRaw = await tool!.execute(
+        {
+          intent: "find_api_field_reads",
+          snapshotId,
+          apiName: "module:src/counter.ts#Counter.label",
+        },
+        stubClient,
+        stubTracker,
+      )
+      const apiReads = JSON.parse(apiReadsRaw) as FlatResponse
+      expect(apiReads.status).toBe("hit")
+      expect(
+        apiReads.data.nodes.some((n) =>
+          String(n.canonical_name).endsWith("#Counter.name"),
+        ),
+      ).toBe(true)
+
+      // 3. find_field_writers(Counter.count) → Counter.reset + Counter.bump
+      const writersRaw = await tool!.execute(
+        {
+          intent: "find_field_writers",
+          snapshotId,
+          apiName: "module:src/counter.ts#Counter.count",
+        },
+        stubClient,
+        stubTracker,
+      )
+      const writers = JSON.parse(writersRaw) as FlatResponse
+      expect(writers.status).toBe("hit")
+      const writerNames = writers.data.nodes.map((n) =>
+        String(n.canonical_name),
+      )
+      expect(writerNames.some((n) => n.endsWith("#Counter.reset"))).toBe(true)
+      expect(writerNames.some((n) => n.endsWith("#Counter.bump"))).toBe(true)
+
+      // 4. find_field_readers(Counter.name) → Counter.label
+      const readersRaw = await tool!.execute(
+        {
+          intent: "find_field_readers",
+          snapshotId,
+          apiName: "module:src/counter.ts#Counter.name",
+        },
+        stubClient,
+        stubTracker,
+      )
+      const readers = JSON.parse(readersRaw) as FlatResponse
+      expect(readers.status).toBe("hit")
+      expect(
+        readers.data.nodes.some((n) =>
+          String(n.canonical_name).endsWith("#Counter.label"),
+        ),
+      ).toBe(true)
+
+      client.close()
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
 })
