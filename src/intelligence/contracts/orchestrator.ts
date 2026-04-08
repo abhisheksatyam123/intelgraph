@@ -118,6 +118,8 @@ export const QUERY_INTENTS = [
   "find_undocumented_exports",
   /** Interfaces ranked DESC by implementor count — core abstractions of the codebase. */
   "find_top_implemented_interfaces",
+  /** Modules with NO incoming AND NO outgoing imports — completely isolated, likely dead. */
+  "find_orphan_modules",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

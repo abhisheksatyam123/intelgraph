@@ -385,6 +385,23 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_orphan_modules returns modules with no imports either way", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_orphan_modules",
+        snapshotId: ingest.snapshotId,
+        limit: 50,
+      })
+      // Result MAY be empty if every module is connected. Most
+      // workspaces have at least a few orphans (test fixtures, type
+      // declaration files, etc.).
+      expect(result.intent).toBe("find_orphan_modules")
+      // All result rows are modules
+      for (const row of result.rows) {
+        expect(row.kind).toBe("module")
+        expect(String(row.canonical_name)).toMatch(/^module:/)
+      }
+    })
+
     it("find_top_implemented_interfaces ranks interfaces by implementor count", async () => {
       const result = await ingest.lookup.lookup({
         intent: "find_top_implemented_interfaces",
@@ -1710,6 +1727,7 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
         { intent: "find_widely_referenced_types", request: {} },
         { intent: "find_undocumented_exports", request: {} },
         { intent: "find_top_implemented_interfaces", request: {} },
+        { intent: "find_orphan_modules", request: {} },
         // Search & browse
         {
           intent: "find_symbols_by_name",

@@ -280,6 +280,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.undocumentedExports(snapshotId, limit)
       case "find_top_implemented_interfaces":
         return this.topByIncoming(snapshotId, "implements", "interface", limit)
+      case "find_orphan_modules":
+        return this.orphanModules(snapshotId, limit)
       default:
         return []
     }
@@ -1037,6 +1039,64 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find modules with NO incoming AND NO outgoing imports. Stricter
+   * than find_module_entry_points which only checks incoming. These
+   * modules are completely isolated — usually dead code, build
+   * artifacts, or accidental files.
+   *
+   * Two NOT EXISTS subqueries: one for incoming imports, one for
+   * outgoing imports. The result is the set difference between all
+   * modules and any module touched by an imports edge in either
+   * direction.
+   */
+  private orphanModules(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        m.canonical_name AS canonical_name,
+        m.kind AS kind,
+        m.location AS location
+      FROM graph_nodes m
+      WHERE m.snapshot_id = ?
+        AND m.kind = 'module'
+        AND NOT EXISTS (
+          SELECT 1 FROM graph_edges e
+          INNER JOIN graph_nodes dst
+            ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+          WHERE e.snapshot_id = m.snapshot_id
+            AND e.edge_kind = 'imports'
+            AND dst.canonical_name = m.canonical_name
+        )
+        AND NOT EXISTS (
+          SELECT 1 FROM graph_edges e
+          INNER JOIN graph_nodes src
+            ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+          WHERE e.snapshot_id = m.snapshot_id
+            AND e.edge_kind = 'imports'
+            AND src.canonical_name = m.canonical_name
+        )
+      ORDER BY m.canonical_name
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: "module",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "imports",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
 
   /**
    * Find exported symbols that lack a JSDoc comment. Builds on D26
