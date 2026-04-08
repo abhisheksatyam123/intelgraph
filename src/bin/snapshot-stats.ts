@@ -698,6 +698,18 @@ export function graphJsonToHtml(graph: GraphJson): string {
     font-size: 11px; color: var(--muted);
     font-variant-numeric: tabular-nums;
   }
+  #sidebar .dir-row {
+    display: flex; gap: 12px;
+    font-size: 11px; color: var(--muted);
+    margin: 6px 0 8px 0;
+  }
+  #sidebar .dir-row label {
+    cursor: pointer; user-select: none;
+    display: flex; gap: 4px; align-items: center;
+  }
+  #sidebar .dir-row input[type="radio"] {
+    accent-color: var(--accent);
+  }
   #sidebar button.preset {
     width: 100%; box-sizing: border-box;
     background: var(--bg); color: var(--text);
@@ -774,6 +786,11 @@ export function graphJsonToHtml(graph: GraphJson): string {
       <span>1 hop</span>
       <span id="hop-value">1</span>
       <span>4 hops</span>
+    </div>
+    <div class="dir-row">
+      <label><input type="radio" name="dir" value="both" checked> both</label>
+      <label><input type="radio" name="dir" value="out"> out</label>
+      <label><input type="radio" name="dir" value="in"> in</label>
     </div>
     <button class="preset" id="center-on-focused">Center on focused (live)</button>
     <button class="preset" id="clear-center">Show full graph</button>
@@ -911,19 +928,32 @@ for (const l of links) {
   successors.get(l.source).add(l.target);
   predecessors.get(l.target).add(l.source);
 }
-function neighborhood(rootId, hops) {
-  // Undirected k-hop BFS over the union of successors+predecessors.
-  // Returns the set of node ids reachable within hops steps (always
-  // includes rootId itself).
+// Walk direction for neighborhood expansion. Mirrors the server-side
+// centerDirection contract:
+//   "both" → undirected (successors ∪ predecessors), "everything related"
+//   "out"  → forward only (successors), "what X reaches"
+//   "in"   → backward only (predecessors), "what reaches X"
+let walkDirection = "both";
+
+function neighborhood(rootId, hops, direction) {
+  // K-hop BFS in the requested direction. Defaults to the current
+  // walkDirection state when no explicit direction is passed.
+  const dir = direction || walkDirection;
+  const walkOut = dir === "out" || dir === "both";
+  const walkIn = dir === "in" || dir === "both";
   const seen = new Set([rootId]);
   let frontier = [rootId];
   for (let i = 0; i < hops; i++) {
     const next = [];
     for (const id of frontier) {
-      const out = successors.get(id);
-      if (out) for (const t of out) if (!seen.has(t)) { seen.add(t); next.push(t); }
-      const inn = predecessors.get(id);
-      if (inn) for (const t of inn) if (!seen.has(t)) { seen.add(t); next.push(t); }
+      if (walkOut) {
+        const out = successors.get(id);
+        if (out) for (const t of out) if (!seen.has(t)) { seen.add(t); next.push(t); }
+      }
+      if (walkIn) {
+        const inn = predecessors.get(id);
+        if (inn) for (const t of inn) if (!seen.has(t)) { seen.add(t); next.push(t); }
+      }
     }
     if (next.length === 0) break;
     frontier = next;
@@ -1141,6 +1171,7 @@ function saveHashState() {
   const params = new URLSearchParams();
   if (focused) params.set("f", focused);
   if (hopDepth !== 1) params.set("h", String(hopDepth));
+  if (walkDirection !== "both") params.set("d", walkDirection);
   if (cyclesOn) params.set("c", "1");
   if (tintOn) params.set("t", "1");
   if (centerSet) params.set("cm", "1");
@@ -1170,6 +1201,13 @@ function loadHashState() {
     hopDepth = h;
     document.getElementById("hop-slider").value = String(h);
     document.getElementById("hop-value").textContent = String(h);
+  }
+  const d = params.get("d");
+  if (d === "in" || d === "out" || d === "both") {
+    walkDirection = d;
+    for (const radio of document.querySelectorAll('input[name="dir"]')) {
+      radio.checked = radio.value === d;
+    }
   }
   if (params.get("c") === "1") {
     cyclesOn = true;
@@ -1207,8 +1245,29 @@ hopSlider.addEventListener("input", (ev) => {
   hopDepth = Number(ev.target.value);
   hopValue.textContent = String(hopDepth);
   if (focused) applyFocus();
+  // If the live center filter is active, recompute it for the
+  // new depth so the visible set tracks the slider live.
+  if (centerSet && focused) {
+    centerSet = neighborhood(focused, hopDepth);
+    render();
+  }
   saveHashState();
 });
+
+// Direction radio — switches the BFS walk to forward / backward / both.
+// Re-applies focus so the highlighted set updates immediately, and
+// rebuilds the live center filter if it's active.
+for (const radio of document.querySelectorAll('input[name="dir"]')) {
+  radio.addEventListener("change", (ev) => {
+    walkDirection = ev.target.value;
+    if (focused) applyFocus();
+    if (centerSet && focused) {
+      centerSet = neighborhood(focused, hopDepth);
+      render();
+    }
+    saveHashState();
+  });
+}
 
 // Cycle-highlight toggle — re-renders so node + link classes pick up
 // the cycle marking. The cycle sets are precomputed once at init,

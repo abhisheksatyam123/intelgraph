@@ -499,6 +499,16 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     // URL hash flag for the live center mode
     expect(html).toContain('"cm"')
 
+    // Walk direction radio buttons (in/out/both) — the inline
+    // counterpart to the new server-side centerDirection parameter.
+    expect(html).toContain("let walkDirection")
+    expect(html).toContain('name="dir"')
+    expect(html).toContain('value="both"')
+    expect(html).toContain('value="out"')
+    expect(html).toContain('value="in"')
+    // The neighborhood BFS now takes a direction param
+    expect(html).toContain("function neighborhood(rootId, hops, direction)")
+
     // Pre-filter totals carried through GraphJson + the badge
     // formatter that shows "X of Y nodes" when truncated.
     expect(html).toContain("TOTAL_NODES")
