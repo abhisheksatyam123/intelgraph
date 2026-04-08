@@ -146,6 +146,11 @@ export const QUERY_INTENTS = [
   "find_field_writers",
   /** APIs/methods that read from this field (incoming reads_field edges). */
   "find_field_readers",
+  // ── Phase 3h: data-path traversal (the data-side analog of
+  //              find_call_chain — walks field_of_type + aggregates
+  //              edges from a source type to a destination type to
+  //              answer "how does Vault structurally reach Reference")
+  "find_data_path",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
@@ -436,6 +441,9 @@ export function validateQueryRequest(input: unknown):
   }
   if (intent === "show_cross_module_path" && (!req.srcApi || !req.dstApi)) {
     errors.push("srcApi and dstApi are required for intent 'show_cross_module_path'")
+  }
+  if (intent === "find_data_path" && (!req.srcApi || !req.dstApi)) {
+    errors.push("srcApi and dstApi are required for intent 'find_data_path'")
   }
 
   if (req.depth !== undefined && (!Number.isInteger(req.depth) || req.depth <= 0)) {

@@ -237,6 +237,14 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.structAccess(snapshotId, apiNames, "writes_field", limit)
       case "find_field_readers":
         return this.structAccess(snapshotId, apiNames, "reads_field", limit)
+      case "find_data_path":
+        return this.dataPath(
+          snapshotId,
+          request.srcApi ?? "",
+          request.dstApi ?? "",
+          request.depth ?? 6,
+          limit,
+        )
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
       case "find_top_imported_modules":
@@ -2617,6 +2625,105 @@ export class SqliteDbLookup implements DbLookupRepository {
       caller,
       callee: segments[i + 1],
       edge_kind: "calls",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: null,
+      line_number: null,
+      path_index: i,
+      chain_depth: shortest.depth_n,
+    }))
+  }
+
+  /**
+   * Phase 3h: data-side analog of callChain. Walks field_of_type
+   * AND aggregates edges from srcType to dstType, returning the
+   * shortest path expanded into per-hop rows. Answers questions
+   * like "how does Vault reach Reference structurally" — useful
+   * for understanding type relationships in big codebases without
+   * having to manually trace field declarations.
+   *
+   * Both edge kinds are walked together because they encode the
+   * same conceptual relationship at different granularities:
+   *   - field_of_type: per-field, with containment metadata
+   *   - aggregates:    type-level rollup of field_of_type
+   *
+   * Walking both lets the BFS hop through either field nodes
+   * (granular path) OR straight type-to-type (rolled up). The
+   * resulting chain is whatever's shortest in the union graph.
+   */
+  private dataPath(
+    snapshotId: number,
+    srcType: string,
+    dstType: string,
+    depth: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (!srcType || !dstType) return []
+    const maxDepth = Math.min(Math.max(depth, 1), 10)
+    const sql = `
+      WITH RECURSIVE chain(src_name, dst_name, depth_n, path) AS (
+        SELECT
+          src.canonical_name,
+          dst.canonical_name,
+          1,
+          src.canonical_name || ' -> ' || dst.canonical_name
+        FROM graph_edges e
+        INNER JOIN graph_nodes src
+          ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+        INNER JOIN graph_nodes dst
+          ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+        WHERE e.snapshot_id = ?
+          AND e.edge_kind IN ('field_of_type', 'aggregates')
+          AND src.canonical_name = ?
+        UNION ALL
+        SELECT
+          c.dst_name,
+          dst.canonical_name,
+          c.depth_n + 1,
+          c.path || ' -> ' || dst.canonical_name
+        FROM chain c
+        INNER JOIN graph_edges e
+          ON e.snapshot_id = ?
+          AND e.edge_kind IN ('field_of_type', 'aggregates')
+        INNER JOIN graph_nodes src
+          ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+          AND src.canonical_name = c.dst_name
+        INNER JOIN graph_nodes dst
+          ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+        WHERE c.depth_n < ?
+          -- avoid revisiting nodes already in the path (cycle prevention)
+          AND instr(c.path || ' -> ', dst.canonical_name || ' -> ') = 0
+      )
+      SELECT src_name, dst_name, depth_n, path
+      FROM chain
+      WHERE dst_name = ?
+      ORDER BY depth_n ASC
+      LIMIT ?
+    `
+    type Row = {
+      src_name: string
+      dst_name: string
+      depth_n: number
+      path: string
+    }
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, srcType, snapshotId, maxDepth, dstType, limit) as Row[]
+    if (rows.length === 0) return []
+    const shortest = rows[0]
+    const segments = shortest.path.split(" -> ")
+    // Hop kind is always "struct" for the response — the BFS only
+    // walks edges between *types* (classes/structs/interfaces — every
+    // node that carries field_of_type/aggregates edges is one of
+    // those), so "struct" is a sensible canonical hop kind that the
+    // node-protocol schema accepts. Mirrors how callChain hard-codes
+    // kind="function" for its hops.
+    return segments.slice(0, -1).map((src, i) => ({
+      kind: "struct",
+      canonical_name: src,
+      src,
+      dst: segments[i + 1],
+      edge_kind: "data_path",
       confidence: 1,
       derivation: "clangd",
       file_path: null,

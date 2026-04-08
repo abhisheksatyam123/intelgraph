@@ -1158,3 +1158,140 @@ describe("intelligence_query MCP tool — data-structure intents (Phase 3e)", ()
     }
   })
 })
+
+// ── Phase 3h: find_data_path — data-side analog of find_call_chain ───────────
+//
+// Walks field_of_type / aggregates edges from a source type to a
+// destination type and returns the shortest chain expanded into
+// per-hop rows. This is the structural answer to "how does X
+// reach Y" — useful when you have a top-level container type and
+// want to see how it transitively holds a leaf type.
+//
+// Fixture shape:  Container -> Box -> User
+//   class Container { box: Box }    → field_of_type Container.box → Box (+ Container aggregates Box)
+//   class Box       { owner: User } → field_of_type Box.owner → User      (+ Box aggregates User)
+//
+// Expected: find_data_path(Container → User) returns a 2-hop chain.
+
+describe("intelligence_query MCP tool — find_data_path (Phase 3h)", () => {
+  it("returns a chain of struct hops from src type to dst type", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3h-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3h" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      writeFileSync(
+        join(tempRoot, "src", "model.ts"),
+        `export interface User { id: string }
+export class Box {
+  owner: User
+}
+export class Container {
+  box: Box
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3h",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const raw = await tool!.execute(
+        {
+          intent: "find_data_path",
+          snapshotId,
+          srcApi: "module:src/model.ts#Container",
+          dstApi: "module:src/model.ts#User",
+          depth: 6,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const res = JSON.parse(raw) as FlatResponse
+      expect(res.status).toBe("hit")
+      // Two hops in the canonical chain: Container → Box, Box → User
+      // (the BFS picks whichever path through field_of_type/aggregates
+      // is shortest — since aggregates is the per-type rollup of
+      // field_of_type, the shortest chain is two hops either way).
+      expect(res.data.nodes.length).toBeGreaterThanOrEqual(2)
+      // Every hop is rendered as a struct (the data-path response
+      // hard-codes kind="struct" so the node-protocol schema accepts
+      // it — same pattern as callChain hard-coding "function").
+      for (const node of res.data.nodes) {
+        expect(node.kind).toBe("struct")
+      }
+      // The names along the chain mention Container and User
+      const names = res.data.nodes.map((n) => String(n.canonical_name))
+      expect(names.some((n) => n.endsWith("#Container"))).toBe(true)
+
+      client.close()
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+
+  it("rejects find_data_path when srcApi or dstApi is missing", async () => {
+    const raw = await tool!.execute(
+      {
+        intent: "find_data_path",
+        snapshotId: 1,
+        // srcApi and dstApi intentionally omitted
+      },
+      stubClient,
+      stubTracker,
+    )
+    const res = JSON.parse(raw) as { status?: string; nodeProtocol?: { errors?: Array<{ message: string }> } }
+    expect(res.status).toBe("error")
+    const messages =
+      res.nodeProtocol?.errors?.map((e) => e.message).join(" ") ?? ""
+    expect(messages).toMatch(/srcApi.*dstApi.*find_data_path/)
+  })
+})

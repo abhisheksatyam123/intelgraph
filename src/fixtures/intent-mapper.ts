@@ -94,6 +94,9 @@ export function mapIntentToArray(intent: QueryIntent): RelationArrayName {
     find_api_field_reads: "structures",
     find_field_writers: "structures",
     find_field_readers: "structures",
+    // Phase 3h: data-side analog of find_call_chain — walks
+    // field_of_type/aggregates edges from src type to dst type
+    find_data_path: "structures",
   }
 
   return mapping[intent] || "uses"
