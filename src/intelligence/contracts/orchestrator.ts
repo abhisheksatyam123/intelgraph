@@ -112,6 +112,8 @@ export const QUERY_INTENTS = [
   "find_tightly_coupled_modules",
   /** Classes ranked DESC by method count — surfaces god objects / refactor candidates. */
   "find_classes_by_method_count",
+  /** Types used across the most distinct modules — core types of the codebase. */
+  "find_widely_referenced_types",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

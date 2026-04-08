@@ -385,6 +385,32 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_widely_referenced_types ranks types by distinct-module usage", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_widely_referenced_types",
+        snapshotId: ingest.snapshotId,
+        limit: 10,
+      })
+      // opencode has Effect-style codebases which heavily use type
+      // references. Expect at least one widely-referenced type.
+      expect(result.intent).toBe("find_widely_referenced_types")
+      const counts = result.rows.map(
+        (r) => Number((r as { module_count?: number }).module_count),
+      )
+      // Each row has a positive module_count
+      for (const c of counts) {
+        expect(c).toBeGreaterThan(0)
+      }
+      // Sorted descending
+      for (let i = 1; i < counts.length; i++) {
+        expect(counts[i - 1]).toBeGreaterThanOrEqual(counts[i])
+      }
+      // All result rows should be type-shaped kinds
+      for (const row of result.rows) {
+        expect(["class", "interface", "typedef"]).toContain(String(row.kind))
+      }
+    })
+
     it("find_classes_by_method_count surfaces god objects", async () => {
       const result = await ingest.lookup.lookup({
         intent: "find_classes_by_method_count",
@@ -1639,6 +1665,7 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
         },
         { intent: "find_tightly_coupled_modules", request: {} },
         { intent: "find_classes_by_method_count", request: {} },
+        { intent: "find_widely_referenced_types", request: {} },
         // Search & browse
         {
           intent: "find_symbols_by_name",

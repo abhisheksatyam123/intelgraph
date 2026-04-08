@@ -274,6 +274,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.tightlyCoupledModules(snapshotId, limit)
       case "find_classes_by_method_count":
         return this.classesByMethodCount(snapshotId, limit)
+      case "find_widely_referenced_types":
+        return this.widelyReferencedTypes(snapshotId, limit)
       default:
         return []
     }
@@ -1031,6 +1033,61 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Rank types by the number of DISTINCT modules that reference them.
+   * Surfaces "core types" — types that touch many parts of the
+   * codebase and are likely candidates for stability guarantees,
+   * docs, or careful refactoring.
+   *
+   * Different from find_top_imported_modules: that counts module
+   * imports, this counts type references across module boundaries.
+   * A type used by 50 different modules is more central than a type
+   * used 50 times in one module.
+   *
+   * Each row carries module_count = number of distinct source modules.
+   */
+  private widelyReferencedTypes(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        dst.canonical_name AS canonical_name,
+        dst.kind AS kind,
+        dst.location AS location,
+        COUNT(DISTINCT
+          SUBSTR(src.canonical_name, 1, INSTR(src.canonical_name, '#') - 1)
+        ) AS module_count
+      FROM graph_edges e
+      INNER JOIN graph_nodes src
+        ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+      INNER JOIN graph_nodes dst
+        ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+      WHERE e.snapshot_id = ?
+        AND e.edge_kind = 'references_type'
+        AND INSTR(src.canonical_name, '#') > 0
+        AND dst.kind IN ('class', 'interface', 'typedef')
+      GROUP BY dst.canonical_name, dst.kind, dst.location
+      ORDER BY module_count DESC, dst.canonical_name ASC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "class",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "references_type",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+      module_count: toNumber(obj.module_count),
+    }))
+  }
 
   /**
    * Rank classes by their method count. After D4 methods are anchored
