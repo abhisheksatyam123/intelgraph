@@ -54,6 +54,9 @@ Thumbs.db
 .opencode/
 opencode.json
 
+# Claude agent state (cron prompts, scratch tasks, etc.)
+.claude/
+
 # Notes vault symlinks (personal Obsidian vault at /home/abhi/notes)
 doc/atomic
 doc/project
