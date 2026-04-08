@@ -258,6 +258,8 @@ export class SqliteDbLookup implements DbLookupRepository {
           request.dstApi ?? "",
           limit,
         )
+      case "find_modules_overview":
+        return this.modulesOverview(snapshotId, limit)
       default:
         return []
     }
@@ -1015,6 +1017,87 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Single-call overview of every module in the snapshot. Returns
+   * aggregate counts (symbol_count, exported_count, outgoing_imports,
+   * incoming_imports, line_count) for each module so visualizers can
+   * populate a file tree without N round-trips.
+   *
+   * Each row is a module with its summary metrics. Ordered
+   * alphabetically by canonical_name. Bounded by limit (the visualizer
+   * can paginate or pre-filter via find_symbols_by_name first).
+   */
+  private modulesOverview(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        m.canonical_name AS canonical_name,
+        m.location AS location,
+        json_extract(m.payload, '$.metadata.lineCount') AS line_count,
+        (
+          SELECT COUNT(*) FROM graph_edges e
+          INNER JOIN graph_nodes src
+            ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+          WHERE e.snapshot_id = m.snapshot_id
+            AND e.edge_kind = 'contains'
+            AND src.canonical_name = m.canonical_name
+        ) AS symbol_count,
+        (
+          SELECT COUNT(*) FROM graph_edges e
+          INNER JOIN graph_nodes src
+            ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+          INNER JOIN graph_nodes dst
+            ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+          WHERE e.snapshot_id = m.snapshot_id
+            AND e.edge_kind = 'contains'
+            AND src.canonical_name = m.canonical_name
+            AND json_extract(dst.payload, '$.metadata.exported') = 1
+        ) AS exported_count,
+        (
+          SELECT COUNT(*) FROM graph_edges e
+          INNER JOIN graph_nodes src
+            ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+          WHERE e.snapshot_id = m.snapshot_id
+            AND e.edge_kind = 'imports'
+            AND src.canonical_name = m.canonical_name
+        ) AS outgoing_imports,
+        (
+          SELECT COUNT(*) FROM graph_edges e
+          INNER JOIN graph_nodes dst
+            ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+          WHERE e.snapshot_id = m.snapshot_id
+            AND e.edge_kind = 'imports'
+            AND dst.canonical_name = m.canonical_name
+        ) AS incoming_imports
+      FROM graph_nodes m
+      WHERE m.snapshot_id = ?
+        AND m.kind = 'module'
+      ORDER BY m.canonical_name ASC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: "module",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "contains",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+      symbol_count: toNumber(obj.symbol_count),
+      exported_count: toNumber(obj.exported_count),
+      outgoing_imports: toNumber(obj.outgoing_imports),
+      incoming_imports: toNumber(obj.incoming_imports),
+      line_count: toNumberOrNull(obj.line_count),
+    }))
+  }
 
   /**
    * Find all calls + references_type edges between symbols in two

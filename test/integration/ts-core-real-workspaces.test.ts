@@ -385,6 +385,37 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_modules_overview returns aggregate stats for every module", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_modules_overview",
+        snapshotId: ingest.snapshotId,
+        limit: 100,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // Each row is a module with all 5 aggregate fields
+      for (const row of result.rows) {
+        expect(row.kind).toBe("module")
+        expect(String(row.canonical_name)).toMatch(/^module:/)
+        const r = row as {
+          symbol_count: number
+          exported_count: number
+          outgoing_imports: number
+          incoming_imports: number
+        }
+        expect(typeof r.symbol_count).toBe("number")
+        expect(typeof r.exported_count).toBe("number")
+        expect(typeof r.outgoing_imports).toBe("number")
+        expect(typeof r.incoming_imports).toBe("number")
+        // exported_count never exceeds symbol_count
+        expect(r.exported_count).toBeLessThanOrEqual(r.symbol_count)
+      }
+      // Sorted alphabetically
+      const names = result.rows.map((r) => String(r.canonical_name))
+      const sorted = [...names].sort()
+      expect(names).toEqual(sorted)
+    })
+
     it("find_module_interactions returns edges between two modules", async () => {
       // Pick any two modules where one calls into the other.
       const seed = ingest.client.raw
@@ -1457,6 +1488,7 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
         { intent: "find_dead_exports", request: {} },
         { intent: "find_long_functions", request: { depth: 50 } },
         { intent: "find_external_imports", request: {} },
+        { intent: "find_modules_overview", request: {} },
         // Search & browse
         {
           intent: "find_symbols_by_name",

@@ -100,6 +100,8 @@ export const QUERY_INTENTS = [
   "find_symbol_degree",
   /** All calls + references_type edges between symbols in two modules (srcApi → dstApi). */
   "find_module_interactions",
+  /** One-call overview: aggregate summary for every module in the snapshot. */
+  "find_modules_overview",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
