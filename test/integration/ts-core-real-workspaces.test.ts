@@ -385,6 +385,31 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_largest_modules ranks modules by line count", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_largest_modules",
+        snapshotId: ingest.snapshotId,
+        limit: 10,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      const counts = result.rows.map(
+        (r) => Number((r as { line_count?: number }).line_count),
+      )
+      // All modules should have positive line counts
+      for (const c of counts) {
+        expect(c).toBeGreaterThan(0)
+      }
+      // Sorted descending
+      for (let i = 1; i < counts.length; i++) {
+        expect(counts[i - 1]).toBeGreaterThanOrEqual(counts[i])
+      }
+      // All result rows are modules
+      for (const row of result.rows) {
+        expect(row.kind).toBe("module")
+      }
+    })
+
     it("find_orphan_modules returns modules with no imports either way", async () => {
       const result = await ingest.lookup.lookup({
         intent: "find_orphan_modules",
@@ -1728,6 +1753,7 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
         { intent: "find_undocumented_exports", request: {} },
         { intent: "find_top_implemented_interfaces", request: {} },
         { intent: "find_orphan_modules", request: {} },
+        { intent: "find_largest_modules", request: {} },
         // Search & browse
         {
           intent: "find_symbols_by_name",

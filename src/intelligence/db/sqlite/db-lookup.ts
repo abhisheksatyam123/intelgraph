@@ -282,6 +282,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.topByIncoming(snapshotId, "implements", "interface", limit)
       case "find_orphan_modules":
         return this.orphanModules(snapshotId, limit)
+      case "find_largest_modules":
+        return this.largestModules(snapshotId, limit)
       default:
         return []
     }
@@ -1039,6 +1041,48 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Rank modules by line count (from metadata.lineCount set by D25).
+   * Surfaces the biggest files in the workspace — useful for refactor
+   * planning and finding files that are too large to maintain.
+   *
+   * Each row carries a line_count field. Modules without lineCount
+   * (rare — should always be set after D25) are excluded.
+   */
+  private largestModules(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        canonical_name,
+        kind,
+        location,
+        json_extract(payload, '$.metadata.lineCount') AS line_count
+      FROM graph_nodes
+      WHERE snapshot_id = ?
+        AND kind = 'module'
+        AND json_extract(payload, '$.metadata.lineCount') IS NOT NULL
+      ORDER BY CAST(json_extract(payload, '$.metadata.lineCount') AS INTEGER) DESC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: "module",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "contains",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+      line_count: toNumberOrNull(obj.line_count),
+    }))
+  }
 
   /**
    * Find modules with NO incoming AND NO outgoing imports. Stricter

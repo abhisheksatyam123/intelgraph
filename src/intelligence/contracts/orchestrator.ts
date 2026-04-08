@@ -120,6 +120,8 @@ export const QUERY_INTENTS = [
   "find_top_implemented_interfaces",
   /** Modules with NO incoming AND NO outgoing imports — completely isolated, likely dead. */
   "find_orphan_modules",
+  /** Modules ranked DESC by line count — biggest files for refactor planning. */
+  "find_largest_modules",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
