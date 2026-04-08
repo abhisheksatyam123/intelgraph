@@ -522,6 +522,15 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(html).toContain("data.total_nodes")
     expect(html).toContain("data.total_edges")
 
+    // Info panel neighbor sections (caller / callee navigation):
+    // edge-kind-tagged adjacency at init, renderNeighborSection
+    // helper, and the .neighbor-row CSS class.
+    expect(html).toContain("outEdgesByKind")
+    expect(html).toContain("inEdgesByKind")
+    expect(html).toContain("function renderNeighborSection")
+    expect(html).toContain(".neighbor-row")
+    expect(html).toContain("data-target")
+
     // Inlined script must parse as valid JS. Catches the class of bug
     // where a stray backtick inside a comment closes the outer
     // template literal and corrupts the rest of the document.

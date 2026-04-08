@@ -782,6 +782,28 @@ export function graphJsonToHtml(graph: GraphJson): string {
   #info .empty { color: var(--muted); font-style: italic; }
   #info .row { margin: 2px 0; }
   #info .key { color: var(--muted); }
+  #info .section {
+    margin-top: 8px; padding-top: 6px;
+    border-top: 1px solid var(--border);
+  }
+  #info .section-title {
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--muted);
+    margin-bottom: 4px; font-weight: 600;
+  }
+  #info .neighbor-row {
+    display: flex; gap: 4px; align-items: baseline;
+    padding: 1px 0; cursor: pointer; user-select: none;
+  }
+  #info .neighbor-row:hover { color: var(--accent); }
+  #info .neighbor-row .kind {
+    color: var(--muted); font-size: 9px;
+    width: 28px; flex-shrink: 0;
+  }
+  #info .neighbor-row .name {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex: 1; min-width: 0;
+  }
   #canvas-wrap { flex: 1; position: relative; }
   svg { width: 100%; height: 100%; display: block; }
   .node { stroke: #000; stroke-width: 0.5; cursor: pointer; }
@@ -1035,13 +1057,30 @@ const links = data.edges
 // edge; predecessors[id] = Set of nodes that point AT this id.
 const successors = new Map();
 const predecessors = new Map();
+// Edge-kind-tagged adjacency for the info panel's caller/callee
+// listing. outEdgesByKind[id][kind] = Array of dst ids;
+// inEdgesByKind[id][kind] = Array of src ids.
+const outEdgesByKind = new Map();
+const inEdgesByKind = new Map();
 for (const n of data.nodes) {
   successors.set(n.id, new Set());
   predecessors.set(n.id, new Set());
+  outEdgesByKind.set(n.id, {});
+  inEdgesByKind.set(n.id, {});
 }
 for (const l of links) {
   successors.get(l.source).add(l.target);
   predecessors.get(l.target).add(l.source);
+  const outBuckets = outEdgesByKind.get(l.source);
+  if (outBuckets) {
+    if (!outBuckets[l.kind]) outBuckets[l.kind] = [];
+    outBuckets[l.kind].push(l.target);
+  }
+  const inBuckets = inEdgesByKind.get(l.target);
+  if (inBuckets) {
+    if (!inBuckets[l.kind]) inBuckets[l.kind] = [];
+    inBuckets[l.kind].push(l.source);
+  }
 }
 // Walk direction for neighborhood expansion. Mirrors the server-side
 // centerDirection contract:
@@ -1420,9 +1459,63 @@ function showInfo(d) {
     ["exported",   d.exported ? "yes" : "no"],
     ["owning",     d.owning_class || "—"],
   ];
-  info.innerHTML = rows
+  let html = rows
     .map((r) => '<div class="row"><span class="key">' + r[0] + '</span> ' + escapeHtml(String(r[1])) + '</div>')
     .join("");
+
+  // Render up to 6 callers and 6 callees grouped by edge_kind. Each
+  // row is clickable; clicking jumps focus to that neighbor.
+  html += renderNeighborSection(
+    "Outgoing",
+    outEdgesByKind.get(d.id) || {},
+  );
+  html += renderNeighborSection(
+    "Incoming",
+    inEdgesByKind.get(d.id) || {},
+  );
+
+  info.innerHTML = html;
+
+  // Wire click handlers on the new neighbor rows. We do this after
+  // setting innerHTML because event delegation is simpler than
+  // re-attaching to the dynamically-built rows.
+  for (const row of info.querySelectorAll(".neighbor-row")) {
+    row.addEventListener("click", () => {
+      const target = row.getAttribute("data-target");
+      if (target && nodeById.has(target)) {
+        focused = target;
+        applyFocus();
+        showInfo(nodeById.get(target));
+        saveHashState();
+      }
+    });
+  }
+}
+
+function renderNeighborSection(title, byKind) {
+  const kinds = Object.keys(byKind);
+  if (kinds.length === 0) return "";
+  // Flatten and cap at 6 entries total, sorted by edge_kind for
+  // determinism. Each entry rendered as a clickable row.
+  const entries = [];
+  for (const kind of kinds.sort()) {
+    for (const target of byKind[kind]) {
+      entries.push({ kind, target });
+      if (entries.length >= 6) break;
+    }
+    if (entries.length >= 6) break;
+  }
+  let body = '<div class="section">';
+  body += '<div class="section-title">' + escapeHtml(title) + '</div>';
+  for (const e of entries) {
+    body +=
+      '<div class="neighbor-row" data-target="' + escapeHtml(e.target) + '">' +
+      '<span class="kind">' + escapeHtml(e.kind.slice(0, 4)) + '</span>' +
+      '<span class="name">' + escapeHtml(shortName(e.target)) + '</span>' +
+      '</div>';
+  }
+  body += '</div>';
+  return body;
 }
 function clearInfo() {
   document.getElementById("info").innerHTML = '<span class="empty">click a node</span>';
