@@ -14,6 +14,7 @@
     "dev": "/usr2/adagur/.bun/bin/bun run ./src/index.ts",
     "enrich:fixtures": "/usr2/adagur/.bun/bin/bun run ./src/bin/enrich-fixtures.ts",
     "audit:fixtures": "/usr2/adagur/.bun/bin/bun run ./src/bin/audit-fixtures.ts",
+    "snapshot:stats": "npx tsx ./src/bin/snapshot-stats.ts",
     "test": "vitest run",
     "test:unit": "vitest run test/unit/",
     "test:integration": "vitest run test/integration/",
