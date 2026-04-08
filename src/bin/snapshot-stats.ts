@@ -67,6 +67,12 @@ interface CliOptions {
   centerDirection?: "in" | "out" | "both"
   /** --max-nodes: cap the result to the top-N nodes by degree. */
   maxNodes?: number
+  /** --data-path-from: source type for find_data_path subgraph filter. */
+  dataPathFrom?: string
+  /** --data-path-to: destination type for find_data_path subgraph filter. */
+  dataPathTo?: string
+  /** --data-path-depth: hop budget for the data-path BFS (default 6). */
+  dataPathDepth?: number
 }
 
 function parseArgs(): CliOptions {
@@ -79,6 +85,9 @@ function parseArgs(): CliOptions {
   let centerHops: number | undefined
   let centerDirection: "in" | "out" | "both" | undefined
   let maxNodes: number | undefined
+  let dataPathFrom: string | undefined
+  let dataPathTo: string | undefined
+  let dataPathDepth: number | undefined
   for (const arg of args) {
     if (arg === "--json") format = "json"
     else if (arg === "--markdown" || arg === "--md") format = "markdown"
@@ -112,6 +121,13 @@ function parseArgs(): CliOptions {
     } else if (arg.startsWith("--max-nodes=")) {
       const n = Number(arg.replace("--max-nodes=", ""))
       if (Number.isFinite(n) && n >= 1) maxNodes = Math.floor(n)
+    } else if (arg.startsWith("--data-path-from=")) {
+      dataPathFrom = arg.replace("--data-path-from=", "")
+    } else if (arg.startsWith("--data-path-to=")) {
+      dataPathTo = arg.replace("--data-path-to=", "")
+    } else if (arg.startsWith("--data-path-depth=")) {
+      const n = Number(arg.replace("--data-path-depth=", ""))
+      if (Number.isFinite(n) && n >= 1) dataPathDepth = Math.floor(n)
     } else if (arg === "--help" || arg === "-h") {
       printUsage()
       process.exit(0)
@@ -132,6 +148,9 @@ function parseArgs(): CliOptions {
     centerHops,
     centerDirection,
     maxNodes,
+    dataPathFrom,
+    dataPathTo,
+    dataPathDepth,
   }
 }
 
@@ -169,6 +188,15 @@ function printUsage(): void {
       "                             (applied last; useful for big workspaces",
       "                              where the unfiltered graph would be too",
       "                              dense for the force layout)",
+      "  --data-path-from=<type>    BFS source for the find_data_path subgraph",
+      "                             reducer (Phase 3h). Walks field_of_type +",
+      "                             aggregates edges from this type to",
+      "                             --data-path-to. Both flags must be set",
+      "                             together. Resolved with the same forgiving",
+      "                             match as --center.",
+      "  --data-path-to=<type>      BFS destination for find_data_path.",
+      "  --data-path-depth=<n>      Hop budget for the data-path BFS",
+      "                             (default 6, max 20).",
     ].join("\n"),
   )
 }
@@ -617,6 +645,9 @@ async function main(): Promise<void> {
         centerHops: options.centerHops,
         centerDirection: options.centerDirection,
         maxNodes: options.maxNodes,
+        dataPathFrom: options.dataPathFrom,
+        dataPathTo: options.dataPathTo,
+        dataPathDepth: options.dataPathDepth,
       })
       console.log(JSON.stringify(graph, null, 2))
       return

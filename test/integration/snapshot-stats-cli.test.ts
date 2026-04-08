@@ -25,7 +25,10 @@ import {
   buildGraphJson,
   dashboardToMarkdown,
 } from "../../src/bin/snapshot-stats.js"
-import { diffGraphJson } from "../../src/intelligence/db/sqlite/graph-export.js"
+import {
+  dataPathSubgraph,
+  diffGraphJson,
+} from "../../src/intelligence/db/sqlite/graph-export.js"
 
 let tempRoot: string
 
@@ -550,3 +553,307 @@ describe("diffGraphJson — pure GraphJson set diff", () => {
     expect(diff.summary.b_edges).toBe(2)
   })
 })
+
+
+// ── Phase 3h: dataPathSubgraph pure filter ──────────────────────────
+//
+// The viewer-side analog of the find_data_path query intent. Walks
+// field_of_type + aggregates edges from a source type to a
+// destination type and returns the subgraph along the chain. The
+// filter is pure on a GraphJson, so we test it with hand-built
+// fixtures rather than spinning up a real workspace.
+
+describe("dataPathSubgraph — pure GraphJson data-path reducer", () => {
+  function makeTypedGraph(
+    nodeIds: string[],
+    edges: Array<{ src: string; dst: string; kind: string }>,
+  ): import("../../src/intelligence/db/sqlite/graph-export.js").GraphJson {
+    return {
+      workspace: "/tmp/x",
+      snapshot_id: 1,
+      total_nodes: nodeIds.length,
+      total_edges: edges.length,
+      nodes: nodeIds.map((id) => ({
+        id,
+        kind: "struct",
+        file_path: null,
+        line: null,
+        end_line: null,
+        line_count: null,
+        exported: false,
+        doc: null,
+        owning_class: null,
+      })),
+      edges: edges.map((e) => ({
+        src: e.src,
+        dst: e.dst,
+        kind: e.kind,
+        resolution_kind: null,
+        metadata: null,
+      })),
+    }
+  }
+
+  it("returns the chain when src reaches dst via field_of_type", () => {
+    const g = makeTypedGraph(
+      ["Container", "Box", "User"],
+      [
+        { src: "Container", dst: "Box", kind: "field_of_type" },
+        { src: "Box", dst: "User", kind: "field_of_type" },
+      ],
+    )
+    const out = dataPathSubgraph(g, "Container", "User", 6)
+    const ids = out.nodes.map((n) => n.id).sort()
+    expect(ids).toEqual(["Box", "Container", "User"])
+    expect(out.edges.length).toBe(2)
+    // total_nodes / total_edges anchor to the input
+    expect(out.total_nodes).toBe(3)
+    expect(out.total_edges).toBe(2)
+  })
+
+  it("walks aggregates edges as well as field_of_type", () => {
+    const g = makeTypedGraph(
+      ["Container", "Box", "User"],
+      [
+        { src: "Container", dst: "Box", kind: "aggregates" },
+        { src: "Box", dst: "User", kind: "aggregates" },
+      ],
+    )
+    const out = dataPathSubgraph(g, "Container", "User", 6)
+    expect(out.nodes.length).toBe(3)
+    expect(out.edges.length).toBe(2)
+    expect(out.edges.every((e) => e.kind === "aggregates")).toBe(true)
+  })
+
+  it("includes both field_of_type AND aggregates edges between the same endpoints", () => {
+    // The extractor emits both kinds for the same (src,dst) pair —
+    // field_of_type for the granular field link, aggregates for the
+    // type-level rollup. The viewer should see both so the user can
+    // drill into the field while still understanding the rolled-up
+    // dependency.
+    const g = makeTypedGraph(
+      ["Container", "Box", "User"],
+      [
+        { src: "Container", dst: "Box", kind: "field_of_type" },
+        { src: "Container", dst: "Box", kind: "aggregates" },
+        { src: "Box", dst: "User", kind: "field_of_type" },
+        { src: "Box", dst: "User", kind: "aggregates" },
+      ],
+    )
+    const out = dataPathSubgraph(g, "Container", "User", 6)
+    expect(out.nodes.length).toBe(3)
+    // All four edges survive — both kinds for both (a,b) pairs
+    expect(out.edges.length).toBe(4)
+    const kinds = out.edges.map((e) => e.kind).sort()
+    expect(kinds).toEqual([
+      "aggregates",
+      "aggregates",
+      "field_of_type",
+      "field_of_type",
+    ])
+  })
+
+  it("ignores non-data-path edge kinds when walking the chain", () => {
+    // calls / imports / contains should NOT extend the data path,
+    // even when they connect intermediate nodes.
+    const g = makeTypedGraph(
+      ["Container", "Box", "User"],
+      [
+        { src: "Container", dst: "Box", kind: "calls" },
+        { src: "Box", dst: "User", kind: "field_of_type" },
+      ],
+    )
+    const out = dataPathSubgraph(g, "Container", "User", 6)
+    // No reachable path through field_of_type/aggregates →
+    // empty subgraph
+    expect(out.nodes.length).toBe(0)
+    expect(out.edges.length).toBe(0)
+  })
+
+  it("returns an empty graph when the dst is unreachable within the depth bound", () => {
+    const g = makeTypedGraph(
+      ["A", "B", "C", "D"],
+      [
+        { src: "A", dst: "B", kind: "field_of_type" },
+        { src: "B", dst: "C", kind: "field_of_type" },
+        { src: "C", dst: "D", kind: "field_of_type" },
+      ],
+    )
+    // Depth 2 is too short to reach D
+    const out = dataPathSubgraph(g, "A", "D", 2)
+    expect(out.nodes.length).toBe(0)
+    expect(out.edges.length).toBe(0)
+  })
+
+  it("returns the chain when the depth bound is exactly enough", () => {
+    const g = makeTypedGraph(
+      ["A", "B", "C", "D"],
+      [
+        { src: "A", dst: "B", kind: "field_of_type" },
+        { src: "B", dst: "C", kind: "field_of_type" },
+        { src: "C", dst: "D", kind: "field_of_type" },
+      ],
+    )
+    const out = dataPathSubgraph(g, "A", "D", 3)
+    expect(out.nodes.length).toBe(4)
+    expect(out.edges.length).toBe(3)
+  })
+
+  it("unions multiple shortest paths between the same endpoints", () => {
+    // Two parallel chains of length 2: A → B → D and A → C → D.
+    // Both should appear in the subgraph.
+    const g = makeTypedGraph(
+      ["A", "B", "C", "D"],
+      [
+        { src: "A", dst: "B", kind: "field_of_type" },
+        { src: "A", dst: "C", kind: "field_of_type" },
+        { src: "B", dst: "D", kind: "field_of_type" },
+        { src: "C", dst: "D", kind: "field_of_type" },
+      ],
+    )
+    const out = dataPathSubgraph(g, "A", "D", 6)
+    const ids = out.nodes.map((n) => n.id).sort()
+    expect(ids).toEqual(["A", "B", "C", "D"])
+    expect(out.edges.length).toBe(4)
+  })
+
+  it("returns an empty graph when src is unknown", () => {
+    const g = makeTypedGraph(
+      ["A", "B"],
+      [{ src: "A", dst: "B", kind: "field_of_type" }],
+    )
+    const out = dataPathSubgraph(g, "Nope", "B", 6)
+    expect(out.nodes.length).toBe(0)
+    expect(out.edges.length).toBe(0)
+  })
+
+  it("returns an empty graph when dst is unknown", () => {
+    const g = makeTypedGraph(
+      ["A", "B"],
+      [{ src: "A", dst: "B", kind: "field_of_type" }],
+    )
+    const out = dataPathSubgraph(g, "A", "Nope", 6)
+    expect(out.nodes.length).toBe(0)
+    expect(out.edges.length).toBe(0)
+  })
+
+  it("resolves src/dst with the suffix-after-# match used by --center", () => {
+    // The viewer's resolveCenterSymbol matches "exact → suffix
+    // after # → substring", so passing a short type name should
+    // find the canonical "module:foo.ts#TypeName" id.
+    const g = makeTypedGraph(
+      ["module:src/x.ts#Container", "module:src/x.ts#Box", "module:src/x.ts#User"],
+      [
+        { src: "module:src/x.ts#Container", dst: "module:src/x.ts#Box", kind: "field_of_type" },
+        { src: "module:src/x.ts#Box", dst: "module:src/x.ts#User", kind: "field_of_type" },
+      ],
+    )
+    const out = dataPathSubgraph(g, "Container", "User", 6)
+    expect(out.nodes.length).toBe(3)
+    expect(out.edges.length).toBe(2)
+  })
+
+  it("does NOT walk edges in reverse — A → B is not a path from B to A", () => {
+    // The data path is directional: field_of_type / aggregates
+    // edges only walk forward (containing → contained type).
+    const g = makeTypedGraph(
+      ["A", "B"],
+      [{ src: "A", dst: "B", kind: "field_of_type" }],
+    )
+    const out = dataPathSubgraph(g, "B", "A", 6)
+    expect(out.nodes.length).toBe(0)
+    expect(out.edges.length).toBe(0)
+  })
+})
+
+
+// ── Phase 3h: end-to-end CLI flag wiring ────────────────────────────
+//
+// Builds a separate fixture workspace with an explicit
+// Container -> Box -> User type chain, then drives buildGraphJson
+// with the new dataPathFrom/dataPathTo filter fields. Proves the
+// CLI flags actually plumb through to the underlying reducer.
+
+describe("buildGraphJson — data-path filter (Phase 3h)", () => {
+  let dpRoot: string
+
+  beforeAll(() => {
+    dpRoot = mkdtempSync(join(tmpdir(), "snapshot-stats-3h-"))
+    writeFileSync(
+      join(dpRoot, "package.json"),
+      JSON.stringify({ name: "fixture-3h" }),
+    )
+    mkdirSync(join(dpRoot, "src"), { recursive: true })
+    writeFileSync(
+      join(dpRoot, "src", "model.ts"),
+      `export interface User { id: string }
+export class Box {
+  owner: User
+}
+export class Container {
+  box: Box
+}
+export class Unrelated {
+  name: string
+}
+`,
+    )
+  })
+
+  afterAll(() => {
+    if (dpRoot) rmSync(dpRoot, { recursive: true, force: true })
+  })
+
+  it("subsets the graph to the Container -> Box -> User chain", async () => {
+    const full = await buildGraphJson(dpRoot)
+    const path = await buildGraphJson(dpRoot, {
+      dataPathFrom: "Container",
+      dataPathTo: "User",
+      dataPathDepth: 6,
+    })
+
+    // The full graph has more nodes than the data path subgraph
+    expect(path.nodes.length).toBeLessThan(full.nodes.length)
+    expect(path.nodes.length).toBeGreaterThanOrEqual(3)
+
+    // Container, Box, and User must all be present
+    const ids = path.nodes.map((n) => n.id)
+    expect(ids.some((id) => id.endsWith("#Container"))).toBe(true)
+    expect(ids.some((id) => id.endsWith("#Box"))).toBe(true)
+    expect(ids.some((id) => id.endsWith("#User"))).toBe(true)
+
+    // Unrelated must NOT be present (it's not on the chain)
+    expect(ids.some((id) => id.endsWith("#Unrelated"))).toBe(false)
+
+    // Every surviving edge is a data-path kind
+    for (const edge of path.edges) {
+      expect(["field_of_type", "aggregates"]).toContain(edge.kind)
+    }
+
+    // Pre-filter totals stay anchored
+    expect(path.total_nodes).toBe(full.total_nodes)
+    expect(path.total_edges).toBe(full.total_edges)
+  })
+
+  it("returns an empty graph when src and dst aren't connected", async () => {
+    const path = await buildGraphJson(dpRoot, {
+      dataPathFrom: "Unrelated",
+      dataPathTo: "User",
+      dataPathDepth: 6,
+    })
+    expect(path.nodes.length).toBe(0)
+    expect(path.edges.length).toBe(0)
+  })
+
+  it("respects the depth bound when set lower than the chain length", async () => {
+    // Container -> Box -> User is 2 hops; depth 1 cannot reach User
+    const path = await buildGraphJson(dpRoot, {
+      dataPathFrom: "Container",
+      dataPathTo: "User",
+      dataPathDepth: 1,
+    })
+    expect(path.nodes.length).toBe(0)
+    expect(path.edges.length).toBe(0)
+  })
+})
+

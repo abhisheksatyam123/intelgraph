@@ -100,6 +100,28 @@ export interface GraphJsonFilters {
    * dense for an interactive force layout.
    */
   maxNodes?: number
+  /**
+   * Phase 3h: data-path subgraph. When both `dataPathFrom` and
+   * `dataPathTo` are set, restrict the graph to nodes/edges that
+   * appear on a chain of `field_of_type` or `aggregates` edges
+   * walking from the source type to the destination type within
+   * `dataPathDepth` hops. This is the visualizer-side surface for
+   * the `find_data_path` query intent — the user gets the same
+   * BFS but rendered as a subgraph instead of a flat row list.
+   *
+   * Applied AFTER edgeKinds / symbolKinds / centerOf so callers
+   * can combine "data-flow view" with "centered on package X" or
+   * an edge-kind preset. Applied BEFORE maxNodes so the cap still
+   * trims a wide path subgraph the same way it trims a wide
+   * center subgraph.
+   *
+   * If either endpoint cannot be resolved, returns an empty graph
+   * (the caller can detect this and report a useful error).
+   */
+  dataPathFrom?: string
+  dataPathTo?: string
+  /** Hop budget for the data-path BFS (default 6, max 20). */
+  dataPathDepth?: number
 }
 
 type NodeRow = {
@@ -273,6 +295,18 @@ export function loadGraphJsonFromDb(
       filters.centerOf,
       filters.centerHops ?? 2,
       filters.centerDirection ?? "both",
+    )
+  }
+  // dataPath: Phase 3h subgraph reducer. Walks field_of_type +
+  // aggregates edges from src type to dst type. Applied after
+  // centerOf so callers can scope to a region first, then ask for
+  // the data path within it.
+  if (filters.dataPathFrom && filters.dataPathTo) {
+    result = dataPathSubgraph(
+      result,
+      filters.dataPathFrom,
+      filters.dataPathTo,
+      filters.dataPathDepth ?? 6,
     )
   }
   // maxNodes is applied LAST so it caps whatever the prior filters
@@ -533,6 +567,139 @@ export function centerSubgraph(
     snapshot_id: graph.snapshot_id,
     nodes: graph.nodes.filter((n) => seen.has(n.id)),
     edges: graph.edges.filter((e) => seen.has(e.src) && seen.has(e.dst)),
+    total_nodes: graph.total_nodes,
+    total_edges: graph.total_edges,
+  }
+}
+
+/**
+ * Phase 3h: data-path subgraph reducer. Walks `field_of_type` and
+ * `aggregates` edges from `srcQuery` to `dstQuery`, returning the
+ * union of every node/edge that lies on a chain of length ≤
+ * `maxDepth`. This is the visualizer-side analog of the
+ * `find_data_path` query intent — instead of a flat row list, the
+ * caller gets a subgraph they can hand to the d3 force viewer.
+ *
+ * Both src and dst queries are resolved with the same forgiving
+ * exact / suffix-after-# / substring strategy as `centerSubgraph`,
+ * so the user can pass a short type name and the function will
+ * pick the right canonical id.
+ *
+ * Algorithm: forward BFS from src restricted to field_of_type +
+ * aggregates edges, recording per-hop predecessors. After the BFS
+ * settles, walk backwards from dst to reconstruct every reachable
+ * predecessor chain and union the visited nodes/edges. Returns the
+ * filtered GraphJson preserving the original total_nodes /
+ * total_edges so the viewer's "showing X of Y" header still reads
+ * sensibly.
+ *
+ * Returns an empty subgraph (no nodes, no edges) when:
+ *   - Either query resolves to no node
+ *   - The src and dst exist but no path connects them within
+ *     `maxDepth` field_of_type / aggregates hops
+ *
+ * Pure: no IO, no mutation of the input graph.
+ */
+export function dataPathSubgraph(
+  graph: GraphJson,
+  srcQuery: string,
+  dstQuery: string,
+  maxDepth: number,
+): GraphJson {
+  const empty = (): GraphJson => ({
+    workspace: graph.workspace,
+    snapshot_id: graph.snapshot_id,
+    nodes: [],
+    edges: [],
+    total_nodes: graph.total_nodes,
+    total_edges: graph.total_edges,
+  })
+
+  const src = resolveCenterSymbol(graph, srcQuery)
+  const dst = resolveCenterSymbol(graph, dstQuery)
+  if (!src || !dst) return empty()
+  // Sanity-bound the depth so a malicious input can't blow the BFS
+  // up on a deeply-recursive type graph. The find_data_path SQL
+  // helper applies the same cap; mirror it here so the viewer and
+  // the row API stay aligned.
+  const depth = Math.min(Math.max(maxDepth, 1), 20)
+
+  // Build a forward adjacency list restricted to data-path edge
+  // kinds. We keep both kinds in the same map because the SQL
+  // helper unions them — they encode the same relationship at
+  // different granularities, so the BFS naturally picks whichever
+  // path is shortest.
+  const isDataEdge = (kind: string): boolean =>
+    kind === "field_of_type" || kind === "aggregates"
+  const succ = new Map<string, Set<string>>()
+  for (const node of graph.nodes) succ.set(node.id, new Set())
+  for (const edge of graph.edges) {
+    if (!isDataEdge(edge.kind)) continue
+    succ.get(edge.src)?.add(edge.dst)
+  }
+
+  // Forward BFS from src. Track parents as Map<node, Set<parent>>
+  // so we can reconstruct *every* shortest chain back from dst.
+  // Multiple parents per node lets us union all reachable chains,
+  // not just one — useful when there are independent paths between
+  // two types.
+  const distance = new Map<string, number>()
+  const parents = new Map<string, Set<string>>()
+  distance.set(src, 0)
+  let frontier: string[] = [src]
+  for (let hop = 0; hop < depth; hop++) {
+    const next: string[] = []
+    for (const id of frontier) {
+      const out = succ.get(id)
+      if (!out) continue
+      for (const t of out) {
+        if (!distance.has(t)) {
+          distance.set(t, hop + 1)
+          parents.set(t, new Set([id]))
+          next.push(t)
+        } else if (distance.get(t) === hop + 1) {
+          // Same-distance alternate parent — union into the set so
+          // the back-walk recovers both chains.
+          parents.get(t)?.add(id)
+        }
+      }
+    }
+    if (next.length === 0) break
+    frontier = next
+  }
+
+  if (!distance.has(dst)) return empty()
+
+  // Backward walk from dst through the parent map. Collect every
+  // node/edge that lies on any chain from src → dst. The kept-edge
+  // set is keyed by "src|dst" so the final filter pulls every
+  // matching edge from the original graph regardless of edge_kind
+  // (a single (a,b) endpoint pair can carry both a field_of_type
+  // and an aggregates edge — both should render so the user can
+  // see the granular field plus the rolled-up aggregation).
+  const keptNodes = new Set<string>([dst])
+  const keptEdges = new Set<string>()
+  const stack: string[] = [dst]
+  while (stack.length > 0) {
+    const cur = stack.pop()!
+    const ps = parents.get(cur)
+    if (!ps) continue
+    for (const p of ps) {
+      keptEdges.add(p + "|" + cur)
+      if (!keptNodes.has(p)) {
+        keptNodes.add(p)
+        stack.push(p)
+      }
+    }
+  }
+
+  return {
+    workspace: graph.workspace,
+    snapshot_id: graph.snapshot_id,
+    nodes: graph.nodes.filter((n) => keptNodes.has(n.id)),
+    edges: graph.edges.filter(
+      (e) => isDataEdge(e.kind) && keptEdges.has(e.src + "|" + e.dst),
+    ),
     total_nodes: graph.total_nodes,
     total_edges: graph.total_edges,
   }
