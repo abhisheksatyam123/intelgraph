@@ -444,6 +444,52 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
           )) {
             yield ctx.edge({ payload: ref })
           }
+
+          // Field nodes: emit one symbol per public_field_definition /
+          // property_signature so the data-flow story has explicit
+          // field nodes to attach reads_field / writes_field edges to
+          // in a later phase. Each field also gets a contains edge
+          // from the parent class/interface, mirroring the
+          // class → method shape.
+          for (const fieldDecl of extractFieldDeclarations(
+            node,
+            name,
+            moduleNodeName,
+            file,
+          )) {
+            if (seenSymbols.has(fieldDecl.canonicalName)) continue
+            seenSymbols.add(fieldDecl.canonicalName)
+            yield ctx.symbol({
+              payload: {
+                kind: "field",
+                name: fieldDecl.canonicalName,
+                qualifiedName: fieldDecl.canonicalName,
+                location: {
+                  filePath: file,
+                  line: fieldDecl.line,
+                },
+                metadata: {
+                  localName: fieldDecl.localName,
+                  owningClass: name,
+                  declaredOn: kind, // "class" or "interface"
+                  ...(fieldDecl.exported ? { exported: true } : {}),
+                },
+              },
+            })
+            yield ctx.edge({
+              payload: {
+                edgeKind: "contains",
+                srcSymbolName: canonicalName,
+                dstSymbolName: fieldDecl.canonicalName,
+                confidence: 1,
+                derivation: "clangd",
+                sourceLocation: {
+                  sourceFilePath: file,
+                  sourceLineNumber: fieldDecl.line,
+                },
+              },
+            })
+          }
         }
 
         // Type alias body references. `type X = User | Result` should
@@ -1548,6 +1594,81 @@ function extractTypeAliasBodyReferences(
         },
       })
     }
+  }
+  return out
+}
+
+/**
+ * Walk the body of a class or interface and return one descriptor per
+ * declared field / property. Used to emit field SymbolFacts with
+ * canonical names of the form `module:src/foo.ts#ClassName.fieldName`.
+ *
+ * Handles two member node types:
+ *   - public_field_definition (class fields):    `prefix: string`, `count = 0`
+ *   - property_signature      (interface props): `prefix: string`
+ *
+ * Field name extraction: each member has a "name" child which is
+ * usually a property_identifier. Computed property names
+ * (`[Symbol.iterator]`) are skipped — they have no stable canonical
+ * name we can attach edges to.
+ *
+ * Static fields are included; abstract fields (which only appear in
+ * abstract_class_body / class_body via abstract modifier) are
+ * included too — what matters is that the field has a name.
+ */
+function extractFieldDeclarations(
+  classOrIfaceNode: TsNode,
+  className: string,
+  moduleNodeName: string,
+  _file: string,
+): Array<{
+  localName: string
+  canonicalName: string
+  line: number
+  exported: boolean
+}> {
+  const out: Array<{
+    localName: string
+    canonicalName: string
+    line: number
+    exported: boolean
+  }> = []
+  const body =
+    firstNamedChildOfType(classOrIfaceNode, "class_body") ??
+    firstNamedChildOfType(classOrIfaceNode, "interface_body") ??
+    firstNamedChildOfType(classOrIfaceNode, "object_type")
+  if (!body) return out
+
+  for (let i = 0; i < body.namedChildCount; i++) {
+    const member = body.namedChild(i)
+    if (!member) continue
+    if (
+      member.type !== "public_field_definition" &&
+      member.type !== "property_signature"
+    ) {
+      continue
+    }
+    // Extract the field's local name. property_identifier is the
+    // common case (`prefix:`); plain `identifier` covers public_field
+    // shorthand on parameter properties (rare in declared bodies).
+    const nameNode = member.childForFieldName("name")
+    if (!nameNode) continue
+    if (
+      nameNode.type !== "property_identifier" &&
+      nameNode.type !== "identifier"
+    ) {
+      // computed_property_name (`[Symbol.iterator]`) lands here. Skip:
+      // no stable canonical name to attach edges to.
+      continue
+    }
+    const localName = `${className}.${nameNode.text}`
+    const canonicalName = `${moduleNodeName}#${localName}`
+    out.push({
+      localName,
+      canonicalName,
+      line: member.startPosition.row + 1,
+      exported: false,
+    })
   }
   return out
 }

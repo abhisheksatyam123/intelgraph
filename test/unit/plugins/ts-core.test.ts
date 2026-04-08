@@ -1698,4 +1698,102 @@ describe("ts-core plugin — extraction", () => {
       | undefined
     expect(provenance?.producedBy).toContain("ts-core")
   })
+
+  it("emits field nodes for class fields with kind=field", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const fields = sink.allNodes().filter((n) => n.kind === "field")
+    const fieldNames = new Set(
+      fields.map((n) => String(n.canonical_name).split("#")[1]),
+    )
+    // FormalGreeter declares: name, owner, fallback, count
+    expect(fieldNames.has("FormalGreeter.name")).toBe(true)
+    expect(fieldNames.has("FormalGreeter.owner")).toBe(true)
+    expect(fieldNames.has("FormalGreeter.fallback")).toBe(true)
+    expect(fieldNames.has("FormalGreeter.count")).toBe(true)
+
+    // Field nodes carry owningClass + declaredOn metadata
+    const formalName = fields.find(
+      (n) => String(n.canonical_name).endsWith("#FormalGreeter.name"),
+    )
+    expect(formalName).toBeDefined()
+    const meta =
+      ((formalName!.payload as Record<string, unknown>).metadata as
+        | Record<string, unknown>
+        | undefined) ?? {}
+    expect(meta.owningClass).toBe("FormalGreeter")
+    expect(meta.declaredOn).toBe("class")
+  })
+
+  it("emits field nodes for interface property signatures", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    // module-a defines `interface NamedThing { name: string }`
+    const fields = sink.allNodes().filter((n) => n.kind === "field")
+    const namedThingFields = fields.filter((n) =>
+      String(n.canonical_name).includes("#NamedThing."),
+    )
+    expect(namedThingFields.length).toBeGreaterThan(0)
+    // The `name` property must appear
+    expect(
+      namedThingFields.some((n) =>
+        String(n.canonical_name).endsWith("#NamedThing.name"),
+      ),
+    ).toBe(true)
+    // declaredOn = "interface" so consumers can tell them apart from class fields
+    const meta =
+      ((namedThingFields[0].payload as Record<string, unknown>).metadata as
+        | Record<string, unknown>
+        | undefined) ?? {}
+    expect(meta.declaredOn).toBe("interface")
+  })
+
+  it("emits contains edges from class to field (parent → field)", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const allNodes = sink.allNodes()
+    const classNodes = new Set(
+      allNodes.filter((n) => n.kind === "class").map((n) => String(n.canonical_name)),
+    )
+    const fieldNodes = new Set(
+      allNodes.filter((n) => n.kind === "field").map((n) => String(n.canonical_name)),
+    )
+    expect(classNodes.size).toBeGreaterThan(0)
+    expect(fieldNodes.size).toBeGreaterThan(0)
+
+    const classToField = sink
+      .allEdges()
+      .filter(
+        (e) =>
+          e.edge_kind === "contains" &&
+          classNodes.has(String(e.src_node_id).replace(/^.*?:symbol:/, "")) &&
+          fieldNodes.has(String(e.dst_node_id).replace(/^.*?:symbol:/, "")),
+      )
+    // At least the FormalGreeter fields should produce class→field edges
+    expect(classToField.length).toBeGreaterThanOrEqual(4)
+  })
 })
