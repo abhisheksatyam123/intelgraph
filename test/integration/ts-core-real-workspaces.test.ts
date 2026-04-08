@@ -385,6 +385,31 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_modules_by_directory groups modules with aggregate stats", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_modules_by_directory",
+        snapshotId: ingest.snapshotId,
+        limit: 20,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // Each row should have positive module_count and start with module:
+      for (const row of result.rows) {
+        expect(String(row.canonical_name)).toMatch(/^module:/)
+        const count = Number(
+          (row as { module_count?: number }).module_count,
+        )
+        expect(count).toBeGreaterThan(0)
+      }
+      // Sorted descending by module_count
+      const counts = result.rows.map(
+        (r) => Number((r as { module_count?: number }).module_count),
+      )
+      for (let i = 1; i < counts.length; i++) {
+        expect(counts[i - 1]).toBeGreaterThanOrEqual(counts[i])
+      }
+    })
+
     it("find_largest_modules ranks modules by line count", async () => {
       const result = await ingest.lookup.lookup({
         intent: "find_largest_modules",
@@ -1754,6 +1779,7 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
         { intent: "find_top_implemented_interfaces", request: {} },
         { intent: "find_orphan_modules", request: {} },
         { intent: "find_largest_modules", request: {} },
+        { intent: "find_modules_by_directory", request: {} },
         // Search & browse
         {
           intent: "find_symbols_by_name",

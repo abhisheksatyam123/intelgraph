@@ -122,6 +122,8 @@ export const QUERY_INTENTS = [
   "find_orphan_modules",
   /** Modules ranked DESC by line count — biggest files for refactor planning. */
   "find_largest_modules",
+  /** Modules grouped by parent directory with aggregate stats — package overview view. */
+  "find_modules_by_directory",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

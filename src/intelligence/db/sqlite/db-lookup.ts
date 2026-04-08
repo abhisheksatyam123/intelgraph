@@ -284,6 +284,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.orphanModules(snapshotId, limit)
       case "find_largest_modules":
         return this.largestModules(snapshotId, limit)
+      case "find_modules_by_directory":
+        return this.modulesByDirectory(snapshotId, limit)
       default:
         return []
     }
@@ -1041,6 +1043,73 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Group modules by their parent directory and return per-directory
+   * aggregate stats. Useful for visualizers showing "what's in
+   * src/auth/" package overview views.
+   *
+   * The directory is everything before the last '/' in the
+   * canonical_name (after stripping the 'module:' prefix). e.g.
+   * `module:src/auth/repo.ts` → directory `module:src/auth`.
+   *
+   * SQLite doesn't have a clean LAST_INDEX_OF function, so we pull
+   * all module rows and aggregate in JS. The volume is small —
+   * one row per module — so the cost is negligible.
+   *
+   * Each row carries:
+   *   - canonical_name: the directory key
+   *   - module_count: number of modules in this directory
+   *   - total_lines: sum of metadata.lineCount across all modules
+   *
+   * Result is ordered DESC by module_count, alphabetical tie-break.
+   */
+  private modulesByDirectory(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const allModules = this.raw
+      .prepare(
+        `SELECT canonical_name, json_extract(payload, '$.metadata.lineCount') AS line_count
+         FROM graph_nodes
+         WHERE snapshot_id = ?
+           AND kind = 'module'
+           AND canonical_name LIKE 'module:%/%'`,
+      )
+      .all(snapshotId) as Array<{ canonical_name: string; line_count: unknown }>
+
+    const dirs = new Map<string, { count: number; lines: number }>()
+    for (const m of allModules) {
+      // Strip the trailing /filename to get the directory
+      const lastSlash = m.canonical_name.lastIndexOf("/")
+      if (lastSlash <= 7) continue // 'module:' = 7 chars, no actual directory
+      const dir = m.canonical_name.substring(0, lastSlash)
+      const lines = toNumber(m.line_count)
+      const existing = dirs.get(dir) ?? { count: 0, lines: 0 }
+      existing.count++
+      existing.lines += lines
+      dirs.set(dir, existing)
+    }
+
+    const sorted = [...dirs.entries()]
+      .map(([dir, stats]) => ({ dir, ...stats }))
+      .sort((a, b) => b.count - a.count || a.dir.localeCompare(b.dir))
+      .slice(0, limit)
+
+    return sorted.map((entry) => ({
+      kind: "directory",
+      canonical_name: entry.dir,
+      caller: null,
+      callee: entry.dir,
+      edge_kind: "contains",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: null,
+      line_number: null,
+      module_count: entry.count,
+      total_lines: entry.lines,
+    }))
+  }
 
   /**
    * Rank modules by line count (from metadata.lineCount set by D25).
