@@ -289,7 +289,8 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
           }
         }
 
-        // struct/enum/trait field type references
+        // struct/enum/trait field type references (existing
+        // class-level rollup, kept for back-compat).
         if (kind === "struct" || kind === "enum" || kind === "interface") {
           for (const ref of extractFieldTypeReferences(
             node,
@@ -299,6 +300,80 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
             file,
           )) {
             yield ctx.edge({ payload: ref })
+          }
+        }
+
+        // Phase 3c: emit explicit field nodes + per-field
+        // field_of_type edges + class-level aggregates rollup
+        // for structs and traits. Enums are handled as variants
+        // (phase 3d) in a separate block below.
+        if (kind === "struct") {
+          const aggregatedTargets = new Set<string>()
+          for (const fieldDecl of extractRustFieldDeclarations(
+            node,
+            name,
+            moduleNodeName,
+          )) {
+            if (seenSymbols.has(fieldDecl.canonicalName)) continue
+            seenSymbols.add(fieldDecl.canonicalName)
+            yield ctx.symbol({
+              payload: {
+                kind: "field",
+                name: fieldDecl.canonicalName,
+                qualifiedName: fieldDecl.canonicalName,
+                location: { filePath: file, line: fieldDecl.line },
+                metadata: {
+                  localName: fieldDecl.localName,
+                  owningClass: name,
+                  declaredOn: "struct",
+                  ...(fieldDecl.tupleIndex !== undefined
+                    ? { tupleIndex: fieldDecl.tupleIndex }
+                    : {}),
+                },
+              },
+            })
+            yield ctx.edge({
+              payload: {
+                edgeKind: "contains",
+                srcSymbolName: canonicalName,
+                dstSymbolName: fieldDecl.canonicalName,
+                confidence: 1,
+                derivation: "clangd",
+                sourceLocation: {
+                  sourceFilePath: file,
+                  sourceLineNumber: fieldDecl.line,
+                },
+              },
+            })
+            for (const typeEdge of extractRustFieldTypeEdges(
+              fieldDecl.typeNode,
+              fieldDecl.canonicalName,
+              fieldDecl.line,
+              resolver,
+              moduleNodeName,
+              file,
+            )) {
+              yield ctx.edge({ payload: typeEdge })
+              aggregatedTargets.add(typeEdge.dstSymbolName)
+            }
+          }
+          // Phase 3b rollup: one aggregates edge per distinct target
+          const declLine = node.startPosition.row + 1
+          for (const target of aggregatedTargets) {
+            yield ctx.edge({
+              payload: {
+                edgeKind: "aggregates",
+                srcSymbolName: canonicalName,
+                dstSymbolName: target,
+                confidence: 0.95,
+                derivation: "clangd",
+                sourceLocation: {
+                  sourceFilePath: file,
+                  sourceLineNumber: declLine,
+                },
+                metadata: { resolved: true, rolledUpFrom: "field_of_type" },
+              },
+            })
           }
         }
       }
@@ -609,13 +684,341 @@ function populateResolverFromUse(
 }
 
 interface TypeRefEdgePayload {
-  edgeKind: "references_type"
+  // Phase 3c widened edgeKind to include field_of_type so the same
+  // payload shape covers both the class-level references_type rollup
+  // (existing) and the per-field field_of_type emission (new).
+  edgeKind: "references_type" | "field_of_type"
   srcSymbolName: string
   dstSymbolName: string
   confidence: number
   derivation: "clangd" | "llm" | "runtime" | "hybrid"
   sourceLocation: { sourceFilePath: string; sourceLineNumber: number }
   metadata: Record<string, unknown>
+}
+
+/**
+ * Walk a struct's field_declaration_list and return one descriptor
+ * per declared field. Handles both named-field structs
+ * (`struct Foo { a: u32, b: String }`) and tuple structs
+ * (`struct Foo(u32, String)`). For tuple structs, the field's local
+ * name is the positional index (`Foo.0`, `Foo.1`).
+ */
+function extractRustFieldDeclarations(
+  structItemNode: TsNode,
+  structName: string,
+  moduleNodeName: string,
+): Array<{
+  localName: string
+  canonicalName: string
+  line: number
+  typeNode: TsNode
+  tupleIndex?: number
+}> {
+  const out: Array<{
+    localName: string
+    canonicalName: string
+    line: number
+    typeNode: TsNode
+    tupleIndex?: number
+  }> = []
+
+  // Named-field struct: field_declaration_list with field_declaration children
+  const fieldList = firstNamedChildOfType(structItemNode, "field_declaration_list")
+  if (fieldList) {
+    for (let i = 0; i < fieldList.namedChildCount; i++) {
+      const member = fieldList.namedChild(i)
+      if (!member || member.type !== "field_declaration") continue
+      const nameNode = member.childForFieldName("name")
+      const typeNode = member.childForFieldName("type")
+      if (!nameNode || !typeNode) continue
+      const localName = `${structName}.${nameNode.text}`
+      out.push({
+        localName,
+        canonicalName: `${moduleNodeName}#${localName}`,
+        line: member.startPosition.row + 1,
+        typeNode,
+      })
+    }
+    return out
+  }
+
+  // Tuple struct: ordered_field_declaration_list with positional fields
+  const tupleList = firstNamedChildOfType(
+    structItemNode,
+    "ordered_field_declaration_list",
+  )
+  if (tupleList) {
+    let idx = 0
+    for (let i = 0; i < tupleList.namedChildCount; i++) {
+      const member = tupleList.namedChild(i)
+      if (!member) continue
+      // Each tuple field is an unnamed type expression. The first
+      // type-bearing child IS the type. We support both the
+      // direct-type form and the wrapped form.
+      const typeNode =
+        member.childForFieldName("type") ??
+        (member.type !== "visibility_modifier" ? member : null)
+      if (!typeNode) continue
+      // The tupleList may include visibility_modifier nodes; skip them.
+      if (typeNode.type === "visibility_modifier") continue
+      const localName = `${structName}.${idx}`
+      out.push({
+        localName,
+        canonicalName: `${moduleNodeName}#${localName}`,
+        line: member.startPosition.row + 1,
+        typeNode,
+        tupleIndex: idx,
+      })
+      idx++
+    }
+  }
+  return out
+}
+
+/**
+ * Per-field type extraction with Rust-specific containment metadata.
+ * Mirrors ts-core's extractFieldTypeEdges but with the wrapper
+ * vocabulary Rust source actually uses:
+ *
+ *   - direct      bare type identifier:           a: Foo
+ *   - ref         &T or &'a T:                    a: &'a Foo            ← containment=ref
+ *   - ref_mut     &mut T or &'a mut T:            a: &'a mut Foo        ← containment=ref_mut
+ *   - box         Box<T>:                         a: Box<Foo>
+ *   - rc / arc    Rc<T> / Arc<T>:                 a: Rc<Foo>
+ *   - vec         Vec<T>:                         a: Vec<Foo>
+ *   - option      Option<T>:                      a: Option<Foo>
+ *   - result      Result<T, E> (one edge per arm) a: Result<Foo, Err>
+ *   - map         HashMap<K, V> / BTreeMap<K, V>  a: HashMap<u64, Foo>  ← containment=map, keyType=u64
+ *   - set         HashSet<T> / BTreeSet<T>:       a: HashSet<Foo>
+ *   - array       [T; N]:                         a: [Foo; 8]
+ *   - slice       &[T] (already wrapped by ref):  a: &[Foo]             ← containment=ref.slice
+ *   - dyn_trait   dyn Trait:                      a: Box<dyn Foo>       ← containment=box.dyn_trait
+ *
+ * Wrappers compose: `Vec<Option<Box<Foo>>>` → containment=vec.option.box
+ *
+ * Built-in primitive types (u8/u16/u32/u64/usize/i8/i16/i32/i64/isize/
+ * f32/f64/bool/char/str) are dropped because they don't resolve
+ * through the file resolver.
+ */
+function extractRustFieldTypeEdges(
+  typeNode: TsNode,
+  fieldFqName: string,
+  fieldLine: number,
+  resolver: FileResolver,
+  moduleNodeName: string,
+  file: string,
+): Array<TypeRefEdgePayload> {
+  const out: TypeRefEdgePayload[] = []
+  const seen = new Set<string>()
+  const rawText = typeNode.text
+
+  const visit = (n: TsNode, accumulated: string[]): void => {
+    switch (n.type) {
+      case "primitive_type":
+        // u8/i32/f64/bool/char/str/etc. — built-in, skip
+        return
+
+      case "type_identifier": {
+        const name = n.text
+        const resolved = resolveTypeName(name, resolver, moduleNodeName)
+        if (!resolved) return
+        const containment = accumulated.length > 0 ? accumulated.join(".") : "direct"
+        const dstKey = resolved.name + "|" + containment
+        if (seen.has(dstKey)) return
+        seen.add(dstKey)
+        out.push({
+          edgeKind: "field_of_type",
+          srcSymbolName: fieldFqName,
+          dstSymbolName: resolved.name,
+          confidence: 0.95,
+          derivation: "clangd",
+          sourceLocation: { sourceFilePath: file, sourceLineNumber: fieldLine },
+          metadata: {
+            resolved: true,
+            resolutionKind: resolved.kind,
+            containment,
+            typeExpr: rawText,
+          },
+        })
+        return
+      }
+
+      case "reference_type": {
+        // &T or &'a T or &mut T or &'a mut T. Detect mut by looking
+        // for a mutable_specifier child.
+        let isMut = false
+        for (let i = 0; i < n.namedChildCount; i++) {
+          const c = n.namedChild(i)
+          if (c && c.type === "mutable_specifier") isMut = true
+        }
+        const wrapper = isMut ? "ref_mut" : "ref"
+        // The pointee is the "type" field child (skip lifetime + mut)
+        const pointee = n.childForFieldName("type")
+        if (pointee) visit(pointee, [...accumulated, wrapper])
+        return
+      }
+
+      case "pointer_type": {
+        // *const T or *mut T
+        let isMut = false
+        for (let i = 0; i < n.namedChildCount; i++) {
+          const c = n.namedChild(i)
+          if (c && c.type === "mutable_specifier") isMut = true
+        }
+        const wrapper = isMut ? "ptr_mut" : "ptr"
+        const pointee = n.childForFieldName("type")
+        if (pointee) visit(pointee, [...accumulated, wrapper])
+        return
+      }
+
+      case "array_type": {
+        // [T; N]
+        const inner = n.childForFieldName("element") ?? n.namedChild(0)
+        if (inner) visit(inner, [...accumulated, "array"])
+        return
+      }
+
+      case "generic_type": {
+        // Vec<T>, Box<T>, Rc<T>, Arc<T>, Option<T>, Result<T,E>,
+        // HashMap<K,V>, BTreeMap<K,V>, HashSet<T>, BTreeSet<T>,
+        // user-defined Foo<T>
+        const typeNameNode = n.childForFieldName("type")
+        const argsNode = n.childForFieldName("type_arguments")
+        const wrapperName = typeNameNode ? typeNameNode.text : ""
+        // The wrapper name may be a scoped path like
+        // `std::collections::HashMap` — take the last segment.
+        const lastSegment = wrapperName.split("::").pop() ?? wrapperName
+
+        let wrapperKind: string | null = null
+        let walkArgIndex = -1 // -1 means walk all type arguments
+        let keyArgIndex = -1 // for Map: which arg is the key
+        switch (lastSegment) {
+          case "Vec":
+            wrapperKind = "vec"
+            break
+          case "Box":
+            wrapperKind = "box"
+            break
+          case "Rc":
+            wrapperKind = "rc"
+            break
+          case "Arc":
+            wrapperKind = "arc"
+            break
+          case "Option":
+            wrapperKind = "option"
+            break
+          case "Result":
+            wrapperKind = "result"
+            // Walk both arms; both are interesting
+            break
+          case "HashMap":
+          case "BTreeMap":
+            wrapperKind = "map"
+            walkArgIndex = 1
+            keyArgIndex = 0
+            break
+          case "HashSet":
+          case "BTreeSet":
+            wrapperKind = "set"
+            break
+          case "Cell":
+          case "RefCell":
+          case "Mutex":
+          case "RwLock":
+            wrapperKind = "cell"
+            break
+        }
+
+        if (!argsNode) {
+          // Bare generic name — resolve as plain identifier
+          if (typeNameNode && typeNameNode.type === "type_identifier") {
+            visit(typeNameNode, accumulated)
+          }
+          return
+        }
+
+        if (wrapperKind) {
+          const newAcc = [...accumulated, wrapperKind]
+          // Map: extract key type as metadata, walk only the value
+          let keyTypeText: string | null = null
+          if (keyArgIndex >= 0) {
+            const k = argsNode.namedChild(keyArgIndex)
+            if (k) keyTypeText = k.text
+          }
+          if (walkArgIndex >= 0) {
+            const target = argsNode.namedChild(walkArgIndex)
+            if (target) {
+              const before = out.length
+              visit(target, newAcc)
+              if (keyTypeText) {
+                for (let i = before; i < out.length; i++) {
+                  const meta = out[i].metadata as Record<string, unknown> | undefined
+                  if (meta) meta.keyType = keyTypeText
+                }
+              }
+            }
+          } else {
+            for (let i = 0; i < argsNode.namedChildCount; i++) {
+              const c = argsNode.namedChild(i)
+              if (c) visit(c, newAcc)
+            }
+          }
+        } else {
+          // User-defined generic Foo<T>: emit Foo as the primary
+          // target, AND walk the type args at the same depth.
+          if (typeNameNode && typeNameNode.type === "type_identifier") {
+            visit(typeNameNode, accumulated)
+          }
+          for (let i = 0; i < argsNode.namedChildCount; i++) {
+            const c = argsNode.namedChild(i)
+            if (c) visit(c, accumulated)
+          }
+        }
+        return
+      }
+
+      case "scoped_type_identifier": {
+        // std::collections::HashMap or crate::module::Foo. The
+        // last named child is the local type name; resolve that.
+        let last: TsNode | null = null
+        for (let i = 0; i < n.namedChildCount; i++) {
+          const c = n.namedChild(i)
+          if (c && c.type === "type_identifier") last = c
+        }
+        if (last) visit(last, accumulated)
+        return
+      }
+
+      case "tuple_type": {
+        // (A, B, C) — walk each element
+        for (let i = 0; i < n.namedChildCount; i++) {
+          const c = n.namedChild(i)
+          if (c) visit(c, [...accumulated, "tuple"])
+        }
+        return
+      }
+
+      case "dynamic_type": {
+        // dyn Trait — the trait IS the target
+        for (let i = 0; i < n.namedChildCount; i++) {
+          const c = n.namedChild(i)
+          if (c) visit(c, [...accumulated, "dyn_trait"])
+        }
+        return
+      }
+
+      default:
+        // Catch-all: walk children defensively
+        for (let i = 0; i < n.namedChildCount; i++) {
+          const c = n.namedChild(i)
+          if (c) visit(c, accumulated)
+        }
+        return
+    }
+  }
+  visit(typeNode, [])
+  return out
 }
 
 /**
