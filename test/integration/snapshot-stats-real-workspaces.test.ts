@@ -883,6 +883,31 @@ for (const wcase of CASES) {
         expect(sub).not.toBeNull()
         expect(sub!.includes(probe)).toBe(true)
       })
+
+      it("truncated HTML stays under the production size budget", () => {
+        // The 20,466-node instructkr-claude-code unfiltered HTML is
+        // ~19 MB, which would be both slow to download and impossible
+        // to render in any d3-force layout. The maxNodes filter is
+        // the production-readiness mechanism that keeps the output
+        // tractable. This test pins down the budget so a regression
+        // that accidentally bypasses the cap will be caught here.
+        //
+        // Budget is 1 MB — generous compared to the measured 180 KB
+        // for instructkr-claude-code at maxNodes=300, but tight
+        // enough that any orders-of-magnitude regression fails.
+        const graph = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+          { maxNodes: 300 },
+        )
+        const html = graphJsonToHtml(graph)
+        const SIZE_BUDGET_BYTES = 1_048_576 // 1 MB
+        expect(html.length).toBeLessThan(SIZE_BUDGET_BYTES)
+        // Sanity floor: we should still get a real document, not an
+        // empty stub
+        expect(html.length).toBeGreaterThan(50_000)
+      })
     },
   )
 }

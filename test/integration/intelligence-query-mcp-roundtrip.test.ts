@@ -467,6 +467,92 @@ describe("intelligence_graph MCP tool — round trip", () => {
     expect(graph.edges.length).toBe(0)
   })
 
+  it("returns an empty graph for an unknown snapshotId", async () => {
+    fixture = await buildFixture()
+    // Pass a snapshotId that doesn't exist in the db. The lookup
+    // should return an empty graph (zero nodes/edges) rather than
+    // throwing — the contract is "no rows matched" not "error".
+    const raw = await graphTool!.execute(
+      {
+        snapshotId: 999999,
+        workspaceRoot: fixture.tempRoot,
+      },
+      stubClient,
+      stubTracker,
+    )
+    const graph = JSON.parse(raw) as {
+      workspace: string
+      snapshot_id: number
+      nodes: unknown[]
+      edges: unknown[]
+      total_nodes: number
+      total_edges: number
+    }
+    expect(graph.workspace).toBe(fixture.tempRoot)
+    expect(graph.snapshot_id).toBe(999999)
+    expect(graph.nodes.length).toBe(0)
+    expect(graph.edges.length).toBe(0)
+    expect(graph.total_nodes).toBe(0)
+    expect(graph.total_edges).toBe(0)
+  })
+
+  it("ignores empty filter arrays as if they were omitted", async () => {
+    fixture = await buildFixture()
+    // The contract: an empty array is treated as "no filter" rather
+    // than "match nothing", so callers can pass [] for optional
+    // filters without zeroing the result.
+    const baseRaw = await graphTool!.execute(
+      {
+        snapshotId: fixture.snapshotId,
+        workspaceRoot: fixture.tempRoot,
+      },
+      stubClient,
+      stubTracker,
+    )
+    const emptyRaw = await graphTool!.execute(
+      {
+        snapshotId: fixture.snapshotId,
+        workspaceRoot: fixture.tempRoot,
+        edgeKinds: [],
+        symbolKinds: [],
+      },
+      stubClient,
+      stubTracker,
+    )
+    const base = JSON.parse(baseRaw) as { nodes: unknown[]; edges: unknown[] }
+    const withEmpty = JSON.parse(emptyRaw) as {
+      nodes: unknown[]
+      edges: unknown[]
+    }
+    expect(withEmpty.nodes.length).toBe(base.nodes.length)
+    expect(withEmpty.edges.length).toBe(base.edges.length)
+  })
+
+  it("handles centerOf with whitespace + special chars gracefully", async () => {
+    fixture = await buildFixture()
+    // None of these should throw — empty / whitespace / regex-like
+    // characters all flow through resolveCenterSymbol which uses
+    // plain string matching, never a regex compile.
+    const probes = ["  ", "(", ")", "[", "]", "*", ".*", "no_such_xyz"]
+    for (const probe of probes) {
+      const raw = await graphTool!.execute(
+        {
+          snapshotId: fixture.snapshotId,
+          workspaceRoot: fixture.tempRoot,
+          centerOf: probe,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const graph = JSON.parse(raw) as { nodes: unknown[]; edges: unknown[] }
+      // Each probe either resolves to no node (empty result) or
+      // to a substring match (non-empty result). Either is valid;
+      // what we care about is that none throw.
+      expect(Array.isArray(graph.nodes)).toBe(true)
+      expect(Array.isArray(graph.edges)).toBe(true)
+    }
+  })
+
   it("maxNodes caps the result to the top-N by degree", async () => {
     fixture = await buildFixture()
     // Get the full graph first to know how many nodes to cap from
