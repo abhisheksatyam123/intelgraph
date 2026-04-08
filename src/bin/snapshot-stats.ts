@@ -44,15 +44,16 @@ const stubLsp = {
 
 interface CliOptions {
   workspace: string
-  json: boolean
+  format: "text" | "json" | "markdown"
 }
 
 function parseArgs(): CliOptions {
   const args = process.argv.slice(2)
   const positionals: string[] = []
-  let json = false
+  let format: CliOptions["format"] = "text"
   for (const arg of args) {
-    if (arg === "--json") json = true
+    if (arg === "--json") format = "json"
+    else if (arg === "--markdown" || arg === "--md") format = "markdown"
     else if (arg === "--help" || arg === "-h") {
       printUsage()
       process.exit(0)
@@ -64,11 +65,13 @@ function parseArgs(): CliOptions {
     printUsage()
     process.exit(1)
   }
-  return { workspace: positionals[0], json }
+  return { workspace: positionals[0], format }
 }
 
 function printUsage(): void {
-  console.error("Usage: bun run src/bin/snapshot-stats.ts <workspace-path> [--json]")
+  console.error(
+    "Usage: bun run src/bin/snapshot-stats.ts <workspace-path> [--json|--markdown]",
+  )
 }
 
 export interface Dashboard {
@@ -319,6 +322,107 @@ function printDashboard(d: Dashboard): void {
   console.log(line)
 }
 
+/**
+ * Render a Dashboard as a markdown report — same content as the
+ * text format but with proper headings and tables, suitable for
+ * sharing in PR descriptions, docs, or chat.
+ */
+export function dashboardToMarkdown(d: Dashboard): string {
+  const lines: string[] = []
+  lines.push(`# Snapshot stats — ${d.workspace}`)
+  lines.push("")
+  lines.push("## Overview")
+  lines.push("")
+  lines.push(`- Files discovered: **${d.files_discovered}**`)
+  lines.push(`- Total symbols: **${d.total_nodes}**`)
+  lines.push(`- Total edges: **${d.total_edges}**`)
+  lines.push(`- Entry points: ${d.entry_points_count} modules`)
+  lines.push(`- Orphan modules: ${d.orphan_modules_count}`)
+  lines.push(`- Dead exports: ${d.dead_exports_count}`)
+  lines.push(`- Undocumented exports: ${d.undocumented_exports_count}`)
+  lines.push(`- Import 2-cycles: ${d.cycles.length}`)
+  lines.push("")
+  if (d.edge_kinds.length > 0) {
+    lines.push("## Edge kinds")
+    lines.push("")
+    lines.push("| edge_kind | count |")
+    lines.push("|---|---:|")
+    for (const ek of d.edge_kinds) {
+      lines.push(`| ${ek.edge_kind} | ${ek.n} |`)
+    }
+    lines.push("")
+  }
+  if (d.resolution_kinds.length > 0) {
+    lines.push("## Call resolution kinds")
+    lines.push("")
+    lines.push("| kind | count |")
+    lines.push("|---|---:|")
+    for (const rk of d.resolution_kinds) {
+      lines.push(`| ${rk.kind ?? "(none)"} | ${rk.n} |`)
+    }
+    lines.push("")
+  }
+  if (d.top_imported_modules.length > 0) {
+    lines.push("## Top imported modules")
+    lines.push("")
+    lines.push("| incoming | module |")
+    lines.push("|---:|---|")
+    for (const m of d.top_imported_modules) {
+      lines.push(`| ${m.incoming_count} | \`${m.name}\` |`)
+    }
+    lines.push("")
+  }
+  if (d.top_called_functions.length > 0) {
+    lines.push("## Top called functions")
+    lines.push("")
+    lines.push("| incoming | function |")
+    lines.push("|---:|---|")
+    for (const f of d.top_called_functions) {
+      lines.push(`| ${f.incoming_count} | \`${f.name}\` |`)
+    }
+    lines.push("")
+  }
+  if (d.largest_modules.length > 0) {
+    lines.push("## Largest modules")
+    lines.push("")
+    lines.push("| lines | module |")
+    lines.push("|---:|---|")
+    for (const m of d.largest_modules) {
+      lines.push(`| ${m.line_count} | \`${m.name}\` |`)
+    }
+    lines.push("")
+  }
+  if (d.tightly_coupled.length > 0) {
+    lines.push("## Tightly coupled module pairs")
+    lines.push("")
+    lines.push("| edges | src ↔ dst |")
+    lines.push("|---:|---|")
+    for (const c of d.tightly_coupled) {
+      lines.push(`| ${c.coupling_count} | \`${c.src}\` ↔ \`${c.dst}\` |`)
+    }
+    lines.push("")
+  }
+  if (d.cycles.length > 0) {
+    lines.push("## Import cycles (2-cycles)")
+    lines.push("")
+    for (const c of d.cycles) {
+      lines.push(`- \`${c.src}\` ↔ \`${c.dst}\``)
+    }
+    lines.push("")
+  }
+  if (d.external_imports.length > 0) {
+    lines.push("## Top external dependencies")
+    lines.push("")
+    lines.push("| uses | package |")
+    lines.push("|---:|---|")
+    for (const e of d.external_imports) {
+      lines.push(`| ${e.usage_count} | \`${e.name}\` |`)
+    }
+    lines.push("")
+  }
+  return lines.join("\n")
+}
+
 async function main(): Promise<void> {
   const options = parseArgs()
   if (!existsSync(options.workspace)) {
@@ -328,8 +432,10 @@ async function main(): Promise<void> {
 
   try {
     const dashboard = await buildDashboard(options.workspace)
-    if (options.json) {
+    if (options.format === "json") {
       console.log(JSON.stringify(dashboard, null, 2))
+    } else if (options.format === "markdown") {
+      console.log(dashboardToMarkdown(dashboard))
     } else {
       printDashboard(dashboard)
     }

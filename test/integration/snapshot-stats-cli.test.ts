@@ -20,7 +20,7 @@ import {
 } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { buildDashboard } from "../../src/bin/snapshot-stats.js"
+import { buildDashboard, dashboardToMarkdown } from "../../src/bin/snapshot-stats.js"
 
 let tempRoot: string
 
@@ -148,5 +148,24 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     )
     expect(moduleA).toBeDefined()
     expect(moduleA!.incoming_count).toBeGreaterThanOrEqual(2)
+  })
+
+  it("dashboardToMarkdown renders a valid markdown report", async () => {
+    const dashboard = await buildDashboard(tempRoot)
+    const md = dashboardToMarkdown(dashboard)
+    // Top-level heading
+    expect(md).toContain("# Snapshot stats")
+    expect(md).toContain(tempRoot)
+    // Section headings
+    expect(md).toContain("## Overview")
+    expect(md).toContain("## Edge kinds")
+    // Table syntax
+    expect(md).toContain("| edge_kind | count |")
+    expect(md).toContain("|---|---:|")
+    // module-a should appear in the top imported modules section
+    expect(md).toContain("module-a.ts")
+    // No raw object/undefined leakage
+    expect(md).not.toContain("undefined")
+    expect(md).not.toContain("[object Object]")
   })
 })
