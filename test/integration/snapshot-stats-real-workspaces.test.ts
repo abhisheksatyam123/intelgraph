@@ -447,6 +447,98 @@ for (const wcase of CASES) {
         expect(viaMcp.nodes.length).toBe(direct.nodes.length)
         expect(viaMcp.edges.length).toBe(direct.edges.length)
       })
+
+      it("maxNodes caps the unfiltered graph to a tractable size", () => {
+        // The "production readiness" case: any workspace should
+        // collapse to N nodes when maxNodes=N is requested. For
+        // instructkr-claude-code this is the only way to make the
+        // 20K-node graph tractable for the HTML force layout.
+        const CAP = 300
+        const full = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        const capped = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+          { maxNodes: CAP },
+        )
+
+        // If the full graph has > CAP nodes, the cap took effect;
+        // otherwise the cap was a no-op and the result equals the
+        // full graph. Either is correct.
+        if (full.nodes.length > CAP) {
+          expect(capped.nodes.length).toBeLessThanOrEqual(CAP)
+          // The cap should produce something nontrivial
+          expect(capped.nodes.length).toBeGreaterThan(0)
+        } else {
+          expect(capped.nodes.length).toBe(full.nodes.length)
+        }
+
+        // Edge integrity in the capped subgraph
+        const ids = new Set(capped.nodes.map((n) => n.id))
+        for (const edge of capped.edges) {
+          expect(ids.has(edge.src)).toBe(true)
+          expect(ids.has(edge.dst)).toBe(true)
+        }
+      })
+
+      it("maxNodes via intelligence_graph MCP tool produces a tractable graph", async () => {
+        const CAP = 300
+        const raw = await graphTool!.execute(
+          {
+            snapshotId: ingest.snapshotId,
+            workspaceRoot: wcase.path,
+            maxNodes: CAP,
+          },
+          stubClient,
+          stubTracker,
+        )
+        const capped = JSON.parse(raw) as {
+          nodes: Array<{ id: string }>
+          edges: Array<{ src: string; dst: string }>
+        }
+
+        expect(capped.nodes.length).toBeLessThanOrEqual(CAP)
+        expect(capped.nodes.length).toBeGreaterThan(0)
+        const ids = new Set(capped.nodes.map((n) => n.id))
+        for (const edge of capped.edges) {
+          expect(ids.has(edge.src)).toBe(true)
+          expect(ids.has(edge.dst)).toBe(true)
+        }
+      })
+
+      it("maxNodes composes with centerOf — center first, then cap", () => {
+        // The interesting composition: scope to a hub symbol's
+        // neighborhood, then cap. The result should be ≤ both the
+        // unbounded center result AND the cap.
+        const CAP = 50
+        const centered = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+          { centerOf: wcase.centerSymbol, centerHops: 3 },
+        )
+        const both = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+          { centerOf: wcase.centerSymbol, centerHops: 3, maxNodes: CAP },
+        )
+
+        expect(both.nodes.length).toBeLessThanOrEqual(CAP)
+        expect(both.nodes.length).toBeLessThanOrEqual(centered.nodes.length)
+        expect(both.nodes.length).toBeGreaterThan(0)
+
+        // Every edge endpoint is in the result set
+        const ids = new Set(both.nodes.map((n) => n.id))
+        for (const edge of both.edges) {
+          expect(ids.has(edge.src)).toBe(true)
+          expect(ids.has(edge.dst)).toBe(true)
+        }
+      })
     },
   )
 }
