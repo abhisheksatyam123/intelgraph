@@ -646,6 +646,31 @@ export function graphJsonToHtml(graph: GraphJson): string {
     font-size: 11px; color: var(--muted);
     font-variant-numeric: tabular-nums;
   }
+  #sidebar button.preset {
+    width: 100%; box-sizing: border-box;
+    background: var(--bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 4px;
+    padding: 6px 8px; font-size: 12px; cursor: pointer;
+    text-align: left;
+    margin-bottom: 4px;
+  }
+  #sidebar button.preset:hover {
+    border-color: var(--accent); color: var(--accent);
+  }
+  #sidebar .hub-row {
+    display: flex; gap: 6px; align-items: baseline;
+    font-size: 11px; padding: 2px 0;
+    cursor: pointer; user-select: none;
+  }
+  #sidebar .hub-row:hover { color: var(--accent); }
+  #sidebar .hub-row .deg {
+    color: var(--muted); font-variant-numeric: tabular-nums;
+    width: 28px; text-align: right; flex-shrink: 0;
+  }
+  #sidebar .hub-row .name {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex: 1; min-width: 0;
+  }
   .label {
     font-size: 9px;
     fill: var(--text);
@@ -664,6 +689,16 @@ export function graphJsonToHtml(graph: GraphJson): string {
   #toolbar kbd {
     background: var(--bg); border: 1px solid var(--border);
     border-radius: 2px; padding: 1px 4px; font-family: inherit;
+  }
+  #badge {
+    position: absolute; bottom: 8px; right: 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
   }
 </style>
 </head>
@@ -703,6 +738,16 @@ export function graphJsonToHtml(graph: GraphJson): string {
       <div class="count" id="tint-count">0</div>
     </div>
 
+    <h2>Quick views</h2>
+    <button class="preset" id="preset-modules">Module dependency view</button>
+    <button class="preset" id="preset-reset">Reset all filters</button>
+
+    <h2>Top imported modules</h2>
+    <div id="top-imported"></div>
+
+    <h2>Top called functions</h2>
+    <div id="top-called"></div>
+
     <h2>Symbol kinds</h2>
     <div id="kind-legend"></div>
 
@@ -715,6 +760,7 @@ export function graphJsonToHtml(graph: GraphJson): string {
   <div id="canvas-wrap">
     <svg id="canvas"></svg>
     <div id="toolbar">scroll = zoom · drag = pan · click = focus · <kbd>esc</kbd> = clear</div>
+    <div id="badge"><span id="badge-text">0 nodes / 0 edges</span></div>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
@@ -922,6 +968,9 @@ function render() {
 
   document.getElementById("stat-visible").textContent =
     visibleNodes.length + " / " + visibleLinks.length;
+  if (typeof updateBadge === "function") {
+    updateBadge(visibleNodes.length, visibleLinks.length);
+  }
 
   linkSel = linkLayer
     .selectAll("line")
@@ -1195,6 +1244,88 @@ function buildEdgeLegend() {
     container.appendChild(div);
   }
 }
+// ── Top-hubs panels ─────────────────────────────────────────────────────────
+// Surface the most-imported modules and most-called functions in the
+// sidebar so users have one-click entry points into the busiest parts
+// of the graph. The data is already inlined as the links array, so we
+// compute the rankings client-side at init.
+function buildHubPanel(containerId, edgeKind, validNodeKinds) {
+  const incoming = new Map();
+  for (const l of links) {
+    if (l.kind !== edgeKind) continue;
+    incoming.set(l.target, (incoming.get(l.target) || 0) + 1);
+  }
+  const ranked = [];
+  for (const [id, count] of incoming) {
+    const node = nodeById.get(id);
+    if (!node) continue;
+    if (validNodeKinds && !validNodeKinds.has(node.kind)) continue;
+    ranked.push({ id, count, node });
+  }
+  ranked.sort((a, b) => b.count - a.count);
+  const top = ranked.slice(0, 8);
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  if (top.length === 0) {
+    container.innerHTML = '<div class="hub-row" style="cursor:default"><div class="name" style="color:var(--muted);font-style:italic">none</div></div>';
+    return;
+  }
+  for (const hub of top) {
+    const row = document.createElement("div");
+    row.className = "hub-row";
+    row.title = hub.id;
+    row.innerHTML =
+      '<div class="deg">' + hub.count + '</div>' +
+      '<div class="name">' + escapeHtml(shortName(hub.id)) + '</div>';
+    row.onclick = () => {
+      focused = hub.id;
+      applyFocus();
+      showInfo(hub.node);
+      saveHashState();
+    };
+    container.appendChild(row);
+  }
+}
+
+// ── Quick-view presets ──────────────────────────────────────────────────────
+// One-click filter combinations for the most useful subgraphs.
+function applyModuleDepView() {
+  // Module-only nodes, imports-only edges. The canonical "package
+  // dependency" view that the snapshot-stats CLI exposes via
+  // --filter-edge-kind=imports --filter-symbol-kind=module.
+  activeKinds.clear();
+  activeKinds.add("module");
+  activeEdgeKinds.clear();
+  activeEdgeKinds.add("imports");
+  buildKindLegend();
+  buildEdgeLegend();
+  render();
+  saveHashState();
+}
+function applyResetView() {
+  activeKinds.clear();
+  for (const n of data.nodes) activeKinds.add(n.kind);
+  activeEdgeKinds.clear();
+  for (const l of links) activeEdgeKinds.add(l.kind);
+  focused = null;
+  buildKindLegend();
+  buildEdgeLegend();
+  applyFocus();
+  clearInfo();
+  render();
+  saveHashState();
+}
+document.getElementById("preset-modules").addEventListener("click", applyModuleDepView);
+document.getElementById("preset-reset").addEventListener("click", applyResetView);
+
+// ── Live stats badge ────────────────────────────────────────────────────────
+// Updates after every render() so users see exactly how their filter
+// choices change the visible counts.
+function updateBadge(visibleNodeCount, visibleEdgeCount) {
+  document.getElementById("badge-text").textContent =
+    visibleNodeCount + " nodes / " + visibleEdgeCount + " edges";
+}
+
 // Restore any persisted state from the URL hash before building the
 // legends and the first render — so the legends pick up the right
 // disabled state and the canvas immediately shows the saved view.
@@ -1202,6 +1333,8 @@ loadHashState();
 
 buildKindLegend();
 buildEdgeLegend();
+buildHubPanel("top-imported", "imports", new Set(["module"]));
+buildHubPanel("top-called", "calls", new Set(["function", "method"]));
 
 // Search
 document.getElementById("search").addEventListener("input", (ev) => {

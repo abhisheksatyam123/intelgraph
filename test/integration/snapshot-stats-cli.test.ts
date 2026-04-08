@@ -304,6 +304,19 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(html).toContain("history.replaceState")
     expect(html).toContain("URLSearchParams")
 
+    // Top hubs panels: client-side ranking + the two containers.
+    expect(html).toContain("function buildHubPanel")
+    expect(html).toContain('id="top-imported"')
+    expect(html).toContain('id="top-called"')
+
+    // Quick view presets + the live stats badge in the corner.
+    expect(html).toContain('id="preset-modules"')
+    expect(html).toContain('id="preset-reset"')
+    expect(html).toContain("function applyModuleDepView")
+    expect(html).toContain("function applyResetView")
+    expect(html).toContain('id="badge"')
+    expect(html).toContain("function updateBadge")
+
     // Inlined script must parse as valid JS. Catches the class of bug
     // where a stray backtick inside a comment closes the outer
     // template literal and corrupts the rest of the document.
