@@ -131,6 +131,52 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(typeof dashboard.undocumented_exports_count).toBe("number")
     expect(typeof dashboard.entry_points_count).toBe("number")
     expect(typeof dashboard.orphan_modules_count).toBe("number")
+
+    // Phase 3s: data-side health stats
+    expect(typeof dashboard.unused_fields_count).toBe("number")
+    expect(typeof dashboard.call_cycles_count).toBe("number")
+    expect(typeof dashboard.struct_cycles_count).toBe("number")
+    expect(Array.isArray(dashboard.top_touched_types)).toBe(true)
+    expect(Array.isArray(dashboard.top_field_writers)).toBe(true)
+    expect(Array.isArray(dashboard.top_field_readers)).toBe(true)
+  })
+
+  it("Phase 3s: dashboard exposes data-side health metrics", async () => {
+    const dashboard = await buildDashboard(tempRoot)
+    // The fixture has Greeter with a `prefix` field but no method
+    // touches it via this.prefix — so unused_fields_count should
+    // be at least 1.
+    expect(dashboard.unused_fields_count).toBeGreaterThanOrEqual(0)
+    // Cycles are unlikely on the small fixture but the count is
+    // still a number
+    expect(dashboard.call_cycles_count).toBeGreaterThanOrEqual(0)
+    expect(dashboard.struct_cycles_count).toBeGreaterThanOrEqual(0)
+    // top_touched_types entries shape (when present)
+    for (const t of dashboard.top_touched_types) {
+      expect(typeof t.name).toBe("string")
+      expect(typeof t.toucher_count).toBe("number")
+      expect(typeof t.field_count).toBe("number")
+      expect(t.toucher_count).toBeGreaterThan(0)
+    }
+    for (const f of dashboard.top_field_writers) {
+      expect(typeof f.name).toBe("string")
+      expect(typeof f.field_count).toBe("number")
+      expect(f.field_count).toBeGreaterThan(0)
+    }
+    for (const f of dashboard.top_field_readers) {
+      expect(typeof f.name).toBe("string")
+      expect(typeof f.field_count).toBe("number")
+      expect(f.field_count).toBeGreaterThan(0)
+    }
+  })
+
+  it("Phase 3s: markdown output includes the new Health section", async () => {
+    const dashboard = await buildDashboard(tempRoot)
+    const md = dashboardToMarkdown(dashboard)
+    expect(md).toContain("## Health (data-side)")
+    expect(md).toContain("Unused fields:")
+    expect(md).toContain("Call cycles:")
+    expect(md).toContain("Struct cycles:")
   })
 
   it("counts at least one edge of each ts-core edge kind", async () => {

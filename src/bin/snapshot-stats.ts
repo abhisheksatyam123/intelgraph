@@ -222,6 +222,15 @@ export interface Dashboard {
   entry_points_count: number
   orphan_modules_count: number
   external_imports: Array<{ name: string; usage_count: number }>
+  // Phase 3s: data-side health stats. These mirror the viewer
+  // sidebar's Health badge so the CLI dashboard surfaces the same
+  // signals (cycles + dead state) the interactive viewer shows.
+  unused_fields_count: number
+  call_cycles_count: number
+  struct_cycles_count: number
+  top_touched_types: Array<{ name: string; toucher_count: number; field_count: number }>
+  top_field_writers: Array<{ name: string; field_count: number }>
+  top_field_readers: Array<{ name: string; field_count: number }>
 }
 
 export async function buildDashboard(workspace: string): Promise<Dashboard> {
@@ -346,6 +355,39 @@ export async function buildDashboard(workspace: string): Promise<Dashboard> {
       limit: 15,
     })
 
+    // Phase 3s: data-side health stats. Mirror the viewer sidebar's
+    // Health badge so the CLI dashboard surfaces the same signals.
+    const unusedFields = await lookup.lookup({
+      intent: "find_unused_fields",
+      snapshotId,
+      limit: 1000,
+    })
+    const callCycles = await lookup.lookup({
+      intent: "find_call_cycles",
+      snapshotId,
+      limit: 1000,
+    })
+    const structCycles = await lookup.lookup({
+      intent: "find_struct_cycles",
+      snapshotId,
+      limit: 1000,
+    })
+    const topTouched = await lookup.lookup({
+      intent: "find_top_touched_types",
+      snapshotId,
+      limit: 10,
+    })
+    const topWriters = await lookup.lookup({
+      intent: "find_top_field_writers",
+      snapshotId,
+      limit: 10,
+    })
+    const topReaders = await lookup.lookup({
+      intent: "find_top_field_readers",
+      snapshotId,
+      limit: 10,
+    })
+
     return {
       workspace,
       files_discovered: filesDiscovered,
@@ -381,6 +423,22 @@ export async function buildDashboard(workspace: string): Promise<Dashboard> {
       external_imports: external.rows.map((r) => ({
         name: String(r.canonical_name),
         usage_count: Number((r as { incoming_count?: number }).incoming_count),
+      })),
+      unused_fields_count: unusedFields.rows.length,
+      call_cycles_count: callCycles.rows.length,
+      struct_cycles_count: structCycles.rows.length,
+      top_touched_types: topTouched.rows.map((r) => ({
+        name: String(r.canonical_name),
+        toucher_count: Number((r as { toucher_count?: number }).toucher_count),
+        field_count: Number((r as { field_count?: number }).field_count),
+      })),
+      top_field_writers: topWriters.rows.map((r) => ({
+        name: String(r.canonical_name),
+        field_count: Number((r as { field_count?: number }).field_count),
+      })),
+      top_field_readers: topReaders.rows.map((r) => ({
+        name: String(r.canonical_name),
+        field_count: Number((r as { field_count?: number }).field_count),
       })),
     }
   } finally {
@@ -457,7 +515,13 @@ function printDashboard(d: Dashboard): void {
   console.log(`Orphan modules:      ${d.orphan_modules_count}`)
   console.log(`Dead exports:        ${d.dead_exports_count}`)
   console.log(`Undocumented exports: ${d.undocumented_exports_count}`)
-  console.log(`2-cycles:            ${d.cycles.length}`)
+  console.log(`Import 2-cycles:     ${d.cycles.length}`)
+  console.log()
+  // Phase 3s: data-side health stats
+  console.log("Health (Phase 3 data-side):")
+  console.log(`  Unused fields:       ${d.unused_fields_count}`)
+  console.log(`  Call cycles:         ${d.call_cycles_count}`)
+  console.log(`  Struct cycles:       ${d.struct_cycles_count}`)
   console.log()
   if (d.top_imported_modules.length > 0) {
     console.log("Top imported modules:")
@@ -501,6 +565,30 @@ function printDashboard(d: Dashboard): void {
     }
     console.log()
   }
+  if (d.top_touched_types.length > 0) {
+    console.log("Top touched types (data hot spots):")
+    for (const t of d.top_touched_types) {
+      console.log(
+        `  ${t.toucher_count.toString().padStart(4)} APIs · ` +
+          `${t.field_count.toString().padStart(3)} fields  ${t.name}`,
+      )
+    }
+    console.log()
+  }
+  if (d.top_field_writers.length > 0) {
+    console.log("Top mutators (most distinct fields written):")
+    for (const f of d.top_field_writers) {
+      console.log(`  ${f.field_count.toString().padStart(4)}× ${f.name}`)
+    }
+    console.log()
+  }
+  if (d.top_field_readers.length > 0) {
+    console.log("Top readers (most distinct fields read):")
+    for (const f of d.top_field_readers) {
+      console.log(`  ${f.field_count.toString().padStart(4)}× ${f.name}`)
+    }
+    console.log()
+  }
   console.log(line)
 }
 
@@ -523,6 +611,13 @@ export function dashboardToMarkdown(d: Dashboard): string {
   lines.push(`- Dead exports: ${d.dead_exports_count}`)
   lines.push(`- Undocumented exports: ${d.undocumented_exports_count}`)
   lines.push(`- Import 2-cycles: ${d.cycles.length}`)
+  lines.push("")
+  // Phase 3s: data-side health stats summary
+  lines.push("## Health (data-side)")
+  lines.push("")
+  lines.push(`- Unused fields: **${d.unused_fields_count}**`)
+  lines.push(`- Call cycles: **${d.call_cycles_count}**`)
+  lines.push(`- Struct cycles: **${d.struct_cycles_count}**`)
   lines.push("")
   if (d.edge_kinds.length > 0) {
     lines.push("## Edge kinds")
@@ -599,6 +694,36 @@ export function dashboardToMarkdown(d: Dashboard): string {
     lines.push("|---:|---|")
     for (const e of d.external_imports) {
       lines.push(`| ${e.usage_count} | \`${e.name}\` |`)
+    }
+    lines.push("")
+  }
+  if (d.top_touched_types.length > 0) {
+    lines.push("## Top touched types")
+    lines.push("")
+    lines.push("| APIs | fields | type |")
+    lines.push("|---:|---:|---|")
+    for (const t of d.top_touched_types) {
+      lines.push(`| ${t.toucher_count} | ${t.field_count} | \`${t.name}\` |`)
+    }
+    lines.push("")
+  }
+  if (d.top_field_writers.length > 0) {
+    lines.push("## Top mutators")
+    lines.push("")
+    lines.push("| fields | method |")
+    lines.push("|---:|---|")
+    for (const f of d.top_field_writers) {
+      lines.push(`| ${f.field_count} | \`${f.name}\` |`)
+    }
+    lines.push("")
+  }
+  if (d.top_field_readers.length > 0) {
+    lines.push("## Top readers")
+    lines.push("")
+    lines.push("| fields | method |")
+    lines.push("|---:|---|")
+    for (const f of d.top_field_readers) {
+      lines.push(`| ${f.field_count} | \`${f.name}\` |`)
     }
     lines.push("")
   }
