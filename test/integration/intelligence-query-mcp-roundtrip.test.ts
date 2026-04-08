@@ -53,6 +53,8 @@ const tool = TOOLS.find((t) => t.name === "intelligence_query")
 if (!tool) throw new Error("intelligence_query tool not registered")
 const graphTool = TOOLS.find((t) => t.name === "intelligence_graph")
 if (!graphTool) throw new Error("intelligence_graph tool not registered")
+const diffTool = TOOLS.find((t) => t.name === "intelligence_graph_diff")
+if (!diffTool) throw new Error("intelligence_graph_diff tool not registered")
 const stubClient = {} as Parameters<typeof tool.execute>[1]
 const stubTracker = {} as Parameters<typeof tool.execute>[2]
 
@@ -633,6 +635,147 @@ describe("intelligence_graph MCP tool — round trip", () => {
     } as never)
 
     const raw = await graphTool!.execute(
+      {
+        snapshotId: 1,
+        workspaceRoot: fixture.tempRoot,
+      },
+      stubClient,
+      stubTracker,
+    )
+    const res = JSON.parse(raw) as { status?: string; errors?: string[] }
+    expect(res.status).toBe("error")
+    expect(res.errors?.[0]).toMatch(/loadGraphJson/)
+  })
+})
+
+describe("intelligence_graph_diff MCP tool — round trip", () => {
+  type Diff = {
+    nodes_only_in_a: string[]
+    nodes_only_in_b: string[]
+    nodes_in_both: number
+    edges_only_in_a: string[]
+    edges_only_in_b: string[]
+    edges_in_both: number
+    summary: {
+      a_nodes: number
+      b_nodes: number
+      a_edges: number
+      b_edges: number
+      nodes_added: number
+      nodes_removed: number
+      edges_added: number
+      edges_removed: number
+    }
+  }
+
+  it("returns zero diff when both filters are unfiltered (default)", async () => {
+    fixture = await buildFixture()
+    const raw = await diffTool!.execute(
+      {
+        snapshotId: fixture.snapshotId,
+        workspaceRoot: fixture.tempRoot,
+      },
+      stubClient,
+      stubTracker,
+    )
+    const diff = JSON.parse(raw) as Diff
+    expect(diff.nodes_only_in_a).toEqual([])
+    expect(diff.nodes_only_in_b).toEqual([])
+    expect(diff.edges_only_in_a).toEqual([])
+    expect(diff.edges_only_in_b).toEqual([])
+    expect(diff.summary.nodes_added).toBe(0)
+    expect(diff.summary.nodes_removed).toBe(0)
+    // Both sides loaded the same graph
+    expect(diff.summary.a_nodes).toBe(diff.summary.b_nodes)
+    expect(diff.summary.a_edges).toBe(diff.summary.b_edges)
+  })
+
+  it("returns symmetric difference when filtersA differs from filtersB", async () => {
+    fixture = await buildFixture()
+    // A = full graph, B = module-only subgraph. Everything in B
+    // should be in A (subset relationship), so nodes_only_in_b = []
+    // and nodes_only_in_a should contain the cut symbols.
+    const raw = await diffTool!.execute(
+      {
+        snapshotId: fixture.snapshotId,
+        workspaceRoot: fixture.tempRoot,
+        filtersB: {
+          symbolKinds: ["module"],
+        },
+      },
+      stubClient,
+      stubTracker,
+    )
+    const diff = JSON.parse(raw) as Diff
+    // B is a strict subset of A
+    expect(diff.nodes_only_in_b).toEqual([])
+    expect(diff.summary.nodes_added).toBe(0)
+    // A has more than B
+    expect(diff.summary.a_nodes).toBeGreaterThan(diff.summary.b_nodes)
+    // The cut symbols are in nodes_only_in_a — at least the Alpha
+    // class from the fixture
+    expect(diff.nodes_only_in_a.length).toBeGreaterThan(0)
+  })
+
+  it("centerOf=Alpha vs full graph: full has more nodes", async () => {
+    fixture = await buildFixture()
+    const raw = await diffTool!.execute(
+      {
+        snapshotId: fixture.snapshotId,
+        workspaceRoot: fixture.tempRoot,
+        filtersB: {
+          centerOf: "Alpha",
+          centerHops: 1,
+        },
+      },
+      stubClient,
+      stubTracker,
+    )
+    const diff = JSON.parse(raw) as Diff
+    // The centered subgraph is a subset of the full graph
+    expect(diff.nodes_only_in_b).toEqual([])
+    expect(diff.summary.b_nodes).toBeLessThanOrEqual(diff.summary.a_nodes)
+    // The center symbol is in the intersection
+    expect(diff.nodes_in_both).toBeGreaterThan(0)
+  })
+
+  it("returns a structured error when the backend has no graph reader", async () => {
+    fixture = await buildFixture()
+    setIntelligenceDeps({
+      persistence: {
+        dbLookup: {
+          lookup: async () => ({
+            hit: false,
+            intent: "who_calls_api" as const,
+            snapshotId: 1,
+            rows: [],
+          }),
+        },
+        authoritativeStore: { persistEnrichment: async () => 0 },
+        graphProjection: {
+          syncFromAuthoritative: async () => ({
+            synced: true,
+            nodesUpserted: 0,
+            edgesUpserted: 0,
+          }),
+        },
+      },
+      clangdEnricher: {
+        source: "clangd" as const,
+        enrich: async () => ({
+          attempts: [{ source: "clangd" as const, status: "failed" as const }],
+          persistedRows: 0,
+        }),
+      },
+      cParserEnricher: {
+        source: "c_parser" as const,
+        enrich: async () => ({
+          attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+          persistedRows: 0,
+        }),
+      },
+    } as never)
+    const raw = await diffTool!.execute(
       {
         snapshotId: 1,
         workspaceRoot: fixture.tempRoot,

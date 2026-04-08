@@ -23,6 +23,7 @@ import { readReasoningConfig } from "./reason-engine/reason-config.js"
 import { QUERY_INTENTS, validateQueryRequest, executeOrchestratedQuery } from "../intelligence/index.js"
 import { INTELLIGENCE_TOOLS } from "../intelligence/tools/index.js"
 import { toNodeResponse, toNodeErrorResponse, toLegacyFlatResponse } from "../intelligence/query-node-adapter.js"
+import { diffGraphJson } from "../intelligence/db/sqlite/graph-export.js"
 import { resolveCallers } from "./get-callers.js"
 
 import { positionSchema, fileOnlySchema, incomingCallSchema } from "./schemas.js"
@@ -791,6 +792,120 @@ export const TOOLS: ToolDef[] = [
         if (args.maxNodes) filters.maxNodes = args.maxNodes
         const graph = lookup.loadGraphJson(args.snapshotId, args.workspaceRoot, filters)
         return JSON.stringify(graph)
+      } catch (err) {
+        return JSON.stringify({
+          status: "error",
+          errors: [err instanceof Error ? err.message : String(err)],
+        })
+      }
+    },
+  },
+
+  // ── Intelligence graph diff tool ───────────────────────────────────────────
+  // Compare two filtered views of the same snapshot and return the
+  // structural diff. The TUI uses this to answer "what does this filter
+  // hide?" or "what changed when I added centerOf=Cursor?".
+  {
+    name: "intelligence_graph_diff",
+    description:
+      "Diff two filtered views of the same snapshot. Loads the graph " +
+      "with filtersA and filtersB, then computes the symmetric difference " +
+      "at the canonical-name + (src,dst,edge_kind) tuple level. Both filter " +
+      "objects accept the same shape as intelligence_graph (edgeKinds, " +
+      "symbolKinds, centerOf, centerHops, centerDirection, maxNodes). Omit " +
+      "either to use the unfiltered graph as that side of the diff. Returns " +
+      "a GraphDiff with sample arrays (capped at 100) and exact counts.",
+    inputSchema: z.object({
+      snapshotId: z.number().int().positive().describe("Snapshot ID to read from"),
+      workspaceRoot: z.string().describe("Workspace root path"),
+      filtersA: z.object({
+        edgeKinds: z.array(z.string()).optional(),
+        symbolKinds: z.array(z.string()).optional(),
+        centerOf: z.string().optional(),
+        centerHops: z.number().int().positive().optional(),
+        centerDirection: z.enum(["in", "out", "both"]).optional(),
+        maxNodes: z.number().int().positive().optional(),
+      }).optional().describe("First filter spec (defaults to unfiltered)"),
+      filtersB: z.object({
+        edgeKinds: z.array(z.string()).optional(),
+        symbolKinds: z.array(z.string()).optional(),
+        centerOf: z.string().optional(),
+        centerHops: z.number().int().positive().optional(),
+        centerDirection: z.enum(["in", "out", "both"]).optional(),
+        maxNodes: z.number().int().positive().optional(),
+      }).optional().describe("Second filter spec (defaults to unfiltered)"),
+    }),
+    execute: async (args, _client, _tracker) => {
+      const INTELLIGENCE_DEPS = getIntelligenceDeps()
+      if (!INTELLIGENCE_DEPS) {
+        return JSON.stringify({
+          status: "error",
+          errors: ["intelligence_graph_diff: backend not initialized."],
+        })
+      }
+      const lookup = INTELLIGENCE_DEPS.persistence.dbLookup as {
+        loadGraphJson?: (
+          snapshotId: number,
+          workspaceRoot: string,
+          filters?: {
+            edgeKinds?: Set<string>
+            symbolKinds?: Set<string>
+            centerOf?: string
+            centerHops?: number
+            centerDirection?: "in" | "out" | "both"
+            maxNodes?: number
+          },
+        ) => import("../intelligence/db/sqlite/graph-export.js").GraphJson
+      }
+      if (typeof lookup.loadGraphJson !== "function") {
+        return JSON.stringify({
+          status: "error",
+          errors: [
+            "intelligence_graph_diff: configured backend does not support graph reads (no loadGraphJson)",
+          ],
+        })
+      }
+      try {
+        type FilterArgs = {
+          edgeKinds?: string[]
+          symbolKinds?: string[]
+          centerOf?: string
+          centerHops?: number
+          centerDirection?: "in" | "out" | "both"
+          maxNodes?: number
+        }
+        const buildFilters = (input: FilterArgs | undefined) => {
+          const f: {
+            edgeKinds?: Set<string>
+            symbolKinds?: Set<string>
+            centerOf?: string
+            centerHops?: number
+            centerDirection?: "in" | "out" | "both"
+            maxNodes?: number
+          } = {}
+          if (!input) return f
+          if (input.edgeKinds && input.edgeKinds.length > 0)
+            f.edgeKinds = new Set(input.edgeKinds)
+          if (input.symbolKinds && input.symbolKinds.length > 0)
+            f.symbolKinds = new Set(input.symbolKinds)
+          if (input.centerOf) f.centerOf = input.centerOf
+          if (input.centerHops) f.centerHops = input.centerHops
+          if (input.centerDirection) f.centerDirection = input.centerDirection
+          if (input.maxNodes) f.maxNodes = input.maxNodes
+          return f
+        }
+        const graphA = lookup.loadGraphJson(
+          args.snapshotId,
+          args.workspaceRoot,
+          buildFilters(args.filtersA),
+        )
+        const graphB = lookup.loadGraphJson(
+          args.snapshotId,
+          args.workspaceRoot,
+          buildFilters(args.filtersB),
+        )
+        const diff = diffGraphJson(graphA, graphB)
+        return JSON.stringify(diff)
       } catch (err) {
         return JSON.stringify({
           status: "error",
