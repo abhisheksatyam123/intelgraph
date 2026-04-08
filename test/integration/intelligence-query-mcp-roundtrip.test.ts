@@ -2482,3 +2482,194 @@ describe("intelligence_query MCP tool — find_unused_fields (Phase 3p)", () => 
     }
   })
 })
+
+// ── Phase 3t: find_top_hot_fields ───────────────────────────────────────────
+//
+// Field-level granularity sibling of find_top_touched_types. Ranks
+// individual fields by distinct method touchers — finds the
+// read-write hot spots inside a popular type.
+
+describe("intelligence_query MCP tool — find_top_hot_fields (Phase 3t)", () => {
+  it("ranks fields by distinct method touchers and breaks down read/write counts", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3t-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3t" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      // Hot field: count is touched by 4 methods (a/b/c/d).
+      // Cold field: name is touched by 1 method (rename).
+      writeFileSync(
+        join(tempRoot, "src", "store.ts"),
+        `export class Store {
+  count = 0
+  name = ""
+  a(): void { this.count = 1 }
+  b(): void { this.count = 2 }
+  c(): number { return this.count }
+  d(): number { return this.count + 1 }
+  rename(): void { this.name = "x" }
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3t",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const raw = await tool!.execute(
+        {
+          intent: "find_top_hot_fields",
+          snapshotId,
+          limit: 10,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const res = JSON.parse(raw) as FlatResponse
+      expect(res.status).toBe("hit")
+      expect(res.data.nodes.length).toBeGreaterThan(0)
+      // count must rank above name (4 touchers > 1 toucher)
+      const names = res.data.nodes.map((n) => String(n.canonical_name))
+      const countIdx = names.findIndex((n) => n.endsWith("#Store.count"))
+      const nameIdx = names.findIndex((n) => n.endsWith("#Store.name"))
+      expect(countIdx).toBeGreaterThanOrEqual(0)
+      if (nameIdx >= 0) {
+        expect(countIdx).toBeLessThan(nameIdx)
+      }
+      // Every returned node has kind=field
+      for (const node of res.data.nodes) {
+        expect(node.kind).toBe("field")
+      }
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+
+  it("returns empty when no field has any toucher", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3t-empty-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3t-empty" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      writeFileSync(
+        join(tempRoot, "src", "math.ts"),
+        `export function add(a: number, b: number): number { return a + b }
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3t-empty",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const raw = await tool!.execute(
+        {
+          intent: "find_top_hot_fields",
+          snapshotId,
+          limit: 10,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const res = JSON.parse(raw) as FlatResponse
+      expect(res.data.nodes.length).toBe(0)
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+})

@@ -188,6 +188,11 @@ export const QUERY_INTENTS = [
   //              edges — "dead state" left over from refactors that
   //              removed the only consumer.
   "find_unused_fields",
+  // ── Phase 3t: field-level granularity sibling of
+  //              find_top_touched_types. Ranks individual fields by
+  //              distinct method touchers — finds the read-write
+  //              hot spots inside a popular type.
+  "find_top_hot_fields",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

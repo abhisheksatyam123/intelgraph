@@ -264,6 +264,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.topFieldAccessors(snapshotId, "reads_field", limit)
       case "find_unused_fields":
         return this.unusedFields(snapshotId, limit)
+      case "find_top_hot_fields":
+        return this.topHotFields(snapshotId, limit)
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
       case "find_top_imported_modules":
@@ -3204,6 +3206,69 @@ export class SqliteDbLookup implements DbLookupRepository {
       canonical_name: obj.canonical_name,
       owning_class: obj.owning_class ?? null,
       edge_kind: "unused_field",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
+
+  /**
+   * Phase 3t: field-level granularity sibling of
+   * find_top_touched_types. find_top_touched_types ranks at the
+   * type level (Agent has 19 touchers across 10 fields). This
+   * intent ranks individual fields by distinct method touchers
+   * — finds the read-write hot spots inside a popular type.
+   *
+   * The "most contended field" answer is useful because the type
+   * ranking can hide which specific field is the bottleneck. A
+   * type with 19 touchers might have one field touched by 18 of
+   * them and the rest touched by just 1 each — the user wants to
+   * know which field is the hub before refactoring.
+   *
+   * Returns rows ordered by toucher_count desc with:
+   *   - canonical_name = the field
+   *   - kind = "field"
+   *   - toucher_count = distinct method count
+   *   - read_count + write_count broken out so the user can tell
+   *     read-mostly fields apart from write-heavy ones at a glance
+   *   - incoming_count = alias for toucher_count so the viewer's
+   *     buildHubPanel renderer works without a new code path
+   */
+  private topHotFields(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        f.canonical_name AS canonical_name,
+        f.kind AS kind,
+        f.location AS location,
+        COUNT(DISTINCT e.src_node_id) AS toucher_count,
+        SUM(CASE WHEN e.edge_kind = 'reads_field' THEN 1 ELSE 0 END) AS read_count,
+        SUM(CASE WHEN e.edge_kind = 'writes_field' THEN 1 ELSE 0 END) AS write_count
+      FROM graph_edges e
+      INNER JOIN graph_nodes f
+        ON e.dst_node_id = f.node_id AND e.snapshot_id = f.snapshot_id
+      WHERE e.snapshot_id = ?
+        AND e.edge_kind IN ('reads_field', 'writes_field')
+        AND f.kind = 'field'
+      GROUP BY f.canonical_name, f.kind, f.location
+      ORDER BY toucher_count DESC, f.canonical_name ASC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "field",
+      canonical_name: obj.canonical_name,
+      toucher_count: Number(obj.toucher_count ?? 0),
+      read_count: Number(obj.read_count ?? 0),
+      write_count: Number(obj.write_count ?? 0),
+      // Alias for the viewer's hub-panel renderer
+      incoming_count: Number(obj.toucher_count ?? 0),
+      edge_kind: "hot_field",
       confidence: 1,
       derivation: "clangd",
       file_path: extractFilePath(obj.location),

@@ -231,6 +231,13 @@ export interface Dashboard {
   top_touched_types: Array<{ name: string; toucher_count: number; field_count: number }>
   top_field_writers: Array<{ name: string; field_count: number }>
   top_field_readers: Array<{ name: string; field_count: number }>
+  // Phase 3t: field-level hot-spot ranking
+  top_hot_fields: Array<{
+    name: string
+    toucher_count: number
+    read_count: number
+    write_count: number
+  }>
 }
 
 export async function buildDashboard(workspace: string): Promise<Dashboard> {
@@ -387,6 +394,11 @@ export async function buildDashboard(workspace: string): Promise<Dashboard> {
       snapshotId,
       limit: 10,
     })
+    const topHotFields = await lookup.lookup({
+      intent: "find_top_hot_fields",
+      snapshotId,
+      limit: 10,
+    })
 
     return {
       workspace,
@@ -439,6 +451,12 @@ export async function buildDashboard(workspace: string): Promise<Dashboard> {
       top_field_readers: topReaders.rows.map((r) => ({
         name: String(r.canonical_name),
         field_count: Number((r as { field_count?: number }).field_count),
+      })),
+      top_hot_fields: topHotFields.rows.map((r) => ({
+        name: String(r.canonical_name),
+        toucher_count: Number((r as { toucher_count?: number }).toucher_count),
+        read_count: Number((r as { read_count?: number }).read_count),
+        write_count: Number((r as { write_count?: number }).write_count),
       })),
     }
   } finally {
@@ -589,6 +607,16 @@ function printDashboard(d: Dashboard): void {
     }
     console.log()
   }
+  if (d.top_hot_fields.length > 0) {
+    console.log("Top hot fields (most contended state):")
+    for (const f of d.top_hot_fields) {
+      console.log(
+        `  ${f.toucher_count.toString().padStart(4)} APIs · ` +
+          `R:${f.read_count.toString().padStart(3)} W:${f.write_count.toString().padStart(3)}  ${f.name}`,
+      )
+    }
+    console.log()
+  }
   console.log(line)
 }
 
@@ -724,6 +752,18 @@ export function dashboardToMarkdown(d: Dashboard): string {
     lines.push("|---:|---|")
     for (const f of d.top_field_readers) {
       lines.push(`| ${f.field_count} | \`${f.name}\` |`)
+    }
+    lines.push("")
+  }
+  if (d.top_hot_fields.length > 0) {
+    lines.push("## Top hot fields")
+    lines.push("")
+    lines.push("| APIs | reads | writes | field |")
+    lines.push("|---:|---:|---:|---|")
+    for (const f of d.top_hot_fields) {
+      lines.push(
+        `| ${f.toucher_count} | ${f.read_count} | ${f.write_count} | \`${f.name}\` |`,
+      )
     }
     lines.push("")
   }

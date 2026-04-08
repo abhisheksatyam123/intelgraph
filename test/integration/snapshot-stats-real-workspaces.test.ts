@@ -1257,6 +1257,38 @@ for (const wcase of CASES) {
         expect(result.rows.some((r) => Number(r.hop_distance) > 0)).toBe(true)
       })
 
+      // ── Phase 3t: find_top_hot_fields on real workspace data ────
+      it("phase 3t: find_top_hot_fields ranks the most contended fields", async () => {
+        const result = await ingest.lookup.lookup({
+          intent: "find_top_hot_fields",
+          snapshotId: ingest.snapshotId,
+          limit: 20,
+        })
+        for (const row of result.rows) {
+          expect(row.kind).toBe("field")
+          expect(row.edge_kind).toBe("hot_field")
+          expect(typeof row.toucher_count).toBe("number")
+          expect(typeof row.read_count).toBe("number")
+          expect(typeof row.write_count).toBe("number")
+          expect(typeof row.incoming_count).toBe("number")
+          expect(Number(row.toucher_count)).toBeGreaterThan(0)
+          // The two columns are aliases — must always agree
+          expect(Number(row.toucher_count)).toBe(Number(row.incoming_count))
+          // read_count + write_count must each be >= 0 (and combined
+          // must be >= toucher_count since one method can do both
+          // — they're access counts, not distinct toucher counts)
+          expect(Number(row.read_count) + Number(row.write_count)).toBeGreaterThanOrEqual(
+            Number(row.toucher_count),
+          )
+        }
+        // Sort verification: rows in non-increasing toucher_count
+        for (let i = 1; i < result.rows.length; i++) {
+          expect(Number(result.rows[i - 1].toucher_count)).toBeGreaterThanOrEqual(
+            Number(result.rows[i].toucher_count),
+          )
+        }
+      })
+
       // ── Phase 3p: find_unused_fields on real workspace data ────
       it("phase 3p: find_unused_fields surfaces dead-state candidates", async () => {
         // Real TS workspaces always have some unused fields — old
