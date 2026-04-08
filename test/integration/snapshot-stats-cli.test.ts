@@ -556,6 +556,12 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(html).toContain('id="search-count"')
     expect(html).toContain("searchMatches.has(d.id)")
 
+    // "Open in VS Code" link in info panel — resolves relative
+    // file_path against data.workspace and emits a vscode:// scheme.
+    expect(html).toContain(".open-link")
+    expect(html).toContain('"vscode://file"')
+    expect(html).toContain("open in VS Code")
+
     // Inlined script must parse as valid JS. Catches the class of bug
     // where a stray backtick inside a comment closes the outer
     // template literal and corrupts the rest of the document.

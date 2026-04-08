@@ -809,6 +809,22 @@ export function graphJsonToHtml(graph: GraphJson): string {
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     flex: 1; min-width: 0;
   }
+  #info .open-link {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 3px 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--accent);
+    font-size: 11px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  #info .open-link:hover {
+    border-color: var(--accent);
+    background: var(--panel);
+  }
   #canvas-wrap { flex: 1; position: relative; }
   svg { width: 100%; height: 100%; display: block; }
   .node { stroke: #000; stroke-width: 0.5; cursor: pointer; }
@@ -1652,6 +1668,25 @@ function showInfo(d) {
   let html = rows
     .map((r) => '<div class="row"><span class="key">' + r[0] + '</span> ' + escapeHtml(String(r[1])) + '</div>')
     .join("");
+
+  // Add an "open in VS Code" link when the node has a usable
+  // file_path. Resolves the relative path against data.workspace
+  // (the workspace root that was inlined at generation time) so
+  // the link points at the absolute file. Works with VS Code
+  // Insiders too via the same scheme.
+  if (d.file_path) {
+    let workspaceRoot = data.workspace;
+    if (workspaceRoot.endsWith("/")) {
+      workspaceRoot = workspaceRoot.substring(0, workspaceRoot.length - 1);
+    }
+    const abs = d.file_path.startsWith("/")
+      ? d.file_path
+      : workspaceRoot + "/" + d.file_path;
+    const lineSuffix = typeof d.line === "number" ? ":" + d.line : "";
+    const href = "vscode://file" + abs + lineSuffix;
+    html +=
+      '<a class="open-link" href="' + escapeHtml(href) + '">→ open in VS Code</a>';
+  }
 
   // Render up to 6 callers and 6 callees grouped by edge_kind. Each
   // row is clickable; clicking jumps focus to that neighbor.
