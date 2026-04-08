@@ -513,6 +513,47 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
       scopeStack.push({ name: fqName, node })
     }
 
+    // self.field accesses inside method bodies. Emits reads_field /
+    // writes_field edges from the enclosing method to the field node
+    // (which phase 3c created on struct extraction). Scope:
+    //
+    //   - Only self.foo is recognized; var.foo would need full type
+    //     inference and is deferred.
+    //   - The field must already exist in seenSymbols (i.e. declared
+    //     on the enclosing impl's type). Phantom accesses to fields
+    //     defined elsewhere (trait defaults, dynamically-attached)
+    //     are silently dropped.
+    //   - self.method() (the call_expression case where the
+    //     field_expression is the function) is skipped because it's
+    //     already covered by the calls edge. self.method without
+    //     parens IS a real read of the method-as-value.
+    if (node.type === "field_expression") {
+      const access = classifyRustSelfFieldAccess(node, implStack, scopeStack)
+      if (access) {
+        const fieldFqName = `${moduleNodeName}#${access.typeName}.${access.fieldName}`
+        if (seenSymbols.has(fieldFqName)) {
+          yield ctx.edge({
+            payload: {
+              edgeKind: access.kind, // reads_field | writes_field
+              srcSymbolName: access.callerFqName,
+              dstSymbolName: fieldFqName,
+              confidence: 0.95,
+              derivation: "clangd",
+              sourceLocation: {
+                sourceFilePath: file,
+                sourceLineNumber: node.startPosition.row + 1,
+              },
+              metadata: {
+                resolved: true,
+                accessKind: access.kind === "reads_field" ? "read" : "write",
+                via: "self",
+              },
+            },
+          })
+        }
+      }
+    }
+
     // Call expressions inside the current scope
     if (node.type === "call_expression") {
       const callee = extractCallee(node, resolver, moduleNodeName)
@@ -848,6 +889,109 @@ function extractRustFieldDeclarations(
     }
   }
   return out
+}
+
+/**
+ * Classify a `field_expression` node as a `self.field` read or write
+ * inside a method body. Returns null when the access isn't on `self`,
+ * when there's no enclosing impl block to attribute the field to,
+ * or when the access is a method call (already covered by calls edges).
+ *
+ * Read vs write detection inspects the parent node:
+ *   - parent is assignment_expression and we are the left field → write
+ *   - parent is compound_assignment_expr (+=, -=, …) → write
+ *   - parent is unary_expression with `&mut` operator → write
+ *   - everything else → read
+ *
+ * Skip rule: if the parent is a call_expression and we are its
+ * function field, the read is part of a method invocation that the
+ * existing calls-edge handler already records — skip to avoid
+ * duplicate edges.
+ *
+ * tree-sitter-rust subtlety: childForFieldName returns a fresh JS
+ * wrapper for the same underlying node, so identity comparison
+ * (left === node) is unreliable. We compare by startIndex, which
+ * is stable across wrapper instances. (Same trick as ts-core's
+ * classifyThisFieldAccess — phase 2 hit this exact bug.)
+ */
+function classifyRustSelfFieldAccess(
+  node: TsNode,
+  implStack: string[],
+  scopeStack: Array<{ name: string; node: TsNode }>,
+): {
+  kind: "reads_field" | "writes_field"
+  typeName: string
+  fieldName: string
+  callerFqName: string
+} | null {
+  // Must be a field access on `self`. The shape is:
+  //   field_expression
+  //     value: <object>
+  //     field: field_identifier
+  const obj = node.childForFieldName("value")
+  if (!obj || obj.type !== "self") return null
+  const field = node.childForFieldName("field")
+  if (!field || field.type !== "field_identifier") return null
+  const fieldName = field.text
+  if (!fieldName) return null
+
+  // Need an enclosing impl block to know which type self refers to.
+  if (implStack.length === 0) return null
+  const typeName = implStack[implStack.length - 1]
+
+  // Need an enclosing method/function scope for attribution.
+  if (scopeStack.length === 0) return null
+  const callerFqName = scopeStack[scopeStack.length - 1].name
+
+  // Skip method calls — self.method() is already a calls edge.
+  // The case to skip: parent is call_expression and our node IS
+  // the function field of that call. self.method without parens
+  // is a real read of the method-as-value.
+  const parent = node.parent
+  const nodeStart = node.startIndex
+  if (parent && parent.type === "call_expression") {
+    const fn = parent.childForFieldName("function")
+    if (fn && fn.startIndex === nodeStart) return null
+  }
+  // Also skip the inner field_expression in chained calls like
+  // self.foo.bar() — when our parent is the OUTER field_expression
+  // whose value is us, AND that outer is the function of a call.
+  // For first pass we keep this behavior simple: skip any
+  // field_expression whose parent is another field_expression that
+  // chains into a call. This avoids over-counting reads on chained
+  // method invocations like self.client.send().
+  if (parent && parent.type === "field_expression") {
+    const grand = parent.parent
+    if (grand && grand.type === "call_expression") {
+      const fn = grand.childForFieldName("function")
+      if (fn && fn.startIndex === parent.startIndex) return null
+    }
+  }
+
+  // Detect write context.
+  let kind: "reads_field" | "writes_field" = "reads_field"
+  if (parent) {
+    if (parent.type === "assignment_expression") {
+      const left = parent.childForFieldName("left")
+      if (left && left.startIndex === nodeStart) kind = "writes_field"
+    } else if (parent.type === "compound_assignment_expr") {
+      // self.count += 1, self.count -= 1, etc.
+      const left = parent.childForFieldName("left")
+      if (left && left.startIndex === nodeStart) kind = "writes_field"
+    } else if (parent.type === "reference_expression") {
+      // &mut self.foo — taking a mutable reference is a write hint.
+      // The "mutable" field on a reference_expression is set when
+      // the source has `&mut` rather than just `&`.
+      let isMut = false
+      for (let i = 0; i < parent.namedChildCount; i++) {
+        const c = parent.namedChild(i)
+        if (c && c.type === "mutable_specifier") isMut = true
+      }
+      if (isMut) kind = "writes_field"
+    }
+  }
+
+  return { kind, typeName, fieldName, callerFqName }
 }
 
 /**

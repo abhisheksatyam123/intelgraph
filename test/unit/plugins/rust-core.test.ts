@@ -574,6 +574,176 @@ pub struct Box1 {
     }
   })
 
+  it("emits reads_field/writes_field edges from self.X access in method bodies", async () => {
+    const tinyDir = mkdtempSync(join(tmpdir(), "rust-core-self-rw-"))
+    try {
+      writeFileSync(
+        join(tinyDir, "Cargo.toml"),
+        `[package]\nname = "fixture"\nversion = "0.1.0"\nedition = "2021"\n`,
+      )
+      mkdirSync(join(tinyDir, "src"), { recursive: true })
+      writeFileSync(
+        join(tinyDir, "src", "lib.rs"),
+        `pub struct Counter {
+    pub count: u32,
+    pub name: String,
+}
+
+impl Counter {
+    pub fn reset(&mut self) {
+        // direct assignment → write
+        self.count = 0;
+    }
+    pub fn bump(&mut self) {
+        // compound assignment → write
+        self.count += 1;
+    }
+    pub fn get(&self) -> u32 {
+        // pure read
+        self.count
+    }
+    pub fn label(&self) -> String {
+        // pure read of name
+        self.name.clone()
+    }
+    pub fn mixed(&mut self, n: u32) {
+        // read self.count + write self.count in one body
+        let prev = self.count;
+        self.count = prev + n;
+    }
+}
+`,
+      )
+      const sink = new CaptureSink()
+      const runner = new ExtractorRunner({
+        snapshotId: 1,
+        workspaceRoot: tinyDir,
+        lsp: stubLsp,
+        sink,
+        plugins: [rustCoreExtractor],
+      })
+      await runner.run()
+
+      const writes = sink.allEdges().filter((e) => e.edge_kind === "writes_field")
+      const reads = sink.allEdges().filter((e) => e.edge_kind === "reads_field")
+
+      // reset() does `self.count = 0` → 1 write
+      expect(
+        writes.some(
+          (e) =>
+            String(e.src_node_id).endsWith("#Counter.reset") &&
+            String(e.dst_node_id).endsWith("#Counter.count"),
+        ),
+      ).toBe(true)
+
+      // bump() does `self.count += 1` → 1 write (compound assignment)
+      expect(
+        writes.some(
+          (e) =>
+            String(e.src_node_id).endsWith("#Counter.bump") &&
+            String(e.dst_node_id).endsWith("#Counter.count"),
+        ),
+      ).toBe(true)
+
+      // get() does `self.count` (rvalue) → 1 read, no write
+      expect(
+        reads.some(
+          (e) =>
+            String(e.src_node_id).endsWith("#Counter.get") &&
+            String(e.dst_node_id).endsWith("#Counter.count"),
+        ),
+      ).toBe(true)
+      expect(
+        writes.every(
+          (e) => !String(e.src_node_id).endsWith("#Counter.get"),
+        ),
+      ).toBe(true)
+
+      // mixed() does both — read of count for `prev`, write to count
+      const mixedWrites = writes.filter((e) =>
+        String(e.src_node_id).endsWith("#Counter.mixed"),
+      )
+      const mixedReads = reads.filter((e) =>
+        String(e.src_node_id).endsWith("#Counter.mixed"),
+      )
+      expect(mixedWrites.length).toBeGreaterThanOrEqual(1)
+      expect(mixedReads.length).toBeGreaterThanOrEqual(1)
+
+      // label() does self.name.clone() — that's a method call, NOT
+      // a field read of `name` (though in raw form it WOULD be a
+      // read, the inner field_expression's parent is another
+      // field_expression that chains into a call). The first-pass
+      // skip rule drops it, matching what ts-core does for
+      // this.method() chains.
+      const labelReads = reads.filter((e) =>
+        String(e.src_node_id).endsWith("#Counter.label") &&
+        String(e.dst_node_id).endsWith("#Counter.name"),
+      )
+      // Either 0 (skipped by chained-call rule) or 1 (counted as a
+      // read of name); both are acceptable. Just assert no writes
+      // come from label.
+      expect(labelReads.length).toBeLessThanOrEqual(1)
+      const labelWrites = writes.filter((e) =>
+        String(e.src_node_id).endsWith("#Counter.label"),
+      )
+      expect(labelWrites.length).toBe(0)
+    } finally {
+      rmSync(tinyDir, { recursive: true, force: true })
+    }
+  })
+
+  it("does not emit field edges for self.method() (already covered by calls)", async () => {
+    const tinyDir = mkdtempSync(join(tmpdir(), "rust-core-self-method-"))
+    try {
+      writeFileSync(
+        join(tinyDir, "Cargo.toml"),
+        `[package]\nname = "fixture"\nversion = "0.1.0"\nedition = "2021"\n`,
+      )
+      mkdirSync(join(tinyDir, "src"), { recursive: true })
+      writeFileSync(
+        join(tinyDir, "src", "lib.rs"),
+        `pub struct Caller {
+    pub greeting: String,
+}
+impl Caller {
+    pub fn greet(&self) -> String {
+        self.helper()
+    }
+    pub fn helper(&self) -> String {
+        self.greeting.clone()
+    }
+}
+`,
+      )
+      const sink = new CaptureSink()
+      const runner = new ExtractorRunner({
+        snapshotId: 1,
+        workspaceRoot: tinyDir,
+        lsp: stubLsp,
+        sink,
+        plugins: [rustCoreExtractor],
+      })
+      await runner.run()
+
+      // greet's body: `self.helper()` — should be a calls edge,
+      // NOT a reads_field edge to Caller.helper.
+      const reads = sink
+        .allEdges()
+        .filter(
+          (e) =>
+            e.edge_kind === "reads_field" &&
+            String(e.src_node_id).endsWith("#Caller.greet"),
+        )
+      expect(
+        reads.every(
+          (e) => !String(e.dst_node_id).endsWith("#Caller.helper"),
+        ),
+      ).toBe(true)
+    } finally {
+      rmSync(tinyDir, { recursive: true, force: true })
+    }
+  })
+
   it("emits enum_variant nodes with shape detection (unit, tuple, struct)", async () => {
     const tinyDir = mkdtempSync(join(tmpdir(), "rust-core-enum-"))
     try {
