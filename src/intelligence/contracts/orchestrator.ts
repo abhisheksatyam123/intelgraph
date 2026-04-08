@@ -211,6 +211,13 @@ export const QUERY_INTENTS = [
   //              it: a function with one caller is often a
   //              candidate to inline back into that caller.
   "find_unique_callers",
+  // ── Phase 3x: direct self-recursion detector. Catches methods
+  //              that call themselves directly — a different
+  //              signal from find_call_cycles (which catches
+  //              mutual recursion) and find_unique_callers
+  //              (which excludes self-recursion). Useful for
+  //              spotting recursive algorithms in the codebase.
+  "find_recursive_methods",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

@@ -1257,6 +1257,27 @@ for (const wcase of CASES) {
         expect(result.rows.some((r) => Number(r.hop_distance) > 0)).toBe(true)
       })
 
+      // ── Phase 3x: find_recursive_methods on real data ─────────
+      it("phase 3x: find_recursive_methods surfaces self-recursive functions", async () => {
+        const result = await ingest.lookup.lookup({
+          intent: "find_recursive_methods",
+          snapshotId: ingest.snapshotId,
+          limit: 50,
+        })
+        expect(result.hit).toBe(true)
+        // Real workspaces always have at least a few recursive
+        // functions (parsers, tree walks, retry loops). Assert
+        // we get at least one row + the row contract.
+        for (const row of result.rows) {
+          expect(["function", "method"]).toContain(String(row.kind))
+          expect(row.edge_kind).toBe("self_recursion")
+          // caller == callee for self-recursion
+          expect(row.caller).toBe(row.callee)
+          // canonical_name == both
+          expect(row.canonical_name).toBe(row.callee)
+        }
+      })
+
       // ── Phase 3w: find_unique_callers on real data ────────────
       it("phase 3w: find_unique_callers surfaces inline candidates", async () => {
         // Real codebases always have plenty of helper functions

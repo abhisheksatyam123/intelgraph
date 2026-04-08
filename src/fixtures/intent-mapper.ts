@@ -118,6 +118,8 @@ export function mapIntentToArray(intent: QueryIntent): RelationArrayName {
     find_field_co_access: "structures",
     // Phase 3w: methods called by exactly one other method
     find_unique_callers: "uses",
+    // Phase 3x: direct self-recursion detector
+    find_recursive_methods: "uses",
   }
 
   return mapping[intent] || "uses"

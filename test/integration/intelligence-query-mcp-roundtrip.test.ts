@@ -3000,3 +3000,177 @@ export function b(): number { return shared() + 1 }
     }
   })
 })
+
+// ── Phase 3x: find_recursive_methods — direct self-recursion detector ──────
+
+describe("intelligence_query MCP tool — find_recursive_methods (Phase 3x)", () => {
+  it("returns methods that call themselves directly", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3x-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3x" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      // factorial calls itself directly. iterative does not.
+      writeFileSync(
+        join(tempRoot, "src", "math.ts"),
+        `export function factorial(n: number): number {
+  if (n <= 1) return 1
+  return n * factorial(n - 1)
+}
+export function iterative(n: number): number {
+  let r = 1
+  for (let i = 2; i <= n; i++) r = r * i
+  return r
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3x",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const result = await lookup.lookup({
+        intent: "find_recursive_methods",
+        snapshotId,
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      const names = result.rows.map((r) => String(r.canonical_name))
+      // factorial must appear; iterative must NOT
+      expect(names.some((n) => n.endsWith("#factorial"))).toBe(true)
+      expect(names.some((n) => n.endsWith("#iterative"))).toBe(false)
+      // Each row's caller equals callee
+      for (const row of result.rows) {
+        expect(row.caller).toBe(row.callee)
+        expect(row.edge_kind).toBe("self_recursion")
+      }
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+
+  it("returns no rows in a workspace with no self-recursion", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3x-none-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3x-none" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      writeFileSync(
+        join(tempRoot, "src", "linear.ts"),
+        `export function a(): number { return b() }
+export function b(): number { return c() }
+export function c(): number { return 42 }
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3x-none",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const result = await lookup.lookup({
+        intent: "find_recursive_methods",
+        snapshotId,
+        limit: 50,
+      })
+      expect(result.rows.length).toBe(0)
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+})

@@ -272,6 +272,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.fieldCoAccess(snapshotId, limit)
       case "find_unique_callers":
         return this.uniqueCallers(snapshotId, limit)
+      case "find_recursive_methods":
+        return this.recursiveMethods(snapshotId, limit)
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
       case "find_top_imported_modules":
@@ -3476,6 +3478,58 @@ export class SqliteDbLookup implements DbLookupRepository {
       caller: obj.unique_caller,
       callee: obj.canonical_name,
       edge_kind: "single_caller",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
+
+  /**
+   * Phase 3x: direct self-recursion detector. Returns methods that
+   * call themselves directly. Different from find_call_cycles
+   * (which catches mutual recursion: A→B→A) and from
+   * find_unique_callers (which intentionally excludes self-calls
+   * to avoid false-positive inline candidates).
+   *
+   * This is the simplest possible recursion shape — a method M
+   * with at least one calls edge whose src and dst are both M.
+   * Useful for spotting recursive algorithms in the codebase
+   * (parsers, tree walks, traversal routines, refresh loops).
+   *
+   * Returns rows ordered by canonical_name for deterministic
+   * output. Each row carries the canonical name of the recursive
+   * method and the edge_kind set to "self_recursion" so the
+   * visualizer can render it with a distinct overlay.
+   */
+  private recursiveMethods(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT DISTINCT
+        m.canonical_name AS canonical_name,
+        m.kind AS kind,
+        m.location AS location
+      FROM graph_edges e
+      INNER JOIN graph_nodes m
+        ON e.src_node_id = m.node_id AND e.snapshot_id = m.snapshot_id
+      WHERE e.snapshot_id = ?
+        AND e.edge_kind = 'calls'
+        AND e.src_node_id = e.dst_node_id
+        AND m.kind IN ('function', 'method')
+      ORDER BY m.canonical_name ASC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "function",
+      canonical_name: obj.canonical_name,
+      caller: obj.canonical_name,
+      callee: obj.canonical_name,
+      edge_kind: "self_recursion",
       confidence: 1,
       derivation: "clangd",
       file_path: extractFilePath(obj.location),
