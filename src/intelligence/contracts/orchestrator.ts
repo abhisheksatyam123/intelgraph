@@ -170,6 +170,11 @@ export const QUERY_INTENTS = [
   //              central pieces of state — the types the codebase
   //              actually revolves around.
   "find_top_touched_types",
+  // ── Phase 3n: direct mutual recursion at the function/method
+  //              level (A calls B AND B calls A). Closes the
+  //              cycle-detection family alongside find_import_cycles,
+  //              find_type_cycles, and find_struct_cycles.
+  "find_call_cycles",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

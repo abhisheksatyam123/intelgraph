@@ -256,6 +256,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         )
       case "find_top_touched_types":
         return this.topTouchedTypes(snapshotId, limit)
+      case "find_call_cycles":
+        return this.callCycles(snapshotId, limit)
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
       case "find_top_imported_modules":
@@ -3018,6 +3020,65 @@ export class SqliteDbLookup implements DbLookupRepository {
       // alias too so the same renderer works without a new code path.
       incoming_count: Number(obj.toucher_count ?? 0),
       edge_kind: "touched_by",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
+
+  /**
+   * Phase 3n: direct mutual recursion at the function/method level.
+   * Finds (A, B) pairs where A calls B AND B calls A, the call-side
+   * analog of find_import_cycles, find_type_cycles, and
+   * find_struct_cycles. Closes the cycle-detection family.
+   *
+   * Self-recursion (A calls A directly) is excluded — that's a
+   * different (intentional) pattern, and `a.canonical_name <
+   * b.canonical_name` would skip it anyway. The cycle detector is
+   * for the *bug-suspect* shape where two methods bounce off each
+   * other.
+   *
+   * Same self-join shape as find_struct_cycles, but on calls edges
+   * with function/method endpoints.
+   */
+  private callCycles(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        a.canonical_name AS caller,
+        b.canonical_name AS callee,
+        a.canonical_name AS canonical_name,
+        a.kind AS kind,
+        a.location AS location
+      FROM graph_edges e1
+      INNER JOIN graph_nodes a
+        ON e1.src_node_id = a.node_id AND e1.snapshot_id = a.snapshot_id
+      INNER JOIN graph_nodes b
+        ON e1.dst_node_id = b.node_id AND e1.snapshot_id = b.snapshot_id
+      INNER JOIN graph_edges e2
+        ON e2.snapshot_id = e1.snapshot_id
+        AND e2.src_node_id = e1.dst_node_id
+        AND e2.dst_node_id = e1.src_node_id
+      WHERE e1.snapshot_id = ?
+        AND e1.edge_kind = 'calls'
+        AND e2.edge_kind = 'calls'
+        AND a.kind IN ('function', 'method')
+        AND b.kind IN ('function', 'method')
+        AND a.canonical_name < b.canonical_name
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "function",
+      canonical_name: obj.canonical_name,
+      caller: obj.caller,
+      callee: obj.callee,
+      edge_kind: "call_cycle",
       confidence: 1,
       derivation: "clangd",
       file_path: extractFilePath(obj.location),

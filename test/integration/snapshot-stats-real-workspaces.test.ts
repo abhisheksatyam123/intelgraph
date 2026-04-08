@@ -1257,6 +1257,29 @@ for (const wcase of CASES) {
         expect(result.rows.some((r) => Number(r.hop_distance) > 0)).toBe(true)
       })
 
+      // ── Phase 3n: find_call_cycles on real workspace data ─────
+      it("phase 3n: find_call_cycles runs without error on a real workspace", async () => {
+        // We don't assert that real workspaces actually contain mutual
+        // recursion — most don't, on purpose. The probe verifies the
+        // SQL self-join doesn't blow up on a snapshot with hundreds
+        // of methods and thousands of edges. If a workspace happens
+        // to contain a cycle, the row contract is asserted.
+        const result = await ingest.lookup.lookup({
+          intent: "find_call_cycles",
+          snapshotId: ingest.snapshotId,
+          limit: 50,
+        })
+        for (const row of result.rows) {
+          expect(row.edge_kind).toBe("call_cycle")
+          expect(["function", "method"]).toContain(String(row.kind))
+          // The self-join condition `a.canonical_name <
+          // b.canonical_name` ensures each cycle pair appears once
+          expect(typeof row.caller).toBe("string")
+          expect(typeof row.callee).toBe("string")
+          expect(String(row.caller) < String(row.callee)).toBe(true)
+        }
+      })
+
       // ── Phase 3i: find_struct_cycles on real workspace data ────
       it("phase 3i: find_struct_cycles runs without error on a real workspace", async () => {
         // We don't assert that real workspaces actually contain

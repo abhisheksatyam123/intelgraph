@@ -1939,3 +1939,197 @@ export function mul(a: number, b: number): number { return a * b }
     }
   })
 })
+
+// ── Phase 3n: find_call_cycles — direct mutual recursion ────────────────────
+//
+// Closes the cycle-detection family alongside find_import_cycles,
+// find_type_cycles, and find_struct_cycles. Detects (A, B) pairs
+// where A calls B AND B calls A — the bug-suspect shape where two
+// methods bounce off each other.
+
+describe("intelligence_query MCP tool — find_call_cycles (Phase 3n)", () => {
+  it("returns the cycle when two methods call each other", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3n-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3n" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      // ping() calls pong() AND pong() calls ping(). The cycle
+      // detector should report the pair.
+      writeFileSync(
+        join(tempRoot, "src", "pingpong.ts"),
+        `export function ping(n: number): number {
+  if (n <= 0) return 0
+  return pong(n - 1)
+}
+export function pong(n: number): number {
+  if (n <= 0) return 0
+  return ping(n - 1)
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3n",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const raw = await tool!.execute(
+        {
+          intent: "find_call_cycles",
+          snapshotId,
+          limit: 50,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const res = JSON.parse(raw) as FlatResponse
+      expect(res.status).toBe("hit")
+      expect(res.data.nodes.length).toBeGreaterThan(0)
+      // The canonical name is alphabetically first of the pair (ping)
+      const names = res.data.nodes.map((n) => String(n.canonical_name))
+      expect(names.some((n) => n.endsWith("#ping"))).toBe(true)
+      // Function kind preserved (the node-protocol layer remaps
+      // SqliteRow.kind="function" → NodeItem.kind="api")
+      for (const node of res.data.nodes) {
+        expect(["api", "method"]).toContain(String(node.kind))
+      }
+
+      client.close()
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+
+  it("returns no rows when there is no mutual recursion", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3n-acyclic-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3n-acyclic" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      // Linear call chain: a → b → c, no back-edges.
+      writeFileSync(
+        join(tempRoot, "src", "chain.ts"),
+        `export function c(): number { return 1 }
+export function b(): number { return c() }
+export function a(): number { return b() }
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3n-acyclic",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const raw = await tool!.execute(
+        {
+          intent: "find_call_cycles",
+          snapshotId,
+          limit: 50,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const res = JSON.parse(raw) as FlatResponse
+      expect(res.data.nodes.length).toBe(0)
+
+      client.close()
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+})
