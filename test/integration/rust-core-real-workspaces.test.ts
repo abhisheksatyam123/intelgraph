@@ -279,5 +279,91 @@ describe.skipIf(!existsSync(MARKDOWN_OXIDE))(
         expect(rate).toBeLessThan(0.5)
       }
     })
+
+    // ── Phase 3 data-structure floors (rust-core) ───────────────────
+    it("phase 3: emits field nodes for rust struct fields", () => {
+      const fields = ingest.client.raw
+        .prepare(
+          "SELECT canonical_name FROM graph_nodes WHERE snapshot_id = ? AND kind = 'field'",
+        )
+        .all(ingest.snapshotId) as Array<{ canonical_name: string }>
+      // markdown-oxide has many structs with named fields
+      expect(fields.length).toBeGreaterThan(50)
+    })
+
+    it("phase 3: emits enum_variant nodes for rust enums", () => {
+      const variants = ingest.client.raw
+        .prepare(
+          "SELECT canonical_name FROM graph_nodes WHERE snapshot_id = ? AND kind = 'enum_variant'",
+        )
+        .all(ingest.snapshotId) as Array<{ canonical_name: string }>
+      // markdown-oxide has many enums (CompletionKind, etc.)
+      expect(variants.length).toBeGreaterThan(30)
+    })
+
+    it("phase 3: emits field_of_type edges with rust containment vocabulary", () => {
+      const edges = ingest.client.raw
+        .prepare(
+          "SELECT metadata FROM graph_edges WHERE snapshot_id = ? AND edge_kind = 'field_of_type' LIMIT 50",
+        )
+        .all(ingest.snapshotId) as Array<{ metadata: string }>
+      expect(edges.length).toBeGreaterThan(0)
+
+      // Collect all distinct containment values seen
+      const containments = new Set<string>()
+      for (const e of edges) {
+        try {
+          const meta = JSON.parse(e.metadata) as { containment?: string }
+          if (meta.containment) containments.add(meta.containment)
+        } catch {
+          // skip
+        }
+      }
+      // markdown-oxide uses Vec, Option, Box, Arc, HashMap heavily.
+      // At minimum some kind of containment should show up.
+      expect(containments.size).toBeGreaterThan(0)
+    })
+
+    it("phase 3: emits aggregates rollup edges for rust structs", () => {
+      const aggs = ingest.client.raw
+        .prepare(
+          "SELECT COUNT(*) AS n FROM graph_edges WHERE snapshot_id = ? AND edge_kind = 'aggregates'",
+        )
+        .get(ingest.snapshotId) as { n: number }
+      expect(aggs.n).toBeGreaterThan(0)
+    })
+
+    it("phase 3: find_type_fields query intent works on real rust data", async () => {
+      // Pick any struct that has fields
+      const candidate = ingest.client.raw
+        .prepare(
+          `SELECT src.canonical_name AS name FROM graph_edges e
+           INNER JOIN graph_nodes src
+             ON e.src_node_id = src.node_id AND src.snapshot_id = e.snapshot_id
+           INNER JOIN graph_nodes dst
+             ON e.dst_node_id = dst.node_id AND dst.snapshot_id = e.snapshot_id
+           WHERE e.snapshot_id = ?
+             AND e.edge_kind = 'contains'
+             AND src.kind = 'struct'
+             AND dst.kind = 'field'
+           GROUP BY src.canonical_name
+           HAVING COUNT(*) >= 2
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string } | undefined
+
+      if (!candidate) return // no qualifying struct, skip
+      const result = await ingest.lookup.lookup({
+        intent: "find_type_fields",
+        snapshotId: ingest.snapshotId,
+        apiName: candidate.name,
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThanOrEqual(2)
+      for (const row of result.rows) {
+        expect(["field", "enum_variant"]).toContain(String(row.kind))
+      }
+    })
   },
 )

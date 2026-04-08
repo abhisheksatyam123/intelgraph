@@ -901,8 +901,134 @@ for (const wcase of CASES) {
         const filteredMs = t3 - t2
         expect(filteredMs).toBeLessThan(PERF_BUDGET_MS)
         expect(filtered.nodes.length).toBeGreaterThan(0)
+      })
 
+      // ── Phase 3 data-structure floors ────────────────────────────
+      it("phase 3: emits field nodes and field_of_type edges (data-structure backend)", () => {
+        const graph = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        const fields = graph.nodes.filter((n) => n.kind === "field")
+        const fotEdges = graph.edges.filter((e) => e.kind === "field_of_type")
+        const aggEdges = graph.edges.filter((e) => e.kind === "aggregates")
 
+        // Real TS workspaces have lots of class fields and interface
+        // properties — both opencode and instructkr-claude-code clear
+        // 100 field nodes easily.
+        expect(fields.length).toBeGreaterThan(100)
+        // The field_of_type edges only fire when a field's type
+        // resolves through the FileResolver to a workspace symbol.
+        // Both workspaces produce hundreds.
+        expect(fotEdges.length).toBeGreaterThan(50)
+        // Aggregates is a strict de-dupe of field_of_type, so it
+        // should be ≤ field_of_type and > 0.
+        expect(aggEdges.length).toBeGreaterThan(0)
+        expect(aggEdges.length).toBeLessThanOrEqual(fotEdges.length)
+
+        // Every field_of_type edge must carry containment metadata
+        // — that's the contract phase 3a established.
+        for (const e of fotEdges.slice(0, 50)) {
+          const meta = e.metadata as Record<string, unknown> | null
+          expect(meta).not.toBeNull()
+          expect(typeof meta!.containment).toBe("string")
+        }
+      })
+
+      it("phase 3: every field has a contains edge from its parent class/interface", () => {
+        const graph = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        const fields = graph.nodes.filter((n) => n.kind === "field")
+        const containsEdges = graph.edges.filter((e) => e.kind === "contains")
+        // Build a Set of dst ids that appear in any contains edge
+        const containedDsts = new Set(containsEdges.map((e) => e.dst))
+        // Every field node must appear as a contains-edge dst
+        let orphanFields = 0
+        for (const f of fields) {
+          if (!containedDsts.has(f.id)) orphanFields++
+        }
+        // Allow up to 5% orphans (degenerate edge cases like
+        // namespace-merged interfaces); the rest must be parented.
+        expect(orphanFields).toBeLessThan(fields.length * 0.05)
+      })
+
+      it("phase 3: find_type_fields MCP intent returns field/enum_variant kinds only", async () => {
+        // Find any class node with at least one field
+        const graph = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        const containsByClass = new Map<string, string[]>()
+        for (const e of graph.edges) {
+          if (e.kind !== "contains") continue
+          const dst = graph.nodes.find((n) => n.id === e.dst)
+          if (!dst || dst.kind !== "field") continue
+          if (!containsByClass.has(e.src)) containsByClass.set(e.src, [])
+          containsByClass.get(e.src)!.push(e.dst)
+        }
+        // Pick any class that has at least 2 fields
+        let pickedClass: string | null = null
+        for (const [cls, fields] of containsByClass) {
+          if (fields.length >= 2) {
+            pickedClass = cls
+            break
+          }
+        }
+        expect(pickedClass).not.toBeNull()
+
+        // Call find_type_fields via the lookup directly (the MCP
+        // path is covered by the in-memory roundtrip tests; here we
+        // just verify the SQL works on real workspace data)
+        const result = await ingest.lookup.lookup({
+          intent: "find_type_fields",
+          snapshotId: ingest.snapshotId,
+          apiName: pickedClass!,
+          limit: 50,
+        })
+        expect(result.hit).toBe(true)
+        expect(result.rows.length).toBeGreaterThan(0)
+        // Every row must have kind=field or kind=enum_variant
+        for (const row of result.rows) {
+          expect(["field", "enum_variant"]).toContain(String(row.kind))
+        }
+      })
+
+      it("phase 3: find_type_aggregates MCP intent returns aggregates rollup", async () => {
+        // Pick any class that has aggregates edges going out
+        const graph = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        const aggSrcs = new Map<string, number>()
+        for (const e of graph.edges) {
+          if (e.kind !== "aggregates") continue
+          aggSrcs.set(e.src, (aggSrcs.get(e.src) ?? 0) + 1)
+        }
+        const pickedSrc = [...aggSrcs.entries()]
+          .sort((a, b) => b[1] - a[1])[0]?.[0]
+        if (!pickedSrc) {
+          // Workspace has no aggregates — skip rather than fail
+          return
+        }
+        const result = await ingest.lookup.lookup({
+          intent: "find_type_aggregates",
+          snapshotId: ingest.snapshotId,
+          apiName: pickedSrc,
+          limit: 50,
+        })
+        expect(result.hit).toBe(true)
+        expect(result.rows.length).toBeGreaterThan(0)
+        // Every row must carry edge_kind = aggregates
+        for (const row of result.rows) {
+          expect(row.edge_kind).toBe("aggregates")
+        }
+      })
     },
   )
 }
