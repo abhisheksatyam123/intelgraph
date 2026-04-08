@@ -890,6 +890,63 @@ export function graphJsonToHtml(graph: GraphJson): string {
     background: var(--bg); border: 1px solid var(--border);
     border-radius: 2px; padding: 1px 4px; font-family: inherit;
   }
+  #help-overlay {
+    position: absolute; inset: 0;
+    background: rgba(15, 17, 23, 0.92);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 100;
+  }
+  #help-overlay.open { display: flex; }
+  #help-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px 24px;
+    max-width: 540px;
+    max-height: 80vh;
+    overflow-y: auto;
+    color: var(--text);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  #help-card h2 {
+    font-size: 14px; margin: 0 0 12px 0;
+    color: var(--accent); font-weight: 600;
+  }
+  #help-card h3 {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--muted);
+    margin: 14px 0 6px 0; font-weight: 600;
+  }
+  #help-card .item {
+    display: flex; gap: 10px;
+    margin: 4px 0;
+  }
+  #help-card .item kbd {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 2px; padding: 1px 6px; font-family: inherit;
+    font-size: 11px; flex-shrink: 0; min-width: 40px;
+    text-align: center;
+  }
+  #help-card .item .desc { color: var(--text); flex: 1; }
+  #help-card .close-hint {
+    margin-top: 14px; padding-top: 10px;
+    border-top: 1px solid var(--border);
+    color: var(--muted); font-size: 11px;
+  }
+  #help-button {
+    position: absolute; bottom: 8px; left: 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  #help-button:hover { color: var(--accent); border-color: var(--accent); }
   #badge {
     position: absolute; bottom: 8px; right: 8px;
     background: var(--panel);
@@ -972,8 +1029,42 @@ export function graphJsonToHtml(graph: GraphJson): string {
   </aside>
   <div id="canvas-wrap">
     <svg id="canvas"></svg>
-    <div id="toolbar">scroll = zoom · drag = pan · click = focus · <kbd>esc</kbd> = clear</div>
+    <div id="toolbar">scroll = zoom · drag = pan · click = focus · <kbd>esc</kbd> = clear · <kbd>?</kbd> = help</div>
     <div id="badge"><span id="badge-text">0 nodes / 0 edges</span></div>
+    <div id="help-button">? help</div>
+    <div id="help-overlay">
+      <div id="help-card">
+        <h2>intelgraph viewer · keyboard &amp; features</h2>
+
+        <h3>Canvas</h3>
+        <div class="item"><kbd>scroll</kbd><div class="desc">zoom in / out</div></div>
+        <div class="item"><kbd>drag</kbd><div class="desc">pan canvas, or drag a node to reposition it</div></div>
+        <div class="item"><kbd>click</kbd><div class="desc">focus a node — highlights its k-hop neighborhood</div></div>
+        <div class="item"><kbd>esc</kbd><div class="desc">clear focus + close help</div></div>
+        <div class="item"><kbd>?</kbd><div class="desc">toggle this help overlay</div></div>
+
+        <h3>Sidebar — exploration</h3>
+        <div class="item"><kbd>search</kbd><div class="desc">find a symbol by canonical name (substring matches)</div></div>
+        <div class="item"><kbd>hops</kbd><div class="desc">slider sets focus depth (1–4) and live-center radius</div></div>
+        <div class="item"><kbd>dir</kbd><div class="desc">in / out / both — direction of the BFS walk</div></div>
+        <div class="item"><kbd>center</kbd><div class="desc">"Center on focused" hard-filters the graph to the neighborhood</div></div>
+        <div class="item"><kbd>neighbors</kbd><div class="desc">click a row in the Selection panel's Outgoing/Incoming lists to jump focus</div></div>
+
+        <h3>Sidebar — overlays</h3>
+        <div class="item"><kbd>cycles</kbd><div class="desc">highlight 2-cycles in red (imports / calls / references_type)</div></div>
+        <div class="item"><kbd>tint</kbd><div class="desc">color node strokes by parent directory</div></div>
+        <div class="item"><kbd>kinds</kbd><div class="desc">click any kind in the legends to toggle visibility</div></div>
+
+        <h3>Sidebar — paths</h3>
+        <div class="item"><kbd>find</kbd><div class="desc">"Find path" runs directed BFS between two symbols, highlights the trail</div></div>
+        <div class="item"><kbd>presets</kbd><div class="desc">"Module dependency view" filters to module-only + imports-only in one click</div></div>
+
+        <h3>Persistence</h3>
+        <div class="item"><kbd>url</kbd><div class="desc">focus, depth, direction, toggles, and filters all live in the URL hash — share or bookmark to round-trip the view</div></div>
+
+        <div class="close-hint">click outside or press <kbd>esc</kbd> / <kbd>?</kbd> to close</div>
+      </div>
+    </div>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
@@ -1286,7 +1377,35 @@ function onHover(ev, d) {
 }
 svg.on("click", () => { focused = null; applyFocus(); clearInfo(); saveHashState(); });
 window.addEventListener("keydown", (ev) => {
-  if (ev.key === "Escape") { focused = null; applyFocus(); clearInfo(); saveHashState(); }
+  if (ev.key === "Escape") {
+    // Esc closes the help overlay first if it's open, otherwise
+    // clears focus.
+    const helpOpen = document.getElementById("help-overlay").classList.contains("open");
+    if (helpOpen) {
+      document.getElementById("help-overlay").classList.remove("open");
+      return;
+    }
+    focused = null; applyFocus(); clearInfo(); saveHashState();
+  }
+  if (ev.key === "?" || (ev.shiftKey && ev.key === "/")) {
+    // Toggle help (Shift+/ produces ? on US layouts; the explicit
+    // check covers other layouts that emit "?" directly).
+    document.getElementById("help-overlay").classList.toggle("open");
+  }
+});
+
+// Help button click + click-outside-to-close behavior on the
+// overlay backdrop.
+document.getElementById("help-button").addEventListener("click", (ev) => {
+  ev.stopPropagation();
+  document.getElementById("help-overlay").classList.toggle("open");
+});
+document.getElementById("help-overlay").addEventListener("click", (ev) => {
+  // Click on the dark backdrop dismisses; click on the inner card
+  // does not.
+  if (ev.target === ev.currentTarget) {
+    ev.currentTarget.classList.remove("open");
+  }
 });
 
 // ── URL hash state ──────────────────────────────────────────────────────────

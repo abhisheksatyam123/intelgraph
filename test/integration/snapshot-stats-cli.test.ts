@@ -531,6 +531,17 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(html).toContain(".neighbor-row")
     expect(html).toContain("data-target")
 
+    // Help overlay (? key) — hidden by default, toggled by ? or
+    // the help button, dismissed by Esc or backdrop click.
+    expect(html).toContain('id="help-overlay"')
+    expect(html).toContain('id="help-card"')
+    expect(html).toContain('id="help-button"')
+    expect(html).toContain("intelgraph viewer · keyboard")
+    // Esc + ? key handlers wired
+    expect(html).toContain('ev.key === "?"')
+    expect(html).toContain("help-overlay")
+    expect(html).toContain("classList.toggle")
+
     // Inlined script must parse as valid JS. Catches the class of bug
     // where a stray backtick inside a comment closes the outer
     // template literal and corrupts the rest of the document.
