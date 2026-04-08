@@ -260,6 +260,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         )
       case "find_modules_overview":
         return this.modulesOverview(snapshotId, limit)
+      case "find_type_cycles":
+        return this.typeCycles(snapshotId, limit)
       default:
         return []
     }
@@ -1017,6 +1019,65 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find pairs of types that reference each other (2-cycles in the
+   * references_type graph). When type A has a field of type B and
+   * type B has a field of type A, that's a circular type dependency
+   * — often a refactor signal (extract a shared interface, break
+   * the bidirectional coupling, etc.).
+   *
+   * Same self-join pattern as find_import_cycles but on
+   * references_type edges. Filters to class/interface dst kinds so
+   * the result is meaningful (function-level type references aren't
+   * usually mutual). De-duped via canonical_name comparison.
+   */
+  private typeCycles(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        a.canonical_name AS caller,
+        b.canonical_name AS callee,
+        a.canonical_name AS canonical_name,
+        a.kind AS kind,
+        'references_type' AS edge_kind,
+        1.0 AS confidence,
+        'clangd' AS derivation,
+        a.location AS location
+      FROM graph_edges e1
+      INNER JOIN graph_nodes a
+        ON e1.src_node_id = a.node_id AND e1.snapshot_id = a.snapshot_id
+      INNER JOIN graph_nodes b
+        ON e1.dst_node_id = b.node_id AND e1.snapshot_id = b.snapshot_id
+      INNER JOIN graph_edges e2
+        ON e2.snapshot_id = e1.snapshot_id
+        AND e2.src_node_id = e1.dst_node_id
+        AND e2.dst_node_id = e1.src_node_id
+      WHERE e1.snapshot_id = ?
+        AND e1.edge_kind = 'references_type'
+        AND e2.edge_kind = 'references_type'
+        AND a.kind IN ('class', 'interface')
+        AND b.kind IN ('class', 'interface')
+        AND a.canonical_name < b.canonical_name
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "class",
+      canonical_name: obj.canonical_name,
+      caller: obj.caller,
+      callee: obj.callee,
+      edge_kind: "references_type",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
 
   /**
    * Single-call overview of every module in the snapshot. Returns

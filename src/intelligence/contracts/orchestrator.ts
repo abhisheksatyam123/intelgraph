@@ -102,6 +102,8 @@ export const QUERY_INTENTS = [
   "find_module_interactions",
   /** One-call overview: aggregate summary for every module in the snapshot. */
   "find_modules_overview",
+  /** Pairs of types that reference each other (2-cycles in the references_type graph). */
+  "find_type_cycles",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

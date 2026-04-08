@@ -385,6 +385,24 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_type_cycles surfaces mutual type references between classes/interfaces", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_type_cycles",
+        snapshotId: ingest.snapshotId,
+        limit: 50,
+      })
+      // Type cycles MAY be empty in healthy codebases. The important
+      // assertion is that the query doesn't error and the row shape
+      // is valid when matches do exist.
+      expect(result.intent).toBe("find_type_cycles")
+      for (const row of result.rows) {
+        expect(["class", "interface"]).toContain(String(row.kind))
+        expect(row.edge_kind).toBe("references_type")
+        // De-dup invariant: caller < callee alphabetically
+        expect(String(row.caller) < String(row.callee)).toBe(true)
+      }
+    })
+
     it("find_modules_overview returns aggregate stats for every module", async () => {
       const result = await ingest.lookup.lookup({
         intent: "find_modules_overview",
@@ -1489,6 +1507,7 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
         { intent: "find_long_functions", request: { depth: 50 } },
         { intent: "find_external_imports", request: {} },
         { intent: "find_modules_overview", request: {} },
+        { intent: "find_type_cycles", request: {} },
         // Search & browse
         {
           intent: "find_symbols_by_name",
