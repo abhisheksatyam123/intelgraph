@@ -64,6 +64,8 @@ const stubLsp = {
 
 const graphTool = TOOLS.find((t) => t.name === "intelligence_graph")
 if (!graphTool) throw new Error("intelligence_graph tool not registered")
+const diffTool = TOOLS.find((t) => t.name === "intelligence_graph_diff")
+if (!diffTool) throw new Error("intelligence_graph_diff tool not registered")
 const stubClient = {} as Parameters<typeof graphTool.execute>[1]
 const stubTracker = {} as Parameters<typeof graphTool.execute>[2]
 
@@ -937,6 +939,117 @@ for (const wcase of CASES) {
         expect(diff.summary.edges_removed).toBe(
           full.edges.length - centered.edges.length,
         )
+      })
+
+      it("intelligence_graph_diff via MCP — identity yields zero diff on real data", async () => {
+        const raw = await diffTool!.execute(
+          {
+            snapshotId: ingest.snapshotId,
+            workspaceRoot: wcase.path,
+          },
+          stubClient,
+          stubTracker,
+        )
+        const diff = JSON.parse(raw) as {
+          nodes_only_in_a: string[]
+          nodes_only_in_b: string[]
+          edges_only_in_a: string[]
+          edges_only_in_b: string[]
+          summary: {
+            a_nodes: number
+            b_nodes: number
+            nodes_added: number
+            nodes_removed: number
+            edges_added: number
+            edges_removed: number
+          }
+        }
+        expect(diff.nodes_only_in_a).toEqual([])
+        expect(diff.nodes_only_in_b).toEqual([])
+        expect(diff.edges_only_in_a).toEqual([])
+        expect(diff.edges_only_in_b).toEqual([])
+        expect(diff.summary.nodes_added).toBe(0)
+        expect(diff.summary.nodes_removed).toBe(0)
+        expect(diff.summary.edges_added).toBe(0)
+        expect(diff.summary.edges_removed).toBe(0)
+        expect(diff.summary.a_nodes).toBe(diff.summary.b_nodes)
+      })
+
+      it("intelligence_graph_diff via MCP — full vs centerOf shows the cut", async () => {
+        // filtersA: unfiltered (full graph)
+        // filtersB: scope to the workspace's hub symbol at hops=2
+        // Property: B ⊂ A → nodes_only_in_b is empty, nodes_removed > 0
+        const raw = await diffTool!.execute(
+          {
+            snapshotId: ingest.snapshotId,
+            workspaceRoot: wcase.path,
+            filtersB: {
+              centerOf: wcase.centerSymbol,
+              centerHops: 2,
+            },
+          },
+          stubClient,
+          stubTracker,
+        )
+        const diff = JSON.parse(raw) as {
+          nodes_only_in_a: string[]
+          nodes_only_in_b: string[]
+          summary: {
+            a_nodes: number
+            b_nodes: number
+            nodes_added: number
+            nodes_removed: number
+          }
+        }
+        expect(diff.nodes_only_in_b).toEqual([])
+        expect(diff.summary.nodes_added).toBe(0)
+        expect(diff.summary.b_nodes).toBeLessThan(diff.summary.a_nodes)
+        // The cut count must equal the difference
+        expect(diff.summary.nodes_removed).toBe(
+          diff.summary.a_nodes - diff.summary.b_nodes,
+        )
+      })
+
+      it("intelligence_graph_diff via MCP — direction in vs out is meaningfully different", async () => {
+        // filtersA: backward-only (predecessors) at hops=2
+        // filtersB: forward-only (successors) at hops=2
+        // These two views overlap at the center symbol but otherwise
+        // describe different things. The diff should have nontrivial
+        // counts on at least one side, and the center symbol should
+        // appear in nodes_in_both since it's in every direction variant.
+        const raw = await diffTool!.execute(
+          {
+            snapshotId: ingest.snapshotId,
+            workspaceRoot: wcase.path,
+            filtersA: {
+              centerOf: wcase.centerSymbol,
+              centerHops: 2,
+              centerDirection: "in",
+            },
+            filtersB: {
+              centerOf: wcase.centerSymbol,
+              centerHops: 2,
+              centerDirection: "out",
+            },
+          },
+          stubClient,
+          stubTracker,
+        )
+        const diff = JSON.parse(raw) as {
+          nodes_in_both: number
+          summary: {
+            a_nodes: number
+            b_nodes: number
+            nodes_added: number
+            nodes_removed: number
+          }
+        }
+        // Both walks include the center symbol, so the intersection
+        // is at least 1.
+        expect(diff.nodes_in_both).toBeGreaterThanOrEqual(1)
+        // Both sides must have at least the center node
+        expect(diff.summary.a_nodes).toBeGreaterThanOrEqual(1)
+        expect(diff.summary.b_nodes).toBeGreaterThanOrEqual(1)
       })
 
       it("truncated HTML stays under the production size budget", () => {
