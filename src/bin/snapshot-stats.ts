@@ -1432,9 +1432,24 @@ document.getElementById("preset-reset").addEventListener("click", () => {
 // ── Live stats badge ────────────────────────────────────────────────────────
 // Updates after every render() so users see exactly how their filter
 // choices change the visible counts.
+//
+// When the result was filtered server-side (centerOf, maxNodes, etc.),
+// the GraphJson carries the pre-filter totals so we can show
+// "<visible> of <total>" instead of just the visible count. This
+// makes truncation visible to the user — if they ran
+// --max-nodes=300 against a 20K-node workspace, the badge will say
+// "300 of 20466 nodes" so they know how much was hidden.
+const TOTAL_NODES = data.total_nodes ?? data.nodes.length;
+const TOTAL_EDGES = data.total_edges ?? links.length;
+function fmtBadgePart(visible, total, label) {
+  if (total > visible) return visible + " of " + total + " " + label;
+  return visible + " " + label;
+}
 function updateBadge(visibleNodeCount, visibleEdgeCount) {
   document.getElementById("badge-text").textContent =
-    visibleNodeCount + " nodes / " + visibleEdgeCount + " edges";
+    fmtBadgePart(visibleNodeCount, TOTAL_NODES, "nodes") +
+    " / " +
+    fmtBadgePart(visibleEdgeCount, TOTAL_EDGES, "edges");
 }
 
 // ── Path finding ────────────────────────────────────────────────────────────

@@ -48,6 +48,16 @@ export interface GraphJson {
     resolution_kind: string | null
     metadata: Record<string, unknown> | null
   }>
+  /**
+   * Total node count in the snapshot BEFORE any filters were applied.
+   * When equal to nodes.length the response is unfiltered; when
+   * greater, the result was reduced by edgeKinds / symbolKinds /
+   * centerOf / maxNodes. The HTML viewer renders "<visible> of <total>"
+   * in the stats badge so users see exactly how much was hidden.
+   */
+  total_nodes: number
+  /** Total edge count BEFORE filters were applied (same semantics). */
+  total_edges: number
 }
 
 export interface GraphJsonFilters {
@@ -226,11 +236,22 @@ export function loadGraphJsonFromDb(
     })
     .filter((e): e is NonNullable<typeof e> => e !== null)
 
+  // Capture the pre-filter totals from the raw SELECT row counts
+  // (NOT from `nodes` / `edges` after the orphan-edge dedupe and the
+  // optional filter cascade). nodeRows.length is the true total of
+  // graph_node rows for this snapshot; same for edgeRows.length on
+  // graph_edges. Filters below may shrink `nodes` / `edges` but the
+  // totals stay anchored to the snapshot.
+  const totalNodes = nodeRows.length
+  const totalEdges = edgeRows.length
+
   let result: GraphJson = {
     workspace,
     snapshot_id: snapshotId,
     nodes,
     edges,
+    total_nodes: totalNodes,
+    total_edges: totalEdges,
   }
 
   // centerOf is applied AFTER the kind filters so users can combine
@@ -265,6 +286,8 @@ export function topNByDegree(graph: GraphJson, n: number): GraphJson {
       snapshot_id: graph.snapshot_id,
       nodes: [],
       edges: [],
+      total_nodes: graph.total_nodes,
+      total_edges: graph.total_edges,
     }
   }
   if (graph.nodes.length <= n) return graph
@@ -284,6 +307,8 @@ export function topNByDegree(graph: GraphJson, n: number): GraphJson {
     edges: graph.edges.filter(
       (edge) => keep.has(edge.src) && keep.has(edge.dst),
     ),
+    total_nodes: graph.total_nodes,
+    total_edges: graph.total_edges,
   }
 }
 
@@ -335,6 +360,8 @@ export function centerSubgraph(
       snapshot_id: graph.snapshot_id,
       nodes: [],
       edges: [],
+      total_nodes: graph.total_nodes,
+      total_edges: graph.total_edges,
     }
   }
   // Build directed adjacency from the supplied edges (undirected
@@ -381,5 +408,7 @@ export function centerSubgraph(
     snapshot_id: graph.snapshot_id,
     nodes: graph.nodes.filter((n) => seen.has(n.id)),
     edges: graph.edges.filter((e) => seen.has(e.src) && seen.has(e.dst)),
+    total_nodes: graph.total_nodes,
+    total_edges: graph.total_edges,
   }
 }

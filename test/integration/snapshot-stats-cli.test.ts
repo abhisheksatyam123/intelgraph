@@ -296,6 +296,40 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(capped.edges.length).toBe(full.edges.length)
   })
 
+  it("buildGraphJson carries pre-filter totals through every filter", async () => {
+    const full = await buildGraphJson(tempRoot)
+    // Totals are the raw graph_nodes / graph_edges row counts; the
+    // visible nodes/edges arrays have already had orphan edges (dst
+    // doesn't resolve to a node) dropped, so totals >= visible counts
+    // is the only invariant that holds in the unfiltered case.
+    expect(full.total_nodes).toBeGreaterThanOrEqual(full.nodes.length)
+    expect(full.total_edges).toBeGreaterThanOrEqual(full.edges.length)
+    // Both must be positive (non-empty fixture)
+    expect(full.total_nodes).toBeGreaterThan(0)
+    expect(full.total_edges).toBeGreaterThan(0)
+
+    // edge-kind + symbol-kind filter shrinks nodes/edges but the
+    // totals stay anchored to the snapshot.
+    const filtered = await buildGraphJson(tempRoot, {
+      edgeKinds: new Set(["imports"]),
+      symbolKinds: new Set(["module"]),
+    })
+    expect(filtered.total_nodes).toBe(full.total_nodes)
+    expect(filtered.total_edges).toBe(full.total_edges)
+    expect(filtered.nodes.length).toBeLessThanOrEqual(full.total_nodes)
+
+    // centerOf scopes the result but totals stay anchored
+    const centered = await buildGraphJson(tempRoot, { centerOf: "Greeter" })
+    expect(centered.total_nodes).toBe(full.total_nodes)
+    expect(centered.total_edges).toBe(full.total_edges)
+
+    // maxNodes truncates but totals stay anchored
+    const capped = await buildGraphJson(tempRoot, { maxNodes: 3 })
+    expect(capped.total_nodes).toBe(full.total_nodes)
+    expect(capped.total_edges).toBe(full.total_edges)
+    expect(capped.nodes.length).toBeLessThanOrEqual(3)
+  })
+
   it("graphJsonToHtml returns a self-contained HTML viewer", async () => {
     const graph = await buildGraphJson(tempRoot)
     const html = graphJsonToHtml(graph)
@@ -406,6 +440,14 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(html).toContain("centerSet && !centerSet.has")
     // URL hash flag for the live center mode
     expect(html).toContain('"cm"')
+
+    // Pre-filter totals carried through GraphJson + the badge
+    // formatter that shows "X of Y nodes" when truncated.
+    expect(html).toContain("TOTAL_NODES")
+    expect(html).toContain("TOTAL_EDGES")
+    expect(html).toContain("function fmtBadgePart")
+    expect(html).toContain("data.total_nodes")
+    expect(html).toContain("data.total_edges")
 
     // Inlined script must parse as valid JS. Catches the class of bug
     // where a stray backtick inside a comment closes the outer
