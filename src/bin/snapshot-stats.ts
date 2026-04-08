@@ -59,6 +59,10 @@ interface CliOptions {
   edgeKinds?: Set<string>
   /** Comma-separated symbol kind filter for --graph-json / --html. */
   symbolKinds?: Set<string>
+  /** --center: anchor symbol to scope the graph around. */
+  centerOf?: string
+  /** --center-hops: max hop budget for --center (default 2). */
+  centerHops?: number
 }
 
 function parseArgs(): CliOptions {
@@ -67,6 +71,8 @@ function parseArgs(): CliOptions {
   let format: CliOptions["format"] = "text"
   let edgeKinds: Set<string> | undefined
   let symbolKinds: Set<string> | undefined
+  let centerOf: string | undefined
+  let centerHops: number | undefined
   for (const arg of args) {
     if (arg === "--json") format = "json"
     else if (arg === "--markdown" || arg === "--md") format = "markdown"
@@ -78,6 +84,11 @@ function parseArgs(): CliOptions {
     } else if (arg.startsWith("--filter-symbol-kind=")) {
       const value = arg.replace("--filter-symbol-kind=", "")
       symbolKinds = new Set(value.split(",").map((s) => s.trim()).filter(Boolean))
+    } else if (arg.startsWith("--center=")) {
+      centerOf = arg.replace("--center=", "")
+    } else if (arg.startsWith("--center-hops=")) {
+      const n = Number(arg.replace("--center-hops=", ""))
+      if (Number.isFinite(n) && n >= 1) centerHops = Math.floor(n)
     } else if (arg === "--help" || arg === "-h") {
       printUsage()
       process.exit(0)
@@ -89,7 +100,14 @@ function parseArgs(): CliOptions {
     printUsage()
     process.exit(1)
   }
-  return { workspace: positionals[0], format, edgeKinds, symbolKinds }
+  return {
+    workspace: positionals[0],
+    format,
+    edgeKinds,
+    symbolKinds,
+    centerOf,
+    centerHops,
+  }
 }
 
 function printUsage(): void {
@@ -113,6 +131,10 @@ function printUsage(): void {
       "                             (module, function, class, interface,",
       "                              method, namespace, typedef, enum,",
       "                              global_var)",
+      "  --center=<symbol>          scope to N-hop neighborhood of a symbol",
+      "                             (matched exact / suffix-after-# /",
+      "                              substring; e.g. --center=Greeter.greet)",
+      "  --center-hops=<n>          hop budget for --center (default 2)",
     ].join("\n"),
   )
 }
@@ -1525,6 +1547,8 @@ async function main(): Promise<void> {
       const graph = await buildGraphJson(options.workspace, {
         edgeKinds: options.edgeKinds,
         symbolKinds: options.symbolKinds,
+        centerOf: options.centerOf,
+        centerHops: options.centerHops,
       })
       console.log(JSON.stringify(graph, null, 2))
       return
@@ -1537,6 +1561,8 @@ async function main(): Promise<void> {
       const graph = await buildGraphJson(options.workspace, {
         edgeKinds: options.edgeKinds,
         symbolKinds: options.symbolKinds,
+        centerOf: options.centerOf,
+        centerHops: options.centerHops,
       })
       console.log(graphJsonToHtml(graph))
       return

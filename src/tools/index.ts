@@ -727,6 +727,10 @@ export const TOOLS: ToolDef[] = [
         .describe("Keep only edges whose edge_kind is in this list (e.g. ['imports','calls']). Omit for all edges."),
       symbolKinds: z.array(z.string()).optional()
         .describe("Keep only nodes whose kind is in this list (e.g. ['module','class']) AND edges where both endpoints survive. Omit for all nodes."),
+      centerOf: z.string().optional()
+        .describe("Scope the graph to nodes within `centerHops` undirected hops of a center symbol. Resolved exact / suffix-after-# / substring (e.g. 'Greeter.greet'). Applied AFTER kind filters."),
+      centerHops: z.number().int().positive().optional()
+        .describe("Hop budget for centerOf (default 2)."),
     }),
     execute: async (args, _client, _tracker) => {
       const INTELLIGENCE_DEPS = getIntelligenceDeps()
@@ -744,7 +748,12 @@ export const TOOLS: ToolDef[] = [
         loadGraphJson?: (
           snapshotId: number,
           workspaceRoot: string,
-          filters?: { edgeKinds?: Set<string>; symbolKinds?: Set<string> },
+          filters?: {
+            edgeKinds?: Set<string>
+            symbolKinds?: Set<string>
+            centerOf?: string
+            centerHops?: number
+          },
         ) => unknown
       }
       if (typeof lookup.loadGraphJson !== "function") {
@@ -756,13 +765,20 @@ export const TOOLS: ToolDef[] = [
         })
       }
       try {
-        const filters: { edgeKinds?: Set<string>; symbolKinds?: Set<string> } = {}
+        const filters: {
+          edgeKinds?: Set<string>
+          symbolKinds?: Set<string>
+          centerOf?: string
+          centerHops?: number
+        } = {}
         if (args.edgeKinds && args.edgeKinds.length > 0) {
           filters.edgeKinds = new Set(args.edgeKinds)
         }
         if (args.symbolKinds && args.symbolKinds.length > 0) {
           filters.symbolKinds = new Set(args.symbolKinds)
         }
+        if (args.centerOf) filters.centerOf = args.centerOf
+        if (args.centerHops) filters.centerHops = args.centerHops
         const graph = lookup.loadGraphJson(args.snapshotId, args.workspaceRoot, filters)
         return JSON.stringify(graph)
       } catch (err) {

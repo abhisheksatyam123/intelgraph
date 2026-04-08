@@ -360,6 +360,66 @@ describe("intelligence_graph MCP tool — round trip", () => {
     }
   })
 
+  it("honors centerOf + centerHops to scope the graph", async () => {
+    fixture = await buildFixture()
+    // Center on Alpha — the fixture's class. Hops=1 should return
+    // Alpha itself plus its module + methods + the module that
+    // imports it (beta.ts). Whatever the exact count, it must be
+    // strictly smaller than the full graph.
+    const fullRaw = await graphTool!.execute(
+      {
+        snapshotId: fixture.snapshotId,
+        workspaceRoot: fixture.tempRoot,
+      },
+      stubClient,
+      stubTracker,
+    )
+    const full = JSON.parse(fullRaw) as { nodes: unknown[] }
+
+    const centeredRaw = await graphTool!.execute(
+      {
+        snapshotId: fixture.snapshotId,
+        workspaceRoot: fixture.tempRoot,
+        centerOf: "Alpha",
+        centerHops: 1,
+      },
+      stubClient,
+      stubTracker,
+    )
+    const centered = JSON.parse(centeredRaw) as {
+      nodes: Array<{ id: string }>
+      edges: Array<{ src: string; dst: string }>
+    }
+
+    expect(centered.nodes.length).toBeLessThan(full.nodes.length)
+    expect(centered.nodes.length).toBeGreaterThan(0)
+    expect(
+      centered.nodes.some((n) => n.id.endsWith("#Alpha")),
+    ).toBe(true)
+    // Every edge endpoint must be inside the centered set
+    const ids = new Set(centered.nodes.map((n) => n.id))
+    for (const edge of centered.edges) {
+      expect(ids.has(edge.src)).toBe(true)
+      expect(ids.has(edge.dst)).toBe(true)
+    }
+  })
+
+  it("centerOf returns an empty graph when the symbol doesn't resolve", async () => {
+    fixture = await buildFixture()
+    const raw = await graphTool!.execute(
+      {
+        snapshotId: fixture.snapshotId,
+        workspaceRoot: fixture.tempRoot,
+        centerOf: "totally_made_up_xyz_zzz_qq",
+      },
+      stubClient,
+      stubTracker,
+    )
+    const graph = JSON.parse(raw) as { nodes: unknown[]; edges: unknown[] }
+    expect(graph.nodes.length).toBe(0)
+    expect(graph.edges.length).toBe(0)
+  })
+
   it("returns a structured error when the backend has no graph reader", async () => {
     // Wire deps with a stub dbLookup that does NOT implement
     // loadGraphJson — simulating a backend that supports query

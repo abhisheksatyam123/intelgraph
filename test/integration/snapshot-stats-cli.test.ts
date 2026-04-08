@@ -229,6 +229,43 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     }
   })
 
+  it("buildGraphJson centerOf filter scopes the graph to a symbol's neighborhood", async () => {
+    // Greeter exists in the fixture (module-a.ts). Centering on it
+    // should return Greeter + its 1-hop neighbors (the module that
+    // contains it, the methods it has, the module that imports it).
+    // The full graph has many more nodes than the centered subgraph.
+    const full = await buildGraphJson(tempRoot)
+    const centered = await buildGraphJson(tempRoot, {
+      centerOf: "Greeter",
+      centerHops: 1,
+    })
+
+    // Strictly smaller than the full graph
+    expect(centered.nodes.length).toBeLessThan(full.nodes.length)
+    expect(centered.nodes.length).toBeGreaterThan(0)
+
+    // Greeter itself must be in the result
+    expect(
+      centered.nodes.some((n) => n.id.endsWith("#Greeter")),
+    ).toBe(true)
+
+    // Every edge endpoint must resolve to a node in the centered set
+    const ids = new Set(centered.nodes.map((n) => n.id))
+    for (const edge of centered.edges) {
+      expect(ids.has(edge.src)).toBe(true)
+      expect(ids.has(edge.dst)).toBe(true)
+    }
+  })
+
+  it("buildGraphJson centerOf returns an empty graph when the symbol doesn't resolve", async () => {
+    const graph = await buildGraphJson(tempRoot, {
+      centerOf: "totally_made_up_symbol_xyz_zzz",
+      centerHops: 2,
+    })
+    expect(graph.nodes.length).toBe(0)
+    expect(graph.edges.length).toBe(0)
+  })
+
   it("graphJsonToHtml returns a self-contained HTML viewer", async () => {
     const graph = await buildGraphJson(tempRoot)
     const html = graphJsonToHtml(graph)

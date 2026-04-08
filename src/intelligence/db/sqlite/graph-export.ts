@@ -58,6 +58,20 @@ export interface GraphJsonFilters {
    * where BOTH src and dst survive the node filter.
    */
   symbolKinds?: Set<string>
+  /**
+   * If set, scope the graph to nodes within `centerHops` hops of the
+   * symbol whose canonical name matches this query (resolved with the
+   * same forgiving exact / suffix-after-# / substring strategy the
+   * HTML viewer uses for path search). Applied AFTER edgeKinds and
+   * symbolKinds, so users can combine "module dependency view" with
+   * "centered on packages/sdk" in one call.
+   */
+  centerOf?: string
+  /**
+   * Hop budget for centerOf. Defaults to 2. Undirected (walks the
+   * union of successors and predecessors).
+   */
+  centerHops?: number
 }
 
 type NodeRow = {
@@ -203,10 +217,116 @@ export function loadGraphJsonFromDb(
     })
     .filter((e): e is NonNullable<typeof e> => e !== null)
 
-  return {
+  const result: GraphJson = {
     workspace,
     snapshot_id: snapshotId,
     nodes,
     edges,
+  }
+
+  // centerOf is applied AFTER the kind filters so users can combine
+  // "module dependency view" with "centered on this symbol" in one
+  // call. The function is pure on the GraphJson and is also exported
+  // for callers that have a graph in hand (e.g. tests).
+  if (filters.centerOf) {
+    return centerSubgraph(result, filters.centerOf, filters.centerHops ?? 2)
+  }
+  return result
+}
+
+/**
+ * Resolve a forgiving symbol query to a node id, matching the HTML
+ * viewer's resolution strategy: exact → suffix-after-# → substring.
+ * Returns null if no node matches.
+ *
+ * Exported so callers (CLI, MCP tool, tests) can do the resolution
+ * themselves and report failures cleanly without invoking the full
+ * subgraph reduction.
+ */
+export function resolveCenterSymbol(
+  graph: GraphJson,
+  query: string,
+): string | null {
+  if (!query) return null
+  const ids = new Set(graph.nodes.map((n) => n.id))
+  if (ids.has(query)) return query
+  for (const id of ids) {
+    if (id.endsWith("#" + query)) return id
+  }
+  for (const id of ids) {
+    if (id.includes(query)) return id
+  }
+  return null
+}
+
+/**
+ * Reduce a graph to nodes within `maxHops` undirected steps of a
+ * resolved center node. Walks the union of incoming + outgoing edges,
+ * so callers get the "everything related to X" view rather than a
+ * directed dependency cone. Pure function: returns a new GraphJson
+ * with the same workspace + snapshot_id and the subset of nodes/edges.
+ *
+ * If the center query resolves to no node, returns an empty
+ * subgraph (no nodes, no edges) — callers can detect this case and
+ * report an error.
+ */
+export function centerSubgraph(
+  graph: GraphJson,
+  centerQuery: string,
+  maxHops: number,
+): GraphJson {
+  const center = resolveCenterSymbol(graph, centerQuery)
+  if (!center) {
+    return {
+      workspace: graph.workspace,
+      snapshot_id: graph.snapshot_id,
+      nodes: [],
+      edges: [],
+    }
+  }
+  // Build directed adjacency from the supplied edges (undirected
+  // BFS uses the union below).
+  const succ = new Map<string, Set<string>>()
+  const pred = new Map<string, Set<string>>()
+  for (const n of graph.nodes) {
+    succ.set(n.id, new Set())
+    pred.set(n.id, new Set())
+  }
+  for (const e of graph.edges) {
+    succ.get(e.src)?.add(e.dst)
+    pred.get(e.dst)?.add(e.src)
+  }
+  const seen = new Set<string>([center])
+  let frontier: string[] = [center]
+  for (let i = 0; i < maxHops; i++) {
+    const next: string[] = []
+    for (const id of frontier) {
+      const out = succ.get(id)
+      if (out) {
+        for (const t of out) {
+          if (!seen.has(t)) {
+            seen.add(t)
+            next.push(t)
+          }
+        }
+      }
+      const inn = pred.get(id)
+      if (inn) {
+        for (const t of inn) {
+          if (!seen.has(t)) {
+            seen.add(t)
+            next.push(t)
+          }
+        }
+      }
+    }
+    if (next.length === 0) break
+    frontier = next
+  }
+  return {
+    workspace: graph.workspace,
+    snapshot_id: graph.snapshot_id,
+    nodes: graph.nodes.filter((n) => seen.has(n.id)),
+    edges: graph.edges.filter((e) => seen.has(e.src) && seen.has(e.dst)),
   }
 }
