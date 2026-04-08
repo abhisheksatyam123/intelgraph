@@ -947,6 +947,19 @@ export function graphJsonToHtml(graph: GraphJson): string {
     user-select: none;
   }
   #help-button:hover { color: var(--accent); border-color: var(--accent); }
+  #fit-button {
+    position: absolute; bottom: 8px; left: 70px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+    font-family: inherit;
+  }
+  #fit-button:hover { color: var(--accent); border-color: var(--accent); }
   #badge {
     position: absolute; bottom: 8px; right: 8px;
     background: var(--panel);
@@ -1029,8 +1042,9 @@ export function graphJsonToHtml(graph: GraphJson): string {
   </aside>
   <div id="canvas-wrap">
     <svg id="canvas"></svg>
-    <div id="toolbar">scroll = zoom · drag = pan · click = focus · <kbd>esc</kbd> = clear · <kbd>?</kbd> = help</div>
+    <div id="toolbar">scroll = zoom · drag = pan · click = focus · <kbd>f</kbd> = fit · <kbd>esc</kbd> = clear · <kbd>?</kbd> = help</div>
     <div id="badge"><span id="badge-text">0 nodes / 0 edges</span></div>
+    <button id="fit-button">fit view</button>
     <div id="help-button">? help</div>
     <div id="help-overlay">
       <div id="help-card">
@@ -1040,6 +1054,7 @@ export function graphJsonToHtml(graph: GraphJson): string {
         <div class="item"><kbd>scroll</kbd><div class="desc">zoom in / out</div></div>
         <div class="item"><kbd>drag</kbd><div class="desc">pan canvas, or drag a node to reposition it</div></div>
         <div class="item"><kbd>click</kbd><div class="desc">focus a node — highlights its k-hop neighborhood</div></div>
+        <div class="item"><kbd>f</kbd><div class="desc">fit view — zoom + center to show all visible nodes</div></div>
         <div class="item"><kbd>esc</kbd><div class="desc">clear focus + close help</div></div>
         <div class="item"><kbd>?</kbd><div class="desc">toggle this help overlay</div></div>
 
@@ -1392,6 +1407,13 @@ window.addEventListener("keydown", (ev) => {
     // check covers other layouts that emit "?" directly).
     document.getElementById("help-overlay").classList.toggle("open");
   }
+  if (ev.key === "f" || ev.key === "F") {
+    // Skip when the user is typing in a search box
+    const tag = (ev.target && ev.target.tagName) || "";
+    if (tag !== "INPUT" && tag !== "TEXTAREA") {
+      fitView();
+    }
+  }
 });
 
 // Help button click + click-outside-to-close behavior on the
@@ -1407,6 +1429,41 @@ document.getElementById("help-overlay").addEventListener("click", (ev) => {
     ev.currentTarget.classList.remove("open");
   }
 });
+
+// Fit-view: compute the bounding box of all currently-rendered
+// nodes and apply a zoom transform that centers and scales them
+// to fill ~85% of the viewport. Used by the "fit view" button and
+// the f keyboard shortcut.
+function fitView() {
+  // Read positions from the d3 data binding — node.x / node.y are
+  // populated by the force tick handler.
+  const nodes = nodeSel.data();
+  if (nodes.length === 0) return;
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const n of nodes) {
+    if (typeof n.x !== "number" || typeof n.y !== "number") continue;
+    if (n.x < minX) minX = n.x;
+    if (n.y < minY) minY = n.y;
+    if (n.x > maxX) maxX = n.x;
+    if (n.y > maxY) maxY = n.y;
+  }
+  if (!isFinite(minX)) return;
+  const bboxW = Math.max(1, maxX - minX);
+  const bboxH = Math.max(1, maxY - minY);
+  const PAD = 40;
+  const w = width(), h = height();
+  const k = Math.min(
+    (w - 2 * PAD) / bboxW,
+    (h - 2 * PAD) / bboxH,
+    8, // never zoom in past the existing scaleExtent ceiling
+  );
+  const tx = (w - k * (minX + maxX)) / 2;
+  const ty = (h - k * (minY + maxY)) / 2;
+  svg.transition()
+    .duration(400)
+    .call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(k));
+}
+document.getElementById("fit-button").addEventListener("click", fitView);
 
 // ── URL hash state ──────────────────────────────────────────────────────────
 // The viewer persists discrete UI state (focused node, hop depth, the

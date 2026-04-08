@@ -542,6 +542,13 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(html).toContain("help-overlay")
     expect(html).toContain("classList.toggle")
 
+    // Fit-view button + f key shortcut
+    expect(html).toContain('id="fit-button"')
+    expect(html).toContain("function fitView")
+    expect(html).toContain('ev.key === "f"')
+    expect(html).toContain("zoom.transform")
+    expect(html).toContain("d3.zoomIdentity")
+
     // Inlined script must parse as valid JS. Catches the class of bug
     // where a stray backtick inside a comment closes the outer
     // template literal and corrupts the rest of the document.
