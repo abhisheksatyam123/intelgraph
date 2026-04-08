@@ -9,7 +9,7 @@
  *
  * Targets:
  *   - /home/abhi/qprojects/opencode (Bun monorepo, packages/opencode/src)
- *   - /home/abhi/qprojects/instructkr-claude-code (TS/React project)
+ *   - /home/abhi/qprojects/qcode (TS/React project)
  *
  * Both tests skip cleanly when the workspace path doesn't exist on the
  * host. Skips intentionally let CI environments without those checkouts
@@ -66,7 +66,7 @@ const stubTracker = {} as Parameters<typeof graphTool.execute>[2]
 
 
 const OPENCODE_ROOT = "/home/abhi/qprojects/opencode/packages/opencode"
-const INSTRUCTKR_ROOT = "/home/abhi/qprojects/instructkr-claude-code"
+const QCODE_ROOT = "/home/abhi/qprojects/qcode"
 
 interface WorkspaceCase {
   name: string
@@ -96,8 +96,8 @@ const CASES: WorkspaceCase[] = [
     centerSymbol: "cmd",
   },
   {
-    name: "instructkr-claude-code",
-    path: INSTRUCTKR_ROOT,
+    name: "qcode",
+    path: QCODE_ROOT,
     minNodes: 200,
     minEdges: 200,
     expectedSubstring: "src/",
@@ -424,7 +424,7 @@ for (const wcase of CASES) {
       it("maxNodes caps the unfiltered graph to a tractable size", () => {
         // The "production readiness" case: any workspace should
         // collapse to N nodes when maxNodes=N is requested. For
-        // instructkr-claude-code this is the only way to make the
+        // qcode this is the only way to make the
         // 20K-node graph tractable for the HTML force layout.
         const CAP = 300
         const full = loadGraphJsonFromDb(
@@ -865,7 +865,7 @@ for (const wcase of CASES) {
 
 
       it("loadGraphJsonFromDb completes within the performance budget", () => {
-        // The full unfiltered graph build for instructkr-claude-code
+        // The full unfiltered graph build for qcode
         // (~20K nodes, ~100K edges) takes ~5s in CI; opencode is
         // ~2s. Budget is 15s — generous enough that flaky CI machines
         // don't fail spuriously, tight enough that any 3x regression
@@ -915,7 +915,7 @@ for (const wcase of CASES) {
         const aggEdges = graph.edges.filter((e) => e.kind === "aggregates")
 
         // Real TS workspaces have lots of class fields and interface
-        // properties — both opencode and instructkr-claude-code clear
+        // properties — both opencode and qcode clear
         // 100 field nodes easily.
         expect(fields.length).toBeGreaterThan(100)
         // The field_of_type edges only fire when a field's type
@@ -1110,6 +1110,128 @@ for (const wcase of CASES) {
             ),
           ).toBe(true)
         }
+      })
+
+      // ── Phase 3h: find_data_path on real workspace data ─────────
+      it("phase 3h: find_data_path resolves a self-discovered type chain", async () => {
+        // Self-discover any 2-hop data chain in the snapshot:
+        //   typeA → typeB → typeC via field_of_type or aggregates.
+        // The chain may go through aggregates (type-level rollup) or
+        // field_of_type (per-field) at either step. We pick the first
+        // such chain and assert find_data_path returns it.
+        const seed = ingest.client.raw
+          .prepare(
+            `SELECT
+               a.canonical_name AS src,
+               c.canonical_name AS dst
+             FROM graph_edges e1
+             INNER JOIN graph_nodes a
+               ON e1.src_node_id = a.node_id AND e1.snapshot_id = a.snapshot_id
+             INNER JOIN graph_edges e2
+               ON e2.snapshot_id = e1.snapshot_id
+               AND e2.src_node_id = e1.dst_node_id
+               AND e2.edge_kind IN ('field_of_type', 'aggregates')
+             INNER JOIN graph_nodes c
+               ON e2.dst_node_id = c.node_id AND e2.snapshot_id = c.snapshot_id
+             WHERE e1.snapshot_id = ?
+               AND e1.edge_kind IN ('field_of_type', 'aggregates')
+               AND a.canonical_name LIKE 'module:%'
+               AND c.canonical_name LIKE 'module:%'
+               AND a.canonical_name != c.canonical_name
+             LIMIT 1`,
+          )
+          .get(ingest.snapshotId) as { src: string; dst: string } | undefined
+        if (!seed) return // workspace has no 2-hop data chain — skip
+
+        const result = await ingest.lookup.lookup({
+          intent: "find_data_path",
+          snapshotId: ingest.snapshotId,
+          srcApi: seed.src,
+          dstApi: seed.dst,
+          depth: 6,
+          limit: 50,
+        })
+        expect(result.hit).toBe(true)
+        expect(result.rows.length).toBeGreaterThan(0)
+        // Per-hop rows must carry the synthetic edge_kind = data_path
+        // and the chain_depth + path_index telemetry the visualizer
+        // uses to render hop indicators.
+        for (const row of result.rows) {
+          expect(row.edge_kind).toBe("data_path")
+          expect(typeof row.path_index).toBe("number")
+          expect(typeof row.chain_depth).toBe("number")
+          // Hop kind is hard-coded to "struct" for the response —
+          // mirrors how callChain hard-codes "function".
+          expect(row.kind).toBe("struct")
+        }
+        // First row's src is the seed src; last row's dst is the
+        // seed dst. (This may go through one or more intermediate
+        // types depending on what the BFS picks as shortest.)
+        expect(result.rows[0].src).toBe(seed.src)
+        expect(result.rows[result.rows.length - 1].dst).toBe(seed.dst)
+      })
+
+      // ── Phase 3h: dataPathSubgraph on real workspace data ────────
+      it("phase 3h: dataPathSubgraph filter renders the chain as a subgraph", async () => {
+        // Self-discover the same chain from above and pass it to the
+        // GraphJson dataPath filter. The result must (a) include
+        // both endpoints, (b) only contain field_of_type/aggregates
+        // edges, and (c) be strictly smaller than the full graph.
+        const seed = ingest.client.raw
+          .prepare(
+            `SELECT
+               a.canonical_name AS src,
+               c.canonical_name AS dst
+             FROM graph_edges e1
+             INNER JOIN graph_nodes a
+               ON e1.src_node_id = a.node_id AND e1.snapshot_id = a.snapshot_id
+             INNER JOIN graph_edges e2
+               ON e2.snapshot_id = e1.snapshot_id
+               AND e2.src_node_id = e1.dst_node_id
+               AND e2.edge_kind IN ('field_of_type', 'aggregates')
+             INNER JOIN graph_nodes c
+               ON e2.dst_node_id = c.node_id AND e2.snapshot_id = c.snapshot_id
+             WHERE e1.snapshot_id = ?
+               AND e1.edge_kind IN ('field_of_type', 'aggregates')
+               AND a.canonical_name LIKE 'module:%'
+               AND c.canonical_name LIKE 'module:%'
+               AND a.canonical_name != c.canonical_name
+             LIMIT 1`,
+          )
+          .get(ingest.snapshotId) as { src: string; dst: string } | undefined
+        if (!seed) return
+
+        const full = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        const path = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+          {
+            dataPathFrom: seed.src,
+            dataPathTo: seed.dst,
+            dataPathDepth: 6,
+          },
+        )
+        // The data path subgraph is strictly smaller than the full
+        // graph (a real workspace has tens of thousands of nodes;
+        // a 2-hop type chain has at most a handful).
+        expect(path.nodes.length).toBeLessThan(full.nodes.length)
+        expect(path.nodes.length).toBeGreaterThanOrEqual(2)
+        // Both endpoints survive
+        const ids = new Set(path.nodes.map((n) => n.id))
+        expect(ids.has(seed.src)).toBe(true)
+        expect(ids.has(seed.dst)).toBe(true)
+        // Every surviving edge is a data-path kind
+        for (const edge of path.edges) {
+          expect(["field_of_type", "aggregates"]).toContain(edge.kind)
+        }
+        // Pre-filter totals stay anchored
+        expect(path.total_nodes).toBe(full.total_nodes)
+        expect(path.total_edges).toBe(full.total_edges)
       })
     },
   )

@@ -7,7 +7,7 @@
  *
  * Targets:
  *   - /home/abhi/qprojects/opencode (Bun monorepo, packages/opencode/src)
- *   - /home/abhi/qprojects/instructkr-claude-code (TS/React project)
+ *   - /home/abhi/qprojects/qcode (TS/React project)
  *
  * Both tests skip cleanly when the workspace path doesn't exist on the
  * host (so CI environments without those checkouts still pass).
@@ -2016,18 +2016,18 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
 )
 
 // ---------------------------------------------------------------------------
-// instructkr-claude-code workspace
+// qcode workspace
 // ---------------------------------------------------------------------------
 
-const INSTRUCTKR_ROOT = "/home/abhi/qprojects/instructkr-claude-code"
+const QCODE_ROOT = "/home/abhi/qprojects/qcode"
 
-describe.skipIf(!existsSync(INSTRUCTKR_ROOT))(
-  "ts-core integration — instructkr-claude-code",
+describe.skipIf(!existsSync(QCODE_ROOT))(
+  "ts-core integration — qcode",
   () => {
     let ingest: IngestedWorkspace
 
     beforeAll(async () => {
-      ingest = await ingestWorkspace(INSTRUCTKR_ROOT)
+      ingest = await ingestWorkspace(QCODE_ROOT)
     }, 120_000)
 
     afterAll(() => {
@@ -2075,7 +2075,7 @@ describe.skipIf(!existsSync(INSTRUCTKR_ROOT))(
     })
 
     it("KPI: ≥30% of calls edges resolve (lower floor for unfamiliar shape)", () => {
-      // instructkr-claude-code is a mirror project — its coding style
+      // qcode is a mirror project — its coding style
       // is different from opencode (no Effect, less namespace-heavy).
       // The resolution rate is lower because there's less for our
       // namespace-style heuristics to grab. We assert a softer 30%
@@ -2096,7 +2096,7 @@ describe.skipIf(!existsSync(INSTRUCTKR_ROOT))(
 
     it("Property: workspace-internal edge dsts must reference real graph_nodes", () => {
       // Same property check as opencode — catches D12-style bugs
-      // where extends/implements use bare dst names. instructkr is a
+      // where extends/implements use bare dst names. qcode is a
       // different shape so this provides cross-workspace validation.
       const workspaceModules = new Set(
         (
