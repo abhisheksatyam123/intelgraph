@@ -317,6 +317,18 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(html).toContain('id="badge"')
     expect(html).toContain("function updateBadge")
 
+    // Path-finding: BFS function + UI inputs + status row + .path-on
+    // CSS classes are all wired.
+    expect(html).toContain("function shortestPath")
+    expect(html).toContain("function findAndShowPath")
+    expect(html).toContain("function resolveSymbol")
+    expect(html).toContain('id="path-from"')
+    expect(html).toContain('id="path-to"')
+    expect(html).toContain('id="path-find"')
+    expect(html).toContain('id="path-status"')
+    expect(html).toContain(".link.path-on")
+    expect(html).toContain(".node.path-on")
+
     // Inlined script must parse as valid JS. Catches the class of bug
     // where a stray backtick inside a comment closes the outer
     // template literal and corrupts the rest of the document.

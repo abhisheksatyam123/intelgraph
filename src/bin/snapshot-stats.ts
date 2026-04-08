@@ -637,6 +637,14 @@ export function graphJsonToHtml(graph: GraphJson): string {
   .arrowhead.hit { fill: var(--link-active); fill-opacity: 0.85; }
   .link.cycle { stroke: #ff5b6b; stroke-opacity: 0.85; stroke-width: 1.6; }
   .node.cycle { stroke: #ff5b6b; stroke-width: 1.5; }
+  .link.path-on { stroke: #c792ea; stroke-opacity: 0.95; stroke-width: 2.4; }
+  .node.path-on { stroke: #c792ea; stroke-width: 2.5; }
+  #path-status {
+    margin-top: 6px; font-size: 11px; color: var(--muted);
+    min-height: 14px;
+  }
+  #path-status.ok { color: #9bd17f; }
+  #path-status.fail { color: #ff5b6b; }
   #sidebar input[type="range"] {
     width: 100%; box-sizing: border-box;
     accent-color: var(--accent);
@@ -741,6 +749,12 @@ export function graphJsonToHtml(graph: GraphJson): string {
     <h2>Quick views</h2>
     <button class="preset" id="preset-modules">Module dependency view</button>
     <button class="preset" id="preset-reset">Reset all filters</button>
+
+    <h2>Find path</h2>
+    <input id="path-from" type="search" placeholder="from (canonical name)" />
+    <input id="path-to" type="search" placeholder="to (canonical name)" />
+    <button class="preset" id="path-find">Find shortest path</button>
+    <div id="path-status"></div>
 
     <h2>Top imported modules</h2>
     <div id="top-imported"></div>
@@ -980,7 +994,11 @@ function render() {
       const s = typeof d.source === "object" ? d.source.id : d.source;
       const t = typeof d.target === "object" ? d.target.id : d.target;
       const isCycle = cyclesOn && cycleEdgeKeys.has(d.kind + "|" + s + "|" + t);
-      return "link" + (isCycle ? " cycle" : "");
+      const isPath = pathEdgeKeys.has(d.kind + "|" + s + "|" + t);
+      let cls = "link";
+      if (isCycle) cls += " cycle";
+      if (isPath) cls += " path-on";
+      return cls;
     })
     .attr("stroke", (d) => colorFor(d.kind, EDGE_COLORS, "#5a6378"))
     .attr("stroke-width", (d) => (d.kind === "calls" ? 1.2 : 0.8))
@@ -991,8 +1009,12 @@ function render() {
     .selectAll("circle")
     .data(visibleNodes, (d) => d.id)
     .join("circle")
-    .attr("class", (d) =>
-      "node" + (cyclesOn && cycleNodes.has(d.id) ? " cycle" : ""))
+    .attr("class", (d) => {
+      let cls = "node";
+      if (cyclesOn && cycleNodes.has(d.id)) cls += " cycle";
+      if (pathNodes.has(d.id)) cls += " path-on";
+      return cls;
+    })
     .attr("r", radiusFor)
     .attr("fill", (d) => colorFor(d.kind, KIND_COLORS, "#a3a8b8"))
     .attr("stroke", (d) => {
@@ -1318,12 +1340,131 @@ function applyResetView() {
 document.getElementById("preset-modules").addEventListener("click", applyModuleDepView);
 document.getElementById("preset-reset").addEventListener("click", applyResetView);
 
+// Path-finding wiring: button click + Enter-key in either input.
+document.getElementById("path-find").addEventListener("click", findAndShowPath);
+for (const id of ["path-from", "path-to"]) {
+  document.getElementById(id).addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter") findAndShowPath();
+  });
+}
+// Also clear the path when Reset is clicked.
+document.getElementById("preset-reset").addEventListener("click", clearPath);
+
 // ── Live stats badge ────────────────────────────────────────────────────────
 // Updates after every render() so users see exactly how their filter
 // choices change the visible counts.
 function updateBadge(visibleNodeCount, visibleEdgeCount) {
   document.getElementById("badge-text").textContent =
     visibleNodeCount + " nodes / " + visibleEdgeCount + " edges";
+}
+
+// ── Path finding ────────────────────────────────────────────────────────────
+// Shortest src→dst path over the directed successors map. BFS, returns
+// the ordered node-id sequence or null if no path exists. Pure client-
+// side computation on the inlined adjacency — no MCP round-trip.
+//
+// Path state is stored as a Set of node ids and a Set of edge keys
+// (kind|s|t) so the render() pass can paint .path-on classes without
+// disturbing the existing focused/cycle/dim state.
+const pathNodes = new Set();
+const pathEdgeKeys = new Set();
+function shortestPath(srcId, dstId) {
+  if (!nodeById.has(srcId) || !nodeById.has(dstId)) return null;
+  if (srcId === dstId) return [srcId];
+  const prev = new Map();
+  prev.set(srcId, null);
+  const queue = [srcId];
+  while (queue.length > 0) {
+    const cur = queue.shift();
+    const out = successors.get(cur);
+    if (!out) continue;
+    for (const next of out) {
+      if (prev.has(next)) continue;
+      prev.set(next, cur);
+      if (next === dstId) {
+        // Reconstruct
+        const trail = [next];
+        let walk = cur;
+        while (walk !== null && walk !== undefined) {
+          trail.push(walk);
+          walk = prev.get(walk) ?? null;
+        }
+        return trail.reverse();
+      }
+      queue.push(next);
+    }
+  }
+  return null;
+}
+function resolveSymbol(query) {
+  // Match strategies, in order: exact, suffix (#name), substring.
+  if (!query) return null;
+  if (nodeById.has(query)) return query;
+  for (const id of nodeById.keys()) {
+    if (id.endsWith("#" + query)) return id;
+  }
+  for (const id of nodeById.keys()) {
+    if (id.includes(query)) return id;
+  }
+  return null;
+}
+function clearPath() {
+  pathNodes.clear();
+  pathEdgeKeys.clear();
+  document.getElementById("path-status").textContent = "";
+  document.getElementById("path-status").className = "";
+  render();
+}
+function findAndShowPath() {
+  const fromQ = document.getElementById("path-from").value.trim();
+  const toQ = document.getElementById("path-to").value.trim();
+  const status = document.getElementById("path-status");
+  if (!fromQ || !toQ) {
+    status.textContent = "enter both endpoints";
+    status.className = "fail";
+    return;
+  }
+  const src = resolveSymbol(fromQ);
+  const dst = resolveSymbol(toQ);
+  if (!src || !dst) {
+    status.textContent =
+      (!src ? "no match for from" : "no match for to") + " — try a longer query";
+    status.className = "fail";
+    pathNodes.clear();
+    pathEdgeKeys.clear();
+    render();
+    return;
+  }
+  const trail = shortestPath(src, dst);
+  if (!trail) {
+    status.textContent = "no path found (src → dst)";
+    status.className = "fail";
+    pathNodes.clear();
+    pathEdgeKeys.clear();
+    render();
+    return;
+  }
+  pathNodes.clear();
+  pathEdgeKeys.clear();
+  for (const id of trail) pathNodes.add(id);
+  for (let i = 0; i < trail.length - 1; i++) {
+    const a = trail[i];
+    const b = trail[i + 1];
+    // Add for any edge_kind — render() walks all visible links and
+    // matches by (kind|src|dst). We don't know which kind connects
+    // a→b at this point, so encode all kinds present in this edge.
+    const kinds = new Set();
+    for (const l of links) {
+      const ls = typeof l.source === "object" ? l.source.id : l.source;
+      const lt = typeof l.target === "object" ? l.target.id : l.target;
+      if (ls === a && lt === b) kinds.add(l.kind);
+    }
+    for (const k of kinds) pathEdgeKeys.add(k + "|" + a + "|" + b);
+  }
+  status.textContent =
+    "path: " + trail.length + " nodes, " + (trail.length - 1) + " hops";
+  status.className = "ok";
+  render();
 }
 
 // Restore any persisted state from the URL hash before building the
