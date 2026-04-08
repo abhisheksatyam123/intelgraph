@@ -574,6 +574,147 @@ pub struct Box1 {
     }
   })
 
+  it("emits enum_variant nodes with shape detection (unit, tuple, struct)", async () => {
+    const tinyDir = mkdtempSync(join(tmpdir(), "rust-core-enum-"))
+    try {
+      writeFileSync(
+        join(tinyDir, "Cargo.toml"),
+        `[package]\nname = "fixture"\nversion = "0.1.0"\nedition = "2021"\n`,
+      )
+      mkdirSync(join(tinyDir, "src"), { recursive: true })
+      writeFileSync(
+        join(tinyDir, "src", "lib.rs"),
+        `pub struct Position { pub x: i32, pub y: i32 }
+pub enum Event {
+    Quit,
+    Click(Position),
+    Resize { width: u32, height: u32 },
+    Open(String, u64),
+}
+`,
+      )
+      const sink = new CaptureSink()
+      const runner = new ExtractorRunner({
+        snapshotId: 1,
+        workspaceRoot: tinyDir,
+        lsp: stubLsp,
+        sink,
+        plugins: [rustCoreExtractor],
+      })
+      await runner.run()
+
+      const variants = sink.allNodes().filter((n) => n.kind === "enum_variant")
+      // Build local-name → metadata.variantShape lookup
+      const shapeOf = new Map<string, string>()
+      for (const v of variants) {
+        const localName = String(v.canonical_name).split("#")[1]
+        const meta =
+          ((v.payload as Record<string, unknown> | undefined)?.metadata as
+            | Record<string, unknown>
+            | undefined) ?? {}
+        shapeOf.set(localName, String(meta.variantShape ?? ""))
+      }
+      expect(shapeOf.get("Event.Quit")).toBe("unit")
+      expect(shapeOf.get("Event.Click")).toBe("tuple")
+      expect(shapeOf.get("Event.Resize")).toBe("struct")
+      expect(shapeOf.get("Event.Open")).toBe("tuple")
+
+      // contains edges from enum → variant
+      const containsToVariant = sink
+        .allEdges()
+        .filter(
+          (e) =>
+            e.edge_kind === "contains" &&
+            String(e.src_node_id).endsWith("#Event") &&
+            String(e.dst_node_id).includes("#Event."),
+        )
+      expect(containsToVariant.length).toBe(4)
+    } finally {
+      rmSync(tinyDir, { recursive: true, force: true })
+    }
+  })
+
+  it("emits field_of_type edges from variants to payload types", async () => {
+    const tinyDir = mkdtempSync(join(tmpdir(), "rust-core-variant-payload-"))
+    try {
+      writeFileSync(
+        join(tinyDir, "Cargo.toml"),
+        `[package]\nname = "fixture"\nversion = "0.1.0"\nedition = "2021"\n`,
+      )
+      mkdirSync(join(tinyDir, "src"), { recursive: true })
+      writeFileSync(
+        join(tinyDir, "src", "lib.rs"),
+        `pub struct Position { pub x: i32 }
+pub struct Size { pub w: u32 }
+pub enum Event {
+    Click(Position),
+    Resize { dim: Size },
+    Both(Position, Size),
+}
+`,
+      )
+      const sink = new CaptureSink()
+      const runner = new ExtractorRunner({
+        snapshotId: 1,
+        workspaceRoot: tinyDir,
+        lsp: stubLsp,
+        sink,
+        plugins: [rustCoreExtractor],
+      })
+      await runner.run()
+
+      const fotEdges = sink
+        .allEdges()
+        .filter((e) => e.edge_kind === "field_of_type")
+
+      // Click(Position) → Click variant points at Position
+      const clickEdges = fotEdges.filter((e) =>
+        String(e.src_node_id).endsWith("#Event.Click"),
+      )
+      expect(
+        clickEdges.some((e) =>
+          String(e.dst_node_id).endsWith("#Position"),
+        ),
+      ).toBe(true)
+
+      // Resize { dim: Size } → Resize variant points at Size
+      const resizeEdges = fotEdges.filter((e) =>
+        String(e.src_node_id).endsWith("#Event.Resize"),
+      )
+      expect(
+        resizeEdges.some((e) =>
+          String(e.dst_node_id).endsWith("#Size"),
+        ),
+      ).toBe(true)
+
+      // Both(Position, Size) → Both variant points at BOTH
+      const bothEdges = fotEdges.filter((e) =>
+        String(e.src_node_id).endsWith("#Event.Both"),
+      )
+      const bothDsts = new Set(
+        bothEdges.map((e) => String(e.dst_node_id).split("#")[1]),
+      )
+      expect(bothDsts.has("Position")).toBe(true)
+      expect(bothDsts.has("Size")).toBe(true)
+
+      // Enum aggregates Position + Size (rolled up from variant payloads)
+      const enumAgg = sink
+        .allEdges()
+        .filter(
+          (e) =>
+            e.edge_kind === "aggregates" &&
+            String(e.src_node_id).endsWith("#Event"),
+        )
+      const enumAggDsts = new Set(
+        enumAgg.map((e) => String(e.dst_node_id).split("#")[1]),
+      )
+      expect(enumAggDsts.has("Position")).toBe(true)
+      expect(enumAggDsts.has("Size")).toBe(true)
+    } finally {
+      rmSync(tinyDir, { recursive: true, force: true })
+    }
+  })
+
   it("emits aggregates rollup edges for struct with multiple field types", async () => {
     const tinyDir = mkdtempSync(join(tmpdir(), "rust-core-agg-"))
     try {

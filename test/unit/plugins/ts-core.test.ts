@@ -2059,6 +2059,66 @@ export class Box {
     }
   })
 
+  it("emits enum_variant nodes for TS enum members", async () => {
+    const tinyDir = mkdtempSync(join(tmpdir(), "ts-core-enum-variant-"))
+    try {
+      writeFileSync(
+        join(tinyDir, "package.json"),
+        JSON.stringify({ name: "fixture" }),
+      )
+      mkdirSync(join(tinyDir, "src"), { recursive: true })
+      writeFileSync(
+        join(tinyDir, "src", "x.ts"),
+        `export enum Status {
+  Active,
+  Inactive = 1,
+  Pending = "pending",
+}
+`,
+      )
+      const sink = new CaptureSink()
+      const runner = new ExtractorRunner({
+        snapshotId: 1,
+        workspaceRoot: tinyDir,
+        lsp: stubLsp,
+        sink,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+
+      const variants = sink.allNodes().filter((n) => n.kind === "enum_variant")
+      const localNames = new Set(
+        variants.map((n) => String(n.canonical_name).split("#")[1]),
+      )
+      expect(localNames.has("Status.Active")).toBe(true)
+      expect(localNames.has("Status.Inactive")).toBe(true)
+      expect(localNames.has("Status.Pending")).toBe(true)
+
+      // Inactive's metadata.value captures the literal `1`
+      const inactive = variants.find(
+        (n) => String(n.canonical_name).endsWith("#Status.Inactive"),
+      )
+      const meta =
+        ((inactive!.payload as Record<string, unknown>).metadata as
+          | Record<string, unknown>
+          | undefined) ?? {}
+      expect(meta.value).toBe("1")
+
+      // contains edges from enum → variant
+      const containsEdges = sink
+        .allEdges()
+        .filter(
+          (e) =>
+            e.edge_kind === "contains" &&
+            String(e.src_node_id).endsWith("#Status") &&
+            String(e.dst_node_id).includes("#Status."),
+        )
+      expect(containsEdges.length).toBe(3)
+    } finally {
+      rmSync(tinyDir, { recursive: true, force: true })
+    }
+  })
+
   it("emits one aggregates edge per distinct target type at the class level", async () => {
     // Same fixture as the field_of_type test but assert on the
     // class-level aggregates rollup. The class has 8 fields touching

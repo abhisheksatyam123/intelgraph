@@ -542,6 +542,48 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
           }
         }
 
+        // Phase 3d: enum variants. TS enums are nominal — variants
+        // are bare names with optional literal values, no payloads.
+        // Each variant becomes its own enum_variant node contained
+        // by the enum, and its literal value (if any) is recorded
+        // in metadata.value.
+        if (kind === "enum") {
+          for (const variant of extractTsEnumVariants(
+            node,
+            name,
+            moduleNodeName,
+          )) {
+            if (seenSymbols.has(variant.canonicalName)) continue
+            seenSymbols.add(variant.canonicalName)
+            yield ctx.symbol({
+              payload: {
+                kind: "enum_variant",
+                name: variant.canonicalName,
+                qualifiedName: variant.canonicalName,
+                location: { filePath: file, line: variant.line },
+                metadata: {
+                  localName: variant.localName,
+                  owningEnum: name,
+                  ...(variant.value !== undefined ? { value: variant.value } : {}),
+                },
+              },
+            })
+            yield ctx.edge({
+              payload: {
+                edgeKind: "contains",
+                srcSymbolName: canonicalName,
+                dstSymbolName: variant.canonicalName,
+                confidence: 1,
+                derivation: "clangd",
+                sourceLocation: {
+                  sourceFilePath: file,
+                  sourceLineNumber: variant.line,
+                },
+              },
+            })
+          }
+        }
+
         // Type alias body references. `type X = User | Result` should
         // emit references_type edges from X to both User and Result.
         // We collect generic parameter names first so they're excluded
@@ -1863,6 +1905,77 @@ function extractFieldDeclarations(
       line: member.startPosition.row + 1,
       exported: false,
       memberNode: member,
+    })
+  }
+  return out
+}
+
+/**
+ * Walk a TS enum_declaration body and return one descriptor per
+ * declared variant. TS enums are nominal — each variant is just a
+ * name with an optional literal value, no payloads.
+ *
+ * Two AST shapes per member:
+ *   - Bare property_identifier:  `Active`           (no value)
+ *   - enum_assignment node:      `Inactive = 1`     (with value)
+ *                                `Pending = "x"`
+ *
+ * The literal value (when present) is recorded in metadata.value
+ * as a string for display.
+ */
+function extractTsEnumVariants(
+  enumDeclNode: TsNode,
+  enumName: string,
+  moduleNodeName: string,
+): Array<{
+  localName: string
+  canonicalName: string
+  line: number
+  value: string | undefined
+}> {
+  const out: Array<{
+    localName: string
+    canonicalName: string
+    line: number
+    value: string | undefined
+  }> = []
+  const body = firstNamedChildOfType(enumDeclNode, "enum_body")
+  if (!body) return out
+
+  for (let i = 0; i < body.namedChildCount; i++) {
+    const member = body.namedChild(i)
+    if (!member) continue
+
+    let nameNode: TsNode | null = null
+    let value: string | undefined = undefined
+
+    if (member.type === "property_identifier") {
+      // Bare member without an initializer
+      nameNode = member
+    } else if (member.type === "enum_assignment") {
+      // Member with an initializer
+      const id = firstNamedChildOfType(member, "property_identifier")
+      if (id) nameNode = id
+      // Capture the literal value child if present
+      for (let j = 0; j < member.namedChildCount; j++) {
+        const c = member.namedChild(j)
+        if (!c) continue
+        if (c.type === "property_identifier") continue
+        // Take the first non-name child as the value
+        value = c.text
+        break
+      }
+    }
+
+    if (!nameNode) continue
+    const variantLocalName = nameNode.text
+    if (!variantLocalName) continue
+    const localName = `${enumName}.${variantLocalName}`
+    out.push({
+      localName,
+      canonicalName: `${moduleNodeName}#${localName}`,
+      line: member.startPosition.row + 1,
+      value,
     })
   }
   return out

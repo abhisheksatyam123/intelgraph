@@ -376,6 +376,81 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
             })
           }
         }
+
+        // Phase 3d: enum variants. Each variant becomes its own
+        // enum_variant node contained by the enum. Tuple/struct
+        // variants ALSO get field_of_type edges from the variant
+        // to each payload type, and the enum aggregates the union.
+        if (kind === "enum") {
+          const enumAggregatedTargets = new Set<string>()
+          for (const variant of extractRustEnumVariants(
+            node,
+            name,
+            moduleNodeName,
+          )) {
+            if (seenSymbols.has(variant.canonicalName)) continue
+            seenSymbols.add(variant.canonicalName)
+            yield ctx.symbol({
+              payload: {
+                kind: "enum_variant",
+                name: variant.canonicalName,
+                qualifiedName: variant.canonicalName,
+                location: { filePath: file, line: variant.line },
+                metadata: {
+                  localName: variant.localName,
+                  owningEnum: name,
+                  variantShape: variant.shape, // "unit" | "tuple" | "struct"
+                },
+              },
+            })
+            yield ctx.edge({
+              payload: {
+                edgeKind: "contains",
+                srcSymbolName: canonicalName,
+                dstSymbolName: variant.canonicalName,
+                confidence: 1,
+                derivation: "clangd",
+                sourceLocation: {
+                  sourceFilePath: file,
+                  sourceLineNumber: variant.line,
+                },
+              },
+            })
+            // For each payload type node attached to the variant,
+            // emit field_of_type edges from the VARIANT.
+            for (const payloadType of variant.payloadTypeNodes) {
+              for (const typeEdge of extractRustFieldTypeEdges(
+                payloadType,
+                variant.canonicalName,
+                variant.line,
+                resolver,
+                moduleNodeName,
+                file,
+              )) {
+                yield ctx.edge({ payload: typeEdge })
+                enumAggregatedTargets.add(typeEdge.dstSymbolName)
+              }
+            }
+          }
+          // Roll up: enum aggregates each distinct payload type
+          const declLine = node.startPosition.row + 1
+          for (const target of enumAggregatedTargets) {
+            yield ctx.edge({
+              payload: {
+                edgeKind: "aggregates",
+                srcSymbolName: canonicalName,
+                dstSymbolName: target,
+                confidence: 0.95,
+                derivation: "clangd",
+                sourceLocation: {
+                  sourceFilePath: file,
+                  sourceLineNumber: declLine,
+                },
+                metadata: { resolved: true, rolledUpFrom: "field_of_type" },
+              },
+            })
+          }
+        }
       }
     }
 
@@ -771,6 +846,91 @@ function extractRustFieldDeclarations(
       })
       idx++
     }
+  }
+  return out
+}
+
+/**
+ * Walk an enum's enum_variant_list and return one descriptor per
+ * variant. Handles all three Rust variant shapes:
+ *
+ *   - unit:    `Quit`                  → shape="unit",   payloadTypeNodes=[]
+ *   - tuple:   `Click(Position)`       → shape="tuple",  payloadTypeNodes=[Position]
+ *               `Open(String, u64)`    → shape="tuple",  payloadTypeNodes=[String, u64]
+ *   - struct:  `Resize { w: u32, h: u32 }`
+ *                                       → shape="struct", payloadTypeNodes=[u32, u32]
+ *
+ * The payloadTypeNodes are raw type AST nodes — callers feed them
+ * to extractRustFieldTypeEdges() so the same containment vocabulary
+ * (vec/option/box/ref/map/...) lights up for variant payloads as
+ * for struct fields. Variants with primitive-only payloads
+ * (Click(u32)) emit no edges because primitive_type is dropped.
+ */
+function extractRustEnumVariants(
+  enumItemNode: TsNode,
+  enumName: string,
+  moduleNodeName: string,
+): Array<{
+  localName: string
+  canonicalName: string
+  line: number
+  shape: "unit" | "tuple" | "struct"
+  payloadTypeNodes: TsNode[]
+}> {
+  const out: Array<{
+    localName: string
+    canonicalName: string
+    line: number
+    shape: "unit" | "tuple" | "struct"
+    payloadTypeNodes: TsNode[]
+  }> = []
+  const variantList = firstNamedChildOfType(enumItemNode, "enum_variant_list")
+  if (!variantList) return out
+
+  for (let i = 0; i < variantList.namedChildCount; i++) {
+    const variant = variantList.namedChild(i)
+    if (!variant || variant.type !== "enum_variant") continue
+    const nameNode = variant.childForFieldName("name")
+    if (!nameNode) continue
+    const variantLocalName = nameNode.text
+    if (!variantLocalName) continue
+
+    // Detect the variant shape by looking for a payload child.
+    let shape: "unit" | "tuple" | "struct" = "unit"
+    const payloadTypeNodes: TsNode[] = []
+
+    const tupleList = firstNamedChildOfType(
+      variant,
+      "ordered_field_declaration_list",
+    )
+    const namedList = firstNamedChildOfType(variant, "field_declaration_list")
+    if (tupleList) {
+      shape = "tuple"
+      // Each child is either a visibility_modifier or a type expression
+      for (let j = 0; j < tupleList.namedChildCount; j++) {
+        const c = tupleList.namedChild(j)
+        if (!c) continue
+        if (c.type === "visibility_modifier") continue
+        payloadTypeNodes.push(c)
+      }
+    } else if (namedList) {
+      shape = "struct"
+      for (let j = 0; j < namedList.namedChildCount; j++) {
+        const fd = namedList.namedChild(j)
+        if (!fd || fd.type !== "field_declaration") continue
+        const t = fd.childForFieldName("type")
+        if (t) payloadTypeNodes.push(t)
+      }
+    }
+
+    const localName = `${enumName}.${variantLocalName}`
+    out.push({
+      localName,
+      canonicalName: `${moduleNodeName}#${localName}`,
+      line: variant.startPosition.row + 1,
+      shape,
+      payloadTypeNodes,
+    })
   }
   return out
 }

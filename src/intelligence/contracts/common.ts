@@ -82,6 +82,9 @@ export interface SymbolRow {
     | "namespace"
     | "module"
     | "method"
+    // Phase 3d: structural data hierarchy
+    /** Member of an enum (TS literal, Rust variant with optional payload). */
+    | "enum_variant"
   name: string
   qualifiedName?: string
   signature?: string
