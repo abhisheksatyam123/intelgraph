@@ -254,6 +254,12 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
   // before the class declaration is reached, missing local resolutions.
   prepopulateLocalSymbols(tree.rootNode, resolver)
 
+  // Pre-pass: collect JSDoc comments preceding top-level declarations.
+  // Map keys are local declaration names; values are the raw doc text.
+  // The main walk attaches these via metadata.doc when emitting
+  // non-member symbols.
+  const topLevelDocs = collectTopLevelDocs(tree.rootNode)
+
   // Walk the tree in document order so we can push/pop scope based on
   // node start/end positions. We use the iterative walkTree generator
   // and a parallel scope stack keyed by endIndex.
@@ -336,6 +342,13 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
           ? { localName: name, owningClass: enclosingClass }
           : { localName: name }
         if (exported) baseMeta.exported = true
+        // D59: attach JSDoc preceding top-level declarations.
+        // Methods (members) inherit no doc — interfaces/classes use
+        // their own docstring, not their methods'.
+        if (!isMember) {
+          const doc = topLevelDocs.get(name)
+          if (doc) baseMeta.doc = doc
+        }
         yield ctx.symbol({
           payload: {
             kind,
@@ -1187,6 +1200,61 @@ function lookupParamType(
     if (t) return t
   }
   return null
+}
+
+/**
+ * Collect JSDoc/TSDoc-style comments that begin with /** and precede
+ * top-level declarations. Returns a map from local declaration name
+ * to the raw comment text.
+ *
+ * Walks the program node's named children in order. When a comment
+ * matching the JSDoc shape is encountered, it's saved as pending.
+ * The next non-comment child consumes the pending doc — if it's a
+ * declaration (or wraps one in an export_statement), the doc is
+ * attached to that declaration's local name.
+ *
+ * Non-doc comments (line comments or non-JSDoc block comments) reset
+ * the pending buffer so they don't get mistakenly applied later.
+ */
+function collectTopLevelDocs(rootNode: TsNode): Map<string, string> {
+  const docs = new Map<string, string>()
+  let pendingDoc: string | null = null
+
+  for (let i = 0; i < rootNode.namedChildCount; i++) {
+    const child = rootNode.namedChild(i)
+    if (!child) continue
+    if (child.type === "comment") {
+      const text = child.text
+      if (text.startsWith("/**")) {
+        pendingDoc = text
+      } else {
+        pendingDoc = null
+      }
+      continue
+    }
+    if (pendingDoc !== null) {
+      // Find the inner declaration. For export_statement, walk into
+      // its named children; otherwise the child IS the declaration.
+      let target: TsNode | null = child
+      if (child.type === "export_statement") {
+        for (let j = 0; j < child.namedChildCount; j++) {
+          const inner = child.namedChild(j)
+          if (!inner) continue
+          if (inner.type === "comment") continue
+          target = inner
+          break
+        }
+      }
+      if (target) {
+        const declared = extractDeclaration(target)
+        if (declared) {
+          docs.set(declared.name, pendingDoc)
+        }
+      }
+      pendingDoc = null
+    }
+  }
+  return docs
 }
 
 /**

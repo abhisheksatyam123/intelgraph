@@ -253,6 +253,25 @@ export function inlineCaller(items: Array<Greeter>) {
 }
 `,
   )
+
+  // Round D59: doc-commented declarations.
+  writeFileSync(
+    join(tempRoot, "src", "documented.ts"),
+    `/**
+ * Says hello to the user.
+ * @param name the recipient
+ */
+export function sayHello(name: string): string {
+  return "hello " + name
+}
+
+/** Inline doc for the bar class. */
+export class Bar {}
+
+// non-doc comment shouldn't attach
+export function noDoc() {}
+`,
+  )
   writeFileSync(
     join(tempRoot, "src", "anon-fn.ts"),
     `export default function() {
@@ -942,6 +961,58 @@ describe("ts-core plugin — extraction", () => {
       String(e.src_node_id).endsWith("module-b.ts#greetUser"),
     )
     expect(fromGreetUser.length).toBe(0)
+  })
+
+  it("attaches JSDoc preceding top-level declarations to metadata.doc", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    // documented.ts > sayHello — has a JSDoc block
+    const sayHello = sink
+      .allNodes()
+      .find(
+        (n) =>
+          n.kind === "function" &&
+          String(n.canonical_name).endsWith("documented.ts#sayHello"),
+      )
+    const sayHelloMeta =
+      ((sayHello?.payload as Record<string, unknown> | undefined)
+        ?.metadata as Record<string, unknown> | undefined) ?? {}
+    expect(typeof sayHelloMeta.doc).toBe("string")
+    expect(String(sayHelloMeta.doc)).toContain("Says hello")
+
+    // documented.ts > Bar — has an inline doc
+    const bar = sink
+      .allNodes()
+      .find(
+        (n) =>
+          n.kind === "class" &&
+          String(n.canonical_name).endsWith("documented.ts#Bar"),
+      )
+    const barMeta =
+      ((bar?.payload as Record<string, unknown> | undefined)
+        ?.metadata as Record<string, unknown> | undefined) ?? {}
+    expect(String(barMeta.doc)).toContain("Inline doc")
+
+    // documented.ts > noDoc — non-JSDoc comment shouldn't attach
+    const noDoc = sink
+      .allNodes()
+      .find(
+        (n) =>
+          n.kind === "function" &&
+          String(n.canonical_name).endsWith("documented.ts#noDoc"),
+      )
+    const noDocMeta =
+      ((noDoc?.payload as Record<string, unknown> | undefined)
+        ?.metadata as Record<string, unknown> | undefined) ?? {}
+    expect(noDocMeta.doc).toBeUndefined()
   })
 
   it("emits anonymous default exports as `default` symbols", async () => {
