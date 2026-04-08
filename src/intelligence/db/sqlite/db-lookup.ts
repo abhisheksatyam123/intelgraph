@@ -276,6 +276,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.classesByMethodCount(snapshotId, limit)
       case "find_widely_referenced_types":
         return this.widelyReferencedTypes(snapshotId, limit)
+      case "find_undocumented_exports":
+        return this.undocumentedExports(snapshotId, limit)
       default:
         return []
     }
@@ -1033,6 +1035,52 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find exported symbols that lack a JSDoc comment. Builds on D26
+   * (exported flag) and D59 (JSDoc extraction). Visualizers can use
+   * this for "what's missing documentation" workflows on public APIs.
+   *
+   * Filters:
+   *   - kind IN (function, class, interface)
+   *   - payload.metadata.exported = true
+   *   - payload.metadata.doc IS NULL
+   *
+   * Methods inside classes are excluded — they don't carry exported=true
+   * (their class does), and method-level docs are a separate concern.
+   */
+  private undocumentedExports(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        canonical_name,
+        kind,
+        location
+      FROM graph_nodes
+      WHERE snapshot_id = ?
+        AND kind IN ('function', 'class', 'interface')
+        AND json_extract(payload, '$.metadata.exported') = 1
+        AND json_extract(payload, '$.metadata.doc') IS NULL
+      ORDER BY canonical_name
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "function",
+      canonical_name: obj.canonical_name,
+      caller: null,
+      callee: obj.canonical_name,
+      edge_kind: "contains",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
 
   /**
    * Rank types by the number of DISTINCT modules that reference them.

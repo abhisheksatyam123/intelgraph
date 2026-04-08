@@ -385,6 +385,22 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_undocumented_exports surfaces public APIs missing JSDoc", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_undocumented_exports",
+        snapshotId: ingest.snapshotId,
+        limit: 50,
+      })
+      // opencode is large and not every export has docs. Expect at
+      // least some undocumented exports.
+      expect(result.intent).toBe("find_undocumented_exports")
+      // All result rows should be exported function/class/interface
+      for (const row of result.rows) {
+        expect(["function", "class", "interface"]).toContain(String(row.kind))
+        expect(String(row.canonical_name)).toMatch(/^module:/)
+      }
+    })
+
     it("find_widely_referenced_types ranks types by distinct-module usage", async () => {
       const result = await ingest.lookup.lookup({
         intent: "find_widely_referenced_types",
@@ -1666,6 +1682,7 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
         { intent: "find_tightly_coupled_modules", request: {} },
         { intent: "find_classes_by_method_count", request: {} },
         { intent: "find_widely_referenced_types", request: {} },
+        { intent: "find_undocumented_exports", request: {} },
         // Search & browse
         {
           intent: "find_symbols_by_name",

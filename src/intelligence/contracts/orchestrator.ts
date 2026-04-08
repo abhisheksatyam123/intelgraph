@@ -114,6 +114,8 @@ export const QUERY_INTENTS = [
   "find_classes_by_method_count",
   /** Types used across the most distinct modules — core types of the codebase. */
   "find_widely_referenced_types",
+  /** Exported symbols (functions/classes/interfaces) without JSDoc — documentation gaps. */
+  "find_undocumented_exports",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]
