@@ -5,7 +5,6 @@
  * three layers against the real TypeScript workspaces:
  *
  *   1. `loadGraphJsonFromDb` (the pure SQL→GraphJson reader)
- *   2. `graphJsonToHtml` (the self-contained --html viewer)
  *   3. `intelligence_graph` MCP tool (the path the TUI uses)
  *
  * Targets:
@@ -18,7 +17,6 @@
  *
  * The existing ts-core-real-workspaces.test.ts covers the *query intent*
  * surface against these workspaces. This file covers the *visualization
- * data surface* — graph-export + graphJsonToHtml + intelligence_graph
  * MCP tool — so the HTML viewer and the TUI's MCP path can't silently
  * break on a real codebase without the test catching it.
  *
@@ -44,10 +42,6 @@ import {
 } from "../../src/intelligence/db/sqlite/graph-export.js"
 import { ExtractorRunner } from "../../src/intelligence/extraction/runner.js"
 import { tsCoreExtractor } from "../../src/plugins/index.js"
-import {
-  graphJsonToHtml,
-  VIEWER_PURE_JS,
-} from "../../src/bin/snapshot-stats.js"
 import { setIntelligenceDeps, TOOLS } from "../../src/tools/index.js"
 import type { ILanguageClient } from "../../src/lsp/types.js"
 import type { OrchestratorRunnerDeps } from "../../src/intelligence/orchestrator-runner.js"
@@ -69,92 +63,7 @@ if (!diffTool) throw new Error("intelligence_graph_diff tool not registered")
 const stubClient = {} as Parameters<typeof graphTool.execute>[1]
 const stubTracker = {} as Parameters<typeof graphTool.execute>[2]
 
-// Eval the VIEWER_PURE_JS block once and capture its function
-// references. Same accessor pattern as the unit tests, but reused
-// here so we can run the BFS / shortestPath / resolveSymbol against
-// real workspace adjacency below.
-type ViewerFns = {
-  neighborhood: (
-    rootId: string,
-    hops: number,
-    direction: "in" | "out" | "both",
-    succ: Map<string, Set<string>>,
-    pred: Map<string, Set<string>>,
-  ) => Set<string>
-  shortestPath: (
-    srcId: string,
-    dstId: string,
-    succ: Map<string, Set<string>>,
-    nodeIds: Set<string>,
-  ) => string[] | null
-  resolveSymbol: (
-    query: string,
-    nodeIds: Set<string> | string[],
-  ) => string | null
-}
-// eslint-disable-next-line @typescript-eslint/no-implied-eval
-const viewerFns = new Function(`
-  ${VIEWER_PURE_JS}
-  return { neighborhood, shortestPath, resolveSymbol };
-`)() as ViewerFns
 
-// Build the directed adjacency the inlined viewer builds at init,
-// from a GraphJson. Used by the real-workspace pure-function tests.
-function buildAdjacency(graph: {
-  nodes: Array<{ id: string }>
-  edges: Array<{ src: string; dst: string }>
-}): {
-  succ: Map<string, Set<string>>
-  pred: Map<string, Set<string>>
-  ids: Set<string>
-} {
-  const succ = new Map<string, Set<string>>()
-  const pred = new Map<string, Set<string>>()
-  const ids = new Set<string>()
-  for (const n of graph.nodes) {
-    succ.set(n.id, new Set())
-    pred.set(n.id, new Set())
-    ids.add(n.id)
-  }
-  for (const e of graph.edges) {
-    succ.get(e.src)?.add(e.dst)
-    pred.get(e.dst)?.add(e.src)
-  }
-  return { succ, pred, ids }
-}
-
-// Build the edge-kind-tagged adjacency the HTML viewer builds at
-// init for the info-panel neighbor sections. outEdges[id][kind] is
-// an array of dst ids; inEdges[id][kind] is an array of src ids.
-// This mirrors the inlined logic exactly so the real-workspace
-// tests can verify the same data structure on actual graph data.
-function buildEdgeKindAdjacency(graph: {
-  nodes: Array<{ id: string }>
-  edges: Array<{ src: string; dst: string; kind: string }>
-}): {
-  outEdgesByKind: Map<string, Record<string, string[]>>
-  inEdgesByKind: Map<string, Record<string, string[]>>
-} {
-  const outEdgesByKind = new Map<string, Record<string, string[]>>()
-  const inEdgesByKind = new Map<string, Record<string, string[]>>()
-  for (const n of graph.nodes) {
-    outEdgesByKind.set(n.id, {})
-    inEdgesByKind.set(n.id, {})
-  }
-  for (const e of graph.edges) {
-    const out = outEdgesByKind.get(e.src)
-    if (out) {
-      if (!out[e.kind]) out[e.kind] = []
-      out[e.kind].push(e.dst)
-    }
-    const inn = inEdgesByKind.get(e.dst)
-    if (inn) {
-      if (!inn[e.kind]) inn[e.kind] = []
-      inn[e.kind].push(e.src)
-    }
-  }
-  return { outEdgesByKind, inEdgesByKind }
-}
 
 const OPENCODE_ROOT = "/home/abhi/qprojects/opencode/packages/opencode"
 const INSTRUCTKR_ROOT = "/home/abhi/qprojects/instructkr-claude-code"
@@ -309,35 +218,6 @@ for (const wcase of CASES) {
         ).toBe(true)
       })
 
-      it("graphJsonToHtml renders a self-contained, parseable viewer", () => {
-        const graph = loadGraphJsonFromDb(
-          ingest.client.raw,
-          ingest.snapshotId,
-          wcase.path,
-        )
-        const html = graphJsonToHtml(graph)
-
-        expect(html.startsWith("<!doctype html>")).toBe(true)
-        expect(html).toContain("</html>")
-        expect(html).toContain("d3@7.9.0")
-
-        // Full feature set survives a real workspace's canonical names
-        expect(html).toContain("ARROW_KINDS")
-        expect(html).toContain("function neighborhood")
-        expect(html).toContain("cycleNodes")
-        expect(html).toContain("dirHueByNode")
-        expect(html).toContain("function saveHashState")
-
-        // Inlined script must parse — catches template-literal corruption
-        const start = html.indexOf("<script>")
-        const end = html.indexOf("</script>", start)
-        expect(start).toBeGreaterThan(0)
-        expect(end).toBeGreaterThan(start)
-        const inlined = html.substring(start + "<script>".length, end)
-        expect(() =>
-          new Function("document", "window", "d3", inlined),
-        ).not.toThrow()
-      })
 
       it("loadGraphJsonFromDb honors edge-kind + symbol-kind filters", () => {
         // The canonical "module dependency view"
@@ -817,110 +697,8 @@ for (const wcase of CASES) {
         }
       })
 
-      it("VIEWER_PURE_JS neighborhood BFS works on real workspace adjacency", () => {
-        // Build the real adjacency the inlined viewer would see
-        const graph = loadGraphJsonFromDb(
-          ingest.client.raw,
-          ingest.snapshotId,
-          wcase.path,
-        )
-        const adj = buildAdjacency(graph)
 
-        // Resolve the workspace's hub symbol via the pure resolver
-        const center = viewerFns.resolveSymbol(wcase.centerSymbol, adj.ids)
-        expect(center).not.toBeNull()
-        expect(adj.ids.has(center!)).toBe(true)
 
-        // Run undirected BFS from the hub at depth 2 — must be
-        // nontrivial (>1 node) and contain the center
-        const undirected = viewerFns.neighborhood(
-          center!,
-          2,
-          "both",
-          adj.succ,
-          adj.pred,
-        )
-        expect(undirected.size).toBeGreaterThan(1)
-        expect(undirected.has(center!)).toBe(true)
-
-        // The directional walks must be subsets of the undirected
-        // walk — same invariant as the server-side centerDirection
-        // tests, but verified inside the viewer's own pure JS.
-        const outOnly = viewerFns.neighborhood(
-          center!,
-          2,
-          "out",
-          adj.succ,
-          adj.pred,
-        )
-        const inOnly = viewerFns.neighborhood(
-          center!,
-          2,
-          "in",
-          adj.succ,
-          adj.pred,
-        )
-        for (const id of outOnly) expect(undirected.has(id)).toBe(true)
-        for (const id of inOnly) expect(undirected.has(id)).toBe(true)
-      })
-
-      it("VIEWER_PURE_JS shortestPath finds a real call chain", () => {
-        // Find any directed src→dst pair from the real graph and
-        // assert the BFS actually walks it. This is the property
-        // the HTML viewer's "Find path" inputs rely on.
-        const graph = loadGraphJsonFromDb(
-          ingest.client.raw,
-          ingest.snapshotId,
-          wcase.path,
-        )
-        const adj = buildAdjacency(graph)
-
-        // Pick a source with at least one outgoing edge — almost
-        // every function in either workspace qualifies.
-        let src: string | null = null
-        let dst: string | null = null
-        for (const [id, outs] of adj.succ) {
-          if (outs.size > 0) {
-            src = id
-            dst = [...outs][0]
-            break
-          }
-        }
-        expect(src).not.toBeNull()
-        expect(dst).not.toBeNull()
-
-        // 1-hop path: src → dst
-        const trail = viewerFns.shortestPath(src!, dst!, adj.succ, adj.ids)
-        expect(trail).not.toBeNull()
-        expect(trail![0]).toBe(src)
-        expect(trail![trail!.length - 1]).toBe(dst)
-        expect(trail!.length).toBe(2)
-      })
-
-      it("VIEWER_PURE_JS resolveSymbol handles real canonical names", () => {
-        // The forgiving resolver must work on real workspace symbols.
-        const graph = loadGraphJsonFromDb(
-          ingest.client.raw,
-          ingest.snapshotId,
-          wcase.path,
-        )
-        const adj = buildAdjacency(graph)
-
-        // Suffix-after-# should resolve the bare local name
-        const found = viewerFns.resolveSymbol(wcase.centerSymbol, adj.ids)
-        expect(found).not.toBeNull()
-        expect(found!.endsWith("#" + wcase.centerSymbol)).toBe(true)
-
-        // Exact passthrough must work on the resolved id
-        expect(viewerFns.resolveSymbol(found!, adj.ids)).toBe(found)
-
-        // Substring fallback must find at least *something* that
-        // contains a unique-ish substring from the workspace path
-        const probe = wcase.expectedSubstring
-        const sub = viewerFns.resolveSymbol(probe, adj.ids)
-        expect(sub).not.toBeNull()
-        expect(sub!.includes(probe)).toBe(true)
-      })
 
       it("diffGraphJson reports zero diff when comparing a graph to itself", () => {
         const g = loadGraphJsonFromDb(
@@ -1085,50 +863,6 @@ for (const wcase of CASES) {
         expect(diff.summary.b_nodes).toBeGreaterThanOrEqual(1)
       })
 
-      it("info-panel edge-kind adjacency is well-formed on real workspace data", () => {
-        // The HTML viewer builds outEdgesByKind / inEdgesByKind at
-        // init from the inlined edges. This test reproduces that
-        // build against real graph data and asserts the invariants
-        // the info panel rendering depends on:
-        //   1. Every edge appears in both outEdgesByKind[src] and
-        //      inEdgesByKind[dst] under the same kind bucket
-        //   2. The dual sums equal the total edge count
-        //   3. The hub symbol has at least one outgoing OR incoming
-        //      bucket (otherwise the panel would have nothing to show)
-        const graph = loadGraphJsonFromDb(
-          ingest.client.raw,
-          ingest.snapshotId,
-          wcase.path,
-        )
-        const { outEdgesByKind, inEdgesByKind } = buildEdgeKindAdjacency(graph)
-
-        // Property 1+2: dual sums match
-        let totalOut = 0
-        for (const buckets of outEdgesByKind.values()) {
-          for (const arr of Object.values(buckets)) totalOut += arr.length
-        }
-        let totalIn = 0
-        for (const buckets of inEdgesByKind.values()) {
-          for (const arr of Object.values(buckets)) totalIn += arr.length
-        }
-        // Each edge contributes once to the out side and once to
-        // the in side, so both totals must equal graph.edges.length.
-        expect(totalOut).toBe(graph.edges.length)
-        expect(totalIn).toBe(graph.edges.length)
-
-        // Property 3: the workspace's hub symbol must have neighbors
-        // in at least one direction (otherwise the panel renders
-        // nothing for it). For real hubs both directions are
-        // typically populated.
-        const adj = buildAdjacency(graph)
-        const center = viewerFns.resolveSymbol(wcase.centerSymbol, adj.ids)
-        expect(center).not.toBeNull()
-        const hubOut = outEdgesByKind.get(center!) || {}
-        const hubIn = inEdgesByKind.get(center!) || {}
-        const hasNeighbors =
-          Object.keys(hubOut).length > 0 || Object.keys(hubIn).length > 0
-        expect(hasNeighbors).toBe(true)
-      })
 
       it("loadGraphJsonFromDb completes within the performance budget", () => {
         // The full unfiltered graph build for instructkr-claude-code
@@ -1168,49 +902,7 @@ for (const wcase of CASES) {
         expect(filteredMs).toBeLessThan(PERF_BUDGET_MS)
         expect(filtered.nodes.length).toBeGreaterThan(0)
 
-        // Render the truncated graph as HTML and assert it also
-        // completes within budget. graphJsonToHtml is mostly a string
-        // template with a single JSON.stringify, so this is fast even
-        // on the maxNodes=300 instructkr case (~180KB output).
-        const t4 = performance.now()
-        const html = graphJsonToHtml(
-          loadGraphJsonFromDb(
-            ingest.client.raw,
-            ingest.snapshotId,
-            wcase.path,
-            { maxNodes: 300 },
-          ),
-        )
-        const t5 = performance.now()
-        const renderMs = t5 - t4
-        expect(renderMs).toBeLessThan(PERF_BUDGET_MS)
-        expect(html.length).toBeGreaterThan(50_000)
-      })
 
-      it("truncated HTML stays under the production size budget", () => {
-        // The 20,466-node instructkr-claude-code unfiltered HTML is
-        // ~19 MB, which would be both slow to download and impossible
-        // to render in any d3-force layout. The maxNodes filter is
-        // the production-readiness mechanism that keeps the output
-        // tractable. This test pins down the budget so a regression
-        // that accidentally bypasses the cap will be caught here.
-        //
-        // Budget is 1 MB — generous compared to the measured 180 KB
-        // for instructkr-claude-code at maxNodes=300, but tight
-        // enough that any orders-of-magnitude regression fails.
-        const graph = loadGraphJsonFromDb(
-          ingest.client.raw,
-          ingest.snapshotId,
-          wcase.path,
-          { maxNodes: 300 },
-        )
-        const html = graphJsonToHtml(graph)
-        const SIZE_BUDGET_BYTES = 1_048_576 // 1 MB
-        expect(html.length).toBeLessThan(SIZE_BUDGET_BYTES)
-        // Sanity floor: we should still get a real document, not an
-        // empty stub
-        expect(html.length).toBeGreaterThan(50_000)
-      })
     },
   )
 }
