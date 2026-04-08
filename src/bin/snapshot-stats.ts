@@ -238,6 +238,10 @@ export interface Dashboard {
     read_count: number
     write_count: number
   }>
+  // Phase 3u: god classes by state size (contained field count)
+  top_field_classes: Array<{ name: string; field_count: number }>
+  // Phase 3v: data clumps — field pairs touched by the same methods
+  field_clumps: Array<{ field_a: string; field_b: string; co_occurrence: number }>
 }
 
 export async function buildDashboard(workspace: string): Promise<Dashboard> {
@@ -399,6 +403,16 @@ export async function buildDashboard(workspace: string): Promise<Dashboard> {
       snapshotId,
       limit: 10,
     })
+    const topFieldClasses = await lookup.lookup({
+      intent: "find_classes_by_field_count",
+      snapshotId,
+      limit: 10,
+    })
+    const fieldClumps = await lookup.lookup({
+      intent: "find_field_co_access",
+      snapshotId,
+      limit: 10,
+    })
 
     return {
       workspace,
@@ -457,6 +471,15 @@ export async function buildDashboard(workspace: string): Promise<Dashboard> {
         toucher_count: Number((r as { toucher_count?: number }).toucher_count),
         read_count: Number((r as { read_count?: number }).read_count),
         write_count: Number((r as { write_count?: number }).write_count),
+      })),
+      top_field_classes: topFieldClasses.rows.map((r) => ({
+        name: String(r.canonical_name),
+        field_count: Number((r as { field_count?: number }).field_count),
+      })),
+      field_clumps: fieldClumps.rows.map((r) => ({
+        field_a: String((r as { caller?: string }).caller ?? r.canonical_name),
+        field_b: String((r as { callee?: string }).callee ?? ""),
+        co_occurrence: Number((r as { co_occurrence?: number }).co_occurrence),
       })),
     }
   } finally {
@@ -617,6 +640,22 @@ function printDashboard(d: Dashboard): void {
     }
     console.log()
   }
+  if (d.top_field_classes.length > 0) {
+    console.log("Top god classes by state size:")
+    for (const c of d.top_field_classes) {
+      console.log(`  ${c.field_count.toString().padStart(4)} fields  ${c.name}`)
+    }
+    console.log()
+  }
+  if (d.field_clumps.length > 0) {
+    console.log("Data clumps (field pairs touched together):")
+    for (const cp of d.field_clumps) {
+      console.log(
+        `  ${cp.co_occurrence.toString().padStart(3)}× ${cp.field_a} ↔ ${cp.field_b}`,
+      )
+    }
+    console.log()
+  }
   console.log(line)
 }
 
@@ -764,6 +803,26 @@ export function dashboardToMarkdown(d: Dashboard): string {
       lines.push(
         `| ${f.toucher_count} | ${f.read_count} | ${f.write_count} | \`${f.name}\` |`,
       )
+    }
+    lines.push("")
+  }
+  if (d.top_field_classes.length > 0) {
+    lines.push("## Top god classes by state")
+    lines.push("")
+    lines.push("| fields | class |")
+    lines.push("|---:|---|")
+    for (const c of d.top_field_classes) {
+      lines.push(`| ${c.field_count} | \`${c.name}\` |`)
+    }
+    lines.push("")
+  }
+  if (d.field_clumps.length > 0) {
+    lines.push("## Data clumps")
+    lines.push("")
+    lines.push("| co | field a ↔ field b |")
+    lines.push("|---:|---|")
+    for (const cp of d.field_clumps) {
+      lines.push(`| ${cp.co_occurrence} | \`${cp.field_a}\` ↔ \`${cp.field_b}\` |`)
     }
     lines.push("")
   }

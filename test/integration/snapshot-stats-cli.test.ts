@@ -141,6 +141,9 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(Array.isArray(dashboard.top_field_readers)).toBe(true)
     // Phase 3t: top hot fields
     expect(Array.isArray(dashboard.top_hot_fields)).toBe(true)
+    // Phase 3u + 3v: god classes by state + data clumps
+    expect(Array.isArray(dashboard.top_field_classes)).toBe(true)
+    expect(Array.isArray(dashboard.field_clumps)).toBe(true)
   })
 
   it("Phase 3s: dashboard exposes data-side health metrics", async () => {
