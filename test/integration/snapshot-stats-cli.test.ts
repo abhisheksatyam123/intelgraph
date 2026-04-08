@@ -291,6 +291,19 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(html).toContain(".link.cycle")
     expect(html).toContain(".node.cycle")
 
+    // Directory tinting: the hue function and toggle are wired, and
+    // the per-node hue map is built at init.
+    expect(html).toContain("dirHueByNode")
+    expect(html).toContain("function hashHue")
+    expect(html).toContain('id="tint-toggle"')
+    expect(html).toContain('id="tint-count"')
+
+    // URL hash state: save + load + history.replaceState wiring.
+    expect(html).toContain("function saveHashState")
+    expect(html).toContain("function loadHashState")
+    expect(html).toContain("history.replaceState")
+    expect(html).toContain("URLSearchParams")
+
     // Inlined script must parse as valid JS. Catches the class of bug
     // where a stray backtick inside a comment closes the outer
     // template literal and corrupts the rest of the document.

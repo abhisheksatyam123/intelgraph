@@ -857,6 +857,13 @@ export function graphJsonToHtml(graph: GraphJson): string {
       <div class="count" id="cycle-count">0</div>
     </div>
 
+    <h2>Tint by directory</h2>
+    <div class="legend-item" id="tint-toggle">
+      <div class="swatch" style="background:linear-gradient(90deg,#6ab1ff,#9bd17f,#ffb86b,#c792ea)"></div>
+      <div>color stroke by parent dir</div>
+      <div class="count" id="tint-count">0</div>
+    </div>
+
     <h2>Symbol kinds</h2>
     <div id="kind-legend"></div>
 
@@ -1010,6 +1017,36 @@ document.getElementById("cycle-count").textContent = cycleNodes.size;
 const activeKinds = new Set(data.nodes.map((n) => n.kind));
 const activeEdgeKinds = new Set(links.map((l) => l.kind));
 let cyclesOn = false;
+let tintOn = false;
+
+// Directory tint: hash each node's parent directory to a stable hue
+// in the HSL wheel. Used as the stroke color when "tint by directory"
+// is on, so the kind color (fill) and subsystem cue (stroke) are
+// readable simultaneously. Computed once at init.
+function dirOf(filePath) {
+  if (!filePath) return "";
+  const slash = filePath.lastIndexOf("/");
+  return slash >= 0 ? filePath.substring(0, slash) : "";
+}
+function hashHue(s) {
+  // Simple FNV-1a-style hash → 0..359 hue
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = (h * 16777619) >>> 0;
+  }
+  return h % 360;
+}
+const dirHueByNode = new Map();
+const distinctDirs = new Set();
+for (const n of data.nodes) {
+  const d = dirOf(n.file_path);
+  if (d) {
+    distinctDirs.add(d);
+    dirHueByNode.set(n.id, "hsl(" + hashHue(d) + ",55%,55%)");
+  }
+}
+document.getElementById("tint-count").textContent = distinctDirs.size;
 
 const sim = d3.forceSimulation(data.nodes)
   .force("link", d3.forceLink(links).id((d) => d.id).distance(40).strength(0.5))
@@ -1070,6 +1107,13 @@ function render() {
       "node" + (cyclesOn && cycleNodes.has(d.id) ? " cycle" : ""))
     .attr("r", radiusFor)
     .attr("fill", (d) => colorFor(d.kind, KIND_COLORS, "#a3a8b8"))
+    .attr("stroke", (d) => {
+      // .cycle class wins (set in CSS), then directory tint, then default.
+      if (cyclesOn && cycleNodes.has(d.id)) return null;
+      if (tintOn) return dirHueByNode.get(d.id) || "#000";
+      return null;
+    })
+    .attr("stroke-width", (d) => (tintOn && dirHueByNode.has(d.id) ? 1.5 : 0.5))
     .on("click", onClick)
     .on("mouseover", onHover)
     .call(
@@ -1110,14 +1154,74 @@ function onClick(ev, d) {
   focused = focused === d.id ? null : d.id;
   applyFocus();
   showInfo(d);
+  saveHashState();
 }
 function onHover(ev, d) {
   if (!focused) showInfo(d);
 }
-svg.on("click", () => { focused = null; applyFocus(); clearInfo(); });
+svg.on("click", () => { focused = null; applyFocus(); clearInfo(); saveHashState(); });
 window.addEventListener("keydown", (ev) => {
-  if (ev.key === "Escape") { focused = null; applyFocus(); clearInfo(); }
+  if (ev.key === "Escape") { focused = null; applyFocus(); clearInfo(); saveHashState(); }
 });
+
+// ── URL hash state ──────────────────────────────────────────────────────────
+// The viewer persists discrete UI state (focused node, hop depth, the
+// cycle/tint toggles, and the active kind/edge filters) into the URL
+// hash so users can bookmark or share specific views. The continuous
+// zoom transform is excluded — it changes too often to be useful in
+// the URL bar and would noisily push history entries.
+function saveHashState() {
+  const params = new URLSearchParams();
+  if (focused) params.set("f", focused);
+  if (hopDepth !== 1) params.set("h", String(hopDepth));
+  if (cyclesOn) params.set("c", "1");
+  if (tintOn) params.set("t", "1");
+  // Only encode kind filters when they don't match the full set
+  const allKinds = new Set(data.nodes.map((n) => n.kind));
+  if (activeKinds.size !== allKinds.size) {
+    params.set("k", [...activeKinds].sort().join(","));
+  }
+  const allEdgeKinds = new Set(links.map((l) => l.kind));
+  if (activeEdgeKinds.size !== allEdgeKinds.size) {
+    params.set("e", [...activeEdgeKinds].sort().join(","));
+  }
+  const next = params.toString();
+  // history.replaceState avoids spamming the back button with every click
+  if (next !== (window.location.hash || "").slice(1)) {
+    history.replaceState(null, "", next ? "#" + next : window.location.pathname);
+  }
+}
+function loadHashState() {
+  const raw = (window.location.hash || "").slice(1);
+  if (!raw) return;
+  const params = new URLSearchParams(raw);
+  const f = params.get("f");
+  if (f && nodeById.has(f)) focused = f;
+  const h = Number(params.get("h"));
+  if (h >= 1 && h <= 4) {
+    hopDepth = h;
+    document.getElementById("hop-slider").value = String(h);
+    document.getElementById("hop-value").textContent = String(h);
+  }
+  if (params.get("c") === "1") {
+    cyclesOn = true;
+    document.getElementById("cycle-toggle").classList.remove("disabled");
+  }
+  if (params.get("t") === "1") {
+    tintOn = true;
+    document.getElementById("tint-toggle").classList.remove("disabled");
+  }
+  const k = params.get("k");
+  if (k) {
+    activeKinds.clear();
+    for (const part of k.split(",")) if (part) activeKinds.add(part);
+  }
+  const e = params.get("e");
+  if (e) {
+    activeEdgeKinds.clear();
+    for (const part of e.split(",")) if (part) activeEdgeKinds.add(part);
+  }
+}
 
 // Hop-depth slider — re-applies focus on change so the highlighted
 // neighborhood expands/contracts live.
@@ -1127,6 +1231,7 @@ hopSlider.addEventListener("input", (ev) => {
   hopDepth = Number(ev.target.value);
   hopValue.textContent = String(hopDepth);
   if (focused) applyFocus();
+  saveHashState();
 });
 
 // Cycle-highlight toggle — re-renders so node + link classes pick up
@@ -1137,9 +1242,20 @@ cycleToggle.addEventListener("click", () => {
   cyclesOn = !cyclesOn;
   cycleToggle.classList.toggle("disabled", !cyclesOn);
   render();
+  saveHashState();
 });
 // Start in the disabled visual state so users see the count first
 cycleToggle.classList.add("disabled");
+
+// Directory-tint toggle — same shape as the cycle toggle.
+const tintToggle = document.getElementById("tint-toggle");
+tintToggle.addEventListener("click", () => {
+  tintOn = !tintOn;
+  tintToggle.classList.toggle("disabled", !tintOn);
+  render();
+  saveHashState();
+});
+tintToggle.classList.add("disabled");
 
 function applyFocus() {
   if (!focused) {
@@ -1205,11 +1321,13 @@ function buildKindLegend() {
       '<div class="swatch" style="background:' + colorFor(kind, KIND_COLORS, "#a3a8b8") + '"></div>' +
       '<div>' + escapeHtml(kind) + '</div>' +
       '<div class="count">' + n + '</div>';
+    if (!activeKinds.has(kind)) div.classList.add("disabled");
     div.onclick = () => {
       if (activeKinds.has(kind)) activeKinds.delete(kind);
       else activeKinds.add(kind);
       div.classList.toggle("disabled", !activeKinds.has(kind));
       render();
+      saveHashState();
     };
     container.appendChild(div);
   }
@@ -1227,24 +1345,31 @@ function buildEdgeLegend() {
       '<div class="swatch line" style="background:' + colorFor(kind, EDGE_COLORS, "#5a6378") + '"></div>' +
       '<div>' + escapeHtml(kind) + '</div>' +
       '<div class="count">' + n + '</div>';
+    if (!activeEdgeKinds.has(kind)) div.classList.add("disabled");
     div.onclick = () => {
       if (activeEdgeKinds.has(kind)) activeEdgeKinds.delete(kind);
       else activeEdgeKinds.add(kind);
       div.classList.toggle("disabled", !activeEdgeKinds.has(kind));
       render();
+      saveHashState();
     };
     container.appendChild(div);
   }
 }
+// Restore any persisted state from the URL hash before building the
+// legends and the first render — so the legends pick up the right
+// disabled state and the canvas immediately shows the saved view.
+loadHashState();
+
 buildKindLegend();
 buildEdgeLegend();
 
 // Search
 document.getElementById("search").addEventListener("input", (ev) => {
   const q = ev.target.value.trim().toLowerCase();
-  if (!q) { focused = null; applyFocus(); return; }
+  if (!q) { focused = null; applyFocus(); saveHashState(); return; }
   const hit = data.nodes.find((n) => n.id.toLowerCase().includes(q));
-  if (hit) { focused = hit.id; applyFocus(); showInfo(hit); }
+  if (hit) { focused = hit.id; applyFocus(); showInfo(hit); saveHashState(); }
 });
 
 window.addEventListener("resize", () => {
@@ -1253,6 +1378,11 @@ window.addEventListener("resize", () => {
 });
 
 render();
+if (focused) {
+  applyFocus();
+  const node = nodeById.get(focused);
+  if (node) showInfo(node);
+}
 </script>
 </body>
 </html>
