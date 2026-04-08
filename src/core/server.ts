@@ -30,7 +30,7 @@ export async function createMcpServer(
   setUnifiedBackend(deps.backend)
 
   const server = new McpServer({
-    name: "clangd-mcp",
+    name: "intelgraph",
     version: "0.1.0",
   })
 
@@ -99,7 +99,7 @@ export async function startStdio(deps: BackendDeps): Promise<void> {
 
   await server.connect(transport)
   log("INFO", "Stdio MCP server connected and listening", { pid: process.pid })
-  process.stderr.write("[clangd-mcp] Listening on stdio\n")
+  process.stderr.write("[intelgraph] Listening on stdio\n")
 }
 
 // ── HTTP/StreamableHTTP transport (multi-session) ─────────────────────────────

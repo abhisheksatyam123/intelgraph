@@ -1,13 +1,13 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@opencode-ai/clangd-mcp",
+  "name": "@opencode-ai/intelgraph",
   "version": "0.2.0",
-  "description": "Standalone MCP server bridging clangd LSP to OpenCode agents",
+  "description": "Plugin-based code intelligence graph: extracts, queries, and visualizes structural facts about C/C++ and TypeScript codebases. Speaks MCP and ships a CLI.",
   "type": "module",
   "license": "MIT",
   "private": true,
   "bin": {
-    "clangd-mcp": "./dist/index.js"
+    "intelgraph": "./dist/index.js"
   },
   "scripts": {
     "build": "/usr2/adagur/.bun/bin/bun build ./src/index.ts --outfile ./dist/index.js --target node --format esm --external better-sqlite3 && /usr2/adagur/.bun/bin/bun build ./src/bridge/index.ts --outfile ./dist/bridge.js --target node --format esm",

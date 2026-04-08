@@ -1,8 +1,8 @@
-# clangd-mcp Configuration Guide
+# intelgraph Configuration Guide
 
 ## Overview
 
-All clangd-mcp configuration is stored in a single file: **`.clangd-mcp.json`** at your workspace root.
+All intelgraph configuration is stored in a single file: **`.clangd-mcp.json`** at your workspace root. The filename retains the legacy `clangd-mcp` prefix for backwards compatibility with existing workspaces — the project was renamed but the config file path was kept stable so users don't need to migrate.
 
 This file serves as **persistent memory** across sessions, storing:
 - Core clangd settings
@@ -57,7 +57,7 @@ See `.clangd-mcp.example.json` for all available options.
 }
 ```
 
-- **`enabled`**: Enable/disable clangd-mcp (default: `true`)
+- **`enabled`**: Enable/disable intelgraph (default: `true`)
 - **`clangd`**: Path to clangd binary (default: `"clangd"` from PATH)
 - **`args`**: Extra arguments passed to clangd
 
@@ -97,7 +97,7 @@ See `.clangd-mcp.example.json` for all available options.
 }
 ```
 
-**Do not edit manually** - managed automatically by clangd-mcp.
+**Do not edit manually** - managed automatically by intelgraph.
 
 ### Index State (Auto-managed)
 

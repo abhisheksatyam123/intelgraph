@@ -1,25 +1,41 @@
-# clangd-mcp
+# intelgraph
 
-`clangd-mcp` is a standalone MCP (Model Context Protocol) server that exposes
-clangd navigation and analysis tools to OpenCode.
+`intelgraph` is a plugin-based code intelligence graph: it extracts structural
+facts about your codebase (symbols, calls, imports, type references, inheritance,
+JSX components, …) into an embedded SQLite graph and exposes them through 38+
+query intents over MCP and a built-in CLI.
 
-Its main advantage over a short-lived built-in LSP process is persistence:
-clangd can stay alive across OpenCode restarts, keep its background index warm,
-and serve multiple MCP sessions for the same workspace.
+Two extractor plugins ship today:
+
+- **`clangd-core`** for C/C++, backed by a persistent clangd LSP daemon. Started
+  life as the only thing this project did — hence the legacy `clangd-mcp` config
+  file names you'll see referenced below.
+- **`ts-core`** for TypeScript / JavaScript / JSX / TSX, using `tree-sitter`
+  with no LSP required. Produces a richly annotated graph with cross-file call
+  resolution, type references from signatures and bodies, JSX component edges,
+  inheritance, and 17+ resolution kinds per call edge.
+
+Visualization tools (such as `tui-relation-window`) consume the query layer
+over MCP. The same query intents are also exposed by `npm run snapshot:stats`
+which prints a workspace dashboard for any TS or C/C++ project.
 
 ## What it does
 
-- starts or reuses a workspace-scoped clangd service
-- exposes clangd capabilities as MCP tools
-- keeps background indexing alive across short-lived frontend processes
+- starts or reuses a workspace-scoped clangd service for C/C++ extraction
+- runs the ts-core tree-sitter extractor for TypeScript/JS workspaces
+- writes facts into an embedded SQLite graph (`.clangd-mcp/intelligence.db`
+  by default; the directory name is legacy and stays for backwards compat)
+- exposes 38+ structural query intents as MCP tools (`intelligence_query`)
 - supports direct stdio mode, standalone HTTP mode, and the default stdio proxy
   to a detached HTTP daemon
+- ships a `snapshot:stats` CLI that prints a per-workspace dashboard in text,
+  JSON, or markdown
 
 ## Runtime modes
 
 ### Default: stdio proxy to detached HTTP daemon
 
-With no transport flags, `clangd-mcp` starts as a short-lived stdio MCP server
+With no transport flags, `intelgraph` starts as a short-lived stdio MCP server
 that first ensures a detached HTTP daemon is already running for the workspace,
 then forwards all tool calls to it.
 
@@ -64,7 +80,7 @@ Minimal recommended setup:
       "type": "local",
       "command": [
         "bun",
-        "/path/to/clangd-mcp/dist/index.js",
+        "/path/to/intelgraph/dist/index.js",
         "--root",
         "/path/to/your/workspace",
         "--clangd",
@@ -86,7 +102,7 @@ Notes:
 
 ### 3. Start OpenCode
 
-OpenCode will launch `clangd-mcp` automatically when the MCP entry is enabled.
+OpenCode will launch `intelgraph` automatically when the MCP entry is enabled.
 
 ## Tool surface
 
@@ -189,7 +205,7 @@ OpenCode / MCP client
         |
         | stdio MCP or HTTP MCP
         v
-clangd-mcp frontend
+intelgraph frontend
         |
         | shared LSP client
         v
@@ -256,8 +272,8 @@ For large codebases you may still prefer to keep a manually launched server in
 `tmux`:
 
 ```bash
-tmux new-session -d -s clangd-mcp \
-  "bun /path/to/clangd-mcp/dist/index.js --port 7777 --root /path/to/workspace"
+tmux new-session -d -s intelgraph \
+  "bun /path/to/intelgraph/dist/index.js --port 7777 --root /path/to/workspace"
 ```
 
 ## Development

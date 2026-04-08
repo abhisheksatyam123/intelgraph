@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * index.ts — Entry point for clangd-mcp.
+ * index.ts — Entry point for intelgraph (legacy package name: clangd-mcp).
  *
  * Configuration is read from a workspace-level `.clangd-mcp.json` file located
  * at the working directory (i.e. the project root when launched by OpenCode).
@@ -91,7 +91,7 @@ async function main(): Promise<void> {
 
   // Respect the enabled flag in the workspace config
   if (ws.enabled === false) {
-    process.stderr.write("[clangd-mcp] Disabled by workspace config (.clangd-mcp.json)\n")
+    process.stderr.write("[intelgraph] Disabled by workspace config (.clangd-mcp.json)\n")
     process.exit(0)
   }
 
@@ -117,7 +117,7 @@ async function main(): Promise<void> {
       : cli.httpDaemonMode
 
   // ── Initialize logger FIRST so all subsequent messages go to the log file ──
-  initLogger({ component: "clangd-mcp" })
+  initLogger({ component: "intelgraph" })
 
   // ── Intelligence backend auto-init (no-op when env vars not set) ────────────
   // Inject env vars from workspace config intelligenceLocal.env before init.
@@ -181,7 +181,7 @@ async function main(): Promise<void> {
         ? `http (port ${port})`
         : "stdio (single-client debug)"
 
-  log("INFO", "clangd-mcp starting", {
+  log("INFO", "intelgraph starting", {
     pid: process.pid,
     cwd,
     root,
