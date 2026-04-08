@@ -2287,3 +2287,198 @@ describe("intelligence_query MCP tool — find_top_field_writers/readers (Phase 
     }
   })
 })
+
+// ── Phase 3p: find_unused_fields — dead-state detector ──────────────────────
+//
+// Data-side analog of find_dead_exports. Finds fields with zero
+// incoming reads_field/writes_field edges — refactor cleanup
+// targets where the only consumer was removed but the field
+// declaration was left behind.
+
+describe("intelligence_query MCP tool — find_unused_fields (Phase 3p)", () => {
+  it("returns the field that nobody touches and excludes the touched ones", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3p-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3p" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      // touched is read by getValue. ignored has no readers/writers
+      // anywhere — that's the orphan we want to surface.
+      writeFileSync(
+        join(tempRoot, "src", "model.ts"),
+        `export class Cell {
+  touched = 0
+  ignored = 0
+  getValue(): number {
+    return this.touched
+  }
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3p",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const raw = await tool!.execute(
+        {
+          intent: "find_unused_fields",
+          snapshotId,
+          limit: 50,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const res = JSON.parse(raw) as FlatResponse
+      expect(res.status).toBe("hit")
+      expect(res.data.nodes.length).toBeGreaterThan(0)
+      const names = res.data.nodes.map((n) => String(n.canonical_name))
+      // ignored must show up; touched must NOT
+      expect(names.some((n) => n.endsWith("#Cell.ignored"))).toBe(true)
+      expect(names.some((n) => n.endsWith("#Cell.touched"))).toBe(false)
+      // Every returned node has kind=field
+      for (const node of res.data.nodes) {
+        expect(node.kind).toBe("field")
+      }
+
+      client.close()
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+
+  it("returns no rows when every field has at least one reader or writer", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3p-clean-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3p-clean" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      writeFileSync(
+        join(tempRoot, "src", "clean.ts"),
+        `export class Clean {
+  count = 0
+  inc(): void { this.count = this.count + 1 }
+  get(): number { return this.count }
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3p-clean",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const raw = await tool!.execute(
+        {
+          intent: "find_unused_fields",
+          snapshotId,
+          limit: 50,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const res = JSON.parse(raw) as FlatResponse
+      // count is read AND written → no unused fields
+      expect(res.data.nodes.length).toBe(0)
+
+      client.close()
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+})

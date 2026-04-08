@@ -262,6 +262,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.topFieldAccessors(snapshotId, "writes_field", limit)
       case "find_top_field_readers":
         return this.topFieldAccessors(snapshotId, "reads_field", limit)
+      case "find_unused_fields":
+        return this.unusedFields(snapshotId, limit)
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
       case "find_top_imported_modules":
@@ -3141,6 +3143,67 @@ export class SqliteDbLookup implements DbLookupRepository {
       // Alias for the viewer's hub-panel renderer (see Phase 3m)
       incoming_count: Number(obj.field_count ?? 0),
       edge_kind: edgeKind,
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
+
+  /**
+   * Phase 3p: data-side analog of find_dead_exports. Finds fields
+   * with zero incoming reads_field/writes_field edges — "dead
+   * state" left over from refactors that removed the only
+   * consumer. Common anti-pattern in evolving codebases: the field
+   * still exists in the class declaration, but no method touches
+   * it anywhere in the snapshot.
+   *
+   * Returns one row per orphan field with the canonical name,
+   * the parent class via the contains edge, and the source
+   * location so the visualizer can render a refactor-target list
+   * symmetric to the existing dead-export view.
+   *
+   * Includes the parent class name in the row metadata so callers
+   * don't have to make a second query — the most useful "where is
+   * this dead field" answer is the class that declares it.
+   */
+  private unusedFields(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        f.canonical_name AS canonical_name,
+        f.kind AS kind,
+        f.location AS location,
+        parent.canonical_name AS owning_class
+      FROM graph_nodes f
+      LEFT JOIN graph_edges contains
+        ON contains.snapshot_id = f.snapshot_id
+        AND contains.edge_kind = 'contains'
+        AND contains.dst_node_id = f.node_id
+      LEFT JOIN graph_nodes parent
+        ON parent.snapshot_id = contains.snapshot_id
+        AND parent.node_id = contains.src_node_id
+      WHERE f.snapshot_id = ?
+        AND f.kind = 'field'
+        AND NOT EXISTS (
+          SELECT 1 FROM graph_edges access
+          WHERE access.snapshot_id = f.snapshot_id
+            AND access.dst_node_id = f.node_id
+            AND access.edge_kind IN ('reads_field', 'writes_field')
+        )
+      ORDER BY f.canonical_name ASC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "field",
+      canonical_name: obj.canonical_name,
+      owning_class: obj.owning_class ?? null,
+      edge_kind: "unused_field",
       confidence: 1,
       derivation: "clangd",
       file_path: extractFilePath(obj.location),

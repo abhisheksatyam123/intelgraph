@@ -108,6 +108,8 @@ export function mapIntentToArray(intent: QueryIntent): RelationArrayName {
     // Phase 3o: top APIs ranked by distinct field writes / reads
     find_top_field_writers: "structures",
     find_top_field_readers: "structures",
+    // Phase 3p: dead-state detector — fields with no readers/writers
+    find_unused_fields: "structures",
   }
 
   return mapping[intent] || "uses"

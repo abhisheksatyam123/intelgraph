@@ -183,6 +183,11 @@ export const QUERY_INTENTS = [
   //              most state".
   "find_top_field_writers",
   "find_top_field_readers",
+  // ── Phase 3p: data-side analog of find_dead_exports. Finds
+  //              fields with zero incoming reads_field/writes_field
+  //              edges — "dead state" left over from refactors that
+  //              removed the only consumer.
+  "find_unused_fields",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

@@ -1257,6 +1257,49 @@ for (const wcase of CASES) {
         expect(result.rows.some((r) => Number(r.hop_distance) > 0)).toBe(true)
       })
 
+      // ── Phase 3p: find_unused_fields on real workspace data ────
+      it("phase 3p: find_unused_fields surfaces dead-state candidates", async () => {
+        // Real TS workspaces always have some unused fields — old
+        // refactor leftovers, optional config that nobody enables,
+        // class properties exposed for tests but never read at
+        // runtime. Assert the SQL works without committing to a
+        // specific minimum count.
+        const result = await ingest.lookup.lookup({
+          intent: "find_unused_fields",
+          snapshotId: ingest.snapshotId,
+          limit: 50,
+        })
+        for (const row of result.rows) {
+          expect(row.kind).toBe("field")
+          expect(row.edge_kind).toBe("unused_field")
+          // owning_class may be null for top-level fields without a
+          // contains parent — both shapes are acceptable
+          if (row.owning_class !== null && row.owning_class !== undefined) {
+            expect(typeof row.owning_class).toBe("string")
+          }
+          // canonical_name must be a non-empty string
+          expect(typeof row.canonical_name).toBe("string")
+          expect(String(row.canonical_name).length).toBeGreaterThan(0)
+        }
+        // Cross-check: every unused field must NOT appear as a dst
+        // of any reads_field/writes_field edge — the contract that
+        // makes "unused" mean what it says.
+        if (result.rows.length > 0) {
+          const sample = String(result.rows[0].canonical_name)
+          const accessCount = ingest.client.raw
+            .prepare(
+              `SELECT COUNT(*) AS n FROM graph_edges e
+               INNER JOIN graph_nodes f
+                 ON e.dst_node_id = f.node_id AND e.snapshot_id = f.snapshot_id
+               WHERE e.snapshot_id = ?
+                 AND e.edge_kind IN ('reads_field', 'writes_field')
+                 AND f.canonical_name = ?`,
+            )
+            .get(ingest.snapshotId, sample) as { n: number }
+          expect(accessCount.n).toBe(0)
+        }
+      })
+
       // ── Phase 3o: find_top_field_writers / readers on real data ──
       it("phase 3o: find_top_field_writers ranks the top mutators", async () => {
         const result = await ingest.lookup.lookup({
