@@ -365,5 +365,54 @@ describe.skipIf(!existsSync(MARKDOWN_OXIDE))(
         expect(["field", "enum_variant"]).toContain(String(row.kind))
       }
     })
+
+    it("phase 3g: rust reads_field on real markdown-oxide data + field-access intents work both ways", async () => {
+      // markdown-oxide is read-heavy LSP code — phase 2c smoke test
+      // showed 48 reads_field, 0 writes_field. Floor: at least 30
+      // reads survive on real rust data.
+      const reads = ingest.client.raw
+        .prepare(
+          `SELECT src.canonical_name AS src, dst.canonical_name AS dst
+           FROM graph_edges e
+           INNER JOIN graph_nodes src
+             ON e.src_node_id = src.node_id AND src.snapshot_id = e.snapshot_id
+           INNER JOIN graph_nodes dst
+             ON e.dst_node_id = dst.node_id AND dst.snapshot_id = e.snapshot_id
+           WHERE e.snapshot_id = ? AND e.edge_kind = 'reads_field'
+           LIMIT 50`,
+        )
+        .all(ingest.snapshotId) as Array<{ src: string; dst: string }>
+      expect(reads.length).toBeGreaterThan(30)
+
+      // Take a sample read and verify both directions of the
+      // field-access intents on real rust data.
+      const sample = reads[0]
+      const apiReads = await ingest.lookup.lookup({
+        intent: "find_api_field_reads",
+        snapshotId: ingest.snapshotId,
+        apiName: sample.src,
+        limit: 50,
+      })
+      expect(apiReads.hit).toBe(true)
+      expect(
+        apiReads.rows.some((r) => String(r.canonical_name) === sample.dst),
+      ).toBe(true)
+
+      const fieldReaders = await ingest.lookup.lookup({
+        intent: "find_field_readers",
+        snapshotId: ingest.snapshotId,
+        apiName: sample.dst,
+        limit: 50,
+      })
+      expect(fieldReaders.hit).toBe(true)
+      expect(
+        fieldReaders.rows.some(
+          (r) =>
+            String(r.canonical_name) === sample.src ||
+            String(r.reader) === sample.src ||
+            String(r.caller) === sample.src,
+        ),
+      ).toBe(true)
+    })
   },
 )

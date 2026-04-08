@@ -1029,6 +1029,88 @@ for (const wcase of CASES) {
           expect(row.edge_kind).toBe("aggregates")
         }
       })
+
+      it("phase 3g: field-access intents work on real workspace data", async () => {
+        // Pick any method that has at least one writes_field or
+        // reads_field edge, then query both directions.
+        const graph = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        // Find the first method with a writes_field outgoing edge
+        const writes = graph.edges.filter((e) => e.kind === "writes_field")
+        const reads = graph.edges.filter((e) => e.kind === "reads_field")
+        if (writes.length === 0 && reads.length === 0) return // skip
+
+        // Pick a writer method + the field it writes
+        const sampleWrite = writes[0]
+        if (sampleWrite) {
+          // 1. find_api_field_writes(method) → its target field
+          const apiWrites = await ingest.lookup.lookup({
+            intent: "find_api_field_writes",
+            snapshotId: ingest.snapshotId,
+            apiName: sampleWrite.src,
+            limit: 50,
+          })
+          expect(apiWrites.hit).toBe(true)
+          expect(
+            apiWrites.rows.some(
+              (r) => String(r.canonical_name) === sampleWrite.dst,
+            ),
+          ).toBe(true)
+
+          // 2. find_field_writers(field) → must include the method
+          const fieldWriters = await ingest.lookup.lookup({
+            intent: "find_field_writers",
+            snapshotId: ingest.snapshotId,
+            apiName: sampleWrite.dst,
+            limit: 50,
+          })
+          expect(fieldWriters.hit).toBe(true)
+          expect(
+            fieldWriters.rows.some(
+              (r) =>
+                String(r.canonical_name) === sampleWrite.src ||
+                String(r.writer) === sampleWrite.src ||
+                String(r.caller) === sampleWrite.src,
+            ),
+          ).toBe(true)
+        }
+
+        // Same shape for reads
+        const sampleRead = reads[0]
+        if (sampleRead) {
+          const apiReads = await ingest.lookup.lookup({
+            intent: "find_api_field_reads",
+            snapshotId: ingest.snapshotId,
+            apiName: sampleRead.src,
+            limit: 50,
+          })
+          expect(apiReads.hit).toBe(true)
+          expect(
+            apiReads.rows.some(
+              (r) => String(r.canonical_name) === sampleRead.dst,
+            ),
+          ).toBe(true)
+
+          const fieldReaders = await ingest.lookup.lookup({
+            intent: "find_field_readers",
+            snapshotId: ingest.snapshotId,
+            apiName: sampleRead.dst,
+            limit: 50,
+          })
+          expect(fieldReaders.hit).toBe(true)
+          expect(
+            fieldReaders.rows.some(
+              (r) =>
+                String(r.canonical_name) === sampleRead.src ||
+                String(r.reader) === sampleRead.src ||
+                String(r.caller) === sampleRead.src,
+            ),
+          ).toBe(true)
+        }
+      })
     },
   )
 }
