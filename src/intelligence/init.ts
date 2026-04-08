@@ -17,6 +17,7 @@ import type { ILanguageClient } from "../lsp/types.js"
 import { collectIndirectCallers } from "../tools/indirect-callers.js"
 import { BUILT_IN_EXTRACTORS } from "../plugins/index.js"
 import { join } from "node:path"
+import { existsSync } from "node:fs"
 
 // ── Module-level backend storage for graceful shutdown ──────────────────────
 let _backend: { close: () => Promise<void> } | null = null
@@ -33,6 +34,13 @@ export async function shutdownIntelligenceBackend(): Promise<void> {
   await b.close()
 }
 
+function resolveDefaultDbPath(): string {
+  const newPath = join(".intelgraph", "intelligence.db")
+  const legacyPath = join(".clangd-mcp", "intelligence.db")
+  if (existsSync(legacyPath) && !existsSync(newPath)) return legacyPath
+  return newPath
+}
+
 export async function initIntelligenceBackend(
   enrichers?: {
     clangdEnricher?: ClangdEnricher
@@ -40,8 +48,12 @@ export async function initIntelligenceBackend(
   },
   lspClient?: LspClientForExtraction,
 ): Promise<boolean> {
+  // Resolve the SQLite DB path. INTELLIGENCE_DB_PATH wins; otherwise
+  // prefer .intelgraph/intelligence.db, falling back to the legacy
+  // .clangd-mcp/intelligence.db if it already exists in the workspace.
+  // Fresh installs land on the new directory.
   const sqliteDbPath =
-    process.env.INTELLIGENCE_DB_PATH ?? join(".clangd-mcp", "intelligence.db")
+    process.env.INTELLIGENCE_DB_PATH ?? resolveDefaultDbPath()
 
   const noopEnricher = {
     source: "clangd" as const,

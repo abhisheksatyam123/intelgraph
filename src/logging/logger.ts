@@ -31,10 +31,16 @@ export class Logger {
     this.component = options.component
     this.logLevel = options.logLevel ?? LogLevel.INFO
 
-    // Setup file logger
+    // Setup file logger. Prefers intelgraph.log; falls back to the
+    // legacy clangd-mcp.log if it already exists in the same dir.
+    // This keeps active tail/log analysis streams from breaking
+    // mid-session when an upgraded binary starts.
     if (options.enableFile !== false) {
       const logDir = this.resolveLogDir(options.logDir)
-      const logFile = path.join(logDir, "clangd-mcp.log")
+      const newLog = path.join(logDir, "intelgraph.log")
+      const legacyLog = path.join(logDir, "clangd-mcp.log")
+      const logFile =
+        existsSync(legacyLog) && !existsSync(newLog) ? legacyLog : newLog
       this.fileLogger = new FileLogger({ filePath: logFile })
     }
 
