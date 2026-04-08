@@ -396,6 +396,27 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
           }
         }
 
+        // Generic constraint references: `<T extends Bar>` should
+        // emit a references_type edge from this declaration to Bar.
+        // Applies to function, method, class, interface, typedef.
+        if (
+          kind === "function" ||
+          kind === "method" ||
+          kind === "class" ||
+          kind === "interface" ||
+          kind === "typedef"
+        ) {
+          for (const ref of extractGenericConstraintReferences(
+            node,
+            canonicalName,
+            resolver,
+            moduleNodeName,
+            file,
+          )) {
+            yield ctx.edge({ payload: ref })
+          }
+        }
+
         // Class field and interface property type references. Emit one
         // references_type edge per resolved type from the class/interface
         // FQ name. Built-ins (predefined_type) are auto-dropped because
@@ -1307,6 +1328,81 @@ function extractTypeReferencesFromAnnotations(
           resolved: true,
           resolutionKind: resolved.kind,
           typeName,
+        },
+      })
+    }
+  }
+  return out
+}
+
+/**
+ * Walk a declaration's type_parameters child for generic constraints
+ * and emit a references_type edge for each constraint type that
+ * resolves through the FileResolver.
+ *
+ * AST shape:
+ *   type_parameters
+ *     └─ type_parameter
+ *         ├─ type_identifier (the parameter name like T)
+ *         └─ constraint
+ *             └─ type_identifier (the constraint type like Bar)
+ *                 OR
+ *             └─ generic_type → type_identifier+ (e.g. Promise<X>)
+ *
+ * Built-in types are dropped (predefined_type, not type_identifier).
+ * The parameter name itself is collected into a skip-set so a
+ * constraint that references another generic param of the same
+ * declaration doesn't create a self-loop edge.
+ */
+function extractGenericConstraintReferences(
+  declNode: TsNode,
+  thisFqName: string,
+  resolver: FileResolver,
+  moduleNodeName: string,
+  file: string,
+): Array<TypeRefEdgePayload> {
+  const params = firstNamedChildOfType(declNode, "type_parameters")
+  if (!params) return []
+
+  // Collect parameter names so a constraint can't refer to its own
+  // declaration's params (those would resolve falsely).
+  const paramNames = new Set<string>()
+  for (let i = 0; i < params.namedChildCount; i++) {
+    const tparam = params.namedChild(i)
+    if (!tparam || tparam.type !== "type_parameter") continue
+    const id = firstNamedChildOfType(tparam, "type_identifier")
+    if (id) paramNames.add(id.text)
+  }
+
+  const out: TypeRefEdgePayload[] = []
+  const seen = new Set<string>()
+
+  for (let i = 0; i < params.namedChildCount; i++) {
+    const tparam = params.namedChild(i)
+    if (!tparam || tparam.type !== "type_parameter") continue
+    const constraint = firstNamedChildOfType(tparam, "constraint")
+    if (!constraint) continue
+    for (const typeName of namedDescendantTexts(constraint, "type_identifier")) {
+      if (paramNames.has(typeName)) continue
+      if (seen.has(typeName)) continue
+      const resolved = resolveTypeName(typeName, resolver, moduleNodeName)
+      if (!resolved) continue
+      seen.add(typeName)
+      out.push({
+        edgeKind: "references_type",
+        srcSymbolName: thisFqName,
+        dstSymbolName: resolved.name,
+        confidence: 0.95,
+        derivation: "clangd",
+        sourceLocation: {
+          sourceFilePath: file,
+          sourceLineNumber: constraint.startPosition.row + 1,
+        },
+        metadata: {
+          resolved: true,
+          resolutionKind: resolved.kind,
+          typeName,
+          genericConstraint: true,
         },
       })
     }

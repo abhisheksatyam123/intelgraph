@@ -228,6 +228,12 @@ export function* genCaller() {
   yield* Greeter.makeFormal()
 }
 
+// Round D58: generic constraints — '<T extends Greeter>' should
+// emit a references_type edge from the function to Greeter.
+export function withConstraint<T extends Greeter>(g: T): T {
+  return g
+}
+
 // Round D35: typed parameter on an inline arrow inside a higher-order
 // call. The arrow's 'g' param should resolve via paramTypeStack so
 // 'g.greet()' becomes a var-member to Greeter.greet.
@@ -1016,6 +1022,33 @@ describe("ts-core plugin — extraction", () => {
         stripPrefix(e.dst_node_id).endsWith("module-a.ts#Greeter.greet"),
     )
     expect(paramMember).toBeDefined()
+  })
+
+  it("emits references_type edges for generic constraints", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    const refEdges = sink
+      .allEdges()
+      .filter((e) => e.edge_kind === "references_type")
+    // withConstraint<T extends Greeter> should reference Greeter
+    const fromWithConstraint = refEdges.find(
+      (e) =>
+        String(e.src_node_id).endsWith("namespace-fixture.ts#withConstraint") &&
+        (e.metadata as { genericConstraint?: boolean })?.genericConstraint ===
+          true,
+    )
+    expect(fromWithConstraint).toBeDefined()
+    expect(String(fromWithConstraint!.dst_node_id)).toMatch(
+      /module-a\.ts#Greeter$/,
+    )
   })
 
   it("tags yielded call sites with metadata.yielded and delegated", async () => {
