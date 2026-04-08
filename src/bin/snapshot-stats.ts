@@ -790,9 +790,21 @@ export function graphJsonToHtml(graph: GraphJson): string {
   .node { stroke: #000; stroke-width: 0.5; cursor: pointer; }
   .node.dim { opacity: 0.12; }
   .node.hit { stroke: #fff; stroke-width: 1.5; }
-  .link { stroke-opacity: 0.45; }
+  .node.focused { stroke: var(--link-active); stroke-width: 2; }
+  .link { stroke-opacity: 0.45; fill: none; }
   .link.dim { stroke-opacity: 0.04; }
   .link.hit { stroke: var(--link-active); stroke-opacity: 0.85; }
+  .arrowhead { fill-opacity: 0.5; }
+  .arrowhead.hit { fill: var(--link-active); fill-opacity: 0.85; }
+  #sidebar input[type="range"] {
+    width: 100%; box-sizing: border-box;
+    accent-color: var(--accent);
+  }
+  #sidebar .slider-row {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
   .label {
     font-size: 9px;
     fill: var(--text);
@@ -827,6 +839,14 @@ export function graphJsonToHtml(graph: GraphJson): string {
 
     <h2>Search</h2>
     <input id="search" type="search" placeholder="canonical name…" />
+
+    <h2>Focus depth</h2>
+    <input id="hop-slider" type="range" min="1" max="4" value="1" step="1" />
+    <div class="slider-row">
+      <span>1 hop</span>
+      <span id="hop-value">1</span>
+      <span>4 hops</span>
+    </div>
 
     <h2>Symbol kinds</h2>
     <div id="kind-legend"></div>
@@ -874,6 +894,31 @@ const wrap = document.getElementById("canvas-wrap");
 const width  = () => wrap.clientWidth;
 const height = () => wrap.clientHeight;
 
+// Per-edge-kind arrowhead markers, so directed edges can show
+// direction without us hand-rolling triangle paths. d3 auto-orients
+// markerUnits=strokeWidth so the arrow scales with the link.
+const defs = svg.append("defs");
+const ARROW_KINDS = Object.keys(EDGE_COLORS).concat(["__default", "__hit"]);
+for (const k of ARROW_KINDS) {
+  const fill =
+    k === "__hit" ? "#ffd86b" :
+    k === "__default" ? "#5a6378" :
+    EDGE_COLORS[k];
+  defs.append("marker")
+    .attr("id", "arrow-" + k)
+    .attr("class", "arrowhead")
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", 12)
+    .attr("refY", 0)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+    .attr("markerUnits", "strokeWidth")
+    .append("path")
+    .attr("d", "M0,-5L10,0L0,5")
+    .attr("fill", fill);
+}
+
 const root = svg.append("g");
 const linkLayer  = root.append("g").attr("class", "links");
 const nodeLayer  = root.append("g").attr("class", "nodes");
@@ -892,12 +937,37 @@ const links = data.edges
   .filter((e) => nodeById.has(e.src) && nodeById.has(e.dst))
   .map((e) => ({ source: e.src, target: e.dst, kind: e.kind }));
 
-// Build neighborhood index for click-highlight
-const neighbors = new Map();
-for (const n of data.nodes) neighbors.set(n.id, new Set([n.id]));
+// Build directed in/out adjacency for multi-hop expansion + degree
+// counts. successors[id] = Set of nodes this id points TO via any
+// edge; predecessors[id] = Set of nodes that point AT this id.
+const successors = new Map();
+const predecessors = new Map();
+for (const n of data.nodes) {
+  successors.set(n.id, new Set());
+  predecessors.set(n.id, new Set());
+}
 for (const l of links) {
-  neighbors.get(l.source).add(l.target);
-  neighbors.get(l.target).add(l.source);
+  successors.get(l.source).add(l.target);
+  predecessors.get(l.target).add(l.source);
+}
+function neighborhood(rootId, hops) {
+  // Undirected k-hop BFS over the union of successors+predecessors.
+  // Returns the set of node ids reachable within hops steps (always
+  // includes rootId itself).
+  const seen = new Set([rootId]);
+  let frontier = [rootId];
+  for (let i = 0; i < hops; i++) {
+    const next = [];
+    for (const id of frontier) {
+      const out = successors.get(id);
+      if (out) for (const t of out) if (!seen.has(t)) { seen.add(t); next.push(t); }
+      const inn = predecessors.get(id);
+      if (inn) for (const t of inn) if (!seen.has(t)) { seen.add(t); next.push(t); }
+    }
+    if (next.length === 0) break;
+    frontier = next;
+  }
+  return seen;
 }
 
 document.getElementById("stat-nodes").textContent = data.nodes.length;
@@ -949,7 +1019,9 @@ function render() {
     .join("line")
     .attr("class", "link")
     .attr("stroke", (d) => colorFor(d.kind, EDGE_COLORS, "#5a6378"))
-    .attr("stroke-width", (d) => (d.kind === "calls" ? 1.2 : 0.8));
+    .attr("stroke-width", (d) => (d.kind === "calls" ? 1.2 : 0.8))
+    .attr("marker-end", (d) =>
+      EDGE_COLORS[d.kind] ? "url(#arrow-" + d.kind + ")" : "url(#arrow-__default)");
 
   nodeSel = nodeLayer
     .selectAll("circle")
@@ -992,6 +1064,7 @@ sim.on("tick", () => {
 });
 
 let focused = null;
+let hopDepth = 1;
 function onClick(ev, d) {
   ev.stopPropagation();
   focused = focused === d.id ? null : d.id;
@@ -1006,37 +1079,52 @@ window.addEventListener("keydown", (ev) => {
   if (ev.key === "Escape") { focused = null; applyFocus(); clearInfo(); }
 });
 
+// Hop-depth slider — re-applies focus on change so the highlighted
+// neighborhood expands/contracts live.
+const hopSlider = document.getElementById("hop-slider");
+const hopValue = document.getElementById("hop-value");
+hopSlider.addEventListener("input", (ev) => {
+  hopDepth = Number(ev.target.value);
+  hopValue.textContent = String(hopDepth);
+  if (focused) applyFocus();
+});
+
 function applyFocus() {
   if (!focused) {
-    nodeSel.classed("dim", false).classed("hit", false);
+    nodeSel.classed("dim", false).classed("hit", false).classed("focused", false);
     linkSel.classed("dim", false).classed("hit", false);
     return;
   }
-  const nbrs = neighbors.get(focused) || new Set([focused]);
+  const nbrs = neighborhood(focused, hopDepth);
   nodeSel
     .classed("dim", (d) => !nbrs.has(d.id))
-    .classed("hit", (d) => d.id === focused);
+    .classed("hit", (d) => nbrs.has(d.id) && d.id !== focused)
+    .classed("focused", (d) => d.id === focused);
   linkSel
     .classed("dim", (l) => {
       const s = typeof l.source === "object" ? l.source.id : l.source;
       const t = typeof l.target === "object" ? l.target.id : l.target;
-      return !(s === focused || t === focused);
+      return !(nbrs.has(s) && nbrs.has(t));
     })
     .classed("hit", (l) => {
       const s = typeof l.source === "object" ? l.source.id : l.source;
       const t = typeof l.target === "object" ? l.target.id : l.target;
-      return s === focused || t === focused;
+      return nbrs.has(s) && nbrs.has(t) && (s === focused || t === focused);
     });
 }
 
 function showInfo(d) {
   const info = document.getElementById("info");
+  const inDeg = (predecessors.get(d.id) || new Set()).size;
+  const outDeg = (successors.get(d.id) || new Set()).size;
   const rows = [
     ["id",         d.id],
     ["kind",       d.kind],
     ["file",       d.file_path || "—"],
     ["line",       d.line ?? "—"],
     ["lines",      d.line_count ?? "—"],
+    ["in-degree",  inDeg],
+    ["out-degree", outDeg],
     ["exported",   d.exported ? "yes" : "no"],
     ["owning",     d.owning_class || "—"],
   ];

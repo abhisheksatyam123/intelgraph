@@ -259,6 +259,28 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     const dataMatch = html.match(/const data = (\{[\s\S]*?\});\nconst KIND_COLORS/)
     expect(dataMatch).not.toBeNull()
     expect(dataMatch![1]).not.toContain("</script")
+
+    // Directional arrow markers — every edge kind in EDGE_COLORS gets
+    // a marker, plus a default and a hit highlight. The markers are
+    // created by d3 at runtime, so we assert against the JS source
+    // that creates them rather than the (un-rendered) static HTML.
+    expect(html).toContain("ARROW_KINDS")
+    expect(html).toContain('"__default"')
+    expect(html).toContain('"__hit"')
+    expect(html).toContain('"arrow-"')
+    expect(html).toContain("marker-end")
+
+    // Multi-hop neighborhood: hop slider + the BFS expansion function.
+    expect(html).toContain('id="hop-slider"')
+    expect(html).toContain("function neighborhood")
+
+    // In/out degree shown in the selection panel.
+    expect(html).toContain("in-degree")
+    expect(html).toContain("out-degree")
+
+    // Directed adjacency: successors / predecessors maps.
+    expect(html).toContain("const successors")
+    expect(html).toContain("const predecessors")
   })
 
   it("graphJsonToHtml propagates --filter-edge-kind subsets", async () => {
