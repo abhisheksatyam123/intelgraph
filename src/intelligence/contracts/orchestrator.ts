@@ -104,6 +104,8 @@ export const QUERY_INTENTS = [
   "find_modules_overview",
   /** Pairs of types that reference each other (2-cycles in the references_type graph). */
   "find_type_cycles",
+  /** Longest call chain reachable from a starting symbol (recursive walk over calls edges). */
+  "find_deepest_call_chain",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

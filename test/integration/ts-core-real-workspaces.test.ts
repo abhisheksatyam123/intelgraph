@@ -385,6 +385,56 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_deepest_call_chain returns the longest reachable chain", async () => {
+      // Pick a function whose outgoing call resolves to a real
+      // graph_node (i.e. an FQ symbol that exists in graph_nodes).
+      // This avoids the case where the seed's only outgoing call is
+      // to a bare/external identifier and the recursive CTE returns
+      // nothing.
+      const seed = ingest.client.raw
+        .prepare(
+          `SELECT src.canonical_name AS name
+           FROM graph_edges e
+           INNER JOIN graph_nodes src
+             ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+           INNER JOIN graph_nodes dst
+             ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+           WHERE e.snapshot_id = ?
+             AND e.edge_kind = 'calls'
+             AND src.kind IN ('function', 'method')
+             AND dst.kind IN ('function', 'method')
+             AND src.canonical_name LIKE 'module:%#%'
+             AND dst.canonical_name LIKE 'module:%#%'
+           LIMIT 1`,
+        )
+        .get(ingest.snapshotId) as { name: string } | undefined
+      if (!seed) return
+
+      const result = await ingest.lookup.lookup({
+        intent: "find_deepest_call_chain",
+        snapshotId: ingest.snapshotId,
+        apiName: seed.name,
+        depth: 6,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // First row's caller should be the seed
+      expect(result.rows[0].caller).toBe(seed.name)
+      // chain_depth equals the number of hops (= rows.length)
+      const depths = new Set(
+        result.rows.map((r) => Number((r as { chain_depth?: number }).chain_depth)),
+      )
+      // All rows in the chain share the same chain_depth
+      expect(depths.size).toBe(1)
+      // path_index is monotonically increasing
+      const indices = result.rows.map(
+        (r) => Number((r as { path_index?: number }).path_index),
+      )
+      for (let i = 1; i < indices.length; i++) {
+        expect(indices[i]).toBeGreaterThan(indices[i - 1])
+      }
+    })
+
     it("find_type_cycles surfaces mutual type references between classes/interfaces", async () => {
       const result = await ingest.lookup.lookup({
         intent: "find_type_cycles",
@@ -1508,6 +1558,11 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
         { intent: "find_external_imports", request: {} },
         { intent: "find_modules_overview", request: {} },
         { intent: "find_type_cycles", request: {} },
+        {
+          intent: "find_deepest_call_chain",
+          request: { apiName: seedFunction?.canonical_name, depth: 4 },
+          skip: !seedFunction,
+        },
         // Search & browse
         {
           intent: "find_symbols_by_name",

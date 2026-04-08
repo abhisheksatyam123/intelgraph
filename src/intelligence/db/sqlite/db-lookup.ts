@@ -262,6 +262,12 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.modulesOverview(snapshotId, limit)
       case "find_type_cycles":
         return this.typeCycles(snapshotId, limit)
+      case "find_deepest_call_chain":
+        return this.deepestCallChain(
+          snapshotId,
+          apiNames[0] ?? "",
+          request.depth ?? 8,
+        )
       default:
         return []
     }
@@ -1019,6 +1025,87 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find the deepest call chain reachable from a starting symbol.
+   * Walks the calls graph forward via a recursive CTE without a
+   * fixed destination — the result is the longest path from the
+   * root within the depth bound.
+   *
+   * Visualizers use this for "worst-case execution path" or "show
+   * me the deepest stack from this entry point" views. Returned
+   * rows are per-hop in the longest chain found, ordered by
+   * path_index, with chain_depth = total length.
+   *
+   * Bounded depth (default 8, clamped to [1, 12]) and cycle
+   * prevention via the running path string.
+   */
+  private deepestCallChain(
+    snapshotId: number,
+    rootName: string,
+    depth: number,
+  ): Array<Record<string, unknown>> {
+    if (!rootName) return []
+    const maxDepth = Math.min(Math.max(depth, 1), 12)
+    const sql = `
+      WITH RECURSIVE chain(callee_name, depth_n, path) AS (
+        SELECT
+          dst.canonical_name,
+          1,
+          src.canonical_name || ' -> ' || dst.canonical_name
+        FROM graph_edges e
+        INNER JOIN graph_nodes src
+          ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+        INNER JOIN graph_nodes dst
+          ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+        WHERE e.snapshot_id = ?
+          AND e.edge_kind = 'calls'
+          AND src.canonical_name = ?
+        UNION ALL
+        SELECT
+          dst.canonical_name,
+          c.depth_n + 1,
+          c.path || ' -> ' || dst.canonical_name
+        FROM chain c
+        INNER JOIN graph_edges e
+          ON e.snapshot_id = ?
+          AND e.edge_kind = 'calls'
+        INNER JOIN graph_nodes src
+          ON e.src_node_id = src.node_id
+          AND e.snapshot_id = src.snapshot_id
+          AND src.canonical_name = c.callee_name
+        INNER JOIN graph_nodes dst
+          ON e.dst_node_id = dst.node_id
+          AND e.snapshot_id = dst.snapshot_id
+        WHERE c.depth_n < ?
+          AND instr(c.path || ' -> ', dst.canonical_name || ' -> ') = 0
+      )
+      SELECT depth_n, path
+      FROM chain
+      ORDER BY depth_n DESC, path ASC
+      LIMIT 1
+    `
+    type Row = { depth_n: number; path: string }
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, rootName, snapshotId, maxDepth) as Row[]
+    if (rows.length === 0) return []
+    const longest = rows[0]
+    const segments = longest.path.split(" -> ")
+    return segments.slice(0, -1).map((caller, i) => ({
+      kind: "function",
+      canonical_name: caller,
+      caller,
+      callee: segments[i + 1],
+      edge_kind: "calls",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: null,
+      line_number: null,
+      path_index: i,
+      chain_depth: longest.depth_n,
+    }))
+  }
 
   /**
    * Find pairs of types that reference each other (2-cycles in the
