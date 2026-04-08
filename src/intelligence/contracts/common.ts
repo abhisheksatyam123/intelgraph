@@ -40,6 +40,11 @@ export type EdgeKind =
   | "extends" // class extends class, interface extends interface
   | "implements" // class implements interface
   | "references_type" // symbol uses a type by name
+  // ── data-structure edges (Phase 3 of the data-flow story)
+  /** field → type the field declares (field-level, with containment metadata) */
+  | "field_of_type"
+  /** type → other type it aggregates structurally (rollup of field_of_type edges) */
+  | "aggregates"
 
 export type LogLevel = "ERROR" | "WARN" | "INFO" | "DEBUG" | "VERBOSE" | "TRACE" | "UNKNOWN"
 

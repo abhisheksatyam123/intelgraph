@@ -489,6 +489,21 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
                 },
               },
             })
+            // Phase 3a: per-field type edges with containment metadata.
+            // Each field also emits one or more field_of_type edges
+            // pointing at the resolved target type(s), tagged with
+            // how the field contains them (direct, array, optional,
+            // promise, map, etc.). Built-ins (string, number, …)
+            // are dropped because they don't resolve.
+            for (const typeEdge of extractFieldTypeEdges(
+              fieldDecl.memberNode,
+              fieldDecl.canonicalName,
+              resolver,
+              moduleNodeName,
+              file,
+            )) {
+              yield ctx.edge({ payload: typeEdge })
+            }
           }
         }
 
@@ -1441,7 +1456,11 @@ function extractTypeReferences(
 }
 
 interface TypeRefEdgePayload {
-  edgeKind: "references_type"
+  // The type-reference helpers historically only emitted references_type
+  // edges. Phase 3a added a parallel field-level emission path
+  // (extractFieldTypeEdges) that uses the same payload shape but
+  // tags the edges with field_of_type. Both kinds share this struct.
+  edgeKind: "references_type" | "field_of_type"
   srcSymbolName: string
   dstSymbolName: string
   confidence: number
@@ -1762,12 +1781,16 @@ function extractFieldDeclarations(
   canonicalName: string
   line: number
   exported: boolean
+  /** The original member AST node, exposed so callers can also walk
+   *  its type_annotation for field_of_type edges. */
+  memberNode: TsNode
 }> {
   const out: Array<{
     localName: string
     canonicalName: string
     line: number
     exported: boolean
+    memberNode: TsNode
   }> = []
   const body =
     firstNamedChildOfType(classOrIfaceNode, "class_body") ??
@@ -1804,8 +1827,279 @@ function extractFieldDeclarations(
       canonicalName,
       line: member.startPosition.row + 1,
       exported: false,
+      memberNode: member,
     })
   }
+  return out
+}
+
+/**
+ * Per-field type extraction with containment metadata. Emits
+ * field_of_type edges from a field node to its declared type(s),
+ * tagging each edge with how the field contains the target:
+ *
+ *   - "direct"   bare type identifier:        prefix: string         (skipped — built-in)
+ *                                             owner: User            ← edge with containment=direct
+ *   - "array"    Foo[] or Array<Foo>          items: Foo[]           ← containment=array
+ *   - "set"      Set<Foo>                     tags: Set<string>      (skipped — built-in element)
+ *   - "map"      Map<K, V> or Record<K, V>    cache: Map<string,Foo> ← containment=map, keyType=string
+ *   - "promise"  Promise<Foo>                 result: Promise<Foo>   ← containment=promise
+ *   - "optional" T | null, T | undefined, T?  fallback?: Foo         ← containment=optional
+ *   - "union"    A | B                        kind: A | B            ← TWO edges, containment=union
+ *   - "intersection" A & B                                            ← two edges, containment=intersection
+ *
+ * Recursive wrappers compose: Promise<Array<Foo>> emits one edge
+ * with containment=promise.array — the kinds chain from outer to
+ * inner. For maps, the key type is recorded in metadata.keyType
+ * but does NOT get its own edge (it's metadata, not a structural
+ * pointer).
+ *
+ * Built-in elements (string, number, boolean, void, never, etc.)
+ * are dropped — they don't resolve through the resolver and aren't
+ * interesting for the data-structure graph. The function returns
+ * an empty array when the field has no usable type or the type
+ * resolves to nothing.
+ *
+ * Each returned edge payload also carries metadata.typeExpr — the
+ * raw text of the type annotation — so the visualizer can show
+ * the user what the field looks like in source.
+ */
+function extractFieldTypeEdges(
+  memberNode: TsNode,
+  fieldFqName: string,
+  resolver: FileResolver,
+  moduleNodeName: string,
+  file: string,
+): Array<TypeRefEdgePayload> {
+  // Get the type_annotation child. Both public_field_definition and
+  // property_signature expose it under the same "type" field name.
+  const typeAnn =
+    firstNamedChildOfType(memberNode, "type_annotation") ??
+    memberNode.childForFieldName("type")
+  if (!typeAnn) return []
+
+  // The annotation wraps the actual type expression. The
+  // type_annotation node is `: Type` — we want the Type child.
+  let typeExpr: TsNode | null = null
+  for (let i = 0; i < typeAnn.namedChildCount; i++) {
+    const c = typeAnn.namedChild(i)
+    if (c) {
+      typeExpr = c
+      break
+    }
+  }
+  if (!typeExpr) return []
+
+  const rawText = typeExpr.text
+  const out: TypeRefEdgePayload[] = []
+  const seenDsts = new Set<string>()
+  const memberLine = memberNode.startPosition.row + 1
+
+  // Recursive walker. `accumulated` is the chain of containment
+  // wrappers we've passed through so far (e.g. ["promise", "array"]
+  // for Promise<Array<Foo>>). At each leaf type_identifier we
+  // resolve and emit an edge tagged with the joined chain.
+  const visit = (n: TsNode, accumulated: string[]): void => {
+    switch (n.type) {
+      case "predefined_type":
+        // string, number, boolean, void, never, undefined, null,
+        // any, unknown, object, symbol, bigint — all built-in,
+        // not interesting for the data-structure graph.
+        return
+
+      case "type_identifier": {
+        const name = n.text
+        const resolved = resolveTypeName(name, resolver, moduleNodeName)
+        if (!resolved) return
+        const containment = accumulated.length > 0 ? accumulated.join(".") : "direct"
+        const dstKey = resolved.name + "|" + containment
+        if (seenDsts.has(dstKey)) return
+        seenDsts.add(dstKey)
+        out.push({
+          edgeKind: "field_of_type",
+          srcSymbolName: fieldFqName,
+          dstSymbolName: resolved.name,
+          confidence: 0.95,
+          derivation: "clangd",
+          sourceLocation: {
+            sourceFilePath: file,
+            sourceLineNumber: memberLine,
+          },
+          metadata: {
+            resolved: true,
+            resolutionKind: resolved.kind,
+            containment,
+            typeExpr: rawText,
+          },
+        })
+        return
+      }
+
+      case "array_type": {
+        // T[] — wrap with "array", recurse on the element type
+        for (let i = 0; i < n.namedChildCount; i++) {
+          const c = n.namedChild(i)
+          if (c) visit(c, [...accumulated, "array"])
+        }
+        return
+      }
+
+      case "generic_type": {
+        // Promise<T>, Array<T>, Set<T>, Map<K,V>, Record<K,V>, Foo<T>
+        const nameNode = n.childForFieldName("name") ?? n.namedChild(0)
+        const argsNode = firstNamedChildOfType(n, "type_arguments")
+        const wrapperName = nameNode ? nameNode.text : ""
+        let wrapperKind: string | null = null
+        let walkArgIndex = -1 // -1 means walk all type args
+        let keyArgIndex = -1 // for Map/Record: which arg is the key
+        switch (wrapperName) {
+          case "Promise":
+            wrapperKind = "promise"
+            break
+          case "Array":
+          case "ReadonlyArray":
+            wrapperKind = "array"
+            break
+          case "Set":
+          case "ReadonlySet":
+            wrapperKind = "set"
+            break
+          case "Map":
+          case "ReadonlyMap":
+            wrapperKind = "map"
+            walkArgIndex = 1 // value type
+            keyArgIndex = 0
+            break
+          case "Record":
+            wrapperKind = "record"
+            walkArgIndex = 1
+            keyArgIndex = 0
+            break
+        }
+        if (!argsNode) {
+          // Bare generic name (rare). Resolve as a plain type identifier.
+          if (nameNode && nameNode.type === "type_identifier") {
+            visit(nameNode, accumulated)
+          }
+          return
+        }
+        if (wrapperKind) {
+          const newAcc = [...accumulated, wrapperKind]
+          // For map/record, also extract the key type (as metadata
+          // on every emitted edge — collected at emission time below
+          // via a closure on `keyType`).
+          let keyTypeText: string | null = null
+          if (keyArgIndex >= 0) {
+            const k = argsNode.namedChild(keyArgIndex)
+            if (k) keyTypeText = k.text
+          }
+          // Walk the value type arg only (or all args for non-key wrappers).
+          if (walkArgIndex >= 0) {
+            const target = argsNode.namedChild(walkArgIndex)
+            if (target) {
+              const before = out.length
+              visit(target, newAcc)
+              if (keyTypeText) {
+                for (let i = before; i < out.length; i++) {
+                  const meta = out[i].metadata as Record<string, unknown> | undefined
+                  if (meta) meta.keyType = keyTypeText
+                }
+              }
+            }
+          } else {
+            for (let i = 0; i < argsNode.namedChildCount; i++) {
+              const c = argsNode.namedChild(i)
+              if (c) visit(c, newAcc)
+            }
+          }
+        } else {
+          // User-defined generic type Foo<T>. The name itself is the
+          // primary target (containment=direct), and we ALSO walk the
+          // type args at the same accumulated depth so e.g.
+          // Box<Inner> emits both Box and Inner.
+          if (nameNode && nameNode.type === "type_identifier") {
+            visit(nameNode, accumulated)
+          }
+          for (let i = 0; i < argsNode.namedChildCount; i++) {
+            const c = argsNode.namedChild(i)
+            if (c) visit(c, accumulated)
+          }
+        }
+        return
+      }
+
+      case "union_type": {
+        // T | null / T | undefined → optional
+        // A | B → union (multi-target, one edge each)
+        //
+        // tree-sitter-typescript parses `null` and `undefined` in
+        // type position as a literal_type wrapping a `null` or
+        // `undefined` node. We treat both as "nullish".
+        const isNullish = (c: TsNode): boolean => {
+          if (c.type === "null" || c.type === "undefined") return true
+          if (c.type === "literal_type") {
+            const inner = c.namedChild(0)
+            if (inner && (inner.type === "null" || inner.type === "undefined")) {
+              return true
+            }
+          }
+          return false
+        }
+        const members: TsNode[] = []
+        let hasNullish = false
+        for (let i = 0; i < n.namedChildCount; i++) {
+          const c = n.namedChild(i)
+          if (!c) continue
+          if (isNullish(c)) {
+            hasNullish = true
+            continue
+          }
+          members.push(c)
+        }
+        if (members.length === 1 && hasNullish) {
+          visit(members[0], [...accumulated, "optional"])
+        } else {
+          // Real union: emit one edge per member, tagged "union"
+          for (const m of members) visit(m, [...accumulated, "union"])
+        }
+        return
+      }
+
+      case "intersection_type": {
+        for (let i = 0; i < n.namedChildCount; i++) {
+          const c = n.namedChild(i)
+          if (c) visit(c, [...accumulated, "intersection"])
+        }
+        return
+      }
+
+      case "parenthesized_type":
+      case "literal_type":
+      case "type_query":
+      case "index_type_query":
+      case "conditional_type":
+      case "mapped_type_clause":
+      case "lookup_type":
+      case "template_literal_type":
+        // These either have no usable target or are out of scope for v1.
+        // Walk children defensively in case they wrap a usable type.
+        for (let i = 0; i < n.namedChildCount; i++) {
+          const c = n.namedChild(i)
+          if (c) visit(c, accumulated)
+        }
+        return
+
+      default:
+        // Catch-all: walk children. Tree-sitter-typescript has many
+        // type node variants and we'd rather under-report than crash.
+        for (let i = 0; i < n.namedChildCount; i++) {
+          const c = n.namedChild(i)
+          if (c) visit(c, accumulated)
+        }
+        return
+    }
+  }
+  visit(typeExpr, [])
   return out
 }
 

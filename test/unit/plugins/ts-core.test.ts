@@ -1961,6 +1961,145 @@ describe("ts-core plugin — extraction", () => {
     expect(writeDsts.has("FormalGreeter.count")).toBe(true)
   })
 
+  it("emits field_of_type edges with containment metadata for class field types", async () => {
+    // Use a fresh tiny fixture so we can control the exact field shapes.
+    const tinyDir = mkdtempSync(join(tmpdir(), "ts-core-fot-"))
+    try {
+      writeFileSync(
+        join(tinyDir, "package.json"),
+        JSON.stringify({ name: "fixture" }),
+      )
+      mkdirSync(join(tinyDir, "src"), { recursive: true })
+      writeFileSync(
+        join(tinyDir, "src", "model.ts"),
+        `export interface User { id: string }
+export class Box {
+  // direct
+  owner: User
+  // array (T[] form)
+  members: User[]
+  // optional (T | undefined)
+  fallback: User | undefined
+  // optional (T | null)
+  nullableOwner: User | null
+  // promise
+  loaded: Promise<User>
+  // map: key=string, value=User
+  byId: Map<string, User>
+  // record
+  cache: Record<string, User>
+  // nested: array.optional → walk into the array, then optional
+  buckets: Array<User | null>
+  // union of two named types
+  primary: User | Box
+}
+`,
+      )
+      const sink = new CaptureSink()
+      const runner = new ExtractorRunner({
+        snapshotId: 1,
+        workspaceRoot: tinyDir,
+        lsp: stubLsp,
+        sink,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+
+      const fotEdges = sink
+        .allEdges()
+        .filter((e) => e.edge_kind === "field_of_type")
+      // Index edges by (src local field name, containment) for assertions
+      const byFieldContainment = new Map<string, GraphEdgeRow[]>()
+      for (const e of fotEdges) {
+        const localName = String(e.src_node_id).split("#")[1]
+        const containment = String(
+          ((e.metadata as Record<string, unknown> | undefined) ?? {})
+            .containment ?? "",
+        )
+        const key = localName + "|" + containment
+        if (!byFieldContainment.has(key)) byFieldContainment.set(key, [])
+        byFieldContainment.get(key)!.push(e)
+      }
+
+      // Each field's expected containment kind:
+      const expectations: Array<[string, string]> = [
+        ["Box.owner", "direct"],
+        ["Box.members", "array"],
+        ["Box.fallback", "optional"],
+        ["Box.nullableOwner", "optional"],
+        ["Box.loaded", "promise"],
+        ["Box.byId", "map"],
+        ["Box.cache", "record"],
+        // Array<User | null> → array.optional walking outer→inner
+        ["Box.buckets", "array.optional"],
+      ]
+      for (const [field, containment] of expectations) {
+        const key = field + "|" + containment
+        expect(
+          byFieldContainment.has(key),
+          `expected field_of_type ${field} with containment=${containment}`,
+        ).toBe(true)
+      }
+
+      // Map key type lands in metadata.keyType
+      const mapEdges = byFieldContainment.get("Box.byId|map") ?? []
+      expect(mapEdges.length).toBe(1)
+      const mapMeta =
+        ((mapEdges[0].metadata as Record<string, unknown> | undefined) ?? {})
+      expect(mapMeta.keyType).toBe("string")
+
+      // Union (User | Box) → two field_of_type edges, both tagged "union"
+      const unionEdges = byFieldContainment.get("Box.primary|union") ?? []
+      // Box self-reference may be skipped if Box doesn't resolve through
+      // the file resolver as a different module — we resolve everything
+      // in-file, so both User AND Box should appear.
+      expect(unionEdges.length).toBeGreaterThanOrEqual(1)
+    } finally {
+      rmSync(tinyDir, { recursive: true, force: true })
+    }
+  })
+
+  it("does not emit field_of_type edges to predefined built-in types", async () => {
+    const tinyDir = mkdtempSync(join(tmpdir(), "ts-core-fot-builtins-"))
+    try {
+      writeFileSync(
+        join(tinyDir, "package.json"),
+        JSON.stringify({ name: "fixture" }),
+      )
+      mkdirSync(join(tinyDir, "src"), { recursive: true })
+      writeFileSync(
+        join(tinyDir, "src", "x.ts"),
+        `export class Plain {
+  name: string
+  count: number
+  ok: boolean
+  payload: unknown
+}
+`,
+      )
+      const sink = new CaptureSink()
+      const runner = new ExtractorRunner({
+        snapshotId: 1,
+        workspaceRoot: tinyDir,
+        lsp: stubLsp,
+        sink,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      const fotEdges = sink
+        .allEdges()
+        .filter((e) => e.edge_kind === "field_of_type")
+      // None of these fields should produce a field_of_type edge —
+      // they all reference predefined_type nodes that are dropped.
+      const fromPlain = fotEdges.filter((e) =>
+        String(e.src_node_id).includes("#Plain."),
+      )
+      expect(fromPlain.length).toBe(0)
+    } finally {
+      rmSync(tinyDir, { recursive: true, force: true })
+    }
+  })
+
   it("does not emit field edges for this.method() (already covered by calls)", async () => {
     // Synthesize a fixture inline: a class with a method that calls
     // another method on `this`. The call should produce a calls
