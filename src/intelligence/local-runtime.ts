@@ -4,6 +4,7 @@ import { spawnSync } from "node:child_process"
 import { homedir } from "node:os"
 import { log } from "../logging/logger.js"
 import type { WorkspaceConfig } from "../config/bootstrap.js"
+import { resolveConfigPath } from "../config/config.js"
 
 function hashPortSeed(input: string): number {
   let h = 0
@@ -69,7 +70,11 @@ function ensureDir(dir: string) {
 }
 
 function ensureWorkspaceConfig(root: string, ws: WorkspaceConfig, ports: { bolt: number; http: number }) {
-  const cfgPath = path.join(root, ".clangd-mcp.json")
+  // Use resolveConfigPath so we don't overwrite an existing
+  // .clangd-mcp.json or .intelgraph.json. resolveConfigPath returns
+  // the new .intelgraph.json path when neither exists, so fresh
+  // installs land on the new name.
+  const cfgPath = resolveConfigPath(root)
   if (existsSync(cfgPath)) return
 
   const cfg: WorkspaceConfig = {

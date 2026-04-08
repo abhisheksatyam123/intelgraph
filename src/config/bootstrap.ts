@@ -6,6 +6,7 @@
 import { readFileSync } from "fs"
 import path from "path"
 import { log } from "../logging/logger.js"
+import { resolveConfigPath } from "./config.js"
 
 // ── Workspace config (.clangd-mcp.json) ──────────────────────────────────────
 
@@ -39,7 +40,9 @@ export interface WorkspaceConfig {
 }
 
 export function readWorkspaceConfig(dir: string): WorkspaceConfig {
-  const configPath = path.join(dir, ".clangd-mcp.json")
+  // Prefers .intelgraph.json, falls back to .clangd-mcp.json. See
+  // resolveConfigPath in config.ts for the lookup order.
+  const configPath = resolveConfigPath(dir)
   try {
     const text = readFileSync(configPath, "utf8")
     const cfg = JSON.parse(text) as WorkspaceConfig

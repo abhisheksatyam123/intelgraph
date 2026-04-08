@@ -14,6 +14,7 @@
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "fs"
 import path from "path"
 import { log, logError } from "../logging/logger.js"
+import { resolveConfigPath } from "../config/config.js"
 
 interface CleaningConfig {
   enabled?: boolean
@@ -493,12 +494,13 @@ export async function cleanCompileCommands(
 }
 
 /**
- * Read cleaning config from .clangd-mcp.json.
+ * Read cleaning config from the workspace config file
+ * (.intelgraph.json preferred, .clangd-mcp.json legacy fallback).
  * @deprecated Use readConfig from config/config.ts instead
  */
 export function readCleaningConfig(workspaceRoot: string): CleaningConfig {
-  const configPath = path.join(workspaceRoot, ".clangd-mcp.json")
-  
+  const configPath = resolveConfigPath(workspaceRoot)
+
   try {
     const content = readFileSync(configPath, "utf8")
     const config = JSON.parse(content)
@@ -509,15 +511,15 @@ export function readCleaningConfig(workspaceRoot: string): CleaningConfig {
 }
 
 /**
- * Update cleaning config in .clangd-mcp.json.
+ * Update cleaning config in the workspace config file.
  * @deprecated Use updateConfig from config/config.ts instead
  */
 export function updateCleaningConfig(
   workspaceRoot: string,
   updates: Partial<CleaningConfig>
 ): void {
-  const configPath = path.join(workspaceRoot, ".clangd-mcp.json")
-  
+  const configPath = resolveConfigPath(workspaceRoot)
+
   let config: any = {}
   try {
     const content = readFileSync(configPath, "utf8")
@@ -533,8 +535,8 @@ export function updateCleaningConfig(
 
   try {
     writeFileSync(configPath, JSON.stringify(config, null, 2))
-    log("INFO", "Updated .clangd-mcp.json with cleaning config", updates)
+    log("INFO", "Updated workspace config with cleaning config", { configPath, updates })
   } catch (err) {
-    logError("Failed to update .clangd-mcp.json", err)
+    logError("Failed to update workspace config", err)
   }
 }

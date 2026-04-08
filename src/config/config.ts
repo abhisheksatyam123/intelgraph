@@ -186,14 +186,32 @@ const DEFAULT_CONFIG: Partial<ClangdMcpConfig> = {
 }
 
 /**
- * Read configuration from .clangd-mcp.json
+ * Resolve the workspace config file path, preferring the new
+ * `.intelgraph.json` over the legacy `.clangd-mcp.json`. If neither
+ * exists, return the new path so writes land there. Exported so other
+ * modules (compile-commands-cleaner, etc.) can use the same lookup.
+ */
+export function resolveConfigPath(workspaceRoot: string): string {
+  const newPath = join(workspaceRoot, ".intelgraph.json")
+  if (existsSync(newPath)) return newPath
+  const legacyPath = join(workspaceRoot, ".clangd-mcp.json")
+  if (existsSync(legacyPath)) return legacyPath
+  return newPath
+}
+
+/**
+ * Read configuration from the workspace config file
+ * (.intelgraph.json preferred, .clangd-mcp.json legacy fallback).
  */
 export function readConfig(workspaceRoot: string): ClangdMcpConfig {
-  const configPath = join(workspaceRoot, ".clangd-mcp.json")
-  
+  const configPath = resolveConfigPath(workspaceRoot)
+
   try {
     if (!existsSync(configPath)) {
-      log("INFO", "No .clangd-mcp.json found — using defaults", { workspaceRoot })
+      log("INFO", "No workspace config found — using defaults", {
+        workspaceRoot,
+        searched: [".intelgraph.json", ".clangd-mcp.json"],
+      })
       return { ...DEFAULT_CONFIG }
     }
 
@@ -222,7 +240,7 @@ export function readConfig(workspaceRoot: string): ClangdMcpConfig {
       },
     }
 
-    log("INFO", "Loaded .clangd-mcp.json", { 
+    log("INFO", "Loaded workspace config", {
       configPath,
       cleaningEnabled: merged.compileCommandsCleaning?.enabled,
       daemonPort: merged.daemon?.port,
@@ -230,28 +248,32 @@ export function readConfig(workspaceRoot: string): ClangdMcpConfig {
 
     return merged
   } catch (err) {
-    logError("Failed to read .clangd-mcp.json — using defaults", err)
+    logError("Failed to read workspace config — using defaults", err)
     return { ...DEFAULT_CONFIG }
   }
 }
 
 /**
- * Write configuration to .clangd-mcp.json
+ * Write configuration to the workspace config file. Writes to
+ * whichever file currently exists (preferring .intelgraph.json for
+ * fresh installs); never silently migrates a legacy
+ * .clangd-mcp.json to the new path. Migration is opt-in via the
+ * separate `migrate-config` script (TODO).
  */
 export function writeConfig(workspaceRoot: string, config: ClangdMcpConfig): void {
-  const configPath = join(workspaceRoot, ".clangd-mcp.json")
-  
+  const configPath = resolveConfigPath(workspaceRoot)
+
   try {
     // Update timestamp
     config.updatedAt = new Date().toISOString()
-    
+
     // Pretty-print with 2-space indentation
     const content = JSON.stringify(config, null, 2)
     writeFileSync(configPath, content + "\n")
-    
-    log("INFO", "Wrote .clangd-mcp.json", { configPath })
+
+    log("INFO", "Wrote workspace config", { configPath })
   } catch (err) {
-    logError("Failed to write .clangd-mcp.json", err)
+    logError("Failed to write workspace config", err)
   }
 }
 
