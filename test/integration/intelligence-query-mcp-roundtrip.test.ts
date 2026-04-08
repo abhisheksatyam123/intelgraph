@@ -788,3 +788,211 @@ describe("intelligence_graph_diff MCP tool — round trip", () => {
     expect(res.errors?.[0]).toMatch(/loadGraphJson/)
   })
 })
+
+// ── Phase 3e: data-structure intents over the MCP path ───────────────────────
+//
+// Builds a small fixture with explicit class fields + an enum so the
+// four new intents (find_field_type, find_type_fields,
+// find_type_aggregates, find_type_aggregators) all have something
+// to return.
+
+interface DataStructFixture {
+  client: { close: () => void }
+  cleanup: () => void
+  snapshotId: number
+  tempRoot: string
+}
+
+async function buildDataStructFixture(): Promise<DataStructFixture> {
+  const tempRoot = mkdtempSync(join(tmpdir(), "intel-data-struct-"))
+  writeFileSync(
+    join(tempRoot, "package.json"),
+    JSON.stringify({ name: "fixture-data-struct" }),
+  )
+  mkdirSync(join(tempRoot, "src"), { recursive: true })
+  writeFileSync(
+    join(tempRoot, "src", "model.ts"),
+    `export interface User { id: string }
+export class Box {
+  owner: User
+  members: User[]
+  fallback: User | undefined
+}
+export enum Status { Active, Inactive = 1 }
+`,
+  )
+
+  const client = openSqlite({ path: ":memory:" })
+  const foundation = new SqliteDbFoundation(client.db, client.raw)
+  await foundation.initSchema()
+  const store = new SqliteGraphStore(client.db)
+  const lookup = new SqliteDbLookup(client.db, client.raw)
+  const ref = await foundation.beginSnapshot({
+    workspaceRoot: tempRoot,
+    compileDbHash: "data-struct-mcp",
+    parserVersion: "0.1.0",
+  })
+  const snapshotId = ref.snapshotId
+  const runner = new ExtractorRunner({
+    snapshotId,
+    workspaceRoot: tempRoot,
+    lsp: stubLsp,
+    sink: store,
+    plugins: [tsCoreExtractor],
+  })
+  await runner.run()
+  await foundation.commitSnapshot(snapshotId)
+
+  const deps: OrchestratorRunnerDeps = {
+    persistence: {
+      dbLookup: lookup,
+      authoritativeStore: { persistEnrichment: async () => 0 },
+      graphProjection: {
+        syncFromAuthoritative: async () => ({
+          synced: true,
+          nodesUpserted: 0,
+          edgesUpserted: 0,
+        }),
+      },
+    },
+    clangdEnricher: {
+      source: "clangd" as const,
+      enrich: async () => ({
+        attempts: [{ source: "clangd" as const, status: "failed" as const }],
+        persistedRows: 0,
+      }),
+    },
+    cParserEnricher: {
+      source: "c_parser" as const,
+      enrich: async () => ({
+        attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+        persistedRows: 0,
+      }),
+    },
+  }
+  setIntelligenceDeps(deps)
+
+  return {
+    client,
+    snapshotId,
+    tempRoot,
+    cleanup: () => {
+      try { client.close() } catch {}
+      rmSync(tempRoot, { recursive: true, force: true })
+    },
+  }
+}
+
+describe("intelligence_query MCP tool — data-structure intents (Phase 3e)", () => {
+  let dsFixture: DataStructFixture | null = null
+
+  afterEach(() => {
+    if (dsFixture) {
+      dsFixture.cleanup()
+      dsFixture = null
+    }
+  })
+
+  it("find_type_fields returns the data members of a class (excluding methods)", async () => {
+    dsFixture = await buildDataStructFixture()
+    const raw = await tool!.execute(
+      {
+        intent: "find_type_fields",
+        snapshotId: dsFixture.snapshotId,
+        apiName: "module:src/model.ts#Box",
+      },
+      stubClient,
+      stubTracker,
+    )
+    const res = JSON.parse(raw) as FlatResponse
+    expect(res.status).toBe("hit")
+    const names = res.data.nodes.map((n) => String(n.canonical_name))
+    expect(names.some((n) => n.endsWith("#Box.owner"))).toBe(true)
+    expect(names.some((n) => n.endsWith("#Box.members"))).toBe(true)
+    expect(names.some((n) => n.endsWith("#Box.fallback"))).toBe(true)
+    // Every returned node must have kind=field (no methods leaking through)
+    for (const node of res.data.nodes) {
+      expect(node.kind).toBe("field")
+    }
+  })
+
+  it("find_type_fields returns the variants of an enum (kind=enum_variant)", async () => {
+    dsFixture = await buildDataStructFixture()
+    const raw = await tool!.execute(
+      {
+        intent: "find_type_fields",
+        snapshotId: dsFixture.snapshotId,
+        apiName: "module:src/model.ts#Status",
+      },
+      stubClient,
+      stubTracker,
+    )
+    const res = JSON.parse(raw) as FlatResponse
+    expect(res.status).toBe("hit")
+    const names = res.data.nodes.map((n) => String(n.canonical_name))
+    expect(names.some((n) => n.endsWith("#Status.Active"))).toBe(true)
+    expect(names.some((n) => n.endsWith("#Status.Inactive"))).toBe(true)
+    for (const node of res.data.nodes) {
+      expect(node.kind).toBe("enum_variant")
+    }
+  })
+
+  it("find_field_type returns the type a field declares", async () => {
+    dsFixture = await buildDataStructFixture()
+    const raw = await tool!.execute(
+      {
+        intent: "find_field_type",
+        snapshotId: dsFixture.snapshotId,
+        apiName: "module:src/model.ts#Box.members",
+      },
+      stubClient,
+      stubTracker,
+    )
+    const res = JSON.parse(raw) as FlatResponse
+    expect(res.status).toBe("hit")
+    // members: User[] → User shows up in the response nodes
+    expect(res.data.nodes.length).toBeGreaterThan(0)
+    expect(
+      res.data.nodes.some((n) =>
+        String(n.canonical_name).endsWith("#User"),
+      ),
+    ).toBe(true)
+  })
+
+  it("find_type_aggregates returns the rolled-up types this struct depends on", async () => {
+    dsFixture = await buildDataStructFixture()
+    const raw = await tool!.execute(
+      {
+        intent: "find_type_aggregates",
+        snapshotId: dsFixture.snapshotId,
+        apiName: "module:src/model.ts#Box",
+      },
+      stubClient,
+      stubTracker,
+    )
+    const res = JSON.parse(raw) as FlatResponse
+    expect(res.status).toBe("hit")
+    // Box.owner, Box.members, Box.fallback all reference User → one
+    // aggregates edge to User (de-duped from 3 field_of_type edges)
+    const targets = res.data.nodes.map((n) => String(n.canonical_name))
+    expect(targets.some((t) => t.endsWith("#User"))).toBe(true)
+  })
+
+  it("find_type_aggregators returns the reverse — types that depend on this", async () => {
+    dsFixture = await buildDataStructFixture()
+    const raw = await tool!.execute(
+      {
+        intent: "find_type_aggregators",
+        snapshotId: dsFixture.snapshotId,
+        apiName: "module:src/model.ts#User",
+      },
+      stubClient,
+      stubTracker,
+    )
+    const res = JSON.parse(raw) as FlatResponse
+    expect(res.status).toBe("hit")
+    // Box aggregates User → User has Box as an aggregator
+    const sources = res.data.nodes.map((n) => String(n.canonical_name))
+    expect(sources.some((s) => s.endsWith("#Box"))).toBe(true)
+  })
+})

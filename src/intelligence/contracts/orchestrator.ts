@@ -124,6 +124,15 @@ export const QUERY_INTENTS = [
   "find_largest_modules",
   /** Modules grouped by parent directory with aggregate stats — package overview view. */
   "find_modules_by_directory",
+  // ── Phase 3e: data-structure intents (field_of_type / aggregates)
+  /** What type(s) does this field declare, with containment metadata. */
+  "find_field_type",
+  /** Direct fields declared on this struct/class/interface. */
+  "find_type_fields",
+  /** Distinct types this struct aggregates (rolled up from field_of_type). */
+  "find_type_aggregates",
+  /** Reverse direction — types that aggregate this one. */
+  "find_type_aggregators",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

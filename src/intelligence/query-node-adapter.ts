@@ -70,6 +70,11 @@ function mapKind(row: Record<string, unknown>): NodeItem["kind"] {
   if (raw === "dispatch_table") return "dispatch_table"
   if (raw === "message" || raw === "message_queue" || raw === "thread_message" || raw === "message_function") return "message"
   if (raw === "log_point" || raw === "log") return "log_point"
+  // Phase 3d / 3e: structural data + previously-missing language-agnostic kinds
+  if (raw === "enum_variant" || raw === "variant") return "enum_variant"
+  if (raw === "interface") return "interface"
+  if (raw === "method") return "method"
+  if (raw === "namespace") return "namespace"
   return "unknown"
 }
 
@@ -95,6 +100,11 @@ function mapKindVerbose(kind: NodeItem["kind"]): NodeItem["kind_verbose"] {
     case "dispatch_table": return "dispatch_table"
     case "message": return "inter_thread_message"
     case "log_point": return "log_emission_point"
+    // Phase 3d / 3e additions
+    case "enum_variant": return "enum_variant_member"
+    case "interface": return "interface_type"
+    case "method": return "class_method"
+    case "namespace": return "namespace_module"
     default: return "unknown_entity"
   }
 }

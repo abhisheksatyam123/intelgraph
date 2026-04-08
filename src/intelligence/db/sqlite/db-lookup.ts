@@ -215,6 +215,15 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.outgoingByEdgeKind(snapshotId, apiNames, "references_type", limit)
       case "find_type_consumers":
         return this.incomingByEdgeKind(snapshotId, apiNames, "references_type", limit)
+      // Phase 3e: data-structure intents
+      case "find_field_type":
+        return this.outgoingByEdgeKind(snapshotId, apiNames, "field_of_type", limit)
+      case "find_type_fields":
+        return this.containedFields(snapshotId, apiNames, limit)
+      case "find_type_aggregates":
+        return this.outgoingByEdgeKind(snapshotId, apiNames, "aggregates", limit)
+      case "find_type_aggregators":
+        return this.incomingByEdgeKind(snapshotId, apiNames, "aggregates", limit)
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
       case "find_top_imported_modules":
@@ -2891,6 +2900,62 @@ export class SqliteDbLookup implements DbLookupRepository {
     return rows.map((obj) => ({
       kind: obj.kind ?? "module",
       canonical_name: obj.canonical_name ?? obj.caller,
+      caller: obj.caller,
+      callee: obj.callee,
+      edge_kind: obj.edge_kind,
+      confidence: toNumber(obj.confidence),
+      derivation: obj.derivation,
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
+
+  /**
+   * Phase 3e: list the field nodes directly contained by a struct,
+   * class, interface, or enum. Same as outgoingByEdgeKind on
+   * "contains" but filtered to dst.kind IN ('field', 'enum_variant')
+   * so the result is JUST the data members — methods on a class
+   * are excluded.
+   *
+   * The query semantics: "show me what data this type holds, not
+   * what behavior it exposes". Pairs naturally with the existing
+   * find_module_symbols (which lists ALL contains-edge children
+   * regardless of kind).
+   */
+  private containedFields(
+    snapshotId: number,
+    srcNames: string[],
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    if (srcNames.length === 0) return []
+    const sql = `
+      SELECT
+        src.canonical_name AS caller,
+        dst.canonical_name AS callee,
+        dst.canonical_name AS canonical_name,
+        dst.kind           AS kind,
+        e.edge_kind        AS edge_kind,
+        e.confidence       AS confidence,
+        e.derivation       AS derivation,
+        dst.location       AS location,
+        dst.payload        AS payload
+      FROM graph_edges e
+      INNER JOIN graph_nodes src
+        ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+      INNER JOIN graph_nodes dst
+        ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+      WHERE e.snapshot_id = ?
+        AND src.canonical_name IN (${expandIn(srcNames)})
+        AND e.edge_kind = 'contains'
+        AND dst.kind IN ('field', 'enum_variant')
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, ...srcNames, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "field",
+      canonical_name: obj.canonical_name ?? obj.callee,
       caller: obj.caller,
       callee: obj.callee,
       edge_kind: obj.edge_kind,

@@ -130,6 +130,14 @@ export const nodeSchema = z.object({
     "dispatch_table",
     "message",
     "log_point",
+    // Phase 3d: structural data hierarchy
+    "enum_variant",
+    // Sister kinds the existing schema was missing — these are
+    // declared in SymbolRow["kind"] but were silently mapped to
+    // "unknown" until phase 3e, breaking the visualization side.
+    "interface",
+    "method",
+    "namespace",
     "unknown",
   ]),
   kind_verbose: z.enum([
@@ -153,6 +161,11 @@ export const nodeSchema = z.object({
     "dispatch_table",
     "inter_thread_message",
     "log_emission_point",
+    // Phase 3d / 3e additions
+    "enum_variant_member",
+    "interface_type",
+    "class_method",
+    "namespace_module",
     "unknown_entity",
   ]),
   canonical_name: z.string(),

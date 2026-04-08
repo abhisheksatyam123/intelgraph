@@ -84,6 +84,11 @@ export function mapIntentToArray(intent: QueryIntent): RelationArrayName {
     find_orphan_modules: "uses",
     find_largest_modules: "uses",
     find_modules_by_directory: "uses",
+    // Phase 3e: data-structure intents — same catch-all
+    find_field_type: "structures",
+    find_type_fields: "structures",
+    find_type_aggregates: "structures",
+    find_type_aggregators: "structures",
   }
 
   return mapping[intent] || "uses"
