@@ -661,13 +661,15 @@ export const TOOLS: ToolDef[] = [
       structName: z.string().optional().describe("Struct name (required for struct ownership intents)"),
       fieldName: z.string().optional().describe("Field name (required for find_field_access_path)"),
       traceId: z.string().optional().describe("Trace ID (required for show_runtime_flow_for_trace)"),
-      pattern: z.string().optional().describe("Log pattern (required for find_api_by_log_pattern)"),
+      pattern: z.string().optional().describe("Log pattern (required for find_api_by_log_pattern, find_symbols_by_name, find_symbols_by_kind, find_symbols_by_doc)"),
       logLevel: z.enum(["ERROR", "WARN", "INFO", "DEBUG", "VERBOSE", "TRACE"]).optional()
         .describe("Log level filter (required for find_api_logs_by_level; one of ERROR, WARN, INFO, DEBUG, VERBOSE, TRACE)"),
-      srcApi: z.string().optional().describe("Source API (required for show_cross_module_path)"),
-      dstApi: z.string().optional().describe("Destination API (required for show_cross_module_path)"),
-      depth: z.number().int().positive().optional().describe("Traversal depth limit"),
+      srcApi: z.string().optional().describe("Source API (required for show_cross_module_path, find_call_chain, find_module_interactions)"),
+      dstApi: z.string().optional().describe("Destination API (required for show_cross_module_path, find_call_chain, find_module_interactions)"),
+      depth: z.number().int().positive().optional().describe("Traversal depth limit (find_call_chain, find_transitive_dependencies, find_long_functions, find_import_cycles_deep)"),
       limit: z.number().int().positive().optional().describe("Result row limit"),
+      filePath: z.string().optional().describe("Workspace-relative file path (required for find_symbol_at_location, find_symbols_in_file)"),
+      lineNumber: z.number().int().positive().optional().describe("1-based line number (required for find_symbol_at_location)"),
     }),
     execute: async (args, _client, _tracker) => {
       const INTELLIGENCE_DEPS = getIntelligenceDeps()
