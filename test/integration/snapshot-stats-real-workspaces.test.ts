@@ -123,6 +123,39 @@ function buildAdjacency(graph: {
   return { succ, pred, ids }
 }
 
+// Build the edge-kind-tagged adjacency the HTML viewer builds at
+// init for the info-panel neighbor sections. outEdges[id][kind] is
+// an array of dst ids; inEdges[id][kind] is an array of src ids.
+// This mirrors the inlined logic exactly so the real-workspace
+// tests can verify the same data structure on actual graph data.
+function buildEdgeKindAdjacency(graph: {
+  nodes: Array<{ id: string }>
+  edges: Array<{ src: string; dst: string; kind: string }>
+}): {
+  outEdgesByKind: Map<string, Record<string, string[]>>
+  inEdgesByKind: Map<string, Record<string, string[]>>
+} {
+  const outEdgesByKind = new Map<string, Record<string, string[]>>()
+  const inEdgesByKind = new Map<string, Record<string, string[]>>()
+  for (const n of graph.nodes) {
+    outEdgesByKind.set(n.id, {})
+    inEdgesByKind.set(n.id, {})
+  }
+  for (const e of graph.edges) {
+    const out = outEdgesByKind.get(e.src)
+    if (out) {
+      if (!out[e.kind]) out[e.kind] = []
+      out[e.kind].push(e.dst)
+    }
+    const inn = inEdgesByKind.get(e.dst)
+    if (inn) {
+      if (!inn[e.kind]) inn[e.kind] = []
+      inn[e.kind].push(e.src)
+    }
+  }
+  return { outEdgesByKind, inEdgesByKind }
+}
+
 const OPENCODE_ROOT = "/home/abhi/qprojects/opencode/packages/opencode"
 const INSTRUCTKR_ROOT = "/home/abhi/qprojects/instructkr-claude-code"
 
@@ -1050,6 +1083,51 @@ for (const wcase of CASES) {
         // Both sides must have at least the center node
         expect(diff.summary.a_nodes).toBeGreaterThanOrEqual(1)
         expect(diff.summary.b_nodes).toBeGreaterThanOrEqual(1)
+      })
+
+      it("info-panel edge-kind adjacency is well-formed on real workspace data", () => {
+        // The HTML viewer builds outEdgesByKind / inEdgesByKind at
+        // init from the inlined edges. This test reproduces that
+        // build against real graph data and asserts the invariants
+        // the info panel rendering depends on:
+        //   1. Every edge appears in both outEdgesByKind[src] and
+        //      inEdgesByKind[dst] under the same kind bucket
+        //   2. The dual sums equal the total edge count
+        //   3. The hub symbol has at least one outgoing OR incoming
+        //      bucket (otherwise the panel would have nothing to show)
+        const graph = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        const { outEdgesByKind, inEdgesByKind } = buildEdgeKindAdjacency(graph)
+
+        // Property 1+2: dual sums match
+        let totalOut = 0
+        for (const buckets of outEdgesByKind.values()) {
+          for (const arr of Object.values(buckets)) totalOut += arr.length
+        }
+        let totalIn = 0
+        for (const buckets of inEdgesByKind.values()) {
+          for (const arr of Object.values(buckets)) totalIn += arr.length
+        }
+        // Each edge contributes once to the out side and once to
+        // the in side, so both totals must equal graph.edges.length.
+        expect(totalOut).toBe(graph.edges.length)
+        expect(totalIn).toBe(graph.edges.length)
+
+        // Property 3: the workspace's hub symbol must have neighbors
+        // in at least one direction (otherwise the panel renders
+        // nothing for it). For real hubs both directions are
+        // typically populated.
+        const adj = buildAdjacency(graph)
+        const center = viewerFns.resolveSymbol(wcase.centerSymbol, adj.ids)
+        expect(center).not.toBeNull()
+        const hubOut = outEdgesByKind.get(center!) || {}
+        const hubIn = inEdgesByKind.get(center!) || {}
+        const hasNeighbors =
+          Object.keys(hubOut).length > 0 || Object.keys(hubIn).length > 0
+        expect(hasNeighbors).toBe(true)
       })
 
       it("truncated HTML stays under the production size budget", () => {
