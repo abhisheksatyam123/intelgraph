@@ -2059,6 +2059,65 @@ export class Box {
     }
   })
 
+  it("emits one aggregates edge per distinct target type at the class level", async () => {
+    // Same fixture as the field_of_type test but assert on the
+    // class-level aggregates rollup. The class has 8 fields touching
+    // ~3 distinct user-defined types (User, Box itself for the
+    // self-reference, and… that's it on this fixture). Aggregates
+    // de-dupes across all fields.
+    const tinyDir = mkdtempSync(join(tmpdir(), "ts-core-agg-"))
+    try {
+      writeFileSync(
+        join(tinyDir, "package.json"),
+        JSON.stringify({ name: "fixture" }),
+      )
+      mkdirSync(join(tinyDir, "src"), { recursive: true })
+      writeFileSync(
+        join(tinyDir, "src", "model.ts"),
+        `export interface User { id: string }
+export class Box {
+  owner: User
+  members: User[]
+  fallback: User | undefined
+  loaded: Promise<User>
+  byId: Map<string, User>
+  cache: Record<string, User>
+  primary: User | Box
+}
+`,
+      )
+      const sink = new CaptureSink()
+      const runner = new ExtractorRunner({
+        snapshotId: 1,
+        workspaceRoot: tinyDir,
+        lsp: stubLsp,
+        sink,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+
+      const aggEdges = sink
+        .allEdges()
+        .filter(
+          (e) =>
+            e.edge_kind === "aggregates" &&
+            String(e.src_node_id).endsWith("#Box"),
+        )
+      const targets = new Set(
+        aggEdges.map((e) => String(e.dst_node_id).split("#")[1]),
+      )
+      // Box should aggregate User (from many fields) and Box itself
+      // (from the `primary: User | Box` self-reference). Each appears
+      // exactly once because the rollup de-dupes.
+      expect(targets.has("User")).toBe(true)
+      expect(targets.has("Box")).toBe(true)
+      // No more than these two (the fixture only references User and Box)
+      expect(aggEdges.length).toBe(targets.size)
+    } finally {
+      rmSync(tinyDir, { recursive: true, force: true })
+    }
+  })
+
   it("does not emit field_of_type edges to predefined built-in types", async () => {
     const tinyDir = mkdtempSync(join(tmpdir(), "ts-core-fot-builtins-"))
     try {

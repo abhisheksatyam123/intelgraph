@@ -451,6 +451,13 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
           // in a later phase. Each field also gets a contains edge
           // from the parent class/interface, mirroring the
           // class → method shape.
+          // Phase 3b rollup: collect every distinct target type that
+          // any field on this class/interface points at, then emit one
+          // `aggregates` edge per target. Lets consumers ask "what
+          // types does Vault depend on" with one query instead of
+          // walking N fields and de-duping client-side.
+          const aggregatedTargets = new Set<string>()
+
           for (const fieldDecl of extractFieldDeclarations(
             node,
             name,
@@ -503,7 +510,35 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
               file,
             )) {
               yield ctx.edge({ payload: typeEdge })
+              // Phase 3b: roll up the target into the per-class set.
+              // Self-references (a class with a field of its own type)
+              // are kept — they're meaningful (recursive structures).
+              aggregatedTargets.add(typeEdge.dstSymbolName)
             }
+          }
+
+          // Emit one aggregates edge per distinct target type. The
+          // source line is the class/interface declaration since
+          // there's no single field to anchor it to.
+          const classDeclLine = node.startPosition.row + 1
+          for (const target of aggregatedTargets) {
+            yield ctx.edge({
+              payload: {
+                edgeKind: "aggregates",
+                srcSymbolName: canonicalName,
+                dstSymbolName: target,
+                confidence: 0.95,
+                derivation: "clangd",
+                sourceLocation: {
+                  sourceFilePath: file,
+                  sourceLineNumber: classDeclLine,
+                },
+                metadata: {
+                  resolved: true,
+                  rolledUpFrom: "field_of_type",
+                },
+              },
+            })
           }
         }
 
