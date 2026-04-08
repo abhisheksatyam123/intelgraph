@@ -38,7 +38,10 @@ import {
 import { SqliteDbFoundation } from "../../src/intelligence/db/sqlite/foundation.js"
 import { SqliteGraphStore } from "../../src/intelligence/db/sqlite/graph-store.js"
 import { SqliteDbLookup } from "../../src/intelligence/db/sqlite/db-lookup.js"
-import { loadGraphJsonFromDb } from "../../src/intelligence/db/sqlite/graph-export.js"
+import {
+  loadGraphJsonFromDb,
+  diffGraphJson,
+} from "../../src/intelligence/db/sqlite/graph-export.js"
 import { ExtractorRunner } from "../../src/intelligence/extraction/runner.js"
 import { tsCoreExtractor } from "../../src/plugins/index.js"
 import {
@@ -882,6 +885,58 @@ for (const wcase of CASES) {
         const sub = viewerFns.resolveSymbol(probe, adj.ids)
         expect(sub).not.toBeNull()
         expect(sub!.includes(probe)).toBe(true)
+      })
+
+      it("diffGraphJson reports zero diff when comparing a graph to itself", () => {
+        const g = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        const diff = diffGraphJson(g, g)
+        expect(diff.nodes_only_in_a).toEqual([])
+        expect(diff.nodes_only_in_b).toEqual([])
+        expect(diff.edges_only_in_a).toEqual([])
+        expect(diff.edges_only_in_b).toEqual([])
+        expect(diff.nodes_in_both).toBe(g.nodes.length)
+        expect(diff.edges_in_both).toBe(g.edges.length)
+        expect(diff.summary.nodes_added).toBe(0)
+        expect(diff.summary.nodes_removed).toBe(0)
+        expect(diff.summary.edges_added).toBe(0)
+        expect(diff.summary.edges_removed).toBe(0)
+      })
+
+      it("diffGraphJson against a centerOf subset shows the cut nodes as removed", () => {
+        // Compare the full graph (a) against a centerOf subset (b).
+        // Everything b contains should be in a, so:
+        //   - nodes_only_in_b == 0  (b is a subset of a)
+        //   - edges_only_in_b == 0  (same property at the edge level)
+        //   - nodes_only_in_a > 0   (the cut nodes)
+        //   - nodes_in_both == b.nodes.length  (b ⊂ a)
+        const full = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        const centered = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+          { centerOf: wcase.centerSymbol, centerHops: 2 },
+        )
+        const diff = diffGraphJson(full, centered)
+
+        expect(diff.nodes_only_in_b).toEqual([])
+        expect(diff.edges_only_in_b).toEqual([])
+        expect(diff.nodes_in_both).toBe(centered.nodes.length)
+        expect(diff.edges_in_both).toBe(centered.edges.length)
+        // The cut count must equal full - centered
+        expect(diff.summary.nodes_removed).toBe(
+          full.nodes.length - centered.nodes.length,
+        )
+        expect(diff.summary.edges_removed).toBe(
+          full.edges.length - centered.edges.length,
+        )
       })
 
       it("truncated HTML stays under the production size budget", () => {

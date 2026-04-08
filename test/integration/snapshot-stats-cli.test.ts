@@ -27,6 +27,7 @@ import {
   graphJsonToHtml,
   VIEWER_PURE_JS,
 } from "../../src/bin/snapshot-stats.js"
+import { diffGraphJson } from "../../src/intelligence/db/sqlite/graph-export.js"
 
 let tempRoot: string
 
@@ -748,5 +749,145 @@ describe("VIEWER_PURE_JS — pure-function unit tests", () => {
       const arr = [...ids]
       expect(fns.resolveSymbol("Greeter", arr)).toBe("module:src/foo.ts#Greeter")
     })
+  })
+})
+
+describe("diffGraphJson — pure GraphJson set diff", () => {
+  // Build two tiny graphs by hand. The diff should report the
+  // exact set difference at the node and edge level.
+  function makeGraph(
+    nodeIds: string[],
+    edges: Array<{ src: string; dst: string; kind: string }>,
+  ): import("../../src/intelligence/db/sqlite/graph-export.js").GraphJson {
+    return {
+      workspace: "/tmp/x",
+      snapshot_id: 1,
+      total_nodes: nodeIds.length,
+      total_edges: edges.length,
+      nodes: nodeIds.map((id) => ({
+        id,
+        kind: "function",
+        file_path: null,
+        line: null,
+        end_line: null,
+        line_count: null,
+        exported: false,
+        doc: null,
+        owning_class: null,
+      })),
+      edges: edges.map((e) => ({
+        src: e.src,
+        dst: e.dst,
+        kind: e.kind,
+        resolution_kind: null,
+        metadata: null,
+      })),
+    }
+  }
+
+  it("identifies a graph as identical to itself", () => {
+    const g = makeGraph(
+      ["A", "B", "C"],
+      [
+        { src: "A", dst: "B", kind: "calls" },
+        { src: "B", dst: "C", kind: "calls" },
+      ],
+    )
+    const diff = diffGraphJson(g, g)
+    expect(diff.nodes_only_in_a).toEqual([])
+    expect(diff.nodes_only_in_b).toEqual([])
+    expect(diff.nodes_in_both).toBe(3)
+    expect(diff.edges_only_in_a).toEqual([])
+    expect(diff.edges_only_in_b).toEqual([])
+    expect(diff.edges_in_both).toBe(2)
+    expect(diff.summary.nodes_added).toBe(0)
+    expect(diff.summary.nodes_removed).toBe(0)
+    expect(diff.summary.edges_added).toBe(0)
+    expect(diff.summary.edges_removed).toBe(0)
+  })
+
+  it("reports added and removed nodes", () => {
+    const a = makeGraph(["A", "B", "C"], [])
+    const b = makeGraph(["B", "C", "D"], [])
+    const diff = diffGraphJson(a, b)
+    expect(diff.nodes_only_in_a).toEqual(["A"])
+    expect(diff.nodes_only_in_b).toEqual(["D"])
+    expect(diff.nodes_in_both).toBe(2)
+    expect(diff.summary.nodes_added).toBe(1)
+    expect(diff.summary.nodes_removed).toBe(1)
+  })
+
+  it("reports added and removed edges by (src,dst,kind) tuple", () => {
+    const a = makeGraph(
+      ["A", "B"],
+      [{ src: "A", dst: "B", kind: "calls" }],
+    )
+    const b = makeGraph(
+      ["A", "B"],
+      [
+        { src: "A", dst: "B", kind: "calls" },
+        { src: "A", dst: "B", kind: "imports" }, // same nodes, different kind
+      ],
+    )
+    const diff = diffGraphJson(a, b)
+    expect(diff.nodes_in_both).toBe(2)
+    expect(diff.nodes_only_in_a).toEqual([])
+    expect(diff.nodes_only_in_b).toEqual([])
+    // The "calls" edge is in both, the "imports" edge is only in b
+    expect(diff.edges_in_both).toBe(1)
+    expect(diff.edges_only_in_a).toEqual([])
+    expect(diff.edges_only_in_b).toEqual(["A|B|imports"])
+    expect(diff.summary.edges_added).toBe(1)
+    expect(diff.summary.edges_removed).toBe(0)
+  })
+
+  it("ignores metadata-only changes", () => {
+    // Same edge, different metadata. The diff treats them as
+    // identical because the (src,dst,kind) tuple matches.
+    const a = makeGraph(["A", "B"], [{ src: "A", dst: "B", kind: "calls" }])
+    const b = makeGraph(["A", "B"], [{ src: "A", dst: "B", kind: "calls" }])
+    a.edges[0].metadata = { resolutionKind: "direct" }
+    b.edges[0].metadata = { resolutionKind: "indirect" }
+    const diff = diffGraphJson(a, b)
+    expect(diff.edges_in_both).toBe(1)
+    expect(diff.edges_only_in_a).toEqual([])
+    expect(diff.edges_only_in_b).toEqual([])
+  })
+
+  it("caps the sample arrays at 100 entries even when the diff is huge", () => {
+    // Build two large disjoint graphs and check that the sample
+    // arrays don't blow up the response.
+    const aIds: string[] = []
+    const bIds: string[] = []
+    for (let i = 0; i < 500; i++) aIds.push("A_" + i)
+    for (let i = 0; i < 500; i++) bIds.push("B_" + i)
+    const a = makeGraph(aIds, [])
+    const b = makeGraph(bIds, [])
+    const diff = diffGraphJson(a, b)
+    expect(diff.nodes_only_in_a.length).toBe(100)
+    expect(diff.nodes_only_in_b.length).toBe(100)
+    // But the counts in the summary are exact
+    expect(diff.summary.nodes_removed).toBe(500)
+    expect(diff.summary.nodes_added).toBe(500)
+    expect(diff.nodes_in_both).toBe(0)
+  })
+
+  it("captures the summary counts from both inputs verbatim", () => {
+    const a = makeGraph(
+      ["A", "B"],
+      [{ src: "A", dst: "B", kind: "calls" }],
+    )
+    const b = makeGraph(
+      ["A", "B", "C"],
+      [
+        { src: "A", dst: "B", kind: "calls" },
+        { src: "B", dst: "C", kind: "calls" },
+      ],
+    )
+    const diff = diffGraphJson(a, b)
+    expect(diff.summary.a_nodes).toBe(2)
+    expect(diff.summary.b_nodes).toBe(3)
+    expect(diff.summary.a_edges).toBe(1)
+    expect(diff.summary.b_edges).toBe(2)
   })
 })

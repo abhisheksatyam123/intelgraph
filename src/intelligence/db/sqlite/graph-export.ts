@@ -293,6 +293,103 @@ export function loadGraphJsonFromDb(
  * If the graph already has ≤ N nodes, returns it unchanged. If N
  * is non-positive, returns an empty graph.
  */
+/**
+ * The result of comparing two GraphJson documents at the
+ * canonical-name level. Edge identity uses the
+ * "src|dst|kind" tuple, which is stable across runs and
+ * unaffected by metadata changes.
+ *
+ * This is the building block for "what did my filters cut out"
+ * questions and the eventual snapshot-vs-snapshot comparison
+ * story. It is intentionally small and pure: no IO, no shared
+ * state, just set arithmetic on two graphs.
+ */
+export interface GraphDiff {
+  nodes_only_in_a: string[]
+  nodes_only_in_b: string[]
+  nodes_in_both: number
+  edges_only_in_a: string[]
+  edges_only_in_b: string[]
+  edges_in_both: number
+  summary: {
+    a_nodes: number
+    b_nodes: number
+    a_edges: number
+    b_edges: number
+    nodes_added: number
+    nodes_removed: number
+    edges_added: number
+    edges_removed: number
+  }
+}
+
+function edgeKey(src: string, dst: string, kind: string): string {
+  return src + "|" + dst + "|" + kind
+}
+
+/**
+ * Compute the symmetric difference of two graphs at the
+ * canonical-name + edge-tuple level. Pure function: no IO, no
+ * mutation of either input.
+ *
+ * Edge identity is the (src, dst, edge_kind) tuple — metadata is
+ * intentionally ignored so a metadata-only change doesn't show up
+ * as add+remove. Node identity is the canonical_name (the `id`
+ * field of GraphJson nodes), which is stable across runs.
+ *
+ * The arrays of names are capped at 100 entries each so the
+ * result stays usable in human-readable output. Counts in
+ * `summary` are exact.
+ */
+export function diffGraphJson(a: GraphJson, b: GraphJson): GraphDiff {
+  const aNodeIds = new Set(a.nodes.map((n) => n.id))
+  const bNodeIds = new Set(b.nodes.map((n) => n.id))
+  const aEdgeKeys = new Set(a.edges.map((e) => edgeKey(e.src, e.dst, e.kind)))
+  const bEdgeKeys = new Set(b.edges.map((e) => edgeKey(e.src, e.dst, e.kind)))
+
+  const nodesOnlyA: string[] = []
+  const nodesOnlyB: string[] = []
+  let nodesBoth = 0
+  for (const id of aNodeIds) {
+    if (bNodeIds.has(id)) nodesBoth++
+    else nodesOnlyA.push(id)
+  }
+  for (const id of bNodeIds) {
+    if (!aNodeIds.has(id)) nodesOnlyB.push(id)
+  }
+
+  const edgesOnlyA: string[] = []
+  const edgesOnlyB: string[] = []
+  let edgesBoth = 0
+  for (const key of aEdgeKeys) {
+    if (bEdgeKeys.has(key)) edgesBoth++
+    else edgesOnlyA.push(key)
+  }
+  for (const key of bEdgeKeys) {
+    if (!aEdgeKeys.has(key)) edgesOnlyB.push(key)
+  }
+
+  const SAMPLE_CAP = 100
+  return {
+    nodes_only_in_a: nodesOnlyA.slice(0, SAMPLE_CAP),
+    nodes_only_in_b: nodesOnlyB.slice(0, SAMPLE_CAP),
+    nodes_in_both: nodesBoth,
+    edges_only_in_a: edgesOnlyA.slice(0, SAMPLE_CAP),
+    edges_only_in_b: edgesOnlyB.slice(0, SAMPLE_CAP),
+    edges_in_both: edgesBoth,
+    summary: {
+      a_nodes: a.nodes.length,
+      b_nodes: b.nodes.length,
+      a_edges: a.edges.length,
+      b_edges: b.edges.length,
+      nodes_added: nodesOnlyB.length,
+      nodes_removed: nodesOnlyA.length,
+      edges_added: edgesOnlyB.length,
+      edges_removed: edgesOnlyA.length,
+    },
+  }
+}
+
 export function topNByDegree(graph: GraphJson, n: number): GraphJson {
   if (n <= 0) {
     return {
