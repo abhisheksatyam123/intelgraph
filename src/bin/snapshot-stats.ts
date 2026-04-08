@@ -242,6 +242,10 @@ export interface Dashboard {
   top_field_classes: Array<{ name: string; field_count: number }>
   // Phase 3v: data clumps — field pairs touched by the same methods
   field_clumps: Array<{ field_a: string; field_b: string; co_occurrence: number }>
+  // Phase 3w: methods called by exactly one other method
+  unique_callers_count: number
+  // Phase 3x: directly self-recursive methods
+  recursive_methods_count: number
 }
 
 export async function buildDashboard(workspace: string): Promise<Dashboard> {
@@ -413,6 +417,16 @@ export async function buildDashboard(workspace: string): Promise<Dashboard> {
       snapshotId,
       limit: 10,
     })
+    const uniqueCallers = await lookup.lookup({
+      intent: "find_unique_callers",
+      snapshotId,
+      limit: 1000,
+    })
+    const recursiveMethods = await lookup.lookup({
+      intent: "find_recursive_methods",
+      snapshotId,
+      limit: 1000,
+    })
 
     return {
       workspace,
@@ -481,6 +495,8 @@ export async function buildDashboard(workspace: string): Promise<Dashboard> {
         field_b: String((r as { callee?: string }).callee ?? ""),
         co_occurrence: Number((r as { co_occurrence?: number }).co_occurrence),
       })),
+      unique_callers_count: uniqueCallers.rows.length,
+      recursive_methods_count: recursiveMethods.rows.length,
     }
   } finally {
     client.close()
@@ -563,6 +579,9 @@ function printDashboard(d: Dashboard): void {
   console.log(`  Unused fields:       ${d.unused_fields_count}`)
   console.log(`  Call cycles:         ${d.call_cycles_count}`)
   console.log(`  Struct cycles:       ${d.struct_cycles_count}`)
+  // Phase 3w/3x: refactor signals
+  console.log(`  Inline candidates:   ${d.unique_callers_count}`)
+  console.log(`  Self-recursive:      ${d.recursive_methods_count}`)
   console.log()
   if (d.top_imported_modules.length > 0) {
     console.log("Top imported modules:")
@@ -685,6 +704,8 @@ export function dashboardToMarkdown(d: Dashboard): string {
   lines.push(`- Unused fields: **${d.unused_fields_count}**`)
   lines.push(`- Call cycles: **${d.call_cycles_count}**`)
   lines.push(`- Struct cycles: **${d.struct_cycles_count}**`)
+  lines.push(`- Inline candidates: **${d.unique_callers_count}**`)
+  lines.push(`- Self-recursive methods: **${d.recursive_methods_count}**`)
   lines.push("")
   if (d.edge_kinds.length > 0) {
     lines.push("## Edge kinds")

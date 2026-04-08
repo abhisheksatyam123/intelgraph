@@ -144,6 +144,9 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     // Phase 3u + 3v: god classes by state + data clumps
     expect(Array.isArray(dashboard.top_field_classes)).toBe(true)
     expect(Array.isArray(dashboard.field_clumps)).toBe(true)
+    // Phase 3w + 3x: inline candidates + self-recursive count
+    expect(typeof dashboard.unique_callers_count).toBe("number")
+    expect(typeof dashboard.recursive_methods_count).toBe("number")
   })
 
   it("Phase 3s: dashboard exposes data-side health metrics", async () => {
