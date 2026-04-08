@@ -43,6 +43,7 @@ import { ExtractorRunner } from "../../src/intelligence/extraction/runner.js"
 import { tsCoreExtractor } from "../../src/plugins/index.js"
 import {
   graphJsonToHtml,
+  VIEWER_PURE_JS,
 } from "../../src/bin/snapshot-stats.js"
 import { setIntelligenceDeps, TOOLS } from "../../src/tools/index.js"
 import type { ILanguageClient } from "../../src/lsp/types.js"
@@ -62,6 +63,60 @@ const graphTool = TOOLS.find((t) => t.name === "intelligence_graph")
 if (!graphTool) throw new Error("intelligence_graph tool not registered")
 const stubClient = {} as Parameters<typeof graphTool.execute>[1]
 const stubTracker = {} as Parameters<typeof graphTool.execute>[2]
+
+// Eval the VIEWER_PURE_JS block once and capture its function
+// references. Same accessor pattern as the unit tests, but reused
+// here so we can run the BFS / shortestPath / resolveSymbol against
+// real workspace adjacency below.
+type ViewerFns = {
+  neighborhood: (
+    rootId: string,
+    hops: number,
+    direction: "in" | "out" | "both",
+    succ: Map<string, Set<string>>,
+    pred: Map<string, Set<string>>,
+  ) => Set<string>
+  shortestPath: (
+    srcId: string,
+    dstId: string,
+    succ: Map<string, Set<string>>,
+    nodeIds: Set<string>,
+  ) => string[] | null
+  resolveSymbol: (
+    query: string,
+    nodeIds: Set<string> | string[],
+  ) => string | null
+}
+// eslint-disable-next-line @typescript-eslint/no-implied-eval
+const viewerFns = new Function(`
+  ${VIEWER_PURE_JS}
+  return { neighborhood, shortestPath, resolveSymbol };
+`)() as ViewerFns
+
+// Build the directed adjacency the inlined viewer builds at init,
+// from a GraphJson. Used by the real-workspace pure-function tests.
+function buildAdjacency(graph: {
+  nodes: Array<{ id: string }>
+  edges: Array<{ src: string; dst: string }>
+}): {
+  succ: Map<string, Set<string>>
+  pred: Map<string, Set<string>>
+  ids: Set<string>
+} {
+  const succ = new Map<string, Set<string>>()
+  const pred = new Map<string, Set<string>>()
+  const ids = new Set<string>()
+  for (const n of graph.nodes) {
+    succ.set(n.id, new Set())
+    pred.set(n.id, new Set())
+    ids.add(n.id)
+  }
+  for (const e of graph.edges) {
+    succ.get(e.src)?.add(e.dst)
+    pred.get(e.dst)?.add(e.src)
+  }
+  return { succ, pred, ids }
+}
 
 const OPENCODE_ROOT = "/home/abhi/qprojects/opencode/packages/opencode"
 const INSTRUCTKR_ROOT = "/home/abhi/qprojects/instructkr-claude-code"
@@ -722,6 +777,111 @@ for (const wcase of CASES) {
             ),
           ).toBe(true)
         }
+      })
+
+      it("VIEWER_PURE_JS neighborhood BFS works on real workspace adjacency", () => {
+        // Build the real adjacency the inlined viewer would see
+        const graph = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        const adj = buildAdjacency(graph)
+
+        // Resolve the workspace's hub symbol via the pure resolver
+        const center = viewerFns.resolveSymbol(wcase.centerSymbol, adj.ids)
+        expect(center).not.toBeNull()
+        expect(adj.ids.has(center!)).toBe(true)
+
+        // Run undirected BFS from the hub at depth 2 — must be
+        // nontrivial (>1 node) and contain the center
+        const undirected = viewerFns.neighborhood(
+          center!,
+          2,
+          "both",
+          adj.succ,
+          adj.pred,
+        )
+        expect(undirected.size).toBeGreaterThan(1)
+        expect(undirected.has(center!)).toBe(true)
+
+        // The directional walks must be subsets of the undirected
+        // walk — same invariant as the server-side centerDirection
+        // tests, but verified inside the viewer's own pure JS.
+        const outOnly = viewerFns.neighborhood(
+          center!,
+          2,
+          "out",
+          adj.succ,
+          adj.pred,
+        )
+        const inOnly = viewerFns.neighborhood(
+          center!,
+          2,
+          "in",
+          adj.succ,
+          adj.pred,
+        )
+        for (const id of outOnly) expect(undirected.has(id)).toBe(true)
+        for (const id of inOnly) expect(undirected.has(id)).toBe(true)
+      })
+
+      it("VIEWER_PURE_JS shortestPath finds a real call chain", () => {
+        // Find any directed src→dst pair from the real graph and
+        // assert the BFS actually walks it. This is the property
+        // the HTML viewer's "Find path" inputs rely on.
+        const graph = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        const adj = buildAdjacency(graph)
+
+        // Pick a source with at least one outgoing edge — almost
+        // every function in either workspace qualifies.
+        let src: string | null = null
+        let dst: string | null = null
+        for (const [id, outs] of adj.succ) {
+          if (outs.size > 0) {
+            src = id
+            dst = [...outs][0]
+            break
+          }
+        }
+        expect(src).not.toBeNull()
+        expect(dst).not.toBeNull()
+
+        // 1-hop path: src → dst
+        const trail = viewerFns.shortestPath(src!, dst!, adj.succ, adj.ids)
+        expect(trail).not.toBeNull()
+        expect(trail![0]).toBe(src)
+        expect(trail![trail!.length - 1]).toBe(dst)
+        expect(trail!.length).toBe(2)
+      })
+
+      it("VIEWER_PURE_JS resolveSymbol handles real canonical names", () => {
+        // The forgiving resolver must work on real workspace symbols.
+        const graph = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        const adj = buildAdjacency(graph)
+
+        // Suffix-after-# should resolve the bare local name
+        const found = viewerFns.resolveSymbol(wcase.centerSymbol, adj.ids)
+        expect(found).not.toBeNull()
+        expect(found!.endsWith("#" + wcase.centerSymbol)).toBe(true)
+
+        // Exact passthrough must work on the resolved id
+        expect(viewerFns.resolveSymbol(found!, adj.ids)).toBe(found)
+
+        // Substring fallback must find at least *something* that
+        // contains a unique-ish substring from the workspace path
+        const probe = wcase.expectedSubstring
+        const sub = viewerFns.resolveSymbol(probe, adj.ids)
+        expect(sub).not.toBeNull()
+        expect(sub!.includes(probe)).toBe(true)
       })
     },
   )
