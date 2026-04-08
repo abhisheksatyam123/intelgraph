@@ -71,7 +71,7 @@ function printUsage(): void {
   console.error("Usage: bun run src/bin/snapshot-stats.ts <workspace-path> [--json]")
 }
 
-interface Dashboard {
+export interface Dashboard {
   workspace: string
   files_discovered: number
   total_nodes: number
@@ -94,7 +94,7 @@ interface Dashboard {
   external_imports: Array<{ name: string; usage_count: number }>
 }
 
-async function buildDashboard(workspace: string): Promise<Dashboard> {
+export async function buildDashboard(workspace: string): Promise<Dashboard> {
   const client = openSqlite({ path: ":memory:" })
   try {
     const foundation = new SqliteDbFoundation(client.db, client.raw)
@@ -119,9 +119,10 @@ async function buildDashboard(workspace: string): Promise<Dashboard> {
     const report = await runner.run()
     await foundation.commitSnapshot(snapshotId)
 
-    const filesDiscovered = report.perPlugin
-      .find((p) => p.pluginName === "ts-core")
-      ?.metrics?.counters?.["ts.files-discovered"] ?? 0
+    const filesDiscovered =
+      report.perPlugin.find((p) => p.name === "ts-core")?.metrics?.counters?.[
+        "ts.files-discovered"
+      ] ?? 0
 
     // Total counts
     const totalNodes = (
@@ -338,4 +339,17 @@ async function main(): Promise<void> {
   }
 }
 
-main()
+// Only run main() when this file is the entry point. Imports from
+// tests should NOT trigger ingestion.
+const isEntryPoint =
+  typeof import.meta !== "undefined" &&
+  // @ts-ignore — import.meta.main is bun/node-specific
+  (import.meta.main === true ||
+    (typeof process !== "undefined" &&
+      process.argv[1] &&
+      import.meta.url &&
+      import.meta.url.endsWith(process.argv[1].split("/").pop() ?? "")))
+
+if (isEntryPoint) {
+  main()
+}
