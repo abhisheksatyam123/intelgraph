@@ -75,6 +75,13 @@ interface WorkspaceCase {
   minEdges: number
   /** A canonical-name substring expected to exist in the graph. */
   expectedSubstring: string
+  /**
+   * A symbol-name suffix (the part after `#` in canonical_name) that
+   * resolves to a heavily-connected node — used as the center for
+   * the centerOf filter tests. Picked to have ~30+ callers so the
+   * centered subgraph is nontrivial but small.
+   */
+  centerSymbol: string
 }
 
 const CASES: WorkspaceCase[] = [
@@ -84,6 +91,7 @@ const CASES: WorkspaceCase[] = [
     minNodes: 500,
     minEdges: 500,
     expectedSubstring: "opencode",
+    centerSymbol: "cmd",
   },
   {
     name: "instructkr-claude-code",
@@ -91,6 +99,7 @@ const CASES: WorkspaceCase[] = [
     minNodes: 200,
     minEdges: 200,
     expectedSubstring: "src/",
+    centerSymbol: "Cursor",
   },
 ]
 
@@ -340,6 +349,101 @@ for (const wcase of CASES) {
           nodes: unknown[]
           edges: unknown[]
         }
+        expect(viaMcp.nodes.length).toBe(direct.nodes.length)
+        expect(viaMcp.edges.length).toBe(direct.edges.length)
+      })
+
+      it("centerOf via loadGraphJsonFromDb produces a small focused subgraph", () => {
+        const full = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        const centered = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+          { centerOf: wcase.centerSymbol, centerHops: 2 },
+        )
+
+        // Strictly smaller than the full graph
+        expect(centered.nodes.length).toBeLessThan(full.nodes.length)
+        expect(centered.nodes.length).toBeGreaterThan(0)
+
+        // The center symbol must appear in the result (suffix-after-#
+        // resolution)
+        expect(
+          centered.nodes.some((n) => n.id.endsWith("#" + wcase.centerSymbol)),
+        ).toBe(true)
+
+        // Every edge endpoint must be in the centered set —
+        // the orphan-edge invariant survives the BFS reduction.
+        const ids = new Set(centered.nodes.map((n) => n.id))
+        for (const edge of centered.edges) {
+          expect(ids.has(edge.src)).toBe(true)
+          expect(ids.has(edge.dst)).toBe(true)
+        }
+      })
+
+      it("centerOf via intelligence_graph MCP tool works on real workspaces", async () => {
+        const fullRaw = await graphTool!.execute(
+          {
+            snapshotId: ingest.snapshotId,
+            workspaceRoot: wcase.path,
+          },
+          stubClient,
+          stubTracker,
+        )
+        const full = JSON.parse(fullRaw) as { nodes: unknown[] }
+
+        const centeredRaw = await graphTool!.execute(
+          {
+            snapshotId: ingest.snapshotId,
+            workspaceRoot: wcase.path,
+            centerOf: wcase.centerSymbol,
+            centerHops: 2,
+          },
+          stubClient,
+          stubTracker,
+        )
+        const centered = JSON.parse(centeredRaw) as {
+          nodes: Array<{ id: string }>
+          edges: Array<{ src: string; dst: string }>
+        }
+
+        expect(centered.nodes.length).toBeLessThan(full.nodes.length)
+        expect(centered.nodes.length).toBeGreaterThan(0)
+        expect(
+          centered.nodes.some((n) => n.id.endsWith("#" + wcase.centerSymbol)),
+        ).toBe(true)
+        // Edge integrity in the centered subgraph
+        const ids = new Set(centered.nodes.map((n) => n.id))
+        for (const edge of centered.edges) {
+          expect(ids.has(edge.src)).toBe(true)
+          expect(ids.has(edge.dst)).toBe(true)
+        }
+      })
+
+      it("centerOf MCP and CLI paths return identical results", async () => {
+        // Same snapshot, same center symbol, same hop budget → same
+        // graph. Parity check between the two centerOf entry points.
+        const direct = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+          { centerOf: wcase.centerSymbol, centerHops: 2 },
+        )
+        const raw = await graphTool!.execute(
+          {
+            snapshotId: ingest.snapshotId,
+            workspaceRoot: wcase.path,
+            centerOf: wcase.centerSymbol,
+            centerHops: 2,
+          },
+          stubClient,
+          stubTracker,
+        )
+        const viaMcp = JSON.parse(raw) as { nodes: unknown[]; edges: unknown[] }
         expect(viaMcp.nodes.length).toBe(direct.nodes.length)
         expect(viaMcp.edges.length).toBe(direct.edges.length)
       })
