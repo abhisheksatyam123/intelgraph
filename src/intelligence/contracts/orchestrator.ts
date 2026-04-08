@@ -108,6 +108,8 @@ export const QUERY_INTENTS = [
   "find_deepest_call_chain",
   /** Search symbols by their JSDoc text (request.pattern, LIKE-matched against payload.metadata.doc). */
   "find_symbols_by_doc",
+  /** Module pairs ranked by total inter-module edges (calls + references_type). Refactor candidates. */
+  "find_tightly_coupled_modules",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

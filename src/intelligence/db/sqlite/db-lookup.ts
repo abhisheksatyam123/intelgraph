@@ -270,6 +270,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         )
       case "find_symbols_by_doc":
         return this.symbolsByDoc(snapshotId, request.pattern ?? "", limit)
+      case "find_tightly_coupled_modules":
+        return this.tightlyCoupledModules(snapshotId, limit)
       default:
         return []
     }
@@ -1027,6 +1029,65 @@ export class SqliteDbLookup implements DbLookupRepository {
   // (find_module_imports, find_class_inheritance, etc.) but are kind-
   // parameterized so they work for any future structural edge_kind
   // without per-intent code duplication.
+
+  /**
+   * Find module pairs ranked by total inter-module edges (calls +
+   * references_type). Surfaces refactor candidates: pairs of modules
+   * with high mutual coupling are often signs that code wants to be
+   * combined or that an abstraction is leaking.
+   *
+   * Module membership is derived from canonical_name prefix: a symbol
+   * `module:src/foo.ts#bar` belongs to module `module:src/foo.ts`.
+   * The query aggregates by (src_module, dst_module) excluding pairs
+   * where src == dst (those are intra-module noise).
+   *
+   * Result rows have caller=src_module, callee=dst_module, and
+   * coupling_count = total edges between them. Ordered DESC.
+   */
+  private tightlyCoupledModules(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        SUBSTR(src.canonical_name, 1, INSTR(src.canonical_name, '#') - 1) AS src_module,
+        SUBSTR(dst.canonical_name, 1, INSTR(dst.canonical_name, '#') - 1) AS dst_module,
+        COUNT(*) AS coupling_count
+      FROM graph_edges e
+      INNER JOIN graph_nodes src
+        ON e.src_node_id = src.node_id AND e.snapshot_id = src.snapshot_id
+      INNER JOIN graph_nodes dst
+        ON e.dst_node_id = dst.node_id AND e.snapshot_id = dst.snapshot_id
+      WHERE e.snapshot_id = ?
+        AND e.edge_kind IN ('calls', 'references_type')
+        AND INSTR(src.canonical_name, '#') > 0
+        AND INSTR(dst.canonical_name, '#') > 0
+        AND SUBSTR(src.canonical_name, 1, INSTR(src.canonical_name, '#') - 1)
+            != SUBSTR(dst.canonical_name, 1, INSTR(dst.canonical_name, '#') - 1)
+      GROUP BY src_module, dst_module
+      ORDER BY coupling_count DESC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<{
+      src_module: string
+      dst_module: string
+      coupling_count: number
+    }>
+    return rows.map((row) => ({
+      kind: "module",
+      canonical_name: row.src_module,
+      caller: row.src_module,
+      callee: row.dst_module,
+      edge_kind: "calls",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: null,
+      line_number: null,
+      coupling_count: toNumber(row.coupling_count),
+    }))
+  }
 
   /**
    * Search symbols by their JSDoc text. Builds on D59 which stores

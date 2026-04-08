@@ -385,6 +385,31 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
       }
     })
 
+    it("find_tightly_coupled_modules ranks module pairs by coupling count", async () => {
+      const result = await ingest.lookup.lookup({
+        intent: "find_tightly_coupled_modules",
+        snapshotId: ingest.snapshotId,
+        limit: 20,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      const counts = result.rows.map(
+        (r) => Number((r as { coupling_count?: number }).coupling_count),
+      )
+      // Each row has a positive coupling_count
+      for (const c of counts) {
+        expect(c).toBeGreaterThan(0)
+      }
+      // Sorted descending
+      for (let i = 1; i < counts.length; i++) {
+        expect(counts[i - 1]).toBeGreaterThanOrEqual(counts[i])
+      }
+      // src_module != dst_module (no self-coupling)
+      for (const row of result.rows) {
+        expect(row.caller).not.toBe(row.callee)
+      }
+    })
+
     it("find_symbols_by_doc searches documentation content", async () => {
       // Pick any pattern that's likely to appear in opencode JSDoc
       const result = await ingest.lookup.lookup({
@@ -1585,6 +1610,7 @@ describe.skipIf(!existsSync(OPENCODE_ROOT))(
           intent: "find_symbols_by_doc",
           request: { pattern: "the" },
         },
+        { intent: "find_tightly_coupled_modules", request: {} },
         // Search & browse
         {
           intent: "find_symbols_by_name",
