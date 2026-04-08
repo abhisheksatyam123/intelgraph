@@ -114,6 +114,8 @@ export function mapIntentToArray(intent: QueryIntent): RelationArrayName {
     find_top_hot_fields: "structures",
     // Phase 3u: god-class detector by state size
     find_classes_by_field_count: "structures",
+    // Phase 3v: data-clump detector — fields touched together
+    find_field_co_access: "structures",
   }
 
   return mapping[intent] || "uses"

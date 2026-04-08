@@ -2785,3 +2785,111 @@ export class Empty {
     }
   })
 })
+
+// ── Phase 3v: find_field_co_access — data clump detector ────────────────────
+//
+// Pairs of fields touched by the same method. Refactor candidates
+// for sub-object extraction (data clumps).
+
+describe("intelligence_query MCP tool — find_field_co_access (Phase 3v)", () => {
+  it("ranks field pairs by co-occurrence count", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3v-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3v" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      // firstName + lastName are touched together by 3 methods.
+      // age is touched alone by 1 method.
+      // → (firstName, lastName) is the top co-access pair.
+      writeFileSync(
+        join(tempRoot, "src", "user.ts"),
+        `export class User {
+  firstName = ""
+  lastName = ""
+  age = 0
+  fullName(): string { return this.firstName + " " + this.lastName }
+  greeting(): string { return "Hi " + this.firstName + " " + this.lastName }
+  format(): string { return this.firstName + ", " + this.lastName }
+  birthday(): void { this.age = this.age + 1 }
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3v",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      // Use lookup directly because the legacy flat response strips
+      // the caller/callee fields we need to verify the pair shape.
+      const result = await lookup.lookup({
+        intent: "find_field_co_access",
+        snapshotId,
+        limit: 10,
+      })
+      expect(result.hit).toBe(true)
+      expect(result.rows.length).toBeGreaterThan(0)
+      // The top pair must be firstName + lastName (touched by 3
+      // methods together). caller is alphabetically first
+      // (firstName < lastName).
+      const topRow = result.rows[0]
+      expect(String(topRow.caller)).toMatch(/#User\.firstName$/)
+      expect(String(topRow.callee)).toMatch(/#User\.lastName$/)
+      expect(Number(topRow.co_occurrence)).toBeGreaterThanOrEqual(3)
+      // Every row must satisfy the alphabetical ordering invariant
+      for (const row of result.rows) {
+        expect(String(row.caller) < String(row.callee)).toBe(true)
+        expect(row.edge_kind).toBe("co_access")
+      }
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+})

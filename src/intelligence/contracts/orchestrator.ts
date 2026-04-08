@@ -198,6 +198,13 @@ export const QUERY_INTENTS = [
   //              behavior. Ranks classes by the number of contained
   //              field nodes — surfaces types with too much state.
   "find_classes_by_field_count",
+  // ── Phase 3v: pairs of fields touched by the same method,
+  //              ranked by co-occurrence count. Surfaces fields
+  //              that move together — refactoring candidates for
+  //              sub-object extraction (e.g., user.firstName +
+  //              user.lastName always touched together → suggest
+  //              combining into a Name struct).
+  "find_field_co_access",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

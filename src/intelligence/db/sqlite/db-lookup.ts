@@ -268,6 +268,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.topHotFields(snapshotId, limit)
       case "find_classes_by_field_count":
         return this.classesByFieldCount(snapshotId, limit)
+      case "find_field_co_access":
+        return this.fieldCoAccess(snapshotId, limit)
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
       case "find_top_imported_modules":
@@ -3328,6 +3330,89 @@ export class SqliteDbLookup implements DbLookupRepository {
       // Alias for the viewer's hub-panel renderer
       incoming_count: Number(obj.toucher_count ?? 0),
       edge_kind: "hot_field",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
+
+  /**
+   * Phase 3v: pairs of fields touched by the same method, ranked
+   * by co-occurrence count. Surfaces fields that move together —
+   * refactoring candidates for sub-object extraction.
+   *
+   * The classic refactoring book "Refactoring" calls this "data
+   * clumps": groups of fields that always appear together in
+   * methods. The fix is usually to extract them into their own
+   * type. Examples:
+   *   - user.firstName + user.lastName → Name struct
+   *   - rect.x + rect.y + rect.w + rect.h → Bounds struct
+   *   - http.host + http.port + http.scheme → Origin struct
+   *
+   * Algorithm: self-join on the same source method touching two
+   * different fields. Count distinct (field_a, field_b) tuples
+   * with field_a.canonical_name < field_b.canonical_name to
+   * de-dupe. Restrict both fields to belong to the SAME parent
+   * type — cross-type co-access usually isn't a "data clump"
+   * candidate, just a signal that the touching method bridges
+   * two types intentionally.
+   *
+   * Returns rows ranked by co_occurrence (number of methods that
+   * touch both fields). The visualizer can present these as
+   * "consider extracting these into a sub-object" suggestions.
+   */
+  private fieldCoAccess(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        f1.canonical_name AS field_a,
+        f2.canonical_name AS field_b,
+        f1.location AS location,
+        COUNT(DISTINCT a1.src_node_id) AS co_occurrence
+      FROM graph_edges a1
+      INNER JOIN graph_nodes f1
+        ON a1.dst_node_id = f1.node_id AND a1.snapshot_id = f1.snapshot_id
+      INNER JOIN graph_edges a2
+        ON a2.snapshot_id = a1.snapshot_id
+        AND a2.src_node_id = a1.src_node_id
+        AND a2.edge_kind IN ('reads_field', 'writes_field')
+      INNER JOIN graph_nodes f2
+        ON a2.dst_node_id = f2.node_id AND a2.snapshot_id = f2.snapshot_id
+      INNER JOIN graph_edges parent_a
+        ON parent_a.snapshot_id = f1.snapshot_id
+        AND parent_a.dst_node_id = f1.node_id
+        AND parent_a.edge_kind = 'contains'
+      INNER JOIN graph_edges parent_b
+        ON parent_b.snapshot_id = f2.snapshot_id
+        AND parent_b.dst_node_id = f2.node_id
+        AND parent_b.edge_kind = 'contains'
+      WHERE a1.snapshot_id = ?
+        AND a1.edge_kind IN ('reads_field', 'writes_field')
+        AND f1.kind = 'field'
+        AND f2.kind = 'field'
+        AND f1.canonical_name < f2.canonical_name
+        AND parent_a.src_node_id = parent_b.src_node_id
+      GROUP BY f1.canonical_name, f2.canonical_name, f1.location
+      HAVING co_occurrence >= 2
+      ORDER BY co_occurrence DESC, f1.canonical_name ASC, f2.canonical_name ASC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: "field",
+      canonical_name: obj.field_a,
+      caller: obj.field_a,
+      callee: obj.field_b,
+      co_occurrence: Number(obj.co_occurrence ?? 0),
+      // Alias so the viewer's hub-panel renderer can pick this up
+      // under its existing incoming_count contract
+      incoming_count: Number(obj.co_occurrence ?? 0),
+      edge_kind: "co_access",
       confidence: 1,
       derivation: "clangd",
       file_path: extractFilePath(obj.location),

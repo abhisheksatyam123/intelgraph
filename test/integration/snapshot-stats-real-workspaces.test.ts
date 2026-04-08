@@ -1257,6 +1257,36 @@ for (const wcase of CASES) {
         expect(result.rows.some((r) => Number(r.hop_distance) > 0)).toBe(true)
       })
 
+      // ── Phase 3v: find_field_co_access on real data ───────────
+      it("phase 3v: find_field_co_access surfaces data clumps", async () => {
+        const result = await ingest.lookup.lookup({
+          intent: "find_field_co_access",
+          snapshotId: ingest.snapshotId,
+          limit: 20,
+        })
+        for (const row of result.rows) {
+          expect(row.kind).toBe("field")
+          expect(row.edge_kind).toBe("co_access")
+          expect(typeof row.caller).toBe("string")
+          expect(typeof row.callee).toBe("string")
+          // Both fields belong to a class — canonical names should
+          // contain a "#" separator (module:src/foo.ts#Class.field)
+          expect(String(row.caller).includes("#")).toBe(true)
+          expect(String(row.callee).includes("#")).toBe(true)
+          // Alphabetical ordering invariant
+          expect(String(row.caller) < String(row.callee)).toBe(true)
+          // Co-occurrence is at least 2 (the HAVING filter)
+          expect(typeof row.co_occurrence).toBe("number")
+          expect(Number(row.co_occurrence)).toBeGreaterThanOrEqual(2)
+        }
+        // Sort verification
+        for (let i = 1; i < result.rows.length; i++) {
+          expect(Number(result.rows[i - 1].co_occurrence)).toBeGreaterThanOrEqual(
+            Number(result.rows[i].co_occurrence),
+          )
+        }
+      })
+
       // ── Phase 3u: find_classes_by_field_count on real data ────
       it("phase 3u: find_classes_by_field_count ranks god classes by state", async () => {
         const result = await ingest.lookup.lookup({
