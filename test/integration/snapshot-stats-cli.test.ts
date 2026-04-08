@@ -186,6 +186,48 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     }
   })
 
+  it("buildGraphJson edge-kind filter keeps only the requested kinds", async () => {
+    const graph = await buildGraphJson(tempRoot, {
+      edgeKinds: new Set(["imports"]),
+    })
+    expect(graph.edges.length).toBeGreaterThan(0)
+    for (const edge of graph.edges) {
+      expect(edge.kind).toBe("imports")
+    }
+  })
+
+  it("buildGraphJson symbol-kind filter cascades to edges", async () => {
+    const graph = await buildGraphJson(tempRoot, {
+      symbolKinds: new Set(["module"]),
+    })
+    // Only module nodes should remain
+    expect(graph.nodes.length).toBeGreaterThan(0)
+    for (const node of graph.nodes) {
+      expect(node.kind).toBe("module")
+    }
+    // Every edge's endpoints should be in the surviving node set
+    const nodeIds = new Set(graph.nodes.map((n) => n.id))
+    for (const edge of graph.edges) {
+      expect(nodeIds.has(edge.src)).toBe(true)
+      expect(nodeIds.has(edge.dst)).toBe(true)
+    }
+  })
+
+  it("buildGraphJson combines edge-kind + symbol-kind filters", async () => {
+    // module → module imports edges only — the canonical "package
+    // dependency" view.
+    const graph = await buildGraphJson(tempRoot, {
+      edgeKinds: new Set(["imports"]),
+      symbolKinds: new Set(["module"]),
+    })
+    for (const node of graph.nodes) {
+      expect(node.kind).toBe("module")
+    }
+    for (const edge of graph.edges) {
+      expect(edge.kind).toBe("imports")
+    }
+  })
+
   it("dashboardToMarkdown renders a valid markdown report", async () => {
     const dashboard = await buildDashboard(tempRoot)
     const md = dashboardToMarkdown(dashboard)

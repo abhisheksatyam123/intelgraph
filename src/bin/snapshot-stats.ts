@@ -45,17 +45,29 @@ const stubLsp = {
 interface CliOptions {
   workspace: string
   format: "text" | "json" | "markdown" | "graph-json"
+  /** Comma-separated edge_kind filter for --graph-json. */
+  edgeKinds?: Set<string>
+  /** Comma-separated symbol kind filter for --graph-json. */
+  symbolKinds?: Set<string>
 }
 
 function parseArgs(): CliOptions {
   const args = process.argv.slice(2)
   const positionals: string[] = []
   let format: CliOptions["format"] = "text"
+  let edgeKinds: Set<string> | undefined
+  let symbolKinds: Set<string> | undefined
   for (const arg of args) {
     if (arg === "--json") format = "json"
     else if (arg === "--markdown" || arg === "--md") format = "markdown"
     else if (arg === "--graph-json" || arg === "--graph") format = "graph-json"
-    else if (arg === "--help" || arg === "-h") {
+    else if (arg.startsWith("--filter-edge-kind=")) {
+      const value = arg.replace("--filter-edge-kind=", "")
+      edgeKinds = new Set(value.split(",").map((s) => s.trim()).filter(Boolean))
+    } else if (arg.startsWith("--filter-symbol-kind=")) {
+      const value = arg.replace("--filter-symbol-kind=", "")
+      symbolKinds = new Set(value.split(",").map((s) => s.trim()).filter(Boolean))
+    } else if (arg === "--help" || arg === "-h") {
       printUsage()
       process.exit(0)
     } else if (!arg.startsWith("--")) {
@@ -66,12 +78,30 @@ function parseArgs(): CliOptions {
     printUsage()
     process.exit(1)
   }
-  return { workspace: positionals[0], format }
+  return { workspace: positionals[0], format, edgeKinds, symbolKinds }
 }
 
 function printUsage(): void {
   console.error(
-    "Usage: bun run src/bin/snapshot-stats.ts <workspace-path> [--json|--markdown|--graph-json]",
+    [
+      "Usage: bun run src/bin/snapshot-stats.ts <workspace-path> [options]",
+      "",
+      "Output formats:",
+      "  --text         human-readable dashboard (default)",
+      "  --json         summary stats as JSON",
+      "  --markdown     PR-pasteable markdown report",
+      "  --graph-json   full node-link graph for d3/cytoscape/sigma",
+      "",
+      "Graph-json filters (combine to subset the graph):",
+      "  --filter-edge-kind=K,K     keep only these edge kinds",
+      "                             (calls, imports, contains, extends,",
+      "                              implements, references_type)",
+      "  --filter-symbol-kind=K,K   keep only nodes of these kinds AND",
+      "                             edges where both endpoints survive",
+      "                             (module, function, class, interface,",
+      "                              method, namespace, typedef, enum,",
+      "                              global_var)",
+    ].join("\n"),
   )
 }
 
@@ -286,12 +316,29 @@ export interface GraphJson {
   }>
 }
 
+export interface GraphJsonFilters {
+  /** If set, keep only edges whose edge_kind is in this set. */
+  edgeKinds?: Set<string>
+  /**
+   * If set, keep only nodes whose kind is in this set, plus only edges
+   * where BOTH src and dst survive the node filter.
+   */
+  symbolKinds?: Set<string>
+}
+
 /**
  * Build the full node-link graph from a workspace snapshot. Used by
  * the --graph-json output mode and exported for direct programmatic
  * consumption (e.g. an HTTP wrapper or static-site generator).
+ *
+ * Optional filters subset the graph: edge-kind filtering keeps only
+ * the specified edge kinds; symbol-kind filtering keeps only matching
+ * nodes plus the edges where both endpoints survive.
  */
-export async function buildGraphJson(workspace: string): Promise<GraphJson> {
+export async function buildGraphJson(
+  workspace: string,
+  filters: GraphJsonFilters = {},
+): Promise<GraphJson> {
   const client = openSqlite({ path: ":memory:" })
   try {
     const foundation = new SqliteDbFoundation(client.db, client.raw)
@@ -374,7 +421,7 @@ export async function buildGraphJson(workspace: string): Promise<GraphJson> {
       }
     }
 
-    const nodes = nodeRows.map((row) => {
+    const allNodes = nodeRows.map((row) => {
       const loc = parseLocation(row.location)
       const payload = parseMetadata(row.payload) as
         | { metadata?: Record<string, unknown> }
@@ -399,6 +446,16 @@ export async function buildGraphJson(workspace: string): Promise<GraphJson> {
       }
     })
 
+    // Symbol-kind filter: drop nodes whose kind isn't in the set, and
+    // build a survivor set so the edge filter below can drop edges
+    // where either endpoint was filtered out.
+    const nodes = filters.symbolKinds
+      ? allNodes.filter((n) => filters.symbolKinds!.has(n.kind))
+      : allNodes
+    const survivingNodeIds = filters.symbolKinds
+      ? new Set(nodes.map((n) => n.id))
+      : null
+
     const edges = edgeRows
       .map((row) => {
         const src = nodeIdLookup.get(row.src_node_id)
@@ -408,6 +465,15 @@ export async function buildGraphJson(workspace: string): Promise<GraphJson> {
         // belong in a node-link graph). The visualizer can request
         // them separately via the query intents if needed.
         if (!src || !dst) return null
+        // Edge-kind filter: drop edges whose kind isn't in the set
+        if (filters.edgeKinds && !filters.edgeKinds.has(row.edge_kind)) {
+          return null
+        }
+        // Symbol-kind filter cascade: drop edges that connect to a
+        // node that was filtered out
+        if (survivingNodeIds && (!survivingNodeIds.has(src) || !survivingNodeIds.has(dst))) {
+          return null
+        }
         const meta = parseMetadata(row.metadata)
         return {
           src,
@@ -614,8 +680,12 @@ async function main(): Promise<void> {
   try {
     if (options.format === "graph-json") {
       // Skip the dashboard build for graph-json — go straight to
-      // the full node/edge dump.
-      const graph = await buildGraphJson(options.workspace)
+      // the full node/edge dump. Filter flags subset the graph
+      // before serialization so the JSON is smaller.
+      const graph = await buildGraphJson(options.workspace, {
+        edgeKinds: options.edgeKinds,
+        symbolKinds: options.symbolKinds,
+      })
       console.log(JSON.stringify(graph, null, 2))
       return
     }
