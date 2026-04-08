@@ -24,7 +24,7 @@
 
 import { createServer, type Socket } from "net"
 import { spawn } from "child_process"
-import { appendFileSync, writeFileSync, readFileSync } from "fs"
+import { appendFileSync, writeFileSync, readFileSync, existsSync } from "fs"
 import path from "path"
 
 // ── Argument parsing ──────────────────────────────────────────────────────────
@@ -41,7 +41,7 @@ export function parseArgs(argv: string[]): {
   let root = process.cwd()
   let serverBin = "clangd"
   let serverArgs: string[] = []
-  let logFile = "/tmp/clangd-mcp-bridge.log"
+  let logFile = "/tmp/intelgraph-bridge.log"
 
   for (let i = 0; i < args.length; i++) {
     const a = args[i]!
@@ -67,7 +67,7 @@ export function parseArgs(argv: string[]): {
 
 // ── JSON Logger ───────────────────────────────────────────────────────────────
 
-let _logFile = "/tmp/clangd-mcp-bridge.log"
+let _logFile = "/tmp/intelgraph-bridge.log"
 
 function initLog(file: string): void {
   _logFile = file
@@ -102,10 +102,22 @@ function logError(message: string, err: any): void {
 
 // ── State file update ─────────────────────────────────────────────────────────
 
-const STATE_FILE = ".clangd-mcp-state.json"
+// Match the daemon's stateFilePath() lookup: prefer .intelgraph-state.json,
+// fall back to the legacy .clangd-mcp-state.json. We can't just import
+// from src/daemon because the bridge is built as a separate dist bundle.
+const STATE_FILE = ".intelgraph-state.json"
+const LEGACY_STATE_FILE = ".clangd-mcp-state.json"
+
+function resolveStateFile(root: string): string {
+  const newPath = path.join(root, STATE_FILE)
+  if (existsSync(newPath)) return newPath
+  const legacyPath = path.join(root, LEGACY_STATE_FILE)
+  if (existsSync(legacyPath)) return legacyPath
+  return newPath
+}
 
 function updateStateServerPid(root: string, serverPid: number): void {
-  const stateFile = path.join(root, STATE_FILE)
+  const stateFile = resolveStateFile(root)
   try {
     const text = readFileSync(stateFile, "utf8")
     const state = JSON.parse(text)

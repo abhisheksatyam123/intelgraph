@@ -16,7 +16,7 @@
  */
 
 import { createServer, createConnection } from "net"
-import { readFileSync, writeFileSync, unlinkSync, openSync, closeSync, constants, statSync } from "fs"
+import { readFileSync, writeFileSync, unlinkSync, openSync, closeSync, constants, statSync, existsSync } from "fs"
 import { spawn } from "child_process"
 import path from "path"
 import { fileURLToPath } from "url"
@@ -92,11 +92,28 @@ export interface DaemonState {
   }
 }
 
-const STATE_FILE = ".clangd-mcp-state.json"
+// New file names — fresh installs land on these
+const STATE_FILE = ".intelgraph-state.json"
+const SPAWN_LOCK_FILE = ".intelgraph-spawn.lock"
+// Legacy file names — kept for backwards compat. Read from these
+// when the new files don't exist; if both exist, the new file wins.
+const LEGACY_STATE_FILE = ".clangd-mcp-state.json"
+const LEGACY_SPAWN_LOCK_FILE = ".clangd-mcp-spawn.lock"
 const STATE_VERSION = 1
 
+/**
+ * Resolve the state file path: prefers the new .intelgraph-state.json,
+ * falls back to the legacy .clangd-mcp-state.json if it already
+ * exists. New writes always go to whichever file currently exists,
+ * or to the new path for fresh installs.
+ */
 export function stateFilePath(root: string): string {
-  return path.join(normaliseRoot(root), STATE_FILE)
+  const normalized = normaliseRoot(root)
+  const newPath = path.join(normalized, STATE_FILE)
+  if (existsSync(newPath)) return newPath
+  const legacyPath = path.join(normalized, LEGACY_STATE_FILE)
+  if (existsSync(legacyPath)) return legacyPath
+  return newPath
 }
 
 export function computeWorkspaceId(root: string): string {
@@ -141,23 +158,35 @@ export function writeState(root: string, state: DaemonState): void {
 }
 
 export function clearState(root: string): void {
-  const fp = stateFilePath(root)
-  try {
-    unlinkSync(fp)
-    log("INFO", "Stale state file removed", { path: fp })
-  } catch (err: any) {
-    if (err?.code !== "ENOENT") {
-      log("WARN", "Failed to remove state file", { path: fp, error: err?.message })
+  // Remove both the new and legacy state files so a clear is total.
+  const normalized = normaliseRoot(root)
+  for (const name of [STATE_FILE, LEGACY_STATE_FILE]) {
+    const fp = path.join(normalized, name)
+    try {
+      unlinkSync(fp)
+      log("INFO", "Stale state file removed", { path: fp })
+    } catch (err: any) {
+      if (err?.code !== "ENOENT") {
+        log("WARN", "Failed to remove state file", { path: fp, error: err?.message })
+      }
     }
   }
 }
 
 // ── Spawn lock file (atomic spawn coordination) ──────────────────────────────
 
-const SPAWN_LOCK_FILE = ".clangd-mcp-spawn.lock"
-
+/**
+ * Spawn lock path: same lookup pattern as the state file. Existing
+ * locks honor whichever file is on disk so a daemon spawned by an
+ * older binary is still recognized.
+ */
 function spawnLockPath(root: string): string {
-  return path.join(normaliseRoot(root), SPAWN_LOCK_FILE)
+  const normalized = normaliseRoot(root)
+  const newPath = path.join(normalized, SPAWN_LOCK_FILE)
+  if (existsSync(newPath)) return newPath
+  const legacyPath = path.join(normalized, LEGACY_SPAWN_LOCK_FILE)
+  if (existsSync(legacyPath)) return legacyPath
+  return newPath
 }
 
 function readSpawnLockOwnerPid(root: string): number | null {
@@ -379,8 +408,15 @@ export async function spawnDaemon(opts: SpawnDaemonOptions): Promise<DaemonState
     root,
   })
 
-  // Bridge log file alongside the state file
-  const bridgeLog = path.join(root, "clangd-mcp-bridge.log")
+  // Bridge log file alongside the state file. Use the legacy name
+  // when an old log file already exists in the workspace so users
+  // tailing it don't lose their stream mid-session.
+  const newBridgeLog = path.join(root, "intelgraph-bridge.log")
+  const legacyBridgeLog = path.join(root, "clangd-mcp-bridge.log")
+  const bridgeLog =
+    !existsSync(newBridgeLog) && existsSync(legacyBridgeLog)
+      ? legacyBridgeLog
+      : newBridgeLog
 
   const bridgeArgs = [
     opts.bridgeScript,
