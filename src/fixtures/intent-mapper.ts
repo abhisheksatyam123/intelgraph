@@ -116,6 +116,8 @@ export function mapIntentToArray(intent: QueryIntent): RelationArrayName {
     find_classes_by_field_count: "structures",
     // Phase 3v: data-clump detector — fields touched together
     find_field_co_access: "structures",
+    // Phase 3w: methods called by exactly one other method
+    find_unique_callers: "uses",
   }
 
   return mapping[intent] || "uses"

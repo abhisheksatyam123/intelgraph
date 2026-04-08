@@ -205,6 +205,12 @@ export const QUERY_INTENTS = [
   //              user.lastName always touched together → suggest
   //              combining into a Name struct).
   "find_field_co_access",
+  // ── Phase 3w: methods called by exactly one other method —
+  //              inline-or-keep refactor signal. Different from
+  //              find_dead_exports (zero callers) and complements
+  //              it: a function with one caller is often a
+  //              candidate to inline back into that caller.
+  "find_unique_callers",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

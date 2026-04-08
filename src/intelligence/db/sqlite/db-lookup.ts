@@ -270,6 +270,8 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.classesByFieldCount(snapshotId, limit)
       case "find_field_co_access":
         return this.fieldCoAccess(snapshotId, limit)
+      case "find_unique_callers":
+        return this.uniqueCallers(snapshotId, limit)
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
       case "find_top_imported_modules":
@@ -3413,6 +3415,67 @@ export class SqliteDbLookup implements DbLookupRepository {
       // under its existing incoming_count contract
       incoming_count: Number(obj.co_occurrence ?? 0),
       edge_kind: "co_access",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
+    }))
+  }
+
+  /**
+   * Phase 3w: methods called by exactly one other method. The
+   * inline-or-keep refactor signal. Different from
+   * find_dead_exports (zero callers, candidate for deletion) —
+   * a function with exactly one caller is often a candidate to
+   * inline back into that caller, especially if it's a private
+   * helper.
+   *
+   * The query returns the callee plus the unique caller for
+   * convenience: the visualizer can render the row as
+   * "callee → only called by caller" without a second query.
+   *
+   * COUNT(DISTINCT src_node_id) = 1 means exactly one method
+   * calls this — not "called once" (a single caller might call
+   * it multiple times). The DISTINCT is the important part.
+   */
+  private uniqueCallers(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        callee.canonical_name AS canonical_name,
+        callee.kind AS kind,
+        callee.location AS location,
+        MIN(caller.canonical_name) AS unique_caller
+      FROM graph_edges e
+      INNER JOIN graph_nodes caller
+        ON e.src_node_id = caller.node_id AND e.snapshot_id = caller.snapshot_id
+      INNER JOIN graph_nodes callee
+        ON e.dst_node_id = callee.node_id AND e.snapshot_id = callee.snapshot_id
+      WHERE e.snapshot_id = ?
+        AND e.edge_kind = 'calls'
+        AND callee.kind IN ('function', 'method')
+        AND caller.kind IN ('function', 'method')
+        -- Exclude pure self-recursion: a function calling itself
+        -- isn't an inline candidate, it's a recursive algorithm.
+        -- The "exactly one OTHER caller" definition is what makes
+        -- this query useful for refactoring.
+        AND caller.canonical_name != callee.canonical_name
+      GROUP BY callee.canonical_name, callee.kind, callee.location
+      HAVING COUNT(DISTINCT e.src_node_id) = 1
+      ORDER BY callee.canonical_name ASC
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "function",
+      canonical_name: obj.canonical_name,
+      caller: obj.unique_caller,
+      callee: obj.canonical_name,
+      edge_kind: "single_caller",
       confidence: 1,
       derivation: "clangd",
       file_path: extractFilePath(obj.location),

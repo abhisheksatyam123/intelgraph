@@ -2893,3 +2893,110 @@ describe("intelligence_query MCP tool — find_field_co_access (Phase 3v)", () =
     }
   })
 })
+
+// ── Phase 3w: find_unique_callers — inline-or-keep refactor signal ──────────
+//
+// Methods called by exactly one other method. Different from
+// find_dead_exports (zero callers) — a function with one caller
+// is often a candidate to inline back into that caller.
+
+describe("intelligence_query MCP tool — find_unique_callers (Phase 3w)", () => {
+  it("surfaces methods with exactly one distinct caller", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3w-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3w" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      // helper has 1 caller (entry).
+      // shared has 2 callers (a, b).
+      // dead has 0 callers (find_dead_exports finds it, not us).
+      writeFileSync(
+        join(tempRoot, "src", "main.ts"),
+        `export function helper(): number { return 42 }
+export function shared(): number { return 7 }
+export function dead(): number { return 0 }
+export function entry(): number { return helper() }
+export function a(): number { return shared() }
+export function b(): number { return shared() + 1 }
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3w",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      // Use lookup directly to get the caller/callee fields
+      const result = await lookup.lookup({
+        intent: "find_unique_callers",
+        snapshotId,
+        limit: 50,
+      })
+      expect(result.hit).toBe(true)
+      const names = result.rows.map((r) => String(r.canonical_name))
+      // helper has 1 caller → must appear
+      expect(names.some((n) => n.endsWith("#helper"))).toBe(true)
+      // shared has 2 callers → must NOT appear
+      expect(names.some((n) => n.endsWith("#shared"))).toBe(false)
+      // dead has 0 callers → must NOT appear (zero ≠ exactly 1)
+      expect(names.some((n) => n.endsWith("#dead"))).toBe(false)
+      // The helper row's caller must be entry
+      const helperRow = result.rows.find((r) =>
+        String(r.canonical_name).endsWith("#helper"),
+      )
+      expect(helperRow).toBeDefined()
+      expect(String(helperRow!.caller)).toMatch(/#entry$/)
+      expect(String(helperRow!.callee)).toMatch(/#helper$/)
+      expect(helperRow!.edge_kind).toBe("single_caller")
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+})

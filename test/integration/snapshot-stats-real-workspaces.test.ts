@@ -1257,6 +1257,33 @@ for (const wcase of CASES) {
         expect(result.rows.some((r) => Number(r.hop_distance) > 0)).toBe(true)
       })
 
+      // ── Phase 3w: find_unique_callers on real data ────────────
+      it("phase 3w: find_unique_callers surfaces inline candidates", async () => {
+        // Real codebases always have plenty of helper functions
+        // called by exactly one other function. Probe just verifies
+        // the SQL works on a real snapshot.
+        const result = await ingest.lookup.lookup({
+          intent: "find_unique_callers",
+          snapshotId: ingest.snapshotId,
+          limit: 50,
+        })
+        expect(result.hit).toBe(true)
+        // Both opencode and qcode should have at least a few inline
+        // candidates — almost any TS codebase does
+        expect(result.rows.length).toBeGreaterThan(0)
+        for (const row of result.rows) {
+          expect(["function", "method"]).toContain(String(row.kind))
+          expect(row.edge_kind).toBe("single_caller")
+          expect(typeof row.caller).toBe("string")
+          expect(typeof row.callee).toBe("string")
+          // canonical_name == callee (the row's "subject")
+          expect(row.canonical_name).toBe(row.callee)
+          // The caller must be a different symbol (no self-recursion
+          // detection — that's a separate intent)
+          expect(row.caller).not.toBe(row.callee)
+        }
+      })
+
       // ── Phase 3v: find_field_co_access on real data ───────────
       it("phase 3v: find_field_co_access surfaces data clumps", async () => {
         const result = await ingest.lookup.lookup({
