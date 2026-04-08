@@ -539,6 +539,87 @@ for (const wcase of CASES) {
           expect(ids.has(edge.dst)).toBe(true)
         }
       })
+
+      it("pre-filter totals stay anchored across every filter cascade", () => {
+        // The full graph defines the snapshot totals.
+        const full = loadGraphJsonFromDb(
+          ingest.client.raw,
+          ingest.snapshotId,
+          wcase.path,
+        )
+        expect(full.total_nodes).toBeGreaterThan(0)
+        expect(full.total_edges).toBeGreaterThan(0)
+        // totals are >= visible counts (orphan edges are dropped at
+        // load time, so total_edges >= edges.length always)
+        expect(full.total_nodes).toBeGreaterThanOrEqual(full.nodes.length)
+        expect(full.total_edges).toBeGreaterThanOrEqual(full.edges.length)
+
+        // Every other filter combination must report the same totals.
+        const variants = [
+          loadGraphJsonFromDb(ingest.client.raw, ingest.snapshotId, wcase.path, {
+            edgeKinds: new Set(["imports"]),
+            symbolKinds: new Set(["module"]),
+          }),
+          loadGraphJsonFromDb(ingest.client.raw, ingest.snapshotId, wcase.path, {
+            centerOf: wcase.centerSymbol,
+            centerHops: 2,
+          }),
+          loadGraphJsonFromDb(ingest.client.raw, ingest.snapshotId, wcase.path, {
+            maxNodes: 50,
+          }),
+          loadGraphJsonFromDb(ingest.client.raw, ingest.snapshotId, wcase.path, {
+            centerOf: wcase.centerSymbol,
+            centerHops: 3,
+            maxNodes: 25,
+          }),
+        ]
+        for (const v of variants) {
+          expect(v.total_nodes).toBe(full.total_nodes)
+          expect(v.total_edges).toBe(full.total_edges)
+          // The visible counts must be ≤ totals (the filter only shrinks)
+          expect(v.nodes.length).toBeLessThanOrEqual(full.total_nodes)
+          expect(v.edges.length).toBeLessThanOrEqual(full.total_edges)
+        }
+      })
+
+      it("totals also propagate through the intelligence_graph MCP path", async () => {
+        // Same anchoring property must hold via the MCP tool.
+        const fullRaw = await graphTool!.execute(
+          {
+            snapshotId: ingest.snapshotId,
+            workspaceRoot: wcase.path,
+          },
+          stubClient,
+          stubTracker,
+        )
+        const full = JSON.parse(fullRaw) as {
+          total_nodes: number
+          total_edges: number
+        }
+        expect(full.total_nodes).toBeGreaterThan(0)
+        expect(full.total_edges).toBeGreaterThan(0)
+
+        // maxNodes via MCP — totals stay anchored, visible count drops
+        const cappedRaw = await graphTool!.execute(
+          {
+            snapshotId: ingest.snapshotId,
+            workspaceRoot: wcase.path,
+            maxNodes: 50,
+          },
+          stubClient,
+          stubTracker,
+        )
+        const capped = JSON.parse(cappedRaw) as {
+          total_nodes: number
+          total_edges: number
+          nodes: unknown[]
+        }
+        expect(capped.total_nodes).toBe(full.total_nodes)
+        expect(capped.total_edges).toBe(full.total_edges)
+        expect(capped.nodes.length).toBeLessThanOrEqual(50)
+        // Truncation actually happened: this workspace has > 50 nodes
+        expect(capped.total_nodes).toBeGreaterThan(50)
+      })
     },
   )
 }
