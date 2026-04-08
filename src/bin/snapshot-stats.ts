@@ -566,6 +566,120 @@ export function dashboardToMarkdown(d: Dashboard): string {
 }
 
 /**
+ * VIEWER_PURE_JS — pure-logic functions used by the inlined HTML
+ * viewer, factored out so they can be unit-tested in vitest without
+ * a JSDOM/d3 sandbox.
+ *
+ * Every function here takes its inputs as parameters (no closure
+ * over outer-scope `successors` / `nodeById` / etc.). The HTML
+ * template inlines this string verbatim and the call sites pass
+ * the closure variables in as args.
+ *
+ * Exported so the test suite can `new Function(...)` this string
+ * and call into the functions with concrete inputs.
+ */
+export const VIEWER_PURE_JS = `
+// Map a file path to its parent directory.
+function dirOf(filePath) {
+  if (!filePath) return "";
+  const slash = filePath.lastIndexOf("/");
+  return slash >= 0 ? filePath.substring(0, slash) : "";
+}
+
+// FNV-1a-style string → 0..359 hue. Used to color nodes by
+// directory in a stable way across runs.
+function hashHue(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = (h * 16777619) >>> 0;
+  }
+  return h % 360;
+}
+
+// k-hop BFS in the requested direction. Pure: takes adjacency as
+// args so it's callable from anywhere with concrete Maps.
+//   direction: "in" | "out" | "both"
+//   succ: Map<id, Set<id>> of forward edges
+//   pred: Map<id, Set<id>> of backward edges
+function neighborhood(rootId, hops, direction, succ, pred) {
+  const walkOut = direction === "out" || direction === "both";
+  const walkIn = direction === "in" || direction === "both";
+  const seen = new Set([rootId]);
+  let frontier = [rootId];
+  for (let i = 0; i < hops; i++) {
+    const next = [];
+    for (const id of frontier) {
+      if (walkOut) {
+        const out = succ.get(id);
+        if (out) for (const t of out) if (!seen.has(t)) { seen.add(t); next.push(t); }
+      }
+      if (walkIn) {
+        const inn = pred.get(id);
+        if (inn) for (const t of inn) if (!seen.has(t)) { seen.add(t); next.push(t); }
+      }
+    }
+    if (next.length === 0) break;
+    frontier = next;
+  }
+  return seen;
+}
+
+// Directed BFS from src to dst over the supplied successors map.
+// Returns the ordered node-id sequence (length >= 2) on success or
+// null if no path exists. nodeIds is the set of valid ids used to
+// reject queries that don't resolve to a known node.
+function shortestPath(srcId, dstId, succ, nodeIds) {
+  if (!nodeIds.has(srcId) || !nodeIds.has(dstId)) return null;
+  if (srcId === dstId) return [srcId];
+  const prev = new Map();
+  prev.set(srcId, null);
+  const queue = [srcId];
+  while (queue.length > 0) {
+    const cur = queue.shift();
+    const out = succ.get(cur);
+    if (!out) continue;
+    for (const next of out) {
+      if (prev.has(next)) continue;
+      prev.set(next, cur);
+      if (next === dstId) {
+        const trail = [next];
+        let walk = cur;
+        while (walk !== null && walk !== undefined) {
+          trail.push(walk);
+          walk = prev.get(walk) ?? null;
+        }
+        return trail.reverse();
+      }
+      queue.push(next);
+    }
+  }
+  return null;
+}
+
+// Resolve a forgiving symbol query to a node id. Strategies in
+// order: exact match → suffix-after-# match → substring match.
+// nodeIds is an iterable of all known canonical names. Returns
+// null if nothing matches.
+function resolveSymbol(query, nodeIds) {
+  if (!query) return null;
+  // Pass 1: exact (Set has O(1), so we materialize once if iterable
+  // wasn't already a Set)
+  const idSet = nodeIds instanceof Set ? nodeIds : new Set(nodeIds);
+  if (idSet.has(query)) return query;
+  // Pass 2: suffix-after-#
+  for (const id of idSet) {
+    if (id.endsWith("#" + query)) return id;
+  }
+  // Pass 3: substring
+  for (const id of idSet) {
+    if (id.includes(query)) return id;
+  }
+  return null;
+}
+`
+
+/**
  * Render a GraphJson as a single self-contained HTML document with
  * a d3-force layout. Pipe the output into a `.html` file and open
  * it in a browser — no build step, no dev server, no file:// CORS
@@ -842,6 +956,7 @@ export function graphJsonToHtml(graph: GraphJson): string {
 </div>
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
 <script>
+${VIEWER_PURE_JS}
 const data = ${dataLiteral};
 const KIND_COLORS = {
   module:     "#6ab1ff",
@@ -935,30 +1050,17 @@ for (const l of links) {
 //   "in"   → backward only (predecessors), "what reaches X"
 let walkDirection = "both";
 
-function neighborhood(rootId, hops, direction) {
-  // K-hop BFS in the requested direction. Defaults to the current
-  // walkDirection state when no explicit direction is passed.
-  const dir = direction || walkDirection;
-  const walkOut = dir === "out" || dir === "both";
-  const walkIn = dir === "in" || dir === "both";
-  const seen = new Set([rootId]);
-  let frontier = [rootId];
-  for (let i = 0; i < hops; i++) {
-    const next = [];
-    for (const id of frontier) {
-      if (walkOut) {
-        const out = successors.get(id);
-        if (out) for (const t of out) if (!seen.has(t)) { seen.add(t); next.push(t); }
-      }
-      if (walkIn) {
-        const inn = predecessors.get(id);
-        if (inn) for (const t of inn) if (!seen.has(t)) { seen.add(t); next.push(t); }
-      }
-    }
-    if (next.length === 0) break;
-    frontier = next;
-  }
-  return seen;
+// Closure-bound wrapper around the parametric neighborhood() from
+// VIEWER_PURE_JS. Call sites use this so they don't have to pass
+// the adjacency maps every time.
+function nbhd(rootId, hops, direction) {
+  return neighborhood(
+    rootId,
+    hops,
+    direction || walkDirection,
+    successors,
+    predecessors,
+  );
 }
 
 document.getElementById("stat-nodes").textContent = data.nodes.length;
@@ -997,21 +1099,8 @@ let tintOn = false;
 // Directory tint: hash each node's parent directory to a stable hue
 // in the HSL wheel. Used as the stroke color when "tint by directory"
 // is on, so the kind color (fill) and subsystem cue (stroke) are
-// readable simultaneously. Computed once at init.
-function dirOf(filePath) {
-  if (!filePath) return "";
-  const slash = filePath.lastIndexOf("/");
-  return slash >= 0 ? filePath.substring(0, slash) : "";
-}
-function hashHue(s) {
-  // Simple FNV-1a-style hash → 0..359 hue
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = (h * 16777619) >>> 0;
-  }
-  return h % 360;
-}
+// readable simultaneously. Computed once at init. (dirOf and hashHue
+// come from the VIEWER_PURE_JS block above.)
 const dirHueByNode = new Map();
 const distinctDirs = new Set();
 for (const n of data.nodes) {
@@ -1223,7 +1312,7 @@ function loadHashState() {
   // ID set in the URL — it would explode for big graphs — so we
   // store just the flag and recompute.
   if (params.get("cm") === "1" && focused) {
-    centerSet = neighborhood(focused, hopDepth);
+    centerSet = nbhd(focused, hopDepth);
   }
   const k = params.get("k");
   if (k) {
@@ -1248,7 +1337,7 @@ hopSlider.addEventListener("input", (ev) => {
   // If the live center filter is active, recompute it for the
   // new depth so the visible set tracks the slider live.
   if (centerSet && focused) {
-    centerSet = neighborhood(focused, hopDepth);
+    centerSet = nbhd(focused, hopDepth);
     render();
   }
   saveHashState();
@@ -1262,7 +1351,7 @@ for (const radio of document.querySelectorAll('input[name="dir"]')) {
     walkDirection = ev.target.value;
     if (focused) applyFocus();
     if (centerSet && focused) {
-      centerSet = neighborhood(focused, hopDepth);
+      centerSet = nbhd(focused, hopDepth);
       render();
     }
     saveHashState();
@@ -1298,7 +1387,7 @@ function applyFocus() {
     linkSel.classed("dim", false).classed("hit", false);
     return;
   }
-  const nbrs = neighborhood(focused, hopDepth);
+  const nbrs = nbhd(focused, hopDepth);
   nodeSel
     .classed("dim", (d) => !nbrs.has(d.id))
     .classed("hit", (d) => nbrs.has(d.id) && d.id !== focused)
@@ -1485,7 +1574,7 @@ document.getElementById("center-on-focused").addEventListener("click", () => {
       '<span class="empty">click a node first, then center</span>';
     return;
   }
-  centerSet = neighborhood(focused, hopDepth);
+  centerSet = nbhd(focused, hopDepth);
   render();
   saveHashState();
 });
@@ -1529,48 +1618,16 @@ function updateBadge(visibleNodeCount, visibleEdgeCount) {
 //
 // Path state is stored as a Set of node ids and a Set of edge keys
 // (kind|s|t) so the render() pass can paint .path-on classes without
-// disturbing the existing focused/cycle/dim state.
+// disturbing the existing focused/cycle/dim state. The pure BFS and
+// resolveSymbol live in the VIEWER_PURE_JS block above; these are
+// closure-bound wrappers that pass the inlined adjacency.
 const pathNodes = new Set();
 const pathEdgeKeys = new Set();
-function shortestPath(srcId, dstId) {
-  if (!nodeById.has(srcId) || !nodeById.has(dstId)) return null;
-  if (srcId === dstId) return [srcId];
-  const prev = new Map();
-  prev.set(srcId, null);
-  const queue = [srcId];
-  while (queue.length > 0) {
-    const cur = queue.shift();
-    const out = successors.get(cur);
-    if (!out) continue;
-    for (const next of out) {
-      if (prev.has(next)) continue;
-      prev.set(next, cur);
-      if (next === dstId) {
-        // Reconstruct
-        const trail = [next];
-        let walk = cur;
-        while (walk !== null && walk !== undefined) {
-          trail.push(walk);
-          walk = prev.get(walk) ?? null;
-        }
-        return trail.reverse();
-      }
-      queue.push(next);
-    }
-  }
-  return null;
+function findPath(srcId, dstId) {
+  return shortestPath(srcId, dstId, successors, nodeById);
 }
-function resolveSymbol(query) {
-  // Match strategies, in order: exact, suffix (#name), substring.
-  if (!query) return null;
-  if (nodeById.has(query)) return query;
-  for (const id of nodeById.keys()) {
-    if (id.endsWith("#" + query)) return id;
-  }
-  for (const id of nodeById.keys()) {
-    if (id.includes(query)) return id;
-  }
-  return null;
+function findSymbol(query) {
+  return resolveSymbol(query, nodeById);
 }
 function clearPath() {
   pathNodes.clear();
@@ -1588,8 +1645,8 @@ function findAndShowPath() {
     status.className = "fail";
     return;
   }
-  const src = resolveSymbol(fromQ);
-  const dst = resolveSymbol(toQ);
+  const src = findSymbol(fromQ);
+  const dst = findSymbol(toQ);
   if (!src || !dst) {
     status.textContent =
       (!src ? "no match for from" : "no match for to") + " — try a longer query";
@@ -1599,7 +1656,7 @@ function findAndShowPath() {
     render();
     return;
   }
-  const trail = shortestPath(src, dst);
+  const trail = findPath(src, dst);
   if (!trail) {
     status.textContent = "no path found (src → dst)";
     status.className = "fail";

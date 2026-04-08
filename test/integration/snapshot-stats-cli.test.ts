@@ -25,6 +25,7 @@ import {
   buildGraphJson,
   dashboardToMarkdown,
   graphJsonToHtml,
+  VIEWER_PURE_JS,
 } from "../../src/bin/snapshot-stats.js"
 
 let tempRoot: string
@@ -506,8 +507,11 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(html).toContain('value="both"')
     expect(html).toContain('value="out"')
     expect(html).toContain('value="in"')
-    // The neighborhood BFS now takes a direction param
-    expect(html).toContain("function neighborhood(rootId, hops, direction)")
+    // The neighborhood BFS is now parametric (takes adjacency in)
+    // and lives in the VIEWER_PURE_JS block; the closure-bound
+    // wrapper is nbhd().
+    expect(html).toContain("function neighborhood(rootId, hops, direction, succ, pred)")
+    expect(html).toContain("function nbhd(rootId, hops, direction)")
 
     // Pre-filter totals carried through GraphJson + the badge
     // formatter that shows "X of Y nodes" when truncated.
@@ -563,5 +567,186 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     // No raw object/undefined leakage
     expect(md).not.toContain("undefined")
     expect(md).not.toContain("[object Object]")
+  })
+})
+
+describe("VIEWER_PURE_JS — pure-function unit tests", () => {
+  // Eval the inlined viewer-runtime block once and capture its
+  // function references via a tiny accessor block. This gives real
+  // unit test coverage of the BFS / shortestPath / resolveSymbol
+  // logic that the HTML viewer relies on, without spinning up a
+  // JSDOM environment.
+  const fns = (() => {
+    const accessor = `
+      ${VIEWER_PURE_JS}
+      return {
+        dirOf,
+        hashHue,
+        neighborhood,
+        shortestPath,
+        resolveSymbol,
+      };
+    `
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
+    return new Function(accessor)() as {
+      dirOf: (filePath: string) => string
+      hashHue: (s: string) => number
+      neighborhood: (
+        rootId: string,
+        hops: number,
+        direction: "in" | "out" | "both",
+        succ: Map<string, Set<string>>,
+        pred: Map<string, Set<string>>,
+      ) => Set<string>
+      shortestPath: (
+        srcId: string,
+        dstId: string,
+        succ: Map<string, Set<string>>,
+        nodeIds: Set<string>,
+      ) => string[] | null
+      resolveSymbol: (
+        query: string,
+        nodeIds: Set<string> | string[],
+      ) => string | null
+    }
+  })()
+
+  describe("dirOf", () => {
+    it("returns parent directory for a path", () => {
+      expect(fns.dirOf("src/util/format.ts")).toBe("src/util")
+    })
+    it("returns empty string for path with no slash", () => {
+      expect(fns.dirOf("foo.ts")).toBe("")
+    })
+    it("returns empty string for empty input", () => {
+      expect(fns.dirOf("")).toBe("")
+    })
+  })
+
+  describe("hashHue", () => {
+    it("returns a number 0..359", () => {
+      const h = fns.hashHue("src/util")
+      expect(h).toBeGreaterThanOrEqual(0)
+      expect(h).toBeLessThan(360)
+    })
+    it("is stable across calls", () => {
+      expect(fns.hashHue("src/util")).toBe(fns.hashHue("src/util"))
+    })
+    it("returns different hues for different inputs (no trivial collision)", () => {
+      // Not a strict guarantee for any two strings, but two different
+      // dir names from a real workspace should virtually never collide.
+      expect(fns.hashHue("src/util")).not.toBe(fns.hashHue("src/cli"))
+    })
+  })
+
+  describe("neighborhood", () => {
+    // Build a tiny graph:
+    //   A → B → C
+    //   A → D
+    //   E → A
+    const succ = new Map<string, Set<string>>([
+      ["A", new Set(["B", "D"])],
+      ["B", new Set(["C"])],
+      ["C", new Set()],
+      ["D", new Set()],
+      ["E", new Set(["A"])],
+    ])
+    const pred = new Map<string, Set<string>>([
+      ["A", new Set(["E"])],
+      ["B", new Set(["A"])],
+      ["C", new Set(["B"])],
+      ["D", new Set(["A"])],
+      ["E", new Set()],
+    ])
+
+    it("undirected BFS at hops=1 includes both directions", () => {
+      const got = fns.neighborhood("A", 1, "both", succ, pred)
+      expect([...got].sort()).toEqual(["A", "B", "D", "E"])
+    })
+    it("forward-only BFS at hops=1 only walks successors", () => {
+      const got = fns.neighborhood("A", 1, "out", succ, pred)
+      expect([...got].sort()).toEqual(["A", "B", "D"])
+    })
+    it("backward-only BFS at hops=1 only walks predecessors", () => {
+      const got = fns.neighborhood("A", 1, "in", succ, pred)
+      expect([...got].sort()).toEqual(["A", "E"])
+    })
+    it("forward BFS at hops=2 reaches grandchildren", () => {
+      const got = fns.neighborhood("A", 2, "out", succ, pred)
+      expect([...got].sort()).toEqual(["A", "B", "C", "D"])
+    })
+    it("BFS terminates when frontier empties before max hops", () => {
+      // From C there's nothing forward; should still return {C}
+      const got = fns.neighborhood("C", 5, "out", succ, pred)
+      expect([...got]).toEqual(["C"])
+    })
+  })
+
+  describe("shortestPath", () => {
+    const ids = new Set(["A", "B", "C", "D"])
+    const succ = new Map<string, Set<string>>([
+      ["A", new Set(["B", "C"])],
+      ["B", new Set(["D"])],
+      ["C", new Set(["D"])],
+      ["D", new Set()],
+    ])
+
+    it("finds the direct path A→B", () => {
+      expect(fns.shortestPath("A", "B", succ, ids)).toEqual(["A", "B"])
+    })
+    it("finds a 2-hop path A→D (via B or C, BFS picks one)", () => {
+      const path = fns.shortestPath("A", "D", succ, ids)
+      expect(path).not.toBeNull()
+      expect(path!.length).toBe(3)
+      expect(path![0]).toBe("A")
+      expect(path![2]).toBe("D")
+      expect(["B", "C"]).toContain(path![1])
+    })
+    it("returns [src] for src===dst", () => {
+      expect(fns.shortestPath("A", "A", succ, ids)).toEqual(["A"])
+    })
+    it("returns null when no path exists (D→A)", () => {
+      expect(fns.shortestPath("D", "A", succ, ids)).toBeNull()
+    })
+    it("returns null when src is unknown", () => {
+      expect(fns.shortestPath("Z", "A", succ, ids)).toBeNull()
+    })
+    it("returns null when dst is unknown", () => {
+      expect(fns.shortestPath("A", "Z", succ, ids)).toBeNull()
+    })
+  })
+
+  describe("resolveSymbol", () => {
+    const ids = new Set([
+      "module:src/foo.ts",
+      "module:src/foo.ts#Greeter",
+      "module:src/foo.ts#Greeter.greet",
+      "module:src/util.ts#format",
+    ])
+    it("returns the exact match when present", () => {
+      expect(fns.resolveSymbol("module:src/foo.ts#Greeter", ids)).toBe(
+        "module:src/foo.ts#Greeter",
+      )
+    })
+    it("returns the suffix-after-# match when no exact match", () => {
+      // "Greeter" → matches "module:src/foo.ts#Greeter" via suffix
+      expect(fns.resolveSymbol("Greeter", ids)).toBe("module:src/foo.ts#Greeter")
+    })
+    it("returns the substring match as a last resort", () => {
+      // "format" matches the format function via substring (no exact
+      // canonical name, no #format suffix on a plain canonical_name)
+      const got = fns.resolveSymbol("format", ids)
+      expect(got).toBe("module:src/util.ts#format")
+    })
+    it("returns null when nothing matches", () => {
+      expect(fns.resolveSymbol("totally_made_up_xyz", ids)).toBeNull()
+    })
+    it("returns null for empty query", () => {
+      expect(fns.resolveSymbol("", ids)).toBeNull()
+    })
+    it("works with an iterable that's not already a Set", () => {
+      const arr = [...ids]
+      expect(fns.resolveSymbol("Greeter", arr)).toBe("module:src/foo.ts#Greeter")
+    })
   })
 })
