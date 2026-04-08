@@ -41,6 +41,11 @@ import type {
   LookupResult,
   QueryRequest,
 } from "../../contracts/orchestrator.js"
+import {
+  loadGraphJsonFromDb,
+  type GraphJson,
+  type GraphJsonFilters,
+} from "./graph-export.js"
 import type * as schema from "./schema.js"
 
 type SqliteDb = BetterSQLite3Database<typeof schema>
@@ -117,6 +122,22 @@ export class SqliteDbLookup implements DbLookupRepository {
     } catch {
       return miss(request)
     }
+  }
+
+  /**
+   * Read graph_nodes + graph_edges for `snapshotId` and assemble a
+   * node-link `GraphJson` document. Used by the `intelligence_graph`
+   * MCP tool to expose the same data the snapshot-stats CLI's
+   * `--graph-json` / `--html` modes render — but against the live
+   * persisted snapshot, with no re-extraction. Pure read; no side
+   * effects on the db.
+   */
+  loadGraphJson(
+    snapshotId: number,
+    workspaceRoot: string,
+    filters: GraphJsonFilters = {},
+  ): GraphJson {
+    return loadGraphJsonFromDb(this.raw, snapshotId, workspaceRoot, filters)
   }
 
   // -------------------------------------------------------------------------

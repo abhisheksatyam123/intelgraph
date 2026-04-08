@@ -29,9 +29,18 @@ import { openSqlite } from "../intelligence/db/sqlite/client.js"
 import { SqliteDbFoundation } from "../intelligence/db/sqlite/foundation.js"
 import { SqliteGraphStore } from "../intelligence/db/sqlite/graph-store.js"
 import { SqliteDbLookup } from "../intelligence/db/sqlite/db-lookup.js"
+import {
+  loadGraphJsonFromDb,
+  type GraphJson,
+  type GraphJsonFilters,
+} from "../intelligence/db/sqlite/graph-export.js"
 import { ExtractorRunner } from "../intelligence/extraction/runner.js"
 import { BUILT_IN_EXTRACTORS } from "../plugins/index.js"
 import type { ILanguageClient } from "../lsp/types.js"
+
+// Re-export for back-compat — existing tests import GraphJson and
+// GraphJsonFilters from this module.
+export type { GraphJson, GraphJsonFilters }
 
 const stubLsp = {
   root: "/tmp",
@@ -296,49 +305,6 @@ export async function buildDashboard(workspace: string): Promise<Dashboard> {
 }
 
 /**
- * Node-link graph shape suitable for d3-force, cytoscape, sigma,
- * cosmograph, and most other web visualization libraries.
- *
- * Each node carries the symbol's kind, canonical name, and the
- * useful metadata flags from the extractor (exported, line range,
- * doc snippet, etc). Each edge carries its kind plus any
- * resolution metadata (resolutionKind, awaited, jsxTag, …) so the
- * visualizer can render different connection styles.
- */
-export interface GraphJson {
-  workspace: string
-  snapshot_id: number
-  nodes: Array<{
-    id: string
-    kind: string
-    file_path: string | null
-    line: number | null
-    end_line: number | null
-    line_count: number | null
-    exported: boolean
-    doc: string | null
-    owning_class: string | null
-  }>
-  edges: Array<{
-    src: string
-    dst: string
-    kind: string
-    resolution_kind: string | null
-    metadata: Record<string, unknown> | null
-  }>
-}
-
-export interface GraphJsonFilters {
-  /** If set, keep only edges whose edge_kind is in this set. */
-  edgeKinds?: Set<string>
-  /**
-   * If set, keep only nodes whose kind is in this set, plus only edges
-   * where BOTH src and dst survive the node filter.
-   */
-  symbolKinds?: Set<string>
-}
-
-/**
  * Build the full node-link graph from a workspace snapshot. Used by
  * the --graph-json output mode and exported for direct programmatic
  * consumption (e.g. an HTTP wrapper or static-site generator).
@@ -346,6 +312,10 @@ export interface GraphJsonFilters {
  * Optional filters subset the graph: edge-kind filtering keeps only
  * the specified edge kinds; symbol-kind filtering keeps only matching
  * nodes plus the edges where both endpoints survive.
+ *
+ * The SQL + filter logic lives in graph-export.ts so the new
+ * `intelligence_graph` MCP tool can reuse it against an existing
+ * snapshot without re-extracting.
  */
 export async function buildGraphJson(
   workspace: string,
@@ -374,138 +344,7 @@ export async function buildGraphJson(
     await runner.run()
     await foundation.commitSnapshot(snapshotId)
 
-    type NodeRow = {
-      canonical_name: string
-      kind: string
-      location: string | null
-      payload: string | null
-    }
-    const nodeRows = client.raw
-      .prepare(
-        `SELECT canonical_name, kind, location, payload
-         FROM graph_nodes
-         WHERE snapshot_id = ?
-         ORDER BY canonical_name`,
-      )
-      .all(snapshotId) as NodeRow[]
-
-    type EdgeRow = {
-      src_node_id: string
-      dst_node_id: string
-      edge_kind: string
-      metadata: string | null
-    }
-    const edgeRows = client.raw
-      .prepare(
-        `SELECT src_node_id, dst_node_id, edge_kind, metadata
-         FROM graph_edges
-         WHERE snapshot_id = ?`,
-      )
-      .all(snapshotId) as EdgeRow[]
-
-    // Build a node_id → canonical_name lookup so edges can use
-    // canonical names (which are stable and human-readable) instead
-    // of opaque graph_node IDs.
-    const nodeIdLookup = new Map<string, string>()
-    const nodeIdRows = client.raw
-      .prepare(
-        `SELECT node_id, canonical_name FROM graph_nodes WHERE snapshot_id = ?`,
-      )
-      .all(snapshotId) as Array<{ node_id: string; canonical_name: string }>
-    for (const row of nodeIdRows) {
-      nodeIdLookup.set(row.node_id, row.canonical_name)
-    }
-
-    const parseMetadata = (raw: string | null): Record<string, unknown> | null => {
-      if (!raw) return null
-      try {
-        return JSON.parse(raw)
-      } catch {
-        return null
-      }
-    }
-    const parseLocation = (raw: string | null): { filePath?: string; line?: number } => {
-      if (!raw) return {}
-      try {
-        return JSON.parse(raw)
-      } catch {
-        return {}
-      }
-    }
-
-    const allNodes = nodeRows.map((row) => {
-      const loc = parseLocation(row.location)
-      const payload = parseMetadata(row.payload) as
-        | { metadata?: Record<string, unknown> }
-        | null
-      const meta = payload?.metadata ?? {}
-      return {
-        id: row.canonical_name,
-        kind: row.kind,
-        file_path: loc.filePath ?? null,
-        line: typeof loc.line === "number" ? loc.line : null,
-        end_line:
-          typeof (meta as { endLine?: unknown }).endLine === "number"
-            ? Number((meta as { endLine?: number }).endLine)
-            : null,
-        line_count:
-          typeof (meta as { lineCount?: unknown }).lineCount === "number"
-            ? Number((meta as { lineCount?: number }).lineCount)
-            : null,
-        exported: (meta as { exported?: boolean }).exported === true,
-        doc: (meta as { doc?: string }).doc ?? null,
-        owning_class: (meta as { owningClass?: string }).owningClass ?? null,
-      }
-    })
-
-    // Symbol-kind filter: drop nodes whose kind isn't in the set, and
-    // build a survivor set so the edge filter below can drop edges
-    // where either endpoint was filtered out.
-    const nodes = filters.symbolKinds
-      ? allNodes.filter((n) => filters.symbolKinds!.has(n.kind))
-      : allNodes
-    const survivingNodeIds = filters.symbolKinds
-      ? new Set(nodes.map((n) => n.id))
-      : null
-
-    const edges = edgeRows
-      .map((row) => {
-        const src = nodeIdLookup.get(row.src_node_id)
-        const dst = nodeIdLookup.get(row.dst_node_id)
-        // Skip edges where src/dst doesn't resolve to a known node
-        // (these are usually external/unresolved targets and don't
-        // belong in a node-link graph). The visualizer can request
-        // them separately via the query intents if needed.
-        if (!src || !dst) return null
-        // Edge-kind filter: drop edges whose kind isn't in the set
-        if (filters.edgeKinds && !filters.edgeKinds.has(row.edge_kind)) {
-          return null
-        }
-        // Symbol-kind filter cascade: drop edges that connect to a
-        // node that was filtered out
-        if (survivingNodeIds && (!survivingNodeIds.has(src) || !survivingNodeIds.has(dst))) {
-          return null
-        }
-        const meta = parseMetadata(row.metadata)
-        return {
-          src,
-          dst,
-          kind: row.edge_kind,
-          resolution_kind:
-            (meta as { resolutionKind?: string } | null)?.resolutionKind ?? null,
-          metadata: meta,
-        }
-      })
-      .filter(
-        (e): e is NonNullable<typeof e> => e !== null,
-      )
-
-    return {
-      workspace,
-      snapshot_id: snapshotId,
-      nodes,
-      edges,
-    }
+    return loadGraphJsonFromDb(client.raw, snapshotId, workspace, filters)
   } finally {
     client.close()
   }

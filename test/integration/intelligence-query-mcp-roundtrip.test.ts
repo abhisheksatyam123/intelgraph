@@ -51,6 +51,8 @@ const stubLsp = {
 
 const tool = TOOLS.find((t) => t.name === "intelligence_query")
 if (!tool) throw new Error("intelligence_query tool not registered")
+const graphTool = TOOLS.find((t) => t.name === "intelligence_graph")
+if (!graphTool) throw new Error("intelligence_graph tool not registered")
 const stubClient = {} as Parameters<typeof tool.execute>[1]
 const stubTracker = {} as Parameters<typeof tool.execute>[2]
 
@@ -291,5 +293,124 @@ describe("intelligence_query MCP tool — round trip", () => {
     })
     expect(res.status).toBe("error")
     expect(res.data.nodes.length).toBe(0)
+  })
+})
+
+describe("intelligence_graph MCP tool — round trip", () => {
+  it("returns the full GraphJson for a snapshot", async () => {
+    fixture = await buildFixture()
+    const raw = await graphTool!.execute(
+      {
+        snapshotId: fixture.snapshotId,
+        workspaceRoot: fixture.tempRoot,
+      },
+      stubClient,
+      stubTracker,
+    )
+    const graph = JSON.parse(raw) as {
+      workspace: string
+      snapshot_id: number
+      nodes: Array<{ id: string; kind: string; file_path: string | null }>
+      edges: Array<{ src: string; dst: string; kind: string }>
+    }
+    expect(graph.workspace).toBe(fixture.tempRoot)
+    expect(graph.snapshot_id).toBe(fixture.snapshotId)
+    expect(graph.nodes.length).toBeGreaterThan(0)
+    expect(graph.edges.length).toBeGreaterThan(0)
+
+    // Both fixture modules should appear
+    const ids = graph.nodes.map((n) => n.id)
+    expect(ids.some((i) => i.includes("alpha.ts"))).toBe(true)
+    expect(ids.some((i) => i.includes("beta.ts"))).toBe(true)
+    // Alpha class should be present
+    expect(ids.some((i) => i.endsWith("#Alpha"))).toBe(true)
+
+    // Every edge endpoint must resolve to a node — same orphan-edge
+    // invariant the snapshot-stats real-workspace test enforces.
+    const nodeIdSet = new Set(ids)
+    for (const edge of graph.edges) {
+      expect(nodeIdSet.has(edge.src)).toBe(true)
+      expect(nodeIdSet.has(edge.dst)).toBe(true)
+    }
+  })
+
+  it("honors edgeKinds + symbolKinds filters", async () => {
+    fixture = await buildFixture()
+    const raw = await graphTool!.execute(
+      {
+        snapshotId: fixture.snapshotId,
+        workspaceRoot: fixture.tempRoot,
+        edgeKinds: ["imports"],
+        symbolKinds: ["module"],
+      },
+      stubClient,
+      stubTracker,
+    )
+    const graph = JSON.parse(raw) as {
+      nodes: Array<{ kind: string }>
+      edges: Array<{ kind: string }>
+    }
+    // Only module nodes survive the symbol filter
+    for (const node of graph.nodes) {
+      expect(node.kind).toBe("module")
+    }
+    // Only imports edges survive the edge filter
+    for (const edge of graph.edges) {
+      expect(edge.kind).toBe("imports")
+    }
+  })
+
+  it("returns a structured error when the backend has no graph reader", async () => {
+    // Wire deps with a stub dbLookup that does NOT implement
+    // loadGraphJson — simulating a backend that supports query
+    // intents but not graph reads.
+    fixture = await buildFixture()
+    setIntelligenceDeps({
+      persistence: {
+        dbLookup: {
+          // Only the lookup method, no loadGraphJson
+          lookup: async () => ({
+            hit: false,
+            intent: "who_calls_api" as const,
+            snapshotId: 1,
+            rows: [],
+          }),
+        },
+        authoritativeStore: { persistEnrichment: async () => 0 },
+        graphProjection: {
+          syncFromAuthoritative: async () => ({
+            synced: true,
+            nodesUpserted: 0,
+            edgesUpserted: 0,
+          }),
+        },
+      },
+      clangdEnricher: {
+        source: "clangd" as const,
+        enrich: async () => ({
+          attempts: [{ source: "clangd" as const, status: "failed" as const }],
+          persistedRows: 0,
+        }),
+      },
+      cParserEnricher: {
+        source: "c_parser" as const,
+        enrich: async () => ({
+          attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+          persistedRows: 0,
+        }),
+      },
+    } as never)
+
+    const raw = await graphTool!.execute(
+      {
+        snapshotId: 1,
+        workspaceRoot: fixture.tempRoot,
+      },
+      stubClient,
+      stubTracker,
+    )
+    const res = JSON.parse(raw) as { status?: string; errors?: string[] }
+    expect(res.status).toBe("error")
+    expect(res.errors?.[0]).toMatch(/loadGraphJson/)
   })
 })

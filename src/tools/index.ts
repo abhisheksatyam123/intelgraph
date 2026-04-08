@@ -704,4 +704,73 @@ export const TOOLS: ToolDef[] = [
       }
     },
   },
+
+  // ── Intelligence graph tool ────────────────────────────────────────────────
+  // Returns the same node-link GraphJson the snapshot-stats CLI emits
+  // via --graph-json / --html, but reads from the live persisted snapshot
+  // instead of re-extracting. This is the one-shot way for any MCP
+  // client (TUI, external visualizer, codegen) to fetch the visualization
+  // data without making N intelligence_query calls.
+  {
+    name: "intelligence_graph",
+    description:
+      "Return the full node-link graph for a snapshot — the same data the " +
+      "snapshot-stats CLI emits via --graph-json / --html, suitable for " +
+      "d3-force / cytoscape / sigma / cosmograph visualizers. Reads the live " +
+      "persisted snapshot (no re-extraction). Optional edgeKinds and " +
+      "symbolKinds filters subset the graph before serialization. Response " +
+      "shape: { workspace, snapshot_id, nodes: [...], edges: [...] }.",
+    inputSchema: z.object({
+      snapshotId: z.number().int().positive().describe("Snapshot ID to read from"),
+      workspaceRoot: z.string().describe("Workspace root path (echoed back in the response.workspace field)"),
+      edgeKinds: z.array(z.string()).optional()
+        .describe("Keep only edges whose edge_kind is in this list (e.g. ['imports','calls']). Omit for all edges."),
+      symbolKinds: z.array(z.string()).optional()
+        .describe("Keep only nodes whose kind is in this list (e.g. ['module','class']) AND edges where both endpoints survive. Omit for all nodes."),
+    }),
+    execute: async (args, _client, _tracker) => {
+      const INTELLIGENCE_DEPS = getIntelligenceDeps()
+      if (!INTELLIGENCE_DEPS) {
+        return JSON.stringify({
+          status: "error",
+          errors: ["intelligence_graph: backend not initialized."],
+        })
+      }
+      // Duck-type the lookup to find the loadGraphJson method. The
+      // SqliteDbLookup implementation provides it; mock backends used
+      // in unit tests don't, and that's fine — they get a structured
+      // error rather than a runtime crash.
+      const lookup = INTELLIGENCE_DEPS.persistence.dbLookup as {
+        loadGraphJson?: (
+          snapshotId: number,
+          workspaceRoot: string,
+          filters?: { edgeKinds?: Set<string>; symbolKinds?: Set<string> },
+        ) => unknown
+      }
+      if (typeof lookup.loadGraphJson !== "function") {
+        return JSON.stringify({
+          status: "error",
+          errors: [
+            "intelligence_graph: configured backend does not support graph reads (no loadGraphJson)",
+          ],
+        })
+      }
+      try {
+        const filters: { edgeKinds?: Set<string>; symbolKinds?: Set<string> } = {}
+        if (args.edgeKinds && args.edgeKinds.length > 0) {
+          filters.edgeKinds = new Set(args.edgeKinds)
+        }
+        if (args.symbolKinds && args.symbolKinds.length > 0) {
+          filters.symbolKinds = new Set(args.symbolKinds)
+        }
+        const graph = lookup.loadGraphJson(args.snapshotId, args.workspaceRoot, filters)
+        return JSON.stringify(graph)
+      } catch (err) {
+        return JSON.stringify({
+          status: "error",
+          errors: [err instanceof Error ? err.message : String(err)],
+        })
+      }
+    },
+  },
 ]
