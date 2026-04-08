@@ -72,6 +72,15 @@ export interface GraphJsonFilters {
    * union of successors and predecessors).
    */
   centerHops?: number
+  /**
+   * If set, cap the result to the top N nodes by total degree
+   * (incoming + outgoing edges), plus the edges connecting them.
+   * Applied LAST in the filter pipeline so users can combine
+   * "everything related to X" with "but cap at 500 nodes" — useful
+   * for big workspaces where the unfiltered graph would be too
+   * dense for an interactive force layout.
+   */
+  maxNodes?: number
 }
 
 type NodeRow = {
@@ -217,7 +226,7 @@ export function loadGraphJsonFromDb(
     })
     .filter((e): e is NonNullable<typeof e> => e !== null)
 
-  const result: GraphJson = {
+  let result: GraphJson = {
     workspace,
     snapshot_id: snapshotId,
     nodes,
@@ -229,9 +238,53 @@ export function loadGraphJsonFromDb(
   // call. The function is pure on the GraphJson and is also exported
   // for callers that have a graph in hand (e.g. tests).
   if (filters.centerOf) {
-    return centerSubgraph(result, filters.centerOf, filters.centerHops ?? 2)
+    result = centerSubgraph(result, filters.centerOf, filters.centerHops ?? 2)
+  }
+  // maxNodes is applied LAST so it caps whatever the prior filters
+  // produced. For unfiltered or lightly-filtered runs on big
+  // workspaces this is what makes the result tractable for the
+  // interactive HTML force layout.
+  if (filters.maxNodes !== undefined && filters.maxNodes > 0) {
+    result = topNByDegree(result, filters.maxNodes)
   }
   return result
+}
+
+/**
+ * Reduce a graph to the top N nodes by total degree (incoming +
+ * outgoing edges), plus the edges connecting them. Pure function:
+ * returns a new GraphJson with the same workspace + snapshot_id.
+ *
+ * If the graph already has ≤ N nodes, returns it unchanged. If N
+ * is non-positive, returns an empty graph.
+ */
+export function topNByDegree(graph: GraphJson, n: number): GraphJson {
+  if (n <= 0) {
+    return {
+      workspace: graph.workspace,
+      snapshot_id: graph.snapshot_id,
+      nodes: [],
+      edges: [],
+    }
+  }
+  if (graph.nodes.length <= n) return graph
+
+  const degree = new Map<string, number>()
+  for (const node of graph.nodes) degree.set(node.id, 0)
+  for (const edge of graph.edges) {
+    degree.set(edge.src, (degree.get(edge.src) ?? 0) + 1)
+    degree.set(edge.dst, (degree.get(edge.dst) ?? 0) + 1)
+  }
+  const ranked = [...degree.entries()].sort((a, b) => b[1] - a[1])
+  const keep = new Set(ranked.slice(0, n).map(([id]) => id))
+  return {
+    workspace: graph.workspace,
+    snapshot_id: graph.snapshot_id,
+    nodes: graph.nodes.filter((node) => keep.has(node.id)),
+    edges: graph.edges.filter(
+      (edge) => keep.has(edge.src) && keep.has(edge.dst),
+    ),
+  }
 }
 
 /**

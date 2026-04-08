@@ -731,6 +731,8 @@ export const TOOLS: ToolDef[] = [
         .describe("Scope the graph to nodes within `centerHops` undirected hops of a center symbol. Resolved exact / suffix-after-# / substring (e.g. 'Greeter.greet'). Applied AFTER kind filters."),
       centerHops: z.number().int().positive().optional()
         .describe("Hop budget for centerOf (default 2)."),
+      maxNodes: z.number().int().positive().optional()
+        .describe("Cap the result to the top-N nodes by total degree. Applied LAST in the filter pipeline. Useful for big workspaces where the unfiltered graph would be too dense."),
     }),
     execute: async (args, _client, _tracker) => {
       const INTELLIGENCE_DEPS = getIntelligenceDeps()
@@ -753,6 +755,7 @@ export const TOOLS: ToolDef[] = [
             symbolKinds?: Set<string>
             centerOf?: string
             centerHops?: number
+            maxNodes?: number
           },
         ) => unknown
       }
@@ -770,6 +773,7 @@ export const TOOLS: ToolDef[] = [
           symbolKinds?: Set<string>
           centerOf?: string
           centerHops?: number
+          maxNodes?: number
         } = {}
         if (args.edgeKinds && args.edgeKinds.length > 0) {
           filters.edgeKinds = new Set(args.edgeKinds)
@@ -779,6 +783,7 @@ export const TOOLS: ToolDef[] = [
         }
         if (args.centerOf) filters.centerOf = args.centerOf
         if (args.centerHops) filters.centerHops = args.centerHops
+        if (args.maxNodes) filters.maxNodes = args.maxNodes
         const graph = lookup.loadGraphJson(args.snapshotId, args.workspaceRoot, filters)
         return JSON.stringify(graph)
       } catch (err) {

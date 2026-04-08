@@ -420,6 +420,44 @@ describe("intelligence_graph MCP tool — round trip", () => {
     expect(graph.edges.length).toBe(0)
   })
 
+  it("maxNodes caps the result to the top-N by degree", async () => {
+    fixture = await buildFixture()
+    // Get the full graph first to know how many nodes to cap from
+    const fullRaw = await graphTool!.execute(
+      {
+        snapshotId: fixture.snapshotId,
+        workspaceRoot: fixture.tempRoot,
+      },
+      stubClient,
+      stubTracker,
+    )
+    const full = JSON.parse(fullRaw) as { nodes: Array<{ id: string }> }
+    expect(full.nodes.length).toBeGreaterThan(3)
+
+    const cap = Math.max(3, Math.floor(full.nodes.length / 2))
+    const cappedRaw = await graphTool!.execute(
+      {
+        snapshotId: fixture.snapshotId,
+        workspaceRoot: fixture.tempRoot,
+        maxNodes: cap,
+      },
+      stubClient,
+      stubTracker,
+    )
+    const capped = JSON.parse(cappedRaw) as {
+      nodes: Array<{ id: string }>
+      edges: Array<{ src: string; dst: string }>
+    }
+    expect(capped.nodes.length).toBeLessThanOrEqual(cap)
+    expect(capped.nodes.length).toBeGreaterThan(0)
+    // Edge endpoints must all be in the capped set
+    const ids = new Set(capped.nodes.map((n) => n.id))
+    for (const edge of capped.edges) {
+      expect(ids.has(edge.src)).toBe(true)
+      expect(ids.has(edge.dst)).toBe(true)
+    }
+  })
+
   it("returns a structured error when the backend has no graph reader", async () => {
     // Wire deps with a stub dbLookup that does NOT implement
     // loadGraphJson — simulating a backend that supports query

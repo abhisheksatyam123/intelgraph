@@ -63,6 +63,8 @@ interface CliOptions {
   centerOf?: string
   /** --center-hops: max hop budget for --center (default 2). */
   centerHops?: number
+  /** --max-nodes: cap the result to the top-N nodes by degree. */
+  maxNodes?: number
 }
 
 function parseArgs(): CliOptions {
@@ -73,6 +75,7 @@ function parseArgs(): CliOptions {
   let symbolKinds: Set<string> | undefined
   let centerOf: string | undefined
   let centerHops: number | undefined
+  let maxNodes: number | undefined
   for (const arg of args) {
     if (arg === "--json") format = "json"
     else if (arg === "--markdown" || arg === "--md") format = "markdown"
@@ -89,6 +92,9 @@ function parseArgs(): CliOptions {
     } else if (arg.startsWith("--center-hops=")) {
       const n = Number(arg.replace("--center-hops=", ""))
       if (Number.isFinite(n) && n >= 1) centerHops = Math.floor(n)
+    } else if (arg.startsWith("--max-nodes=")) {
+      const n = Number(arg.replace("--max-nodes=", ""))
+      if (Number.isFinite(n) && n >= 1) maxNodes = Math.floor(n)
     } else if (arg === "--help" || arg === "-h") {
       printUsage()
       process.exit(0)
@@ -107,6 +113,7 @@ function parseArgs(): CliOptions {
     symbolKinds,
     centerOf,
     centerHops,
+    maxNodes,
   }
 }
 
@@ -135,6 +142,10 @@ function printUsage(): void {
       "                             (matched exact / suffix-after-# /",
       "                              substring; e.g. --center=Greeter.greet)",
       "  --center-hops=<n>          hop budget for --center (default 2)",
+      "  --max-nodes=<n>            cap result to top-N nodes by degree",
+      "                             (applied last; useful for big workspaces",
+      "                              where the unfiltered graph would be too",
+      "                              dense for the force layout)",
     ].join("\n"),
   )
 }
@@ -1549,6 +1560,7 @@ async function main(): Promise<void> {
         symbolKinds: options.symbolKinds,
         centerOf: options.centerOf,
         centerHops: options.centerHops,
+        maxNodes: options.maxNodes,
       })
       console.log(JSON.stringify(graph, null, 2))
       return
@@ -1563,6 +1575,7 @@ async function main(): Promise<void> {
         symbolKinds: options.symbolKinds,
         centerOf: options.centerOf,
         centerHops: options.centerHops,
+        maxNodes: options.maxNodes,
       })
       console.log(graphJsonToHtml(graph))
       return

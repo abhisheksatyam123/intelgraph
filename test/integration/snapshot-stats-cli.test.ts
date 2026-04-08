@@ -266,6 +266,36 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(graph.edges.length).toBe(0)
   })
 
+  it("buildGraphJson maxNodes caps the graph to the top-N nodes by degree", async () => {
+    const full = await buildGraphJson(tempRoot)
+    // Cap to fewer nodes than the full graph has
+    const cap = Math.max(3, Math.floor(full.nodes.length / 2))
+    const capped = await buildGraphJson(tempRoot, { maxNodes: cap })
+
+    expect(capped.nodes.length).toBeLessThanOrEqual(cap)
+    expect(capped.nodes.length).toBeGreaterThan(0)
+
+    // Every surviving edge endpoint must still be in the capped set
+    const ids = new Set(capped.nodes.map((n) => n.id))
+    for (const edge of capped.edges) {
+      expect(ids.has(edge.src)).toBe(true)
+      expect(ids.has(edge.dst)).toBe(true)
+    }
+
+    // Edge count cannot exceed the full graph's edge count
+    expect(capped.edges.length).toBeLessThanOrEqual(full.edges.length)
+  })
+
+  it("buildGraphJson maxNodes leaves small graphs unchanged", async () => {
+    const full = await buildGraphJson(tempRoot)
+    // Cap larger than the graph — no truncation
+    const capped = await buildGraphJson(tempRoot, {
+      maxNodes: full.nodes.length + 1000,
+    })
+    expect(capped.nodes.length).toBe(full.nodes.length)
+    expect(capped.edges.length).toBe(full.edges.length)
+  })
+
   it("graphJsonToHtml returns a self-contained HTML viewer", async () => {
     const graph = await buildGraphJson(tempRoot)
     const html = graphJsonToHtml(graph)
