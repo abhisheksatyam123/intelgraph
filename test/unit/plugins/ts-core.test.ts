@@ -120,7 +120,26 @@ export class FormalGreeter extends Greeter implements NamedThing {
   fallback?: Greeting
   count: number
   greet(name: string): Greeting {
-    return greetUser(name).toUpperCase()
+    // reads_field × 2: this.name + this.count
+    // writes_field × 1: this.count = this.count + 1
+    this.count = this.count + 1
+    return greetUser(name + " " + this.name).toUpperCase()
+  }
+  resetCounter(): void {
+    // writes_field × 1: this.count = 0 (assignment)
+    this.count = 0
+  }
+  bumpCounter(): void {
+    // writes_field × 1: this.count++ (update_expression)
+    this.count++
+  }
+  augmentCounter(): void {
+    // writes_field × 1: this.count += 5 (augmented_assignment)
+    this.count += 5
+  }
+  getCount(): number {
+    // reads_field × 1: pure read of this.count
+    return this.count
   }
 }
 `,
@@ -1795,5 +1814,214 @@ describe("ts-core plugin — extraction", () => {
       )
     // At least the FormalGreeter fields should produce class→field edges
     expect(classToField.length).toBeGreaterThanOrEqual(4)
+  })
+
+  it("emits writes_field edges for plain assignment to this.field", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    // resetCounter does `this.count = 0` — exactly one write_field
+    // edge from FormalGreeter.resetCounter → FormalGreeter.count
+    const writes = sink.allEdges().filter((e) => e.edge_kind === "writes_field")
+    const fromReset = writes.filter((e) =>
+      String(e.src_node_id).endsWith("#FormalGreeter.resetCounter"),
+    )
+    expect(fromReset.length).toBeGreaterThanOrEqual(1)
+    expect(
+      fromReset.some((e) =>
+        String(e.dst_node_id).endsWith("#FormalGreeter.count"),
+      ),
+    ).toBe(true)
+  })
+
+  it("emits writes_field edges for augmented assignment (+=)", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    // augmentCounter does `this.count += 5` → augmented_assignment_expression
+    const writes = sink.allEdges().filter((e) => e.edge_kind === "writes_field")
+    const fromAugment = writes.filter((e) =>
+      String(e.src_node_id).endsWith("#FormalGreeter.augmentCounter"),
+    )
+    expect(fromAugment.length).toBeGreaterThanOrEqual(1)
+    expect(
+      fromAugment.some((e) =>
+        String(e.dst_node_id).endsWith("#FormalGreeter.count"),
+      ),
+    ).toBe(true)
+  })
+
+  it("emits writes_field edges for ++/-- (update expressions)", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    // bumpCounter does `this.count++` → update_expression
+    const writes = sink.allEdges().filter((e) => e.edge_kind === "writes_field")
+    const fromBump = writes.filter((e) =>
+      String(e.src_node_id).endsWith("#FormalGreeter.bumpCounter"),
+    )
+    expect(fromBump.length).toBeGreaterThanOrEqual(1)
+    expect(
+      fromBump.some((e) =>
+        String(e.dst_node_id).endsWith("#FormalGreeter.count"),
+      ),
+    ).toBe(true)
+  })
+
+  it("emits reads_field edges for pure reads of this.field", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    // getCount does `return this.count` — pure read, no write
+    const reads = sink.allEdges().filter((e) => e.edge_kind === "reads_field")
+    const fromGetCount = reads.filter((e) =>
+      String(e.src_node_id).endsWith("#FormalGreeter.getCount"),
+    )
+    expect(fromGetCount.length).toBeGreaterThanOrEqual(1)
+    expect(
+      fromGetCount.some((e) =>
+        String(e.dst_node_id).endsWith("#FormalGreeter.count"),
+      ),
+    ).toBe(true)
+
+    // And getCount must NOT produce a writes_field edge
+    const writesFromGetCount = sink
+      .allEdges()
+      .filter(
+        (e) =>
+          e.edge_kind === "writes_field" &&
+          String(e.src_node_id).endsWith("#FormalGreeter.getCount"),
+      )
+    expect(writesFromGetCount.length).toBe(0)
+  })
+
+  it("greet method emits both reads (this.name + this.count) and a write (this.count = ...)", async () => {
+    const sink = new CaptureSink()
+    const runner = new ExtractorRunner({
+      snapshotId: 1,
+      workspaceRoot: tempRoot,
+      lsp: stubLsp,
+      sink,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+
+    // greet does `this.count = this.count + 1; ... this.name`
+    // → 1 write (this.count =), 2 reads (this.count, this.name)
+    const greetReads = sink
+      .allEdges()
+      .filter(
+        (e) =>
+          e.edge_kind === "reads_field" &&
+          String(e.src_node_id).endsWith("#FormalGreeter.greet"),
+      )
+    const greetWrites = sink
+      .allEdges()
+      .filter(
+        (e) =>
+          e.edge_kind === "writes_field" &&
+          String(e.src_node_id).endsWith("#FormalGreeter.greet"),
+      )
+    const readDsts = new Set(
+      greetReads.map((e) => String(e.dst_node_id).split("#")[1]),
+    )
+    const writeDsts = new Set(
+      greetWrites.map((e) => String(e.dst_node_id).split("#")[1]),
+    )
+    expect(readDsts.has("FormalGreeter.name")).toBe(true)
+    expect(readDsts.has("FormalGreeter.count")).toBe(true)
+    expect(writeDsts.has("FormalGreeter.count")).toBe(true)
+  })
+
+  it("does not emit field edges for this.method() (already covered by calls)", async () => {
+    // Synthesize a fixture inline: a class with a method that calls
+    // another method on `this`. The call should produce a calls
+    // edge but NOT a reads_field edge.
+    const tinyDir = mkdtempSync(join(tmpdir(), "ts-core-this-method-"))
+    try {
+      writeFileSync(
+        join(tinyDir, "package.json"),
+        JSON.stringify({ name: "fixture" }),
+      )
+      mkdirSync(join(tinyDir, "src"), { recursive: true })
+      writeFileSync(
+        join(tinyDir, "src", "x.ts"),
+        `export class Caller {
+  greeting: string = "hi"
+  greet(): string {
+    return this.helper()
+  }
+  helper(): string {
+    return this.greeting
+  }
+}
+`,
+      )
+      const sink = new CaptureSink()
+      const runner = new ExtractorRunner({
+        snapshotId: 1,
+        workspaceRoot: tinyDir,
+        lsp: stubLsp,
+        sink,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+
+      // greet's body: `return this.helper()` — should be a calls
+      // edge, NOT a reads_field edge.
+      const reads = sink
+        .allEdges()
+        .filter(
+          (e) =>
+            e.edge_kind === "reads_field" &&
+            String(e.src_node_id).endsWith("#Caller.greet"),
+        )
+      // No reads_field edge dst should be Caller.helper
+      expect(
+        reads.every(
+          (e) => !String(e.dst_node_id).endsWith("#Caller.helper"),
+        ),
+      ).toBe(true)
+      // helper's body: `return this.greeting` — IS a read
+      const helperReads = sink
+        .allEdges()
+        .filter(
+          (e) =>
+            e.edge_kind === "reads_field" &&
+            String(e.src_node_id).endsWith("#Caller.helper") &&
+            String(e.dst_node_id).endsWith("#Caller.greeting"),
+        )
+      expect(helperReads.length).toBeGreaterThanOrEqual(1)
+    } finally {
+      rmSync(tinyDir, { recursive: true, force: true })
+    }
   })
 })

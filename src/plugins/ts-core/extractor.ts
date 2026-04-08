@@ -746,6 +746,49 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
       }
     }
 
+    // this.field accesses inside method bodies. Emits reads_field /
+    // writes_field edges from the enclosing method to the field node
+    // (which phase 1 created). Scope is intentionally narrow:
+    //
+    //   - Only this.foo is recognized; obj.foo / param.foo would
+    //     require full type inference and are deferred.
+    //   - The field must already exist in seenSymbols (i.e. declared
+    //     on the enclosing class). Phantom accesses to inherited or
+    //     dynamically-attached fields are silently dropped — better
+    //     to skip than to fabricate edges to non-existent nodes.
+    //   - this.method() (the call_expression case) is skipped because
+    //     it's already covered by the calls edge. this.method
+    //     without parens IS a read of the method-as-value.
+    if (node.type === "member_expression") {
+      const access = classifyThisFieldAccess(node, classStack, scopeStack)
+      if (access) {
+        const fieldFqName = `${moduleNodeName}#${access.className}.${access.fieldName}`
+        // Only emit if the field exists as a real symbol — phase 1
+        // populated seenSymbols at class extraction time, so by the
+        // time we visit method bodies the class's fields are all in.
+        if (seenSymbols.has(fieldFqName)) {
+          yield ctx.edge({
+            payload: {
+              edgeKind: access.kind, // "reads_field" or "writes_field"
+              srcSymbolName: access.callerFqName,
+              dstSymbolName: fieldFqName,
+              confidence: 0.95,
+              derivation: "clangd",
+              sourceLocation: {
+                sourceFilePath: file,
+                sourceLineNumber: node.startPosition.row + 1,
+              },
+              metadata: {
+                resolved: true,
+                accessKind: access.kind === "reads_field" ? "read" : "write",
+                via: "this",
+              },
+            },
+          })
+        }
+      }
+    }
+
     // Call expressions inside the current scope
     if (node.type === "call_expression") {
       const enclosingClassNow = classStack.length
@@ -1596,6 +1639,99 @@ function extractTypeAliasBodyReferences(
     }
   }
   return out
+}
+
+/**
+ * Classify a `member_expression` node as a `this.field` read or write,
+ * if it qualifies. Returns null when the access is not on `this`, or
+ * when it's a method call (which the calls-edge handler already covers),
+ * or when there's no enclosing class to attribute the access to.
+ *
+ * Read vs write detection inspects the parent node:
+ *   - parent is assignment_expression and we are the left field → write
+ *   - parent is augmented_assignment_expression and we are left → write
+ *     (covers `this.x += 1`, `this.x ??= y`, etc.)
+ *   - parent is update_expression (`this.x++`) → write
+ *   - parent is unary_expression with `delete` operator → write
+ *   - anything else → read
+ *
+ * The return shape includes:
+ *   - kind: "reads_field" | "writes_field"
+ *   - className: enclosing class name (the canonical name's local part
+ *                between # and the field name)
+ *   - fieldName: the field's local name
+ *   - callerFqName: the canonical name of the method or function the
+ *                   access lives in (taken from scopeStack)
+ *
+ * Returns null if any of these can't be derived.
+ */
+function classifyThisFieldAccess(
+  node: TsNode,
+  classStack: string[],
+  scopeStack: Array<{ name: string; node: TsNode }>,
+): {
+  kind: "reads_field" | "writes_field"
+  className: string
+  fieldName: string
+  callerFqName: string
+} | null {
+  // Must be a member access on `this`
+  const obj = node.childForFieldName("object")
+  if (!obj || obj.type !== "this") return null
+  // Property name lives under the "property" field
+  const prop = node.childForFieldName("property")
+  if (!prop) return null
+  // Skip computed property accesses (`this[foo]`) — no stable name
+  if (prop.type !== "property_identifier") return null
+  const fieldName = prop.text
+  if (!fieldName) return null
+
+  // Need an enclosing class for attribution. If we're not inside one
+  // (e.g. a free function with `this` from a binding context), drop.
+  if (classStack.length === 0) return null
+  const className = classStack[classStack.length - 1]
+
+  // Need an enclosing scope (a method/function) to attribute the
+  // access to. Top-level access doesn't really happen for `this.foo`
+  // outside a class but defensively skip if scopeStack is empty.
+  if (scopeStack.length === 0) return null
+  const callerFqName = scopeStack[scopeStack.length - 1].name
+
+  // Skip method calls — `this.method()` is already a calls edge.
+  // The case to skip: parent is call_expression and we are the
+  // function field of that call. `this.method` without parens is
+  // a true read of the method-as-value, so it's NOT skipped.
+  const parent = node.parent
+  if (parent && parent.type === "call_expression") {
+    const fn = parent.childForFieldName("function")
+    if (fn === node) return null
+  }
+
+  // Detect write context. tree-sitter's childForFieldName returns
+  // a fresh JS wrapper for the same underlying node, so we can't
+  // use identity comparison — compare by startIndex which is
+  // stable across wrapper instances.
+  let kind: "reads_field" | "writes_field" = "reads_field"
+  const nodeStart = node.startIndex
+  if (parent) {
+    if (parent.type === "assignment_expression") {
+      const left = parent.childForFieldName("left")
+      if (left && left.startIndex === nodeStart) kind = "writes_field"
+    } else if (parent.type === "augmented_assignment_expression") {
+      const left = parent.childForFieldName("left")
+      if (left && left.startIndex === nodeStart) kind = "writes_field"
+    } else if (parent.type === "update_expression") {
+      // ++/-- — always a write to the operand
+      kind = "writes_field"
+    } else if (parent.type === "unary_expression") {
+      // delete this.foo — semantically a write (mutation). The
+      // operator is the first child via the "operator" field.
+      const op = parent.childForFieldName("operator")
+      if (op && op.type === "delete") kind = "writes_field"
+    }
+  }
+
+  return { kind, className, fieldName, callerFqName }
 }
 
 /**
