@@ -626,6 +626,7 @@ describe("VIEWER_PURE_JS — pure-function unit tests", () => {
         neighborhood,
         shortestPath,
         resolveSymbol,
+        buildVSCodeUrl,
       };
     `
     // eslint-disable-next-line @typescript-eslint/no-implied-eval
@@ -648,6 +649,11 @@ describe("VIEWER_PURE_JS — pure-function unit tests", () => {
       resolveSymbol: (
         query: string,
         nodeIds: Set<string> | string[],
+      ) => string | null
+      buildVSCodeUrl: (
+        filePath: string | null | undefined,
+        workspaceRoot: string | null | undefined,
+        line: number | null | undefined,
       ) => string | null
     }
   })()
@@ -788,6 +794,56 @@ describe("VIEWER_PURE_JS — pure-function unit tests", () => {
     it("works with an iterable that's not already a Set", () => {
       const arr = [...ids]
       expect(fns.resolveSymbol("Greeter", arr)).toBe("module:src/foo.ts#Greeter")
+    })
+  })
+
+  describe("buildVSCodeUrl", () => {
+    it("returns null when filePath is empty", () => {
+      expect(fns.buildVSCodeUrl("", "/ws", 10)).toBeNull()
+      expect(fns.buildVSCodeUrl(null, "/ws", 10)).toBeNull()
+      expect(fns.buildVSCodeUrl(undefined, "/ws", 10)).toBeNull()
+    })
+
+    it("uses absolute filePath verbatim", () => {
+      expect(fns.buildVSCodeUrl("/abs/path/foo.ts", "/different/ws", 5))
+        .toBe("vscode://file/abs/path/foo.ts:5")
+    })
+
+    it("resolves relative filePath against workspaceRoot", () => {
+      expect(fns.buildVSCodeUrl("src/foo.ts", "/ws", 12))
+        .toBe("vscode://file/ws/src/foo.ts:12")
+    })
+
+    it("trims trailing slash on workspaceRoot", () => {
+      expect(fns.buildVSCodeUrl("src/foo.ts", "/ws/", 12))
+        .toBe("vscode://file/ws/src/foo.ts:12")
+    })
+
+    it("omits the line suffix when line is missing", () => {
+      expect(fns.buildVSCodeUrl("src/foo.ts", "/ws", null))
+        .toBe("vscode://file/ws/src/foo.ts")
+      expect(fns.buildVSCodeUrl("src/foo.ts", "/ws", undefined))
+        .toBe("vscode://file/ws/src/foo.ts")
+    })
+
+    it("omits the line suffix for non-positive lines", () => {
+      // 0 is the schema's "no line" sentinel, negatives are bogus
+      expect(fns.buildVSCodeUrl("src/foo.ts", "/ws", 0))
+        .toBe("vscode://file/ws/src/foo.ts")
+      expect(fns.buildVSCodeUrl("src/foo.ts", "/ws", -3))
+        .toBe("vscode://file/ws/src/foo.ts")
+    })
+
+    it("handles empty workspaceRoot for an absolute path", () => {
+      expect(fns.buildVSCodeUrl("/abs/foo.ts", "", 5))
+        .toBe("vscode://file/abs/foo.ts:5")
+    })
+
+    it("handles empty workspaceRoot for a relative path (no resolution)", () => {
+      // Best-effort: if there's no root and the path is relative,
+      // emit it as-is rather than synthesizing a bogus prefix.
+      expect(fns.buildVSCodeUrl("src/foo.ts", "", 5))
+        .toBe("vscode://filesrc/foo.ts:5")
     })
   })
 })

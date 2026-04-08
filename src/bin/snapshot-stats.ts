@@ -677,6 +677,37 @@ function resolveSymbol(query, nodeIds) {
   }
   return null;
 }
+
+// Build a vscode://file URL for the focused node's source
+// location. Pure: takes filePath, workspaceRoot, and an optional
+// 1-based line, returns the URL string. Returns null when there
+// is no usable filePath.
+//
+//   - Absolute filePath: used verbatim (any leading workspace root
+//     in the path is left intact since the user explicitly knows
+//     the absolute location).
+//   - Relative filePath: resolved against workspaceRoot, with the
+//     workspace's trailing slash (if any) trimmed first.
+//   - line: appended as ":N" when it's a positive integer; omitted
+//     otherwise so VS Code opens at the file's first line.
+//
+// VS Code Insiders is reachable via the same vscode:// scheme; the
+// user's default mac/win/linux URL handler picks the right binary.
+function buildVSCodeUrl(filePath, workspaceRoot, line) {
+  if (!filePath) return null;
+  let root = workspaceRoot || "";
+  if (root.endsWith("/")) {
+    root = root.substring(0, root.length - 1);
+  }
+  const abs = filePath.startsWith("/")
+    ? filePath
+    : (root ? root + "/" + filePath : filePath);
+  const lineSuffix =
+    typeof line === "number" && line > 0 && Number.isFinite(line)
+      ? ":" + line
+      : "";
+  return "vscode://file" + abs + lineSuffix;
+}
 `
 
 /**
@@ -1670,22 +1701,12 @@ function showInfo(d) {
     .join("");
 
   // Add an "open in VS Code" link when the node has a usable
-  // file_path. Resolves the relative path against data.workspace
-  // (the workspace root that was inlined at generation time) so
-  // the link points at the absolute file. Works with VS Code
-  // Insiders too via the same scheme.
-  if (d.file_path) {
-    let workspaceRoot = data.workspace;
-    if (workspaceRoot.endsWith("/")) {
-      workspaceRoot = workspaceRoot.substring(0, workspaceRoot.length - 1);
-    }
-    const abs = d.file_path.startsWith("/")
-      ? d.file_path
-      : workspaceRoot + "/" + d.file_path;
-    const lineSuffix = typeof d.line === "number" ? ":" + d.line : "";
-    const href = "vscode://file" + abs + lineSuffix;
+  // file_path. The pure URL builder lives in VIEWER_PURE_JS so
+  // it can be unit-tested without spinning up the full viewer.
+  const vscodeUrl = buildVSCodeUrl(d.file_path, data.workspace, d.line);
+  if (vscodeUrl) {
     html +=
-      '<a class="open-link" href="' + escapeHtml(href) + '">→ open in VS Code</a>';
+      '<a class="open-link" href="' + escapeHtml(vscodeUrl) + '">→ open in VS Code</a>';
   }
 
   // Render up to 6 callers and 6 callees grouped by edge_kind. Each
