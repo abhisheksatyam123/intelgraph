@@ -44,7 +44,7 @@ const stubLsp = {
 
 interface CliOptions {
   workspace: string
-  format: "text" | "json" | "markdown"
+  format: "text" | "json" | "markdown" | "graph-json"
 }
 
 function parseArgs(): CliOptions {
@@ -54,6 +54,7 @@ function parseArgs(): CliOptions {
   for (const arg of args) {
     if (arg === "--json") format = "json"
     else if (arg === "--markdown" || arg === "--md") format = "markdown"
+    else if (arg === "--graph-json" || arg === "--graph") format = "graph-json"
     else if (arg === "--help" || arg === "-h") {
       printUsage()
       process.exit(0)
@@ -70,7 +71,7 @@ function parseArgs(): CliOptions {
 
 function printUsage(): void {
   console.error(
-    "Usage: bun run src/bin/snapshot-stats.ts <workspace-path> [--json|--markdown]",
+    "Usage: bun run src/bin/snapshot-stats.ts <workspace-path> [--json|--markdown|--graph-json]",
   )
 }
 
@@ -246,6 +247,186 @@ export async function buildDashboard(workspace: string): Promise<Dashboard> {
         name: String(r.canonical_name),
         usage_count: Number((r as { incoming_count?: number }).incoming_count),
       })),
+    }
+  } finally {
+    client.close()
+  }
+}
+
+/**
+ * Node-link graph shape suitable for d3-force, cytoscape, sigma,
+ * cosmograph, and most other web visualization libraries.
+ *
+ * Each node carries the symbol's kind, canonical name, and the
+ * useful metadata flags from the extractor (exported, line range,
+ * doc snippet, etc). Each edge carries its kind plus any
+ * resolution metadata (resolutionKind, awaited, jsxTag, …) so the
+ * visualizer can render different connection styles.
+ */
+export interface GraphJson {
+  workspace: string
+  snapshot_id: number
+  nodes: Array<{
+    id: string
+    kind: string
+    file_path: string | null
+    line: number | null
+    end_line: number | null
+    line_count: number | null
+    exported: boolean
+    doc: string | null
+    owning_class: string | null
+  }>
+  edges: Array<{
+    src: string
+    dst: string
+    kind: string
+    resolution_kind: string | null
+    metadata: Record<string, unknown> | null
+  }>
+}
+
+/**
+ * Build the full node-link graph from a workspace snapshot. Used by
+ * the --graph-json output mode and exported for direct programmatic
+ * consumption (e.g. an HTTP wrapper or static-site generator).
+ */
+export async function buildGraphJson(workspace: string): Promise<GraphJson> {
+  const client = openSqlite({ path: ":memory:" })
+  try {
+    const foundation = new SqliteDbFoundation(client.db, client.raw)
+    await foundation.initSchema()
+    const store = new SqliteGraphStore(client.db)
+
+    const ref = await foundation.beginSnapshot({
+      workspaceRoot: workspace,
+      compileDbHash: "snapshot-stats-graph",
+      parserVersion: "0.1.0",
+    })
+    const snapshotId = ref.snapshotId
+
+    const runner = new ExtractorRunner({
+      snapshotId,
+      workspaceRoot: workspace,
+      lsp: stubLsp,
+      sink: store,
+      plugins: [tsCoreExtractor],
+    })
+    await runner.run()
+    await foundation.commitSnapshot(snapshotId)
+
+    type NodeRow = {
+      canonical_name: string
+      kind: string
+      location: string | null
+      payload: string | null
+    }
+    const nodeRows = client.raw
+      .prepare(
+        `SELECT canonical_name, kind, location, payload
+         FROM graph_nodes
+         WHERE snapshot_id = ?
+         ORDER BY canonical_name`,
+      )
+      .all(snapshotId) as NodeRow[]
+
+    type EdgeRow = {
+      src_node_id: string
+      dst_node_id: string
+      edge_kind: string
+      metadata: string | null
+    }
+    const edgeRows = client.raw
+      .prepare(
+        `SELECT src_node_id, dst_node_id, edge_kind, metadata
+         FROM graph_edges
+         WHERE snapshot_id = ?`,
+      )
+      .all(snapshotId) as EdgeRow[]
+
+    // Build a node_id → canonical_name lookup so edges can use
+    // canonical names (which are stable and human-readable) instead
+    // of opaque graph_node IDs.
+    const nodeIdLookup = new Map<string, string>()
+    const nodeIdRows = client.raw
+      .prepare(
+        `SELECT node_id, canonical_name FROM graph_nodes WHERE snapshot_id = ?`,
+      )
+      .all(snapshotId) as Array<{ node_id: string; canonical_name: string }>
+    for (const row of nodeIdRows) {
+      nodeIdLookup.set(row.node_id, row.canonical_name)
+    }
+
+    const parseMetadata = (raw: string | null): Record<string, unknown> | null => {
+      if (!raw) return null
+      try {
+        return JSON.parse(raw)
+      } catch {
+        return null
+      }
+    }
+    const parseLocation = (raw: string | null): { filePath?: string; line?: number } => {
+      if (!raw) return {}
+      try {
+        return JSON.parse(raw)
+      } catch {
+        return {}
+      }
+    }
+
+    const nodes = nodeRows.map((row) => {
+      const loc = parseLocation(row.location)
+      const payload = parseMetadata(row.payload) as
+        | { metadata?: Record<string, unknown> }
+        | null
+      const meta = payload?.metadata ?? {}
+      return {
+        id: row.canonical_name,
+        kind: row.kind,
+        file_path: loc.filePath ?? null,
+        line: typeof loc.line === "number" ? loc.line : null,
+        end_line:
+          typeof (meta as { endLine?: unknown }).endLine === "number"
+            ? Number((meta as { endLine?: number }).endLine)
+            : null,
+        line_count:
+          typeof (meta as { lineCount?: unknown }).lineCount === "number"
+            ? Number((meta as { lineCount?: number }).lineCount)
+            : null,
+        exported: (meta as { exported?: boolean }).exported === true,
+        doc: (meta as { doc?: string }).doc ?? null,
+        owning_class: (meta as { owningClass?: string }).owningClass ?? null,
+      }
+    })
+
+    const edges = edgeRows
+      .map((row) => {
+        const src = nodeIdLookup.get(row.src_node_id)
+        const dst = nodeIdLookup.get(row.dst_node_id)
+        // Skip edges where src/dst doesn't resolve to a known node
+        // (these are usually external/unresolved targets and don't
+        // belong in a node-link graph). The visualizer can request
+        // them separately via the query intents if needed.
+        if (!src || !dst) return null
+        const meta = parseMetadata(row.metadata)
+        return {
+          src,
+          dst,
+          kind: row.edge_kind,
+          resolution_kind:
+            (meta as { resolutionKind?: string } | null)?.resolutionKind ?? null,
+          metadata: meta,
+        }
+      })
+      .filter(
+        (e): e is NonNullable<typeof e> => e !== null,
+      )
+
+    return {
+      workspace,
+      snapshot_id: snapshotId,
+      nodes,
+      edges,
     }
   } finally {
     client.close()
@@ -431,6 +612,14 @@ async function main(): Promise<void> {
   }
 
   try {
+    if (options.format === "graph-json") {
+      // Skip the dashboard build for graph-json — go straight to
+      // the full node/edge dump.
+      const graph = await buildGraphJson(options.workspace)
+      console.log(JSON.stringify(graph, null, 2))
+      return
+    }
+
     const dashboard = await buildDashboard(options.workspace)
     if (options.format === "json") {
       console.log(JSON.stringify(dashboard, null, 2))

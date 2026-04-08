@@ -20,7 +20,11 @@ import {
 } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { buildDashboard, dashboardToMarkdown } from "../../src/bin/snapshot-stats.js"
+import {
+  buildDashboard,
+  buildGraphJson,
+  dashboardToMarkdown,
+} from "../../src/bin/snapshot-stats.js"
 
 let tempRoot: string
 
@@ -148,6 +152,38 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     )
     expect(moduleA).toBeDefined()
     expect(moduleA!.incoming_count).toBeGreaterThanOrEqual(2)
+  })
+
+  it("buildGraphJson returns a node-link graph for web visualizers", async () => {
+    const graph = await buildGraphJson(tempRoot)
+
+    expect(graph.workspace).toBe(tempRoot)
+    expect(typeof graph.snapshot_id).toBe("number")
+    expect(Array.isArray(graph.nodes)).toBe(true)
+    expect(Array.isArray(graph.edges)).toBe(true)
+
+    // Should have at least the 5 fixture modules + their declarations
+    expect(graph.nodes.length).toBeGreaterThan(5)
+    expect(graph.edges.length).toBeGreaterThan(0)
+
+    // Module-a should be present and exported
+    const moduleA = graph.nodes.find((n) => n.id.endsWith("module-a.ts"))
+    expect(moduleA).toBeDefined()
+    expect(moduleA!.kind).toBe("module")
+
+    // Greeter class should appear with exported=true
+    const greeter = graph.nodes.find((n) => n.id.endsWith("module-a.ts#Greeter"))
+    expect(greeter).toBeDefined()
+    expect(greeter!.exported).toBe(true)
+    expect(greeter!.kind).toBe("class")
+
+    // Every edge's src and dst should resolve to a node in the graph
+    const nodeIds = new Set(graph.nodes.map((n) => n.id))
+    for (const edge of graph.edges) {
+      expect(nodeIds.has(edge.src)).toBe(true)
+      expect(nodeIds.has(edge.dst)).toBe(true)
+      expect(typeof edge.kind).toBe("string")
+    }
   })
 
   it("dashboardToMarkdown renders a valid markdown report", async () => {
