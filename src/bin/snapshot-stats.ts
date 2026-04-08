@@ -755,7 +755,12 @@ export function graphJsonToHtml(graph: GraphJson): string {
     background: var(--bg); color: var(--text);
     border: 1px solid var(--border); border-radius: 4px;
     padding: 6px 8px; font-size: 12px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
+  }
+  #search-count {
+    font-size: 10px; color: var(--muted);
+    margin-bottom: 8px; min-height: 12px;
+    font-variant-numeric: tabular-nums;
   }
   #sidebar .legend-item, #sidebar .edge-toggle {
     display: flex; align-items: center; gap: 8px;
@@ -810,6 +815,9 @@ export function graphJsonToHtml(graph: GraphJson): string {
   .node.dim { opacity: 0.12; }
   .node.hit { stroke: #fff; stroke-width: 1.5; }
   .node.focused { stroke: var(--link-active); stroke-width: 2; }
+  .node.search-hit {
+    stroke: #82aaff; stroke-width: 2;
+  }
   .link { stroke-opacity: 0.45; fill: none; }
   .link.dim { stroke-opacity: 0.04; }
   .link.hit { stroke: var(--link-active); stroke-opacity: 0.85; }
@@ -985,6 +993,7 @@ export function graphJsonToHtml(graph: GraphJson): string {
 
     <h2>Search</h2>
     <input id="search" type="search" placeholder="canonical name…" />
+    <div id="search-count"></div>
 
     <h2>Focus depth</h2>
     <input id="hop-slider" type="range" min="1" max="4" value="1" step="1" />
@@ -1240,6 +1249,10 @@ const activeKinds = new Set(data.nodes.map((n) => n.kind));
 const activeEdgeKinds = new Set(links.map((l) => l.kind));
 let cyclesOn = false;
 let tintOn = false;
+// Set of node ids that match the current search query, used to
+// paint the .search-hit class on every matching node (not just the
+// first one we focus on).
+const searchMatches = new Set();
 
 // Directory tint: hash each node's parent directory to a stable hue
 // in the HSL wheel. Used as the stroke color when "tint by directory"
@@ -1334,6 +1347,7 @@ function render() {
       let cls = "node";
       if (cyclesOn && cycleNodes.has(d.id)) cls += " cycle";
       if (pathNodes.has(d.id)) cls += " path-on";
+      if (searchMatches.has(d.id)) cls += " search-hit";
       return cls;
     })
     .attr("r", radiusFor)
@@ -1967,12 +1981,53 @@ buildEdgeLegend();
 buildHubPanel("top-imported", "imports", new Set(["module"]));
 buildHubPanel("top-called", "calls", new Set(["function", "method"]));
 
-// Search
+// Search: as the user types, highlight EVERY matching node (not
+// just the first) and show a count. The first match is also
+// auto-focused so the camera lands on something useful immediately.
+// The .search-hit class is rendered by render() — toggling it
+// requires a re-render, but it's cheap because we don't re-layout.
 document.getElementById("search").addEventListener("input", (ev) => {
   const q = ev.target.value.trim().toLowerCase();
-  if (!q) { focused = null; applyFocus(); saveHashState(); return; }
-  const hit = data.nodes.find((n) => n.id.toLowerCase().includes(q));
-  if (hit) { focused = hit.id; applyFocus(); showInfo(hit); saveHashState(); }
+  searchMatches.clear();
+  const countEl = document.getElementById("search-count");
+  if (!q) {
+    countEl.textContent = "";
+    focused = null;
+    applyFocus();
+    render();
+    saveHashState();
+    return;
+  }
+  // Cap matches at 200 so a one-character query against a huge
+  // workspace doesn't paint every node yellow.
+  let firstMatch = null;
+  for (const n of data.nodes) {
+    if (n.id.toLowerCase().includes(q)) {
+      if (!firstMatch) firstMatch = n;
+      if (searchMatches.size < 200) searchMatches.add(n.id);
+    }
+  }
+  const total = (() => {
+    let c = 0;
+    for (const n of data.nodes) {
+      if (n.id.toLowerCase().includes(q)) c++;
+    }
+    return c;
+  })();
+  if (total === 0) {
+    countEl.textContent = "no matches";
+  } else if (total > searchMatches.size) {
+    countEl.textContent = "showing " + searchMatches.size + " of " + total + " matches";
+  } else {
+    countEl.textContent = total + " match" + (total === 1 ? "" : "es");
+  }
+  if (firstMatch) {
+    focused = firstMatch.id;
+    applyFocus();
+    showInfo(firstMatch);
+  }
+  render();
+  saveHashState();
 });
 
 window.addEventListener("resize", () => {

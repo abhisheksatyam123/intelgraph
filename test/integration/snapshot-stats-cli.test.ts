@@ -549,6 +549,13 @@ describe("snapshot-stats CLI — buildDashboard", () => {
     expect(html).toContain("zoom.transform")
     expect(html).toContain("d3.zoomIdentity")
 
+    // Search highlight: searchMatches set + .search-hit CSS class +
+    // count display element
+    expect(html).toContain("const searchMatches")
+    expect(html).toContain(".node.search-hit")
+    expect(html).toContain('id="search-count"')
+    expect(html).toContain("searchMatches.has(d.id)")
+
     // Inlined script must parse as valid JS. Catches the class of bug
     // where a stray backtick inside a comment closes the outer
     // template literal and corrupts the rest of the document.
