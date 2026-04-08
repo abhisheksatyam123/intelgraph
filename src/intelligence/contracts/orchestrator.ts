@@ -151,6 +151,12 @@ export const QUERY_INTENTS = [
   //              edges from a source type to a destination type to
   //              answer "how does Vault structurally reach Reference")
   "find_data_path",
+  // ── Phase 3i: structural cycles via field_of_type / aggregates
+  //              edges. The data-side analog of find_type_cycles
+  //              (which only walks references_type). Catches the
+  //              "A.b: B and B.a: A" antipattern that the existing
+  //              intent misses.
+  "find_struct_cycles",
 ] as const
 
 export type QueryIntent = (typeof QUERY_INTENTS)[number]

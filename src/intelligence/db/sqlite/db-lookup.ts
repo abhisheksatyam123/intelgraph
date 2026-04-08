@@ -245,6 +245,8 @@ export class SqliteDbLookup implements DbLookupRepository {
           request.depth ?? 6,
           limit,
         )
+      case "find_struct_cycles":
+        return this.structCycles(snapshotId, limit)
       case "find_import_cycles":
         return this.importCycles(snapshotId, limit)
       case "find_top_imported_modules":
@@ -2730,6 +2732,75 @@ export class SqliteDbLookup implements DbLookupRepository {
       line_number: null,
       path_index: i,
       chain_depth: shortest.depth_n,
+    }))
+  }
+
+  /**
+   * Phase 3i: structural cycles via field_of_type / aggregates edges.
+   * The data-side analog of find_type_cycles (which only walks
+   * references_type). Catches the "A.b: B and B.a: A" antipattern
+   * where two types hold each other as fields — a real code smell
+   * the existing find_type_cycles misses because field-typed
+   * containment doesn't go through references_type.
+   *
+   * Implementation: same self-join pattern as find_type_cycles, but
+   * walks the union of field_of_type and aggregates edges. Uses
+   * aggregates as the canonical edge for cycle detection because
+   * it's the de-duplicated rollup — the per-field field_of_type
+   * edges would over-report (a single A.b: B and A.c: B pair would
+   * look like two cycles instead of one).
+   *
+   * Both endpoints must be types (struct/class/interface). The
+   * canonical_name comparison `a < b` ensures each cycle appears
+   * once in the result, not twice.
+   *
+   * Returns one row per cycle pair with:
+   *   - caller / callee = the two types that mutually reference
+   *   - edge_kind = "data_cycle" so the visualizer can render with
+   *     a distinct overlay
+   *   - kind = the canonical kind of the first type (struct/class/etc.)
+   */
+  private structCycles(
+    snapshotId: number,
+    limit: number,
+  ): Array<Record<string, unknown>> {
+    const sql = `
+      SELECT
+        a.canonical_name AS caller,
+        b.canonical_name AS callee,
+        a.canonical_name AS canonical_name,
+        a.kind AS kind,
+        a.location AS location
+      FROM graph_edges e1
+      INNER JOIN graph_nodes a
+        ON e1.src_node_id = a.node_id AND e1.snapshot_id = a.snapshot_id
+      INNER JOIN graph_nodes b
+        ON e1.dst_node_id = b.node_id AND e1.snapshot_id = b.snapshot_id
+      INNER JOIN graph_edges e2
+        ON e2.snapshot_id = e1.snapshot_id
+        AND e2.src_node_id = e1.dst_node_id
+        AND e2.dst_node_id = e1.src_node_id
+      WHERE e1.snapshot_id = ?
+        AND e1.edge_kind = 'aggregates'
+        AND e2.edge_kind = 'aggregates'
+        AND a.kind IN ('struct', 'class', 'interface')
+        AND b.kind IN ('struct', 'class', 'interface')
+        AND a.canonical_name < b.canonical_name
+      LIMIT ?
+    `
+    const rows = this.raw
+      .prepare(sql)
+      .all(snapshotId, limit) as Array<Record<string, unknown>>
+    return rows.map((obj) => ({
+      kind: obj.kind ?? "struct",
+      canonical_name: obj.canonical_name,
+      caller: obj.caller,
+      callee: obj.callee,
+      edge_kind: "data_cycle",
+      confidence: 1,
+      derivation: "clangd",
+      file_path: extractFilePath(obj.location),
+      line_number: extractLine(obj.location),
     }))
   }
 

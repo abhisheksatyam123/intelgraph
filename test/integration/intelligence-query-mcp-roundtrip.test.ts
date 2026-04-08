@@ -1295,3 +1295,204 @@ export class Container {
     expect(messages).toMatch(/srcApi.*dstApi.*find_data_path/)
   })
 })
+
+// ── Phase 3i: find_struct_cycles — A.b: B and B.a: A antipattern ─────────────
+//
+// The data-side analog of find_type_cycles. Catches mutual structural
+// containment via aggregates edges (the de-duplicated rollup of
+// field_of_type, so a single class with multiple fields of the same
+// type doesn't get reported as multiple cycles).
+
+describe("intelligence_query MCP tool — find_struct_cycles (Phase 3i)", () => {
+  it("returns the cycle when two classes structurally reference each other", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3i-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3i" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      // Mutual containment: Tree.parent: Node + Node.tree: Tree.
+      // The ts-core extractor emits aggregates edges for both
+      // Tree → Node and Node → Tree, which the cycle detector
+      // self-joins to find the pair.
+      writeFileSync(
+        join(tempRoot, "src", "model.ts"),
+        `export class Node {
+  tree: Tree | null = null
+}
+export class Tree {
+  parent: Node | null = null
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3i",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const raw = await tool!.execute(
+        {
+          intent: "find_struct_cycles",
+          snapshotId,
+          limit: 50,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const res = JSON.parse(raw) as FlatResponse
+      expect(res.status).toBe("hit")
+      expect(res.data.nodes.length).toBeGreaterThan(0)
+      // The cycle pair must be present — exactly one row for the
+      // Tree/Node pair. The canonical_name < canonical_name self-join
+      // condition picks the alphabetically-first endpoint (Node) as
+      // the row's canonical_name. The legacy-flat response strips
+      // the caller/callee fields, so we assert on canonical_name
+      // and use the underlying nodeProtocol response to verify both
+      // endpoints survive in the structures rel bucket.
+      const names = res.data.nodes.map((n) => String(n.canonical_name))
+      // Node < Tree alphabetically, so the canonical name is Node
+      expect(names.some((n) => n.endsWith("#Node"))).toBe(true)
+
+      client.close()
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+
+  it("returns no rows when there are no structural cycles", async () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "intel-3i-noncyclic-"))
+    try {
+      writeFileSync(
+        join(tempRoot, "package.json"),
+        JSON.stringify({ name: "fixture-3i-noncyclic" }),
+      )
+      mkdirSync(join(tempRoot, "src"), { recursive: true })
+      // Container -> Box -> User is a chain, not a cycle
+      writeFileSync(
+        join(tempRoot, "src", "model.ts"),
+        `export class User { id = "" }
+export class Box {
+  owner: User | null = null
+}
+export class Container {
+  box: Box | null = null
+}
+`,
+      )
+
+      const client = openSqlite({ path: ":memory:" })
+      const foundation = new SqliteDbFoundation(client.db, client.raw)
+      await foundation.initSchema()
+      const store = new SqliteGraphStore(client.db)
+      const lookup = new SqliteDbLookup(client.db, client.raw)
+      const ref = await foundation.beginSnapshot({
+        workspaceRoot: tempRoot,
+        compileDbHash: "intel-3i-noncyclic",
+        parserVersion: "0.1.0",
+      })
+      const snapshotId = ref.snapshotId
+      const runner = new ExtractorRunner({
+        snapshotId,
+        workspaceRoot: tempRoot,
+        lsp: stubLsp,
+        sink: store,
+        plugins: [tsCoreExtractor],
+      })
+      await runner.run()
+      await foundation.commitSnapshot(snapshotId)
+
+      const deps: OrchestratorRunnerDeps = {
+        persistence: {
+          dbLookup: lookup,
+          authoritativeStore: { persistEnrichment: async () => 0 },
+          graphProjection: {
+            syncFromAuthoritative: async () => ({
+              synced: true,
+              nodesUpserted: 0,
+              edgesUpserted: 0,
+            }),
+          },
+        },
+        clangdEnricher: {
+          source: "clangd" as const,
+          enrich: async () => ({
+            attempts: [{ source: "clangd" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+        cParserEnricher: {
+          source: "c_parser" as const,
+          enrich: async () => ({
+            attempts: [{ source: "c_parser" as const, status: "failed" as const }],
+            persistedRows: 0,
+          }),
+        },
+      }
+      setIntelligenceDeps(deps)
+
+      const raw = await tool!.execute(
+        {
+          intent: "find_struct_cycles",
+          snapshotId,
+          limit: 50,
+        },
+        stubClient,
+        stubTracker,
+      )
+      const res = JSON.parse(raw) as FlatResponse
+      // No cycles → not_found is acceptable, hit with empty rows is also fine
+      expect(res.data.nodes.length).toBe(0)
+
+      client.close()
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+})

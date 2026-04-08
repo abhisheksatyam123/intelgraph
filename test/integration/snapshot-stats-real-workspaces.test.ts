@@ -1171,6 +1171,36 @@ for (const wcase of CASES) {
         expect(result.rows[result.rows.length - 1].dst).toBe(seed.dst)
       })
 
+      // ── Phase 3i: find_struct_cycles on real workspace data ────
+      it("phase 3i: find_struct_cycles runs without error on a real workspace", async () => {
+        // We don't assert that real workspaces actually contain
+        // mutual structural cycles — most healthy codebases avoid
+        // them on purpose. The probe just verifies the SQL self-join
+        // doesn't blow up on a snapshot with hundreds of types and
+        // thousands of edges. If a workspace happens to contain a
+        // cycle, the row contract is asserted; otherwise the empty
+        // result is fine.
+        const result = await ingest.lookup.lookup({
+          intent: "find_struct_cycles",
+          snapshotId: ingest.snapshotId,
+          limit: 50,
+        })
+        // Either no cycles, or every reported cycle has the right shape
+        for (const row of result.rows) {
+          expect(row.edge_kind).toBe("data_cycle")
+          expect(["struct", "class", "interface"]).toContain(String(row.kind))
+          // Both caller and callee are canonical names
+          expect(typeof row.caller).toBe("string")
+          expect(typeof row.callee).toBe("string")
+          expect(String(row.caller).length).toBeGreaterThan(0)
+          expect(String(row.callee).length).toBeGreaterThan(0)
+          // The self-join condition `a.canonical_name < b.canonical_name`
+          // means caller < callee alphabetically; this also de-dupes
+          // each cycle pair.
+          expect(String(row.caller) < String(row.callee)).toBe(true)
+        }
+      })
+
       // ── Phase 3h: dataPathSubgraph on real workspace data ────────
       it("phase 3h: dataPathSubgraph filter renders the chain as a subgraph", async () => {
         // Self-discover the same chain from above and pass it to the
