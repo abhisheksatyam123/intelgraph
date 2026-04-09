@@ -39,7 +39,8 @@ import type {
   WorkspaceProbe,
 } from "../../intelligence/extraction/contract.js"
 import type { SymbolRow } from "../../intelligence/contracts/common.js"
-import { collectAllLogMacros } from "./packs/index.js"
+import { collectAllLogMacros, collectAllDispatchChains } from "./packs/index.js"
+import { collectAllCallPatterns } from "./packs/index.js"
 import type { LogMacroDef } from "./packs/types.js"
 import {
   initParser,
@@ -456,6 +457,107 @@ const clangdCoreExtractor = defineExtractor({
           },
         })
         ctx.metrics.count(`edges.${edgeKind}`)
+      }
+    }
+
+    // ---- Phase 5: runtime_calls edges via dispatch chain templates ----
+    //
+    // For functions that are registered as callbacks (via function-call
+    // registration APIs), emit `runtime_calls` edges to the SQLite graph
+    // so the dispatch chain is persistently queryable. Scans each file
+    // for call_expressions to known registration APIs where a function
+    // symbol is passed as an argument. Uses the dispatch chain templates
+    // from the sub-plugin packs to build the full runtime dispatch path.
+    const allCallPatterns = collectAllCallPatterns()
+    const registrationApis = new Set(allCallPatterns.map((p) => p.registrationApi))
+    const dispatchTemplateMap = collectAllDispatchChains()
+
+    if (dispatchTemplateMap.size > 0 && registrationApis.size > 0) {
+      // Build a set of all known function names for fast membership test
+      const knownFunctions = new Set<string>()
+      for (const syms of fileSymbols.values()) {
+        for (const s of syms) {
+          if (s.kind === "function") knownFunctions.add(s.name)
+        }
+      }
+
+      for (const [file] of fileSymbols.entries()) {
+        if (ctx.signal.aborted) return
+        const text = ctx.workspace.readFile(file)
+        if (!text) continue
+
+        // Quick check: does this file reference any registration API?
+        let hasAnyApi = false
+        for (const api of registrationApis) {
+          if (text.includes(api)) { hasAnyApi = true; break }
+        }
+        if (!hasAnyApi) continue
+
+        const root = parseSource(text)
+        if (!root) continue
+
+        const callNodes = findAllNodes(root, "call_expression")
+        for (const callNode of callNodes) {
+          const fnNode = callNode.childForFieldName?.("function")
+          if (!fnNode || fnNode.type !== "identifier") continue
+          if (!registrationApis.has(fnNode.text)) continue
+
+          const calleeName = fnNode.text
+          const pattern = allCallPatterns.find((p) => p.registrationApi === calleeName)
+          if (!pattern) continue
+
+          // Extract arguments
+          const argsNode = callNode.childForFieldName?.("arguments")
+          if (!argsNode) continue
+          const argTexts: string[] = []
+          for (let i = 0; i < argsNode.childCount; i++) {
+            const child = argsNode.child(i)
+            if (!child || child.type === "(" || child.type === ")" || child.type === ",") continue
+            argTexts.push(child.text.trim())
+          }
+
+          // Find which arg is a known function name (the callback)
+          let callbackName: string | null = null
+          for (const arg of argTexts) {
+            if (knownFunctions.has(arg)) { callbackName = arg; break }
+          }
+          if (!callbackName) continue
+
+          const dispatchKey = argTexts[pattern.keyArgIndex] ?? ""
+          const tmpl = dispatchTemplateMap.get(calleeName)
+          if (!tmpl) continue
+
+          const chain = tmpl.chain.map((s: string) =>
+            s.replace(/%CALLBACK%/g, callbackName!).replace(/%KEY%/g, dispatchKey),
+          )
+
+          yield ctx.edge({
+            payload: {
+              edgeKind: "runtime_calls",
+              srcSymbolName: chain.length >= 3 ? chain[chain.length - 2] : chain[0],
+              dstSymbolName: callbackName,
+              confidence: 0.9,
+              derivation: "clangd",
+              metadata: {
+                dispatchChain: chain,
+                registrationApi: calleeName,
+                dispatchKey,
+                triggerKind: tmpl.triggerKind,
+                triggerDescription: tmpl.triggerDescription
+                  .replace(/%KEY%/g, dispatchKey)
+                  .replace(/%CALLBACK%/g, callbackName!),
+              },
+              evidence: {
+                sourceKind: "file_line",
+                location: {
+                  filePath: file,
+                  line: (callNode.startPosition?.row ?? 0) + 1,
+                },
+              },
+            },
+          })
+          ctx.metrics.count("edges.runtime_calls")
+        }
       }
     }
   },
