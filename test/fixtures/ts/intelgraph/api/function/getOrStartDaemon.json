@@ -20,49 +20,49 @@
     ],
     "calls_out": [
       {
-        "dst": "module:src/daemon/index.js#readState",
+        "dst": "module:src/daemon/index.ts#readState",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 128
       },
       {
-        "dst": "module:src/logging/logger.js#log",
+        "dst": "module:src/logging/logger.ts#log",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 186
       },
       {
-        "dst": "module:src/daemon/index.js#checkDaemonAlive",
+        "dst": "module:src/daemon/index.ts#checkDaemonAlive",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 71
       },
       {
-        "dst": "module:src/daemon/index.js#clearState",
+        "dst": "module:src/daemon/index.ts#clearState",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 82
       },
       {
-        "dst": "module:src/utils/compile-commands-cleaner.js#readCleaningConfig",
+        "dst": "module:src/utils/compile-commands-cleaner.ts#readCleaningConfig",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 96
       },
       {
-        "dst": "module:src/utils/compile-commands-cleaner.js#cleanCompileCommands",
+        "dst": "module:src/utils/compile-commands-cleaner.ts#cleanCompileCommands",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 100
       },
       {
-        "dst": "module:src/utils/compile-commands-cleaner.js#updateCleaningConfig",
+        "dst": "module:src/utils/compile-commands-cleaner.ts#updateCleaningConfig",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 161
       },
       {
-        "dst": "module:src/daemon/index.js#writeState",
+        "dst": "module:src/daemon/index.ts#writeState",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 130
@@ -74,19 +74,19 @@
         "source_line": 155
       },
       {
-        "dst": "module:src/logging/logger.js#logError",
+        "dst": "module:src/logging/logger.ts#logError",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 167
       },
       {
-        "dst": "module:src/daemon/index.js#resolveBridgeScript",
+        "dst": "module:src/daemon/index.ts#resolveBridgeScript",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 176
       },
       {
-        "dst": "module:src/daemon/index.js#spawnDaemon",
+        "dst": "module:src/daemon/index.ts#spawnDaemon",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 179
@@ -118,6 +118,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.749Z"
+    "generated_at": "2026-04-09T12:15:48.803Z"
   }
 }

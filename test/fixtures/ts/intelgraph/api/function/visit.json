@@ -12,13 +12,13 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode",
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 302
       },
       {
-        "dst": "module:src/intelligence/extraction/facts.js#Fact",
+        "dst": "module:src/intelligence/extraction/facts.ts#Fact",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 302
@@ -242,7 +242,7 @@
         "source_line": 776
       },
       {
-        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode.namedChild",
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode.namedChild",
         "confidence": 0.95,
         "resolution": "param-member",
         "source_line": 2281
@@ -320,7 +320,7 @@
         "source_line": 2103
       },
       {
-        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode.childForFieldName",
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode.childForFieldName",
         "confidence": 0.95,
         "resolution": "param-member",
         "source_line": 2134
@@ -338,7 +338,7 @@
         "source_line": 2238
       },
       {
-        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode.push",
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode.push",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 2242
@@ -382,6 +382,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.788Z"
+    "generated_at": "2026-04-09T12:15:48.996Z"
   }
 }

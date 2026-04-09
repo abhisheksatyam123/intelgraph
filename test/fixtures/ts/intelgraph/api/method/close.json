@@ -1,47 +1,28 @@
 {
   "kind": "method",
-  "canonical_name": "module:src/intelligence/extraction/fact-bus.ts#FactBus.close",
+  "canonical_name": "module:src/intelligence/db/sqlite/client.ts#close",
   "category": "method",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/fact-bus.ts",
-    "line": 219,
-    "character": 3
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/client.ts",
+    "line": 88,
+    "character": 5
   },
   "exported": null,
   "line_count": 5,
   "relations": {
-    "reads_field_out": [
-      {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.closedFlag",
-        "confidence": 0.95,
-        "source_line": 220
-      },
-      {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.flush",
-        "confidence": 0.95,
-        "source_line": 221
-      }
-    ],
     "calls_out": [
       {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.flush",
+        "dst": "module:better-sqlite3.close",
         "confidence": 0.95,
-        "resolution": "this-method",
-        "source_line": 221
-      }
-    ],
-    "writes_field_out": [
-      {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.closedFlag",
-        "confidence": 0.95,
-        "source_line": 222
+        "resolution": "var-member",
+        "source_line": 91
       }
     ],
     "contains_in": [
       {
-        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBus",
+        "src": "module:src/intelligence/db/sqlite/client.ts",
         "confidence": 1,
-        "source_line": 219
+        "source_line": 88
       }
     ]
   },
@@ -49,12 +30,12 @@
     "required_node_kinds": [
       "method"
     ],
-    "total_outgoing_edges": 4,
+    "total_outgoing_edges": 1,
     "total_incoming_edges": 1
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:00.492Z"
+    "generated_at": "2026-04-09T12:15:49.160Z"
   }
 }

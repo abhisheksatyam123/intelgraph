@@ -12,13 +12,13 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/tools/indirect-callers.js#IndirectCallerGraph",
+        "dst": "module:src/tools/indirect-callers.ts#IndirectCallerGraph",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 156
       },
       {
-        "dst": "module:src/intelligence/contracts/common.js#RuntimeCallerRow",
+        "dst": "module:src/intelligence/contracts/common.ts#RuntimeCallerRow",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 157
@@ -38,7 +38,7 @@
         "source_line": 185
       },
       {
-        "dst": "module:src/intelligence/contracts/common.js#RuntimeCallerRow.push",
+        "dst": "module:src/intelligence/contracts/common.ts#RuntimeCallerRow.push",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 187
@@ -70,6 +70,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.777Z"
+    "generated_at": "2026-04-09T12:15:48.981Z"
   }
 }

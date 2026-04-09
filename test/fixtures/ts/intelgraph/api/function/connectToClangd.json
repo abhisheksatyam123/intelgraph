@@ -18,13 +18,13 @@
         "source_line": 209
       },
       {
-        "dst": "module:src/tracking/index.js#IndexTracker",
+        "dst": "module:src/tracking/index.ts#IndexTracker",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 210
       },
       {
-        "dst": "module:src/lsp/index.js#LspClient",
+        "dst": "module:src/lsp/index.ts#LspClient",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 211
@@ -38,19 +38,19 @@
         "source_line": 215
       },
       {
-        "dst": "module:src/logging/logger.js#log",
+        "dst": "module:src/logging/logger.ts#log",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 241
       },
       {
-        "dst": "module:src/lsp/index.js#LspClient.createFromSocket",
+        "dst": "module:src/lsp/index.ts#LspClient.createFromSocket",
         "confidence": 0.95,
         "resolution": "named-member",
         "source_line": 219
       },
       {
-        "dst": "module:src/tracking/index.js#IndexTracker.markReady",
+        "dst": "module:src/tracking/index.ts#IndexTracker.markReady",
         "confidence": 0.95,
         "resolution": "param-member",
         "source_line": 221
@@ -104,7 +104,7 @@
         "source_line": 242
       },
       {
-        "dst": "module:src/logging/logger.js#logError",
+        "dst": "module:src/logging/logger.ts#logError",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 247
@@ -129,6 +129,12 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 239
+      },
+      {
+        "src": "module:src/index.ts#main",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 242
       }
     ]
   },
@@ -137,11 +143,11 @@
       "function"
     ],
     "total_outgoing_edges": 17,
-    "total_incoming_edges": 2
+    "total_incoming_edges": 3
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.749Z"
+    "generated_at": "2026-04-09T12:15:48.803Z"
   }
 }

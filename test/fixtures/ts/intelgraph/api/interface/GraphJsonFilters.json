@@ -57,19 +57,31 @@
         "source_line": 124
       }
     ],
-    "contains_in": [
-      {
-        "src": "module:src/intelligence/db/sqlite/graph-export.ts",
-        "confidence": 1,
-        "source_line": 63
-      }
-    ],
     "references_type_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts#buildGraphJson",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 521
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.loadGraphJson",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 138
+      },
       {
         "src": "module:src/intelligence/db/sqlite/graph-export.ts#loadGraphJsonFromDb",
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 170
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-export.ts",
+        "confidence": 1,
+        "source_line": 63
       }
     ]
   },
@@ -78,11 +90,11 @@
       "interface"
     ],
     "total_outgoing_edges": 9,
-    "total_incoming_edges": 2
+    "total_incoming_edges": 4
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.113Z"
+    "generated_at": "2026-04-09T12:15:49.173Z"
   }
 }

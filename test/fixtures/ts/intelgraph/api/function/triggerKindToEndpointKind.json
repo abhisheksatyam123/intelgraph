@@ -4,7 +4,7 @@
   "category": "function",
   "source": {
     "file": "/home/abhi/qprojects/intelgraph/src/tools/indirect-callers.ts",
-    "line": 394,
+    "line": 483,
     "character": 1
   },
   "exported": null,
@@ -14,7 +14,7 @@
       {
         "src": "module:src/tools/indirect-callers.ts",
         "confidence": 1,
-        "source_line": 394
+        "source_line": 483
       }
     ],
     "calls_in": [
@@ -22,7 +22,7 @@
         "src": "module:src/tools/indirect-callers.ts#formatIndirectCallerTree",
         "confidence": 0.95,
         "resolution": "local",
-        "source_line": 463
+        "source_line": 552
       }
     ]
   },
@@ -36,6 +36,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.794Z"
+    "generated_at": "2026-04-09T12:15:49.004Z"
   }
 }

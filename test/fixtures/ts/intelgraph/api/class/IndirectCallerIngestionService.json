@@ -12,7 +12,7 @@
   "relations": {
     "implements_out": [
       {
-        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.js#IIndirectCallerIngestion",
+        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#IIndirectCallerIngestion",
         "confidence": 1,
         "resolution": "named-import",
         "source_line": 14
@@ -40,6 +40,34 @@
         "source_line": 53
       }
     ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/backend-factory.ts#ingestion",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 134
+      },
+      {
+        "src": "module:test/unit/intelligence/runtime-graph-materialization.test.ts#service",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 144
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/backend-factory.ts#createIntelligenceBackend",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 134
+      },
+      {
+        "src": "module:test/unit/intelligence/runtime-graph-materialization.test.ts",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 144
+      }
+    ],
     "contains_in": [
       {
         "src": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts",
@@ -53,11 +81,11 @@
       "class"
     ],
     "total_outgoing_edges": 5,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 5
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:57.970Z"
+    "generated_at": "2026-04-09T12:15:49.158Z"
   }
 }

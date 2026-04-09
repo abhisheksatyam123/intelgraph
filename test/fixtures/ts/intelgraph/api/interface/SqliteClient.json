@@ -37,19 +37,115 @@
         "source_line": 39
       }
     ],
-    "contains_in": [
-      {
-        "src": "module:src/intelligence/db/sqlite/client.ts",
-        "confidence": 1,
-        "source_line": 39
-      }
-    ],
     "references_type_in": [
+      {
+        "src": "module:src/intelligence/backend-factory.ts#SqliteIntelligenceBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 98
+      },
       {
         "src": "module:src/intelligence/db/sqlite/client.ts#openSqlite",
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 48
+      },
+      {
+        "src": "module:test/integration/rust-core-real-workspaces.test.ts#IngestedWorkspace",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 39
+      },
+      {
+        "src": "module:test/integration/snapshot-stats-real-workspaces.test.ts#IngestedWorkspace",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 109
+      },
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts#client",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 84
+      },
+      {
+        "src": "module:test/integration/ts-core-real-workspaces.test.ts#IngestedWorkspace",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 49
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-db-lookup.test.ts#client",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 38
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-foundation.test.ts#client",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 15
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-graph-store.test.ts#client",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 33
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/backend-factory.ts#SqliteIntelligenceBackend.sqliteClient",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 98
+      },
+      {
+        "src": "module:test/integration/rust-core-real-workspaces.test.ts#IngestedWorkspace.client",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 39
+      },
+      {
+        "src": "module:test/integration/snapshot-stats-real-workspaces.test.ts#IngestedWorkspace.client",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 109
+      },
+      {
+        "src": "module:test/integration/ts-core-real-workspaces.test.ts#IngestedWorkspace.client",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 49
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/backend-factory.ts#SqliteIntelligenceBackend",
+        "confidence": 0.95,
+        "source_line": 97
+      },
+      {
+        "src": "module:test/integration/rust-core-real-workspaces.test.ts#IngestedWorkspace",
+        "confidence": 0.95,
+        "source_line": 38
+      },
+      {
+        "src": "module:test/integration/snapshot-stats-real-workspaces.test.ts#IngestedWorkspace",
+        "confidence": 0.95,
+        "source_line": 108
+      },
+      {
+        "src": "module:test/integration/ts-core-real-workspaces.test.ts#IngestedWorkspace",
+        "confidence": 0.95,
+        "source_line": 48
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/client.ts",
+        "confidence": 1,
+        "source_line": 39
       }
     ]
   },
@@ -58,11 +154,11 @@
       "interface"
     ],
     "total_outgoing_edges": 4,
-    "total_incoming_edges": 2
+    "total_incoming_edges": 18
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.113Z"
+    "generated_at": "2026-04-09T12:15:49.160Z"
   }
 }

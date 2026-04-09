@@ -64,6 +64,54 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 162
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#GraphNodeRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 16
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#GraphEvidenceRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 37
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#placeholderRuntimeParticipant",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 118
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/schema.ts#ObservationPayload",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 62
+      },
+      {
+        "src": "module:src/intelligence/extraction/context.ts#ExtractionContext",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 161
+      },
+      {
+        "src": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.location",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 427
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#ObservationFact",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 96
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#location",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 130
       }
     ],
     "field_of_type_in": [
@@ -96,6 +144,24 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 162
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#GraphNodeRow.location",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 16
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#GraphEvidenceRow.location",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 37
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#ObservationFact.payload",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 96
       }
     ],
     "aggregates_in": [
@@ -123,6 +189,21 @@
         "src": "module:src/intelligence/contracts/common.ts#RuntimeCallerRow",
         "confidence": 0.95,
         "source_line": 156
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#GraphNodeRow",
+        "confidence": 0.95,
+        "source_line": 11
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#GraphEvidenceRow",
+        "confidence": 0.95,
+        "source_line": 31
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#ObservationFact",
+        "confidence": 0.95,
+        "source_line": 94
       }
     ]
   },
@@ -131,11 +212,11 @@
       "interface"
     ],
     "total_outgoing_edges": 3,
-    "total_incoming_edges": 16
+    "total_incoming_edges": 30
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.106Z"
+    "generated_at": "2026-04-09T12:15:49.137Z"
   }
 }

@@ -12,7 +12,7 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/plugins/ts-core/packs/types.js#TsPatternPack",
+        "dst": "module:src/plugins/ts-core/packs/types.ts#TsPatternPack",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 27
@@ -20,13 +20,13 @@
     ],
     "calls_out": [
       {
-        "dst": "module:src/plugins/ts-core/packs/types.js#TsPatternPack.slice",
+        "dst": "module:src/plugins/ts-core/packs/types.ts#TsPatternPack.slice",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 28
       },
       {
-        "dst": "module:src/plugins/ts-core/packs/types.js#TsPatternPack.filter",
+        "dst": "module:src/plugins/ts-core/packs/types.ts#TsPatternPack.filter",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 29
@@ -56,6 +56,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.788Z"
+    "generated_at": "2026-04-09T12:15:48.996Z"
   }
 }

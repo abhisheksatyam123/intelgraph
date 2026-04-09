@@ -1,19 +1,19 @@
 {
   "kind": "field",
-  "canonical_name": "module:src/fixtures/intent-mapper.ts#Relation.subsystem",
+  "canonical_name": "module:src/intelligence/contracts/common.ts#LogRow.subsystem",
   "category": "field",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/intent-mapper.ts",
-    "line": 168
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/common.ts",
+    "line": 59
   },
   "exported": null,
   "line_count": null,
   "relations": {
     "contains_in": [
       {
-        "src": "module:src/fixtures/intent-mapper.ts#Relation",
+        "src": "module:src/intelligence/contracts/common.ts#LogRow",
         "confidence": 1,
-        "source_line": 168
+        "source_line": 59
       }
     ]
   },
@@ -27,6 +27,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:03.197Z"
+    "generated_at": "2026-04-09T12:15:49.133Z"
   }
 }

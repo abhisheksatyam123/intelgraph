@@ -54,7 +54,7 @@
         "source_line": 238
       },
       {
-        "dst": "module:src/intelligence/extraction/runner.js#ExtractorRunner",
+        "dst": "module:src/intelligence/extraction/runner.ts#ExtractorRunner",
         "confidence": 0.95,
         "resolution": "constructor",
         "source_line": 243
@@ -162,6 +162,20 @@
         "source_line": 316
       }
     ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/tools/index.ts#execute",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 23
+      },
+      {
+        "src": "module:test/unit/intelligence/ingest-extraction-wlan.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 120
+      }
+    ],
     "contains_in": [
       {
         "src": "module:src/intelligence/tools/ingest-tool.ts",
@@ -175,11 +189,11 @@
       "function"
     ],
     "total_outgoing_edges": 25,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 3
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.777Z"
+    "generated_at": "2026-04-09T12:15:48.981Z"
   }
 }

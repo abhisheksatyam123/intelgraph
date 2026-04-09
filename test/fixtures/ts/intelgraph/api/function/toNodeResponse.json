@@ -12,19 +12,19 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/orchestrator.js#QueryRequest",
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryRequest",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 431
       },
       {
-        "dst": "module:src/intelligence/contracts/orchestrator.js#NormalizedQueryResponse",
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#NormalizedQueryResponse",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 431
       },
       {
-        "dst": "module:src/intelligence/contracts/node-protocol.js#NodeProtocolResponse",
+        "dst": "module:src/intelligence/contracts/node-protocol.ts#NodeProtocolResponse",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 431
@@ -62,7 +62,7 @@
         "source_line": 448
       },
       {
-        "dst": "module:src/intelligence/contracts/node-protocol.js#nodeResponseSchema.parse",
+        "dst": "module:src/intelligence/contracts/node-protocol.ts#nodeResponseSchema.parse",
         "confidence": 0.95,
         "resolution": "named-member",
         "source_line": 450
@@ -74,6 +74,14 @@
         "confidence": 1,
         "source_line": 431
       }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/index.ts#execute",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 694
+      }
     ]
   },
   "contract": {
@@ -81,11 +89,11 @@
       "function"
     ],
     "total_outgoing_edges": 9,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 2
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.777Z"
+    "generated_at": "2026-04-09T12:15:48.981Z"
   }
 }

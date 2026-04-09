@@ -1,0 +1,47 @@
+{
+  "kind": "field",
+  "canonical_name": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.cache",
+  "category": "field",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/context.ts",
+    "line": 340
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "field_of_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#KeyedCache",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 340
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl",
+        "confidence": 1,
+        "source_line": 340
+      }
+    ],
+    "writes_field_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.constructor",
+        "confidence": 0.95,
+        "source_line": 356
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "field"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.180Z"
+  }
+}

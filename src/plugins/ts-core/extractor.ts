@@ -2651,14 +2651,37 @@ function workspaceRelativePath(workspaceRoot: string, file: string): string {
  * unresolved relative import to a missing file).
  */
 function resolveImportPath(basePath: string): string {
+  // If the path already has a JS-family extension (common in NodeNext
+  // resolution: `import { x } from "./foo.js"`), strip it and try the
+  // TS equivalent first. This is the .js→.ts normalization that prevents
+  // cross-file edges from using mismatched extensions.
+  const jsExts = [".js", ".mjs", ".cjs", ".jsx"]
+  const stripped = jsExts.reduce((p, ext) => p.endsWith(ext) ? p.slice(0, -ext.length) : p, basePath)
+
   const exts = [".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"]
+
+  // Try stripped path first (handles .js→.ts normalization)
+  if (stripped !== basePath) {
+    for (const ext of exts) {
+      const p = stripped + ext
+      if (existsSync(p)) return p
+    }
+  }
+  // Try original path with extensions appended
   for (const ext of exts) {
     const p = basePath + ext
     if (existsSync(p)) return p
   }
+  // Try index files
   for (const ext of exts) {
     const p = join(basePath, "index" + ext)
     if (existsSync(p)) return p
+  }
+  if (stripped !== basePath) {
+    for (const ext of exts) {
+      const p = join(stripped, "index" + ext)
+      if (existsSync(p)) return p
+    }
   }
   return basePath
 }

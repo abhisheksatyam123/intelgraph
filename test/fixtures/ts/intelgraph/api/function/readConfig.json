@@ -32,7 +32,7 @@
         "source_line": 211
       },
       {
-        "dst": "module:src/logging/logger.js#log",
+        "dst": "module:src/logging/logger.ts#log",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 244
@@ -50,7 +50,7 @@
         "source_line": 220
       },
       {
-        "dst": "module:src/logging/logger.js#logError",
+        "dst": "module:src/logging/logger.ts#logError",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 252
@@ -87,6 +87,18 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 402
+      },
+      {
+        "src": "module:src/tools/reason-engine/reason-config.ts#readReasoningConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 4
+      },
+      {
+        "src": "module:test/unit/config/rename-fallback.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 124
       }
     ]
   },
@@ -95,11 +107,11 @@
       "function"
     ],
     "total_outgoing_edges": 7,
-    "total_incoming_edges": 5
+    "total_incoming_edges": 7
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.748Z"
+    "generated_at": "2026-04-09T12:15:48.802Z"
   }
 }

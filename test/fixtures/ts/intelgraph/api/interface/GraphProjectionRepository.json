@@ -23,6 +23,18 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 338
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 70
+      },
+      {
+        "src": "module:test/unit/intelligence/test-kit.ts#projection",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 65
       }
     ],
     "field_of_type_in": [
@@ -31,6 +43,12 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 338
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.projection",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 70
       }
     ],
     "aggregates_in": [
@@ -38,6 +56,19 @@
         "src": "module:src/intelligence/contracts/orchestrator.ts#PersistenceContracts",
         "confidence": 0.95,
         "source_line": 335
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps",
+        "confidence": 0.95,
+        "source_line": 56
+      }
+    ],
+    "implements_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/projection-service.ts#SqliteGraphProjectionService",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 23
       }
     ]
   },
@@ -46,11 +77,11 @@
       "interface"
     ],
     "total_outgoing_edges": 0,
-    "total_incoming_edges": 4
+    "total_incoming_edges": 9
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.110Z"
+    "generated_at": "2026-04-09T12:15:49.145Z"
   }
 }

@@ -1,19 +1,19 @@
 {
   "kind": "field",
-  "canonical_name": "module:src/bin/snapshot-stats.ts#Dashboard.total_nodes",
+  "canonical_name": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJson.total_nodes",
   "category": "field",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/src/bin/snapshot-stats.ts",
-    "line": 207
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/graph-export.ts",
+    "line": 58
   },
   "exported": null,
   "line_count": null,
   "relations": {
     "contains_in": [
       {
-        "src": "module:src/bin/snapshot-stats.ts#Dashboard",
+        "src": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJson",
         "confidence": 1,
-        "source_line": 207
+        "source_line": 58
       }
     ]
   },
@@ -27,6 +27,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:03.184Z"
+    "generated_at": "2026-04-09T12:15:49.173Z"
   }
 }

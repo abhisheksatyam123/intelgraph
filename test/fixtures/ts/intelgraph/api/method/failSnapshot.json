@@ -54,6 +54,14 @@
         "confidence": 1,
         "source_line": 81
       }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/unit/intelligence/sqlite-foundation.test.ts",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 174
+      }
     ]
   },
   "contract": {
@@ -61,11 +69,11 @@
       "method"
     ],
     "total_outgoing_edges": 6,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 2
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:00.487Z"
+    "generated_at": "2026-04-09T12:15:49.171Z"
   }
 }

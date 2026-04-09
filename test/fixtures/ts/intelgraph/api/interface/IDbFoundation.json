@@ -12,13 +12,13 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/common.js#SnapshotRef",
+        "dst": "module:src/intelligence/contracts/common.ts#SnapshotRef",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 10
       },
       {
-        "dst": "module:src/intelligence/contracts/common.js#SnapshotMeta",
+        "dst": "module:src/intelligence/contracts/common.ts#SnapshotMeta",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 10
@@ -30,11 +30,77 @@
         "source_line": 15
       }
     ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 32
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 57
+      },
+      {
+        "src": "module:src/intelligence/tools/snapshot-tool.ts#DB_FOUNDATION",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 9
+      },
+      {
+        "src": "module:src/intelligence/tools/snapshot-tool.ts#setDbFoundation",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 11
+      },
+      {
+        "src": "module:test/unit/intelligence/test-kit.ts#db",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 26
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend.db",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 32
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.db",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 57
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend",
+        "confidence": 0.95,
+        "source_line": 30
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps",
+        "confidence": 0.95,
+        "source_line": 56
+      }
+    ],
     "contains_in": [
       {
         "src": "module:src/intelligence/contracts/db-foundation.ts",
         "confidence": 1,
         "source_line": 7
+      }
+    ],
+    "implements_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 28
       }
     ]
   },
@@ -43,11 +109,11 @@
       "interface"
     ],
     "total_outgoing_edges": 3,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 11
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.107Z"
+    "generated_at": "2026-04-09T12:15:49.139Z"
   }
 }

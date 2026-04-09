@@ -16,6 +16,8 @@ import { existsSync } from "node:fs"
 import { join } from "node:path"
 import type { PatternPack } from "../types.js"
 import wlanLogMacros from "./log-macros.js"
+import wlanDispatchChains from "./dispatch-chains.js"
+import wlanHWEntities from "./hw-entities.js"
 
 const wlanPack: PatternPack = {
   name: "wlan",
@@ -73,8 +75,8 @@ const wlanPack: PatternPack = {
   ],
 
   logMacros: wlanLogMacros,
-  dispatchChains: [],
-  hwEntities: [],  // WLAN HW entities TBD — add WMI, HIF, CMNOS blocks here
+  dispatchChains: wlanDispatchChains,
+  hwEntities: wlanHWEntities,
 
   appliesTo: (workspaceRoot: string) => {
     // Heuristic: a WLAN firmware checkout always has a `wlan/` or `wmi/`

@@ -12,7 +12,7 @@
   "relations": {
     "implements_out": [
       {
-        "dst": "module:src/intelligence/contracts/orchestrator.js#GraphProjectionRepository",
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#GraphProjectionRepository",
         "confidence": 1,
         "resolution": "named-import",
         "source_line": 23
@@ -23,6 +23,22 @@
         "dst": "module:src/intelligence/db/sqlite/projection-service.ts#SqliteGraphProjectionService.syncFromAuthoritative",
         "confidence": 1,
         "source_line": 24
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/backend-factory.ts#projection",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 115
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/backend-factory.ts#createIntelligenceBackend",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 115
       }
     ],
     "contains_in": [
@@ -38,11 +54,11 @@
       "class"
     ],
     "total_outgoing_edges": 2,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 3
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:57.973Z"
+    "generated_at": "2026-04-09T12:15:49.177Z"
   }
 }

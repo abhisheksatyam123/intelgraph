@@ -12,13 +12,13 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/db/sqlite/graph-export.js#GraphJsonFilters",
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJsonFilters",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 138
       },
       {
-        "dst": "module:src/intelligence/db/sqlite/graph-export.js#GraphJson",
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJson",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 139
@@ -26,7 +26,7 @@
     ],
     "calls_out": [
       {
-        "dst": "module:src/intelligence/db/sqlite/graph-export.js#loadGraphJsonFromDb",
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#loadGraphJsonFromDb",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 140
@@ -50,6 +50,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:00.483Z"
+    "generated_at": "2026-04-09T12:15:49.165Z"
   }
 }

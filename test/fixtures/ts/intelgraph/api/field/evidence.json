@@ -1,19 +1,27 @@
 {
   "kind": "field",
-  "canonical_name": "module:src/fixtures/intent-mapper.ts#Relation.evidence",
+  "canonical_name": "module:src/intelligence/db/graph-rows.ts#GraphWriteBatch.evidence",
   "category": "field",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/intent-mapper.ts",
-    "line": 173
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/graph-rows.ts",
+    "line": 54
   },
   "exported": null,
   "line_count": null,
   "relations": {
+    "field_of_type_out": [
+      {
+        "dst": "module:src/intelligence/db/graph-rows.ts#GraphEvidenceRow",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 54
+      }
+    ],
     "contains_in": [
       {
-        "src": "module:src/fixtures/intent-mapper.ts#Relation",
+        "src": "module:src/intelligence/db/graph-rows.ts#GraphWriteBatch",
         "confidence": 1,
-        "source_line": 173
+        "source_line": 54
       }
     ]
   },
@@ -21,12 +29,12 @@
     "required_node_kinds": [
       "field"
     ],
-    "total_outgoing_edges": 0,
+    "total_outgoing_edges": 1,
     "total_incoming_edges": 1
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:03.196Z"
+    "generated_at": "2026-04-09T12:15:49.157Z"
   }
 }

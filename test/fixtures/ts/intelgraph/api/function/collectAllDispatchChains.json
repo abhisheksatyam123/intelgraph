@@ -1,0 +1,81 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/clangd-core/packs/index.ts#collectAllDispatchChains",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/clangd-core/packs/index.ts",
+    "line": 91,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 9,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/plugins/clangd-core/packs/types.ts#DispatchChainTemplate",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 91
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 92
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/packs/index.ts#collectAllPacks",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 93
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/packs/index.ts#map.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 95
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/packs/index.ts#map.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 95
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/clangd-core/extractor.ts#extract",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 89
+      },
+      {
+        "src": "module:src/tools/indirect-callers.ts#getDispatchTemplateMap",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 611
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/clangd-core/packs/index.ts",
+        "confidence": 1,
+        "source_line": 91
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.984Z"
+  }
+}

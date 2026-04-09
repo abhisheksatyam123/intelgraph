@@ -37,6 +37,24 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 168
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#normalizeGraphKind",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 83
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#placeholderRuntimeParticipant",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 117
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#kind",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 166
       }
     ],
     "field_of_type_in": [
@@ -71,11 +89,11 @@
       "typedef"
     ],
     "total_outgoing_edges": 1,
-    "total_incoming_edges": 7
+    "total_incoming_edges": 10
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:07.059Z"
+    "generated_at": "2026-04-09T12:15:49.135Z"
   }
 }

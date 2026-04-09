@@ -1,28 +1,68 @@
 {
   "kind": "function",
-  "canonical_name": "module:src/tools/pattern-detector/c-parser.ts#parseSource",
+  "canonical_name": "module:src/intelligence/extraction/services/treesitter-registry.ts#parseSource",
   "category": "function",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-detector/c-parser.ts",
-    "line": 340,
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/treesitter-registry.ts",
+    "line": 216,
     "character": 8
   },
   "exported": true,
-  "line_count": 8,
+  "line_count": 12,
   "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.ts#SupportedLanguage",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 217
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.ts#TsTree",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 219
+      }
+    ],
     "calls_out": [
       {
-        "dst": "module:src/tools/pattern-detector/c-parser.ts#_parser.parse",
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.ts#getParser",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 220
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.ts#parser.parse",
         "confidence": 0.95,
         "resolution": "local-member",
-        "source_line": 343
+        "source_line": 223
       }
     ],
     "contains_in": [
       {
-        "src": "module:src/tools/pattern-detector/c-parser.ts",
+        "src": "module:src/intelligence/extraction/services/treesitter-registry.ts",
         "confidence": 1,
-        "source_line": 340
+        "source_line": 216
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-registry.ts#parseFile",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 246
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.parseSource",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 186
+      },
+      {
+        "src": "module:test/unit/extraction/services/treesitter-registry.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 194
       }
     ]
   },
@@ -30,12 +70,12 @@
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 1,
-    "total_incoming_edges": 1
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 4
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.798Z"
+    "generated_at": "2026-04-09T12:15:48.975Z"
   }
 }

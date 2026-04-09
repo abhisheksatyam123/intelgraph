@@ -1,19 +1,19 @@
 {
   "kind": "field",
-  "canonical_name": "module:src/intelligence/contracts/common.ts#AggregateFieldRow.name",
+  "canonical_name": "module:src/intelligence/extraction/contract.ts#ExtractorMetadata.name",
   "category": "field",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/common.ts",
-    "line": 106
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/contract.ts",
+    "line": 86
   },
   "exported": null,
   "line_count": null,
   "relations": {
     "contains_in": [
       {
-        "src": "module:src/intelligence/contracts/common.ts#AggregateFieldRow",
+        "src": "module:src/intelligence/extraction/contract.ts#ExtractorMetadata",
         "confidence": 1,
-        "source_line": 106
+        "source_line": 86
       }
     ]
   },
@@ -27,6 +27,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:03.199Z"
+    "generated_at": "2026-04-09T12:15:49.185Z"
   }
 }

@@ -111,6 +111,129 @@
         "confidence": 1,
         "source_line": 156
       }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#RuntimeCallerInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 6
+      },
+      {
+        "src": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#RuntimeCallerBatch",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 10
+      },
+      {
+        "src": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#LinkReport",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 14
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#placeholderRuntimeParticipant",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 114
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#participantsForRuntimeRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 133
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#runtimeChainEdges",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 178
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#runtimeRows",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 267
+      },
+      {
+        "src": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#linked",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 36
+      },
+      {
+        "src": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#unresolved",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 37
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#graphNodesToRuntimeCallerRows",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 157
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#rows",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 158
+      },
+      {
+        "src": "module:test/unit/intelligence/runtime-graph-materialization.test.ts#signalDispatchRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 6
+      },
+      {
+        "src": "module:test/unit/intelligence/runtime-graph-materialization.test.ts#row",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 111
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#RuntimeCallerInput.records",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 6
+      },
+      {
+        "src": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#RuntimeCallerBatch.rows",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 10
+      },
+      {
+        "src": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#LinkReport.linked",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 14
+      },
+      {
+        "src": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#LinkReport.unresolved",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 15
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#RuntimeCallerInput",
+        "confidence": 0.95,
+        "source_line": 3
+      },
+      {
+        "src": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#RuntimeCallerBatch",
+        "confidence": 0.95,
+        "source_line": 9
+      },
+      {
+        "src": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#LinkReport",
+        "confidence": 0.95,
+        "source_line": 13
+      }
     ]
   },
   "contract": {
@@ -118,11 +241,11 @@
       "interface"
     ],
     "total_outgoing_edges": 17,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 21
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.106Z"
+    "generated_at": "2026-04-09T12:15:49.134Z"
   }
 }

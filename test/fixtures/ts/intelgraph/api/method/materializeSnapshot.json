@@ -12,13 +12,13 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/extraction-adapter.js#ExtractionBatches",
+        "dst": "module:src/intelligence/contracts/extraction-adapter.ts#ExtractionBatches",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 198
       },
       {
-        "dst": "module:src/intelligence/contracts/common.js#IngestReport",
+        "dst": "module:src/intelligence/contracts/common.ts#IngestReport",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 198
@@ -32,7 +32,7 @@
         "source_line": 199
       },
       {
-        "dst": "module:src/intelligence/db/graph-rows.js#symbolNode",
+        "dst": "module:src/intelligence/db/graph-rows.ts#symbolNode",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 199
@@ -44,7 +44,7 @@
         "source_line": 201
       },
       {
-        "dst": "module:src/intelligence/db/graph-rows.js#edgeRow",
+        "dst": "module:src/intelligence/db/graph-rows.ts#edgeRow",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 200
@@ -56,7 +56,7 @@
         "source_line": 201
       },
       {
-        "dst": "module:src/intelligence/db/graph-rows.js#evidenceRow",
+        "dst": "module:src/intelligence/db/graph-rows.ts#evidenceRow",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 202
@@ -92,6 +92,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:00.473Z"
+    "generated_at": "2026-04-09T12:15:49.153Z"
   }
 }

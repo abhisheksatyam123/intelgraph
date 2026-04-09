@@ -1,129 +1,66 @@
 {
   "kind": "method",
-  "canonical_name": "module:src/intelligence/extraction/fact-bus.ts#FactBus.emit",
+  "canonical_name": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger.emit",
   "category": "method",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/fact-bus.ts",
-    "line": 151,
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/context.ts",
+    "line": 238,
     "character": 3
   },
   "exported": null,
-  "line_count": 36,
+  "line_count": 8,
   "relations": {
-    "references_type_out": [
-      {
-        "dst": "module:src/intelligence/extraction/facts.js#Fact",
-        "confidence": 0.95,
-        "resolution": "named-import",
-        "source_line": 151
-      }
-    ],
-    "reads_field_out": [
-      {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.closedFlag",
-        "confidence": 0.95,
-        "source_line": 152
-      },
-      {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.logger",
-        "confidence": 0.95,
-        "source_line": 166
-      },
-      {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.byKind",
-        "confidence": 0.95,
-        "source_line": 174
-      },
-      {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.byExtractor",
-        "confidence": 0.95,
-        "source_line": 176
-      },
-      {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.flushThreshold",
-        "confidence": 0.95,
-        "source_line": 181
-      }
-    ],
     "calls_out": [
       {
-        "dst": "Error",
-        "confidence": 0.7,
-        "resolution": "constructor",
-        "source_line": 153
-      },
-      {
-        "dst": "module:src/intelligence/extraction/facts.js#validateFact",
-        "confidence": 0.95,
-        "resolution": "named-import",
-        "source_line": 156
-      },
-      {
-        "dst": "module:src/intelligence/extraction/facts.js#canonicalKey",
-        "confidence": 0.95,
-        "resolution": "named-import",
-        "source_line": 159
-      },
-      {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.lookupExisting",
-        "confidence": 0.95,
-        "resolution": "this-method",
-        "source_line": 160
-      },
-      {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.merge",
-        "confidence": 0.95,
-        "resolution": "this-method",
-        "source_line": 164
-      },
-      {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.replaceExisting",
-        "confidence": 0.95,
-        "resolution": "this-method",
-        "source_line": 165
-      },
-      {
-        "dst": "this.logger.debug",
+        "dst": "Object.keys",
         "confidence": 0.7,
         "resolution": "member",
-        "source_line": 166
+        "source_line": 243
       },
       {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.storeNew",
-        "confidence": 0.95,
-        "resolution": "this-method",
-        "source_line": 172
+        "dst": "JSON.stringify",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 243
       },
       {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.bufferSize",
+        "dst": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger.sink",
         "confidence": 0.95,
         "resolution": "this-method",
-        "source_line": 181
-      },
-      {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.flush",
-        "confidence": 0.95,
-        "resolution": "this-method",
-        "source_line": 182
+        "source_line": 244
       }
     ],
-    "writes_field_out": [
+    "calls_in": [
       {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.totalEmits",
+        "src": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger.debug",
         "confidence": 0.95,
-        "source_line": 157
+        "resolution": "this-method",
+        "source_line": 226
       },
       {
-        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.totalAccepted",
+        "src": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger.info",
         "confidence": 0.95,
-        "source_line": 173
+        "resolution": "this-method",
+        "source_line": 229
+      },
+      {
+        "src": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger.warn",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 232
+      },
+      {
+        "src": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger.error",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 235
       }
     ],
     "contains_in": [
       {
-        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBus",
+        "src": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger",
         "confidence": 1,
-        "source_line": 151
+        "source_line": 238
       }
     ]
   },
@@ -131,12 +68,12 @@
     "required_node_kinds": [
       "method"
     ],
-    "total_outgoing_edges": 18,
-    "total_incoming_edges": 1
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 5
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:00.492Z"
+    "generated_at": "2026-04-09T12:15:49.184Z"
   }
 }

@@ -12,7 +12,7 @@
   "relations": {
     "implements_out": [
       {
-        "dst": "module:src/intelligence/contracts/orchestrator.js#DbLookupRepository",
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#DbLookupRepository",
         "confidence": 1,
         "resolution": "named-import",
         "source_line": 112
@@ -335,11 +335,184 @@
         "source_line": 3955
       }
     ],
+    "references_type_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts#lookup",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 257
+      },
+      {
+        "src": "module:src/intelligence/backend-factory.ts#lookup",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 114
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#lookup",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 111
+      },
+      {
+        "src": "module:test/integration/rust-core-real-workspaces.test.ts#IngestedWorkspace",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 42
+      },
+      {
+        "src": "module:test/integration/rust-core-real-workspaces.test.ts#lookup",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 53
+      },
+      {
+        "src": "module:test/integration/snapshot-stats-real-workspaces.test.ts#IngestedWorkspace",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 110
+      },
+      {
+        "src": "module:test/integration/snapshot-stats-real-workspaces.test.ts#lookup",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 121
+      },
+      {
+        "src": "module:test/integration/snapshot-stats-real-workspaces.test.ts#wireMcpDeps",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 143
+      },
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts#lookup",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 85
+      },
+      {
+        "src": "module:test/integration/ts-core-real-workspaces.test.ts#IngestedWorkspace",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 52
+      },
+      {
+        "src": "module:test/integration/ts-core-real-workspaces.test.ts#lookup",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 61
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-db-lookup.test.ts#lookup",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 41
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts#buildDashboard",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 257
+      },
+      {
+        "src": "module:src/intelligence/backend-factory.ts#createIntelligenceBackend",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 114
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#buildFixture",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 111
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#buildDataStructFixture",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 829
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 3216
+      },
+      {
+        "src": "module:test/integration/rust-core-real-workspaces.test.ts#ingestWorkspace",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 53
+      },
+      {
+        "src": "module:test/integration/snapshot-stats-real-workspaces.test.ts#ingestWorkspace",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 121
+      },
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 93
+      },
+      {
+        "src": "module:test/integration/ts-core-real-workspaces.test.ts#ingestWorkspace",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 61
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-db-lookup.test.ts",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 106
+      }
+    ],
     "contains_in": [
       {
         "src": "module:src/intelligence/db/sqlite/db-lookup.ts",
         "confidence": 1,
         "source_line": 112
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:test/integration/rust-core-real-workspaces.test.ts#IngestedWorkspace.lookup",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 42
+      },
+      {
+        "src": "module:test/integration/snapshot-stats-real-workspaces.test.ts#IngestedWorkspace.lookup",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 110
+      },
+      {
+        "src": "module:test/integration/ts-core-real-workspaces.test.ts#IngestedWorkspace.lookup",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 52
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:test/integration/rust-core-real-workspaces.test.ts#IngestedWorkspace",
+        "confidence": 0.95,
+        "source_line": 38
+      },
+      {
+        "src": "module:test/integration/snapshot-stats-real-workspaces.test.ts#IngestedWorkspace",
+        "confidence": 0.95,
+        "source_line": 108
+      },
+      {
+        "src": "module:test/integration/ts-core-real-workspaces.test.ts#IngestedWorkspace",
+        "confidence": 0.95,
+        "source_line": 48
       }
     ]
   },
@@ -348,11 +521,11 @@
       "class"
     ],
     "total_outgoing_edges": 64,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 29
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:57.972Z"
+    "generated_at": "2026-04-09T12:15:49.162Z"
   }
 }

@@ -4,7 +4,7 @@
   "category": "function",
   "source": {
     "file": "/home/abhi/qprojects/intelgraph/src/plugins/ts-core/extractor.ts",
-    "line": 2820,
+    "line": 2843,
     "character": 1
   },
   "exported": null,
@@ -15,7 +15,7 @@
         "dst": "name.charCodeAt",
         "confidence": 0.7,
         "resolution": "member",
-        "source_line": 2822
+        "source_line": 2845
       }
     ],
     "calls_in": [
@@ -23,14 +23,14 @@
         "src": "module:src/plugins/ts-core/extractor.ts#extractJsxComponentRef",
         "confidence": 0.95,
         "resolution": "local",
-        "source_line": 2774
+        "source_line": 2797
       }
     ],
     "contains_in": [
       {
         "src": "module:src/plugins/ts-core/extractor.ts",
         "confidence": 1,
-        "source_line": 2820
+        "source_line": 2843
       }
     ]
   },
@@ -44,6 +44,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.786Z"
+    "generated_at": "2026-04-09T12:15:48.994Z"
   }
 }

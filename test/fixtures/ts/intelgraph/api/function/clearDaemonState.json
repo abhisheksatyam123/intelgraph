@@ -36,6 +36,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.747Z"
+    "generated_at": "2026-04-09T12:15:48.802Z"
   }
 }

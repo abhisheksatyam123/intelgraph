@@ -1,19 +1,19 @@
 {
   "kind": "field",
-  "canonical_name": "module:src/fixtures/intent-mapper.ts#Relation.edge_kind",
+  "canonical_name": "module:src/intelligence/db/graph-rows.ts#GraphEdgeRow.edge_kind",
   "category": "field",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/intent-mapper.ts",
-    "line": 169
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/graph-rows.ts",
+    "line": 23
   },
   "exported": null,
   "line_count": null,
   "relations": {
     "contains_in": [
       {
-        "src": "module:src/fixtures/intent-mapper.ts#Relation",
+        "src": "module:src/intelligence/db/graph-rows.ts#GraphEdgeRow",
         "confidence": 1,
-        "source_line": 169
+        "source_line": 23
       }
     ]
   },
@@ -27,6 +27,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:03.196Z"
+    "generated_at": "2026-04-09T12:15:49.154Z"
   }
 }

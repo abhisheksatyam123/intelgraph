@@ -74,14 +74,25 @@
         "source_line": 82
       }
     ],
-    "contains_in": [
-      {
-        "src": "module:src/intelligence/db/sqlite/client.ts",
-        "confidence": 1,
-        "source_line": 48
-      }
-    ],
     "calls_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts#buildDashboard",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 252
+      },
+      {
+        "src": "module:src/bin/snapshot-stats.ts#buildGraphJson",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 523
+      },
+      {
+        "src": "module:src/intelligence/backend-factory.ts#createIntelligenceBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 109
+      },
       {
         "src": "module:test/fixtures/run-multi-lang.mjs",
         "confidence": 0.95,
@@ -93,6 +104,73 @@
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 83
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#buildFixture",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 107
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#buildDataStructFixture",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 825
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 3212
+      },
+      {
+        "src": "module:test/integration/rust-core-real-workspaces.test.ts#ingestWorkspace",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 49
+      },
+      {
+        "src": "module:test/integration/snapshot-stats-real-workspaces.test.ts#ingestWorkspace",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 117
+      },
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 89
+      },
+      {
+        "src": "module:test/integration/ts-core-real-workspaces.test.ts#ingestWorkspace",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 57
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-db-lookup.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 102
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-foundation.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 19
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-graph-store.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 39
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/client.ts",
+        "confidence": 1,
+        "source_line": 48
       }
     ]
   },
@@ -101,11 +179,11 @@
       "function"
     ],
     "total_outgoing_edges": 10,
-    "total_incoming_edges": 3
+    "total_incoming_edges": 16
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.764Z"
+    "generated_at": "2026-04-09T12:15:48.969Z"
   }
 }

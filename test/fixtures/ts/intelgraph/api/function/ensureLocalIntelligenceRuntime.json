@@ -12,7 +12,7 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/config/bootstrap.js#WorkspaceConfig",
+        "dst": "module:src/config/bootstrap.ts#WorkspaceConfig",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 159
@@ -68,6 +68,14 @@
         "source_line": 174
       }
     ],
+    "calls_in": [
+      {
+        "src": "module:src/index.ts#main",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 171
+      }
+    ],
     "contains_in": [
       {
         "src": "module:src/intelligence/local-runtime.ts",
@@ -81,11 +89,11 @@
       "function"
     ],
     "total_outgoing_edges": 9,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 2
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.772Z"
+    "generated_at": "2026-04-09T12:15:48.976Z"
   }
 }

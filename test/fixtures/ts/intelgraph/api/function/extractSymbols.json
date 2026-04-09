@@ -1,0 +1,117 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/clangd-core/phases/symbols.ts#extractSymbols",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/clangd-core/phases/symbols.ts",
+    "line": 39,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 51,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#PhaseCtx",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 40
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#FileSymbolMap",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 42
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "ctx.workspace.readFile",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 47
+      },
+      {
+        "dst": "ctx.lsp.documentSymbol",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 50
+      },
+      {
+        "dst": "ctx.metrics.timing",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 51
+      },
+      {
+        "dst": "ctx.metrics.count",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 78
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/symbols.ts#mapLspSymbolKind",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 63
+      },
+      {
+        "dst": "String",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 66
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#SymbolRow.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 75
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#PhaseCtx.symbol",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 77
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#PhaseCtx.type",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 81
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#FileSymbolMap.set",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 87
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/clangd-core/extractor.ts#extract",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 97
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/clangd-core/phases/symbols.ts",
+        "confidence": 1,
+        "source_line": 39
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 12,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.986Z"
+  }
+}

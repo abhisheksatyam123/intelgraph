@@ -1,36 +1,36 @@
 {
   "kind": "function",
-  "canonical_name": "module:src/plugins/clangd-core/extractor.ts#mapLspSymbolKind",
+  "canonical_name": "module:src/plugins/clangd-core/phases/symbols.ts#mapLspSymbolKind",
   "category": "function",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/src/plugins/clangd-core/extractor.ts",
-    "line": 53,
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/clangd-core/phases/symbols.ts",
+    "line": 15,
     "character": 1
   },
   "exported": null,
-  "line_count": 18,
+  "line_count": 11,
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/common.js#SymbolRow",
+        "dst": "module:src/intelligence/contracts/common.ts#SymbolRow",
         "confidence": 0.95,
         "resolution": "named-import",
-        "source_line": 53
+        "source_line": 15
       }
     ],
     "contains_in": [
       {
-        "src": "module:src/plugins/clangd-core/extractor.ts",
+        "src": "module:src/plugins/clangd-core/phases/symbols.ts",
         "confidence": 1,
-        "source_line": 53
+        "source_line": 15
       }
     ],
     "calls_in": [
       {
-        "src": "module:src/plugins/clangd-core/extractor.ts#extract",
+        "src": "module:src/plugins/clangd-core/phases/symbols.ts#extractSymbols",
         "confidence": 0.95,
         "resolution": "local",
-        "source_line": 149
+        "source_line": 63
       }
     ]
   },
@@ -44,6 +44,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.779Z"
+    "generated_at": "2026-04-09T12:15:48.986Z"
   }
 }

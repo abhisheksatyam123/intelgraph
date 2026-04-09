@@ -12,7 +12,7 @@
   "relations": {
     "calls_out": [
       {
-        "dst": "module:src/intelligence/contracts/db-foundation.js#IDbFoundation.beginSnapshot",
+        "dst": "module:src/intelligence/contracts/db-foundation.ts#IDbFoundation.beginSnapshot",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 40
@@ -24,19 +24,19 @@
         "source_line": 61
       },
       {
-        "dst": "module:src/intelligence/contracts/db-foundation.js#IDbFoundation.getLatestReadySnapshot",
+        "dst": "module:src/intelligence/contracts/db-foundation.ts#IDbFoundation.getLatestReadySnapshot",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 57
       },
       {
-        "dst": "module:src/intelligence/contracts/db-foundation.js#IDbFoundation.commitSnapshot",
+        "dst": "module:src/intelligence/contracts/db-foundation.ts#IDbFoundation.commitSnapshot",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 73
       },
       {
-        "dst": "module:src/intelligence/contracts/db-foundation.js#IDbFoundation.failSnapshot",
+        "dst": "module:src/intelligence/contracts/db-foundation.ts#IDbFoundation.failSnapshot",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 81
@@ -46,6 +46,14 @@
         "confidence": 0.7,
         "resolution": "bare",
         "source_line": 84
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/tools/index.ts#execute",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 34
       }
     ],
     "contains_in": [
@@ -61,11 +69,11 @@
       "function"
     ],
     "total_outgoing_edges": 6,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 2
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.778Z"
+    "generated_at": "2026-04-09T12:15:48.982Z"
   }
 }

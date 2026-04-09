@@ -12,13 +12,13 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/orchestrator.js#QueryRequest",
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryRequest",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 118
       },
       {
-        "dst": "module:src/intelligence/contracts/orchestrator.js#LookupResult",
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#LookupResult",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 118
@@ -38,6 +38,32 @@
         "source_line": 123
       }
     ],
+    "calls_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts#buildDashboard",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 425
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 3262
+      },
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 289
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-db-lookup.test.ts",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 602
+      }
+    ],
     "contains_in": [
       {
         "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup",
@@ -51,11 +77,11 @@
       "method"
     ],
     "total_outgoing_edges": 4,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 5
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:00.483Z"
+    "generated_at": "2026-04-09T12:15:49.165Z"
   }
 }

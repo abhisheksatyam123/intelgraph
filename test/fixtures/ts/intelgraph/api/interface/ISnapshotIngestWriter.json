@@ -12,10 +12,41 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/common.js#IngestReport",
+        "dst": "module:src/intelligence/contracts/common.ts#IngestReport",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 19
+      }
+    ],
+    "implements_in": [
+      {
+        "src": "module:src/intelligence/backend-factory.ts#SnapshotIngestWriter",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 55
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 33
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend.ingestWriter",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 33
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend",
+        "confidence": 0.95,
+        "source_line": 30
       }
     ],
     "contains_in": [
@@ -31,11 +62,11 @@
       "interface"
     ],
     "total_outgoing_edges": 1,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 5
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.107Z"
+    "generated_at": "2026-04-09T12:15:49.139Z"
   }
 }

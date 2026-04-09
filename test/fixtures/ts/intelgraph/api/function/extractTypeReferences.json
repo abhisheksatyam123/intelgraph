@@ -12,7 +12,7 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode",
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 1533
@@ -44,13 +44,13 @@
         "source_line": 1545
       },
       {
-        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode.push",
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode.push",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 1559
       },
       {
-        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode.namedChild",
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode.namedChild",
         "confidence": 0.95,
         "resolution": "param-member",
         "source_line": 1557
@@ -88,6 +88,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.785Z"
+    "generated_at": "2026-04-09T12:15:48.993Z"
   }
 }

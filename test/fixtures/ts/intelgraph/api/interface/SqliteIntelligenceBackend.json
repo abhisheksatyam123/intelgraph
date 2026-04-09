@@ -12,7 +12,7 @@
   "relations": {
     "extends_out": [
       {
-        "dst": "module:src/intelligence/backend-types.js#IntelligenceBackend",
+        "dst": "module:src/intelligence/backend-types.ts#IntelligenceBackend",
         "confidence": 1,
         "resolution": "named-import",
         "source_line": 97
@@ -20,7 +20,7 @@
     ],
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/db/sqlite/client.js#SqliteClient",
+        "dst": "module:src/intelligence/db/sqlite/client.ts#SqliteClient",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 98
@@ -35,7 +35,7 @@
     ],
     "aggregates_out": [
       {
-        "dst": "module:src/intelligence/db/sqlite/client.js#SqliteClient",
+        "dst": "module:src/intelligence/db/sqlite/client.ts#SqliteClient",
         "confidence": 0.95,
         "source_line": 97
       }
@@ -66,6 +66,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.104Z"
+    "generated_at": "2026-04-09T12:15:49.126Z"
   }
 }

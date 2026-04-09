@@ -24,7 +24,7 @@
         "source_line": 104
       },
       {
-        "dst": "module:src/tools/schemas.js#displayPath",
+        "dst": "module:src/tools/schemas.ts#displayPath",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 98
@@ -42,6 +42,14 @@
         "confidence": 1,
         "source_line": 94
       }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/index.ts#execute",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 526
+      }
     ]
   },
   "contract": {
@@ -49,11 +57,11 @@
       "function"
     ],
     "total_outgoing_edges": 4,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 2
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.789Z"
+    "generated_at": "2026-04-09T12:15:48.997Z"
   }
 }

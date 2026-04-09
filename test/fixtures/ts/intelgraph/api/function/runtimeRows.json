@@ -12,7 +12,7 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/common.js#RuntimeCallerRow",
+        "dst": "module:src/intelligence/contracts/common.ts#RuntimeCallerRow",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 267
@@ -122,6 +122,20 @@
         "confidence": 1,
         "source_line": 267
       }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#IndirectCallerIngestionService.persistRuntimeChains",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 60
+      },
+      {
+        "src": "module:test/unit/intelligence/runtime-graph-materialization.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 124
+      }
     ]
   },
   "contract": {
@@ -129,11 +143,11 @@
       "function"
     ],
     "total_outgoing_edges": 17,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 3
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.764Z"
+    "generated_at": "2026-04-09T12:15:48.968Z"
   }
 }

@@ -24,6 +24,14 @@
         "resolution": "local",
         "source_line": 16
       }
+    ],
+    "implements_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteGraphStore",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 46
+      }
     ]
   },
   "contract": {
@@ -31,11 +39,11 @@
       "interface"
     ],
     "total_outgoing_edges": 0,
-    "total_incoming_edges": 2
+    "total_incoming_edges": 3
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.112Z"
+    "generated_at": "2026-04-09T12:15:49.159Z"
   }
 }

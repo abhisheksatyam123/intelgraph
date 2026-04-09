@@ -12,19 +12,19 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/index.js#CParserEnricher",
+        "dst": "module:src/intelligence/index.ts#CParserEnricher",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 46
       },
       {
-        "dst": "module:src/intelligence/index.js#ClangdEnricher",
+        "dst": "module:src/intelligence/index.ts#ClangdEnricher",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 46
       },
       {
-        "dst": "module:src/intelligence/backend-types.js#LspClientForExtraction",
+        "dst": "module:src/intelligence/backend-types.ts#LspClientForExtraction",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 50
@@ -44,13 +44,13 @@
         "source_line": 168
       },
       {
-        "dst": "module:src/logging/logger.js#getLogger",
+        "dst": "module:src/logging/logger.ts#getLogger",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 168
       },
       {
-        "dst": "module:src/intelligence/backend-factory.js#createIntelligenceBackend",
+        "dst": "module:src/intelligence/backend-factory.ts#createIntelligenceBackend",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 82
@@ -62,28 +62,36 @@
         "source_line": 89
       },
       {
-        "dst": "module:src/tools/index.js#setIntelligenceDeps",
+        "dst": "module:src/tools/index.ts#setIntelligenceDeps",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 94
       },
       {
-        "dst": "module:src/intelligence/tools/index.js#setDbFoundation",
+        "dst": "module:src/intelligence/tools/index.ts#setDbFoundation",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 95
       },
       {
-        "dst": "module:src/tools/indirect-callers.js#collectIndirectCallers",
+        "dst": "module:src/tools/indirect-callers.ts#collectIndirectCallers",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 106
       },
       {
-        "dst": "module:src/intelligence/tools/index.js#setIngestDeps",
+        "dst": "module:src/intelligence/tools/index.ts#setIngestDeps",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 158
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/index.ts#main",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 174
       }
     ],
     "contains_in": [
@@ -99,11 +107,11 @@
       "function"
     ],
     "total_outgoing_edges": 12,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 2
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.771Z"
+    "generated_at": "2026-04-09T12:15:48.975Z"
   }
 }

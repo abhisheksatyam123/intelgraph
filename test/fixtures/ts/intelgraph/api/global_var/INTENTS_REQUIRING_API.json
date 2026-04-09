@@ -28,6 +28,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:05.094Z"
+    "generated_at": "2026-04-09T12:15:49.145Z"
   }
 }

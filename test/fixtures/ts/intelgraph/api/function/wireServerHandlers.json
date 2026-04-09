@@ -18,7 +18,7 @@
         "source_line": 130
       },
       {
-        "dst": "module:src/tracking/index.js#IndexTracker",
+        "dst": "module:src/tracking/index.ts#IndexTracker",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 131
@@ -32,7 +32,7 @@
         "source_line": 150
       },
       {
-        "dst": "module:src/tracking/index.js#IndexTracker.onProgressCreate",
+        "dst": "module:src/tracking/index.ts#IndexTracker.onProgressCreate",
         "confidence": 0.95,
         "resolution": "param-member",
         "source_line": 135
@@ -44,13 +44,13 @@
         "source_line": 142
       },
       {
-        "dst": "module:src/tracking/index.js#IndexTracker.onProgress",
+        "dst": "module:src/tracking/index.ts#IndexTracker.onProgress",
         "confidence": 0.95,
         "resolution": "param-member",
         "source_line": 139
       },
       {
-        "dst": "module:src/tracking/index.js#IndexTracker.onFileStatus",
+        "dst": "module:src/tracking/index.ts#IndexTracker.onFileStatus",
         "confidence": 0.95,
         "resolution": "param-member",
         "source_line": 144
@@ -94,6 +94,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.779Z"
+    "generated_at": "2026-04-09T12:15:48.983Z"
   }
 }

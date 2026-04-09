@@ -12,13 +12,13 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/extraction-adapter.js#ExtractionInput",
+        "dst": "module:src/intelligence/contracts/extraction-adapter.ts#ExtractionInput",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 118
       },
       {
-        "dst": "module:src/intelligence/contracts/extraction-adapter.js#SymbolBatch",
+        "dst": "module:src/intelligence/contracts/extraction-adapter.ts#SymbolBatch",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 118
@@ -38,7 +38,7 @@
         "source_line": 124
       },
       {
-        "dst": "module:src/intelligence/contracts/common.js#SymbolRow.push",
+        "dst": "module:src/intelligence/contracts/common.ts#SymbolRow.push",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 130
@@ -75,6 +75,12 @@
         "confidence": 0.95,
         "resolution": "this-method",
         "source_line": 163
+      },
+      {
+        "src": "module:test/unit/intelligence/ingest-extraction-wlan.test.ts",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 45
       }
     ],
     "reads_field_in": [
@@ -95,11 +101,11 @@
       "method"
     ],
     "total_outgoing_edges": 7,
-    "total_incoming_edges": 5
+    "total_incoming_edges": 6
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:00.473Z"
+    "generated_at": "2026-04-09T12:15:49.153Z"
   }
 }

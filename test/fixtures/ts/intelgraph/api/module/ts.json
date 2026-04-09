@@ -1,28 +1,97 @@
 {
   "kind": "module",
-  "canonical_name": "module:vitest.config.ts",
+  "canonical_name": "module:src/intelligence/extraction/fact-bus.ts",
   "category": "module",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/vitest.config.ts",
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/fact-bus.ts",
     "line": 1,
     "character": 1
   },
   "exported": null,
-  "line_count": 32,
+  "line_count": 415,
   "relations": {
     "imports_out": [
       {
-        "dst": "module:vitest/config",
+        "dst": "module:src/intelligence/db/graph-rows.ts",
         "confidence": 1,
-        "source_line": 1
+        "source_line": 45
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.ts",
+        "confidence": 1,
+        "source_line": 46
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBusOptions",
+        "confidence": 1,
+        "source_line": 63
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBusLogger",
+        "confidence": 1,
+        "source_line": 78
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBusReport",
+        "confidence": 1,
+        "source_line": 83
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus",
+        "confidence": 1,
+        "source_line": 104
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#stored",
+        "confidence": 1,
+        "source_line": 162
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#allProducers",
+        "confidence": 1,
+        "source_line": 309
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#nodes",
+        "confidence": 1,
+        "source_line": 325
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#edges",
+        "confidence": 1,
+        "source_line": 326
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#evidence",
+        "confidence": 1,
+        "source_line": 327
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#observations",
+        "confidence": 1,
+        "source_line": 328
       }
     ],
     "calls_out": [
       {
-        "dst": "module:vitest/config#defineConfig",
-        "confidence": 0.95,
-        "resolution": "named-import",
-        "source_line": 3
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 118
+      }
+    ],
+    "imports_in": [
+      {
+        "src": "module:src/intelligence/extraction/runner.ts",
+        "confidence": 1,
+        "source_line": 38
+      },
+      {
+        "src": "module:test/unit/extraction/fact-bus.test.ts",
+        "confidence": 1,
+        "source_line": 10
       }
     ]
   },
@@ -30,12 +99,12 @@
     "required_node_kinds": [
       "module"
     ],
-    "total_outgoing_edges": 2,
-    "total_incoming_edges": 0
+    "total_outgoing_edges": 13,
+    "total_incoming_edges": 2
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:02.518Z"
+    "generated_at": "2026-04-09T12:15:49.186Z"
   }
 }

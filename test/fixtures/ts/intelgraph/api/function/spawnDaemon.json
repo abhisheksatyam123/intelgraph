@@ -32,7 +32,7 @@
         "source_line": 396
       },
       {
-        "dst": "module:src/logging/logger.js#log",
+        "dst": "module:src/logging/logger.ts#log",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 499
@@ -134,6 +134,14 @@
         "source_line": 498
       }
     ],
+    "calls_in": [
+      {
+        "src": "module:src/core/lifecycle.ts#getOrStartDaemon",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 179
+      }
+    ],
     "contains_in": [
       {
         "src": "module:src/daemon/index.ts",
@@ -147,11 +155,11 @@
       "function"
     ],
     "total_outgoing_edges": 20,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 2
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.752Z"
+    "generated_at": "2026-04-09T12:15:48.897Z"
   }
 }

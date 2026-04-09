@@ -1,0 +1,54 @@
+{
+  "kind": "field",
+  "canonical_name": "module:src/intelligence/extraction/context.ts#InMemoryKeyedCache.store",
+  "category": "field",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/context.ts",
+    "line": 185
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts#InMemoryKeyedCache",
+        "confidence": 1,
+        "source_line": 185
+      }
+    ],
+    "reads_field_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts#InMemoryKeyedCache.get",
+        "confidence": 0.95,
+        "source_line": 188
+      },
+      {
+        "src": "module:src/intelligence/extraction/context.ts#InMemoryKeyedCache.set",
+        "confidence": 0.95,
+        "source_line": 192
+      },
+      {
+        "src": "module:src/intelligence/extraction/context.ts#InMemoryKeyedCache.has",
+        "confidence": 0.95,
+        "source_line": 196
+      },
+      {
+        "src": "module:src/intelligence/extraction/context.ts#InMemoryKeyedCache.getOrCompute",
+        "confidence": 0.95,
+        "source_line": 204
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "field"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.183Z"
+  }
+}

@@ -26,7 +26,7 @@
         "source_line": 21
       },
       {
-        "dst": "module:src/logging/log-levels.js#logLevelToString",
+        "dst": "module:src/logging/log-levels.ts#logLevelToString",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 22
@@ -50,6 +50,14 @@
         "source_line": 41
       }
     ],
+    "calls_in": [
+      {
+        "src": "module:src/logging/file-logger.ts#FileLogger.write",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 38
+      }
+    ],
     "contains_in": [
       {
         "src": "module:src/logging/log-formatter.ts",
@@ -63,11 +71,11 @@
       "function"
     ],
     "total_outgoing_edges": 6,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 2
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.778Z"
+    "generated_at": "2026-04-09T12:15:48.982Z"
   }
 }

@@ -18,7 +18,7 @@
         "source_line": 294
       },
       {
-        "dst": "module:src/intelligence/contracts/orchestrator.js#NormalizedQueryResponse",
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#NormalizedQueryResponse",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 295
@@ -26,7 +26,7 @@
     ],
     "calls_out": [
       {
-        "dst": "module:src/intelligence/contracts/orchestrator.js#validateQueryRequest",
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#validateQueryRequest",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 296
@@ -38,7 +38,7 @@
         "source_line": 365
       },
       {
-        "dst": "module:src/intelligence/contracts/orchestrator.js#decideOrchestrationAction",
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#decideOrchestrationAction",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 320
@@ -50,7 +50,7 @@
         "source_line": 378
       },
       {
-        "dst": "module:src/intelligence/contracts/orchestrator.js#EnrichmentAttempt.some",
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#EnrichmentAttempt.some",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 330
@@ -62,7 +62,7 @@
         "source_line": 340
       },
       {
-        "dst": "module:src/intelligence/contracts/orchestrator.js#EnrichmentAttempt.push",
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#EnrichmentAttempt.push",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 358
@@ -110,6 +110,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.773Z"
+    "generated_at": "2026-04-09T12:15:48.977Z"
   }
 }

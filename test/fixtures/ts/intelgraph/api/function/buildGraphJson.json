@@ -12,13 +12,13 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/db/sqlite/graph-export.js#GraphJsonFilters",
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJsonFilters",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 521
       },
       {
-        "dst": "module:src/intelligence/db/sqlite/graph-export.js#GraphJson",
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJson",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 522
@@ -26,55 +26,55 @@
     ],
     "calls_out": [
       {
-        "dst": "module:src/intelligence/db/sqlite/client.js#openSqlite",
+        "dst": "module:src/intelligence/db/sqlite/client.ts#openSqlite",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 523
       },
       {
-        "dst": "module:src/intelligence/db/sqlite/foundation.js#SqliteDbFoundation",
+        "dst": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation",
         "confidence": 0.95,
         "resolution": "constructor",
         "source_line": 525
       },
       {
-        "dst": "module:src/intelligence/db/sqlite/foundation.js#SqliteDbFoundation.initSchema",
+        "dst": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.initSchema",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 526
       },
       {
-        "dst": "module:src/intelligence/db/sqlite/graph-store.js#SqliteGraphStore",
+        "dst": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteGraphStore",
         "confidence": 0.95,
         "resolution": "constructor",
         "source_line": 527
       },
       {
-        "dst": "module:src/intelligence/db/sqlite/foundation.js#SqliteDbFoundation.beginSnapshot",
+        "dst": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.beginSnapshot",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 529
       },
       {
-        "dst": "module:src/intelligence/extraction/runner.js#ExtractorRunner",
+        "dst": "module:src/intelligence/extraction/runner.ts#ExtractorRunner",
         "confidence": 0.95,
         "resolution": "constructor",
         "source_line": 536
       },
       {
-        "dst": "module:src/intelligence/extraction/runner.js#ExtractorRunner.run",
+        "dst": "module:src/intelligence/extraction/runner.ts#ExtractorRunner.run",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 543
       },
       {
-        "dst": "module:src/intelligence/db/sqlite/foundation.js#SqliteDbFoundation.commitSnapshot",
+        "dst": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.commitSnapshot",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 544
       },
       {
-        "dst": "module:src/intelligence/db/sqlite/graph-export.js#loadGraphJsonFromDb",
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#loadGraphJsonFromDb",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 546
@@ -99,6 +99,12 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 886
+      },
+      {
+        "src": "module:test/integration/snapshot-stats-cli.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 904
       }
     ]
   },
@@ -107,11 +113,11 @@
       "function"
     ],
     "total_outgoing_edges": 12,
-    "total_incoming_edges": 2
+    "total_incoming_edges": 3
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.745Z"
+    "generated_at": "2026-04-09T12:15:48.799Z"
   }
 }

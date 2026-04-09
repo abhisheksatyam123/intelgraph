@@ -36,7 +36,7 @@
         "source_line": 319
       },
       {
-        "dst": "module:src/logging/logger.js#log",
+        "dst": "module:src/logging/logger.ts#log",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 325
@@ -60,14 +60,13 @@
         "source_line": 324
       }
     ],
-    "contains_in": [
-      {
-        "src": "module:src/daemon/index.ts",
-        "confidence": 1,
-        "source_line": 309
-      }
-    ],
     "calls_in": [
+      {
+        "src": "module:src/core/lifecycle.ts#startAsStdioProxy",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 401
+      },
       {
         "src": "module:src/daemon/index.ts#checkDaemonAlive",
         "confidence": 0.95,
@@ -86,6 +85,13 @@
         "resolution": "local",
         "source_line": 579
       }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/daemon/index.ts",
+        "confidence": 1,
+        "source_line": 309
+      }
     ]
   },
   "contract": {
@@ -93,11 +99,11 @@
       "function"
     ],
     "total_outgoing_edges": 8,
-    "total_incoming_edges": 4
+    "total_incoming_edges": 5
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.752Z"
+    "generated_at": "2026-04-09T12:15:48.896Z"
   }
 }

@@ -68,19 +68,25 @@
         "source_line": 318
       }
     ],
-    "contains_in": [
-      {
-        "src": "module:src/fixtures/completeness-audit.ts",
-        "confidence": 1,
-        "source_line": 245
-      }
-    ],
     "calls_in": [
+      {
+        "src": "module:src/bin/audit-fixtures.ts#main",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 65
+      },
       {
         "src": "module:test/unit/fixtures/completeness-audit.test.ts",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 90
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/completeness-audit.ts",
+        "confidence": 1,
+        "source_line": 245
       }
     ]
   },
@@ -89,11 +95,11 @@
       "function"
     ],
     "total_outgoing_edges": 9,
-    "total_incoming_edges": 2
+    "total_incoming_edges": 3
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.754Z"
+    "generated_at": "2026-04-09T12:15:48.899Z"
   }
 }

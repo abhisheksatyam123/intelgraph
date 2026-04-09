@@ -43,6 +43,20 @@
         "confidence": 1,
         "source_line": 13
       }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/db-foundation.ts#IDbFoundation",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 10
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.beginSnapshot",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 48
+      }
     ]
   },
   "contract": {
@@ -50,11 +64,11 @@
       "interface"
     ],
     "total_outgoing_edges": 5,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 3
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.106Z"
+    "generated_at": "2026-04-09T12:15:49.136Z"
   }
 }

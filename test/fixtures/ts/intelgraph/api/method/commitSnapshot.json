@@ -48,14 +48,19 @@
         "source_line": 77
       }
     ],
-    "contains_in": [
-      {
-        "src": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation",
-        "confidence": 1,
-        "source_line": 72
-      }
-    ],
     "calls_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts#buildDashboard",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 274
+      },
+      {
+        "src": "module:src/bin/snapshot-stats.ts#buildGraphJson",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 544
+      },
       {
         "src": "module:test/fixtures/run-multi-lang.mjs",
         "confidence": 0.95,
@@ -67,6 +72,61 @@
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 101
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#buildFixture",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 128
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#buildDataStructFixture",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 844
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 3231
+      },
+      {
+        "src": "module:test/integration/rust-core-real-workspaces.test.ts#ingestWorkspace",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 73
+      },
+      {
+        "src": "module:test/integration/snapshot-stats-real-workspaces.test.ts#ingestWorkspace",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 138
+      },
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts#seedSnapshotFromFixture",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 624
+      },
+      {
+        "src": "module:test/integration/ts-core-real-workspaces.test.ts#ingestWorkspace",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 81
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-foundation.test.ts",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 220
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation",
+        "confidence": 1,
+        "source_line": 72
       }
     ]
   },
@@ -75,11 +135,11 @@
       "method"
     ],
     "total_outgoing_edges": 6,
-    "total_incoming_edges": 3
+    "total_incoming_edges": 13
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:00.487Z"
+    "generated_at": "2026-04-09T12:15:49.171Z"
   }
 }

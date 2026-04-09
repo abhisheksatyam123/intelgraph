@@ -12,7 +12,7 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/common.js#SourceLocation",
+        "dst": "module:src/intelligence/contracts/common.ts#SourceLocation",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 16
@@ -52,7 +52,7 @@
     ],
     "aggregates_out": [
       {
-        "dst": "module:src/intelligence/contracts/common.js#SourceLocation",
+        "dst": "module:src/intelligence/contracts/common.ts#SourceLocation",
         "confidence": 0.95,
         "source_line": 11
       }
@@ -88,6 +88,60 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 267
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteGraphStore.writeNodes",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 82
+      },
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#nodes",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 325
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink.isFunctionNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 125
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink.toSymbolRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 129
+      },
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts#nodes",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 384
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-db-lookup.test.ts#makeNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 50
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-graph-store.test.ts#makeNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 59
+      },
+      {
+        "src": "module:test/unit/plugins/rust-core.test.ts#CaptureSink.allNodes",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 28
+      },
+      {
+        "src": "module:test/unit/plugins/ts-core.test.ts#CaptureSink.allNodes",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 33
       }
     ],
     "field_of_type_in": [
@@ -111,11 +165,11 @@
       "interface"
     ],
     "total_outgoing_edges": 8,
-    "total_incoming_edges": 7
+    "total_incoming_edges": 16
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.112Z"
+    "generated_at": "2026-04-09T12:15:49.155Z"
   }
 }

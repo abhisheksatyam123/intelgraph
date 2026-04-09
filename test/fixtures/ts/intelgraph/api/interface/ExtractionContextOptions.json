@@ -12,25 +12,25 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/extraction/services/index.js#LspService",
+        "dst": "module:src/intelligence/extraction/services/index.ts#LspService",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 313
       },
       {
-        "dst": "module:src/intelligence/extraction/services/index.js#TreeSitterService",
+        "dst": "module:src/intelligence/extraction/services/index.ts#TreeSitterService",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 314
       },
       {
-        "dst": "module:src/intelligence/extraction/services/index.js#RipgrepService",
+        "dst": "module:src/intelligence/extraction/services/index.ts#RipgrepService",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 315
       },
       {
-        "dst": "module:src/intelligence/extraction/services/index.js#WorkspaceService",
+        "dst": "module:src/intelligence/extraction/services/index.ts#WorkspaceService",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 316
@@ -85,22 +85,22 @@
     ],
     "aggregates_out": [
       {
-        "dst": "module:src/intelligence/extraction/services/index.js#LspService",
+        "dst": "module:src/intelligence/extraction/services/index.ts#LspService",
         "confidence": 0.95,
         "source_line": 309
       },
       {
-        "dst": "module:src/intelligence/extraction/services/index.js#TreeSitterService",
+        "dst": "module:src/intelligence/extraction/services/index.ts#TreeSitterService",
         "confidence": 0.95,
         "source_line": 309
       },
       {
-        "dst": "module:src/intelligence/extraction/services/index.js#RipgrepService",
+        "dst": "module:src/intelligence/extraction/services/index.ts#RipgrepService",
         "confidence": 0.95,
         "source_line": 309
       },
       {
-        "dst": "module:src/intelligence/extraction/services/index.js#WorkspaceService",
+        "dst": "module:src/intelligence/extraction/services/index.ts#WorkspaceService",
         "confidence": 0.95,
         "source_line": 309
       }
@@ -118,6 +118,12 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 348
+      },
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#contextOpts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 256
       }
     ]
   },
@@ -126,11 +132,11 @@
       "interface"
     ],
     "total_outgoing_edges": 17,
-    "total_incoming_edges": 2
+    "total_incoming_edges": 3
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.114Z"
+    "generated_at": "2026-04-09T12:15:49.182Z"
   }
 }

@@ -58,6 +58,12 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 346
+      },
+      {
+        "src": "module:test/unit/extraction/context.test.ts#m",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 197
       }
     ],
     "field_of_type_in": [
@@ -81,6 +87,12 @@
         "confidence": 0.95,
         "resolution": "constructor",
         "source_line": 358
+      },
+      {
+        "src": "module:test/unit/extraction/context.test.ts",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 197
       }
     ]
   },
@@ -89,11 +101,11 @@
       "class"
     ],
     "total_outgoing_edges": 6,
-    "total_incoming_edges": 5
+    "total_incoming_edges": 7
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:57.974Z"
+    "generated_at": "2026-04-09T12:15:49.183Z"
   }
 }

@@ -61,6 +61,12 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 209
+      },
+      {
+        "src": "module:src/index.ts#lifecycleConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 145
       }
     ]
   },
@@ -69,11 +75,11 @@
       "interface"
     ],
     "total_outgoing_edges": 6,
-    "total_incoming_edges": 3
+    "total_incoming_edges": 4
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.100Z"
+    "generated_at": "2026-04-09T12:15:49.101Z"
   }
 }

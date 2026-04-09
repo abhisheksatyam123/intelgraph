@@ -18,13 +18,13 @@
         "source_line": 117
       },
       {
-        "dst": "module:src/intelligence/extraction/facts.js#Fact",
+        "dst": "module:src/intelligence/extraction/facts.ts#Fact",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 118
       },
       {
-        "dst": "module:src/intelligence/extraction/context.js#ExtractionContext",
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContext",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 118
@@ -57,6 +57,62 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 148
+      },
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#ExtractorRunnerOptions",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 67
+      },
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#PluginEntry",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 156
+      },
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#ExtractorRunner.runPlugin",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 244
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 63
+      },
+      {
+        "src": "module:src/plugins/index.ts#BUILT_IN_EXTRACTORS",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 22
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#ExtractorRunnerOptions.plugins",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 67
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.plugins",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 63
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#ExtractorRunnerOptions",
+        "confidence": 0.95,
+        "source_line": 54
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps",
+        "confidence": 0.95,
+        "source_line": 56
       }
     ]
   },
@@ -65,11 +121,11 @@
       "interface"
     ],
     "total_outgoing_edges": 5,
-    "total_incoming_edges": 2
+    "total_incoming_edges": 11
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.114Z"
+    "generated_at": "2026-04-09T12:15:49.186Z"
   }
 }

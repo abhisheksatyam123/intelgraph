@@ -20,7 +20,7 @@
     ],
     "calls_out": [
       {
-        "dst": "module:src/config/config.js#resolveConfigPath",
+        "dst": "module:src/config/config.ts#resolveConfigPath",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 45
@@ -44,6 +44,20 @@
         "confidence": 1,
         "source_line": 42
       }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/index.ts#main",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 92
+      },
+      {
+        "src": "module:test/unit/config/rename-fallback.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 170
+      }
     ]
   },
   "contract": {
@@ -51,11 +65,11 @@
       "function"
     ],
     "total_outgoing_edges": 4,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 3
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.747Z"
+    "generated_at": "2026-04-09T12:15:48.801Z"
   }
 }

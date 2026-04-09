@@ -12,7 +12,7 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/tools/pattern-detector/c-parser.js#FunctionCall",
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#FunctionCall",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 61
@@ -24,7 +24,7 @@
         "source_line": 66
       },
       {
-        "dst": "module:src/tools/pattern-detector/types.js#ClassifiedSite",
+        "dst": "module:src/tools/pattern-detector/types.ts#ClassifiedSite",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 67
@@ -80,13 +80,13 @@
         "source_line": 88
       },
       {
-        "dst": "module:src/tools/pattern-detector/c-parser.js#parseSource",
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#parseSource",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 93
       },
       {
-        "dst": "module:src/tools/pattern-detector/c-parser.js#extractFunctionParams",
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#extractFunctionParams",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 97
@@ -128,6 +128,14 @@
         "confidence": 1,
         "source_line": 60
       }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/pattern-detector/detector.ts#classifyReferenceSite",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 137
+      }
     ]
   },
   "contract": {
@@ -135,11 +143,11 @@
       "function"
     ],
     "total_outgoing_edges": 18,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 2
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.795Z"
+    "generated_at": "2026-04-09T12:15:49.004Z"
   }
 }

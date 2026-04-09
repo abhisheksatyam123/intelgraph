@@ -4,171 +4,185 @@
   "category": "function",
   "source": {
     "file": "/home/abhi/qprojects/intelgraph/src/tools/indirect-callers.ts",
-    "line": 67,
+    "line": 69,
     "character": 8
   },
   "exported": true,
-  "line_count": 183,
+  "line_count": 208,
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/lsp/types.js#ILanguageClient",
+        "dst": "module:src/lsp/types.ts#ILanguageClient",
         "confidence": 0.95,
         "resolution": "named-import",
-        "source_line": 68
+        "source_line": 70
       },
       {
         "dst": "module:src/tools/indirect-callers.ts#IndirectCallerGraph",
         "confidence": 0.95,
         "resolution": "local",
-        "source_line": 70
+        "source_line": 72
       }
     ],
     "calls_out": [
       {
-        "dst": "module:src/tools/pattern-detector/c-parser.js#initParser",
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#initParser",
         "confidence": 0.95,
         "resolution": "named-import",
-        "source_line": 75
+        "source_line": 77
       },
       {
         "dst": "module:src/tools/indirect-callers.ts#readFileSafe",
         "confidence": 0.95,
         "resolution": "local",
-        "source_line": 86
+        "source_line": 88
       },
       {
-        "dst": "module:src/lsp/types.js#ILanguageClient.openFile",
+        "dst": "module:src/lsp/types.ts#ILanguageClient.openFile",
         "confidence": 0.95,
         "resolution": "param-member",
-        "source_line": 88
+        "source_line": 90
       },
       {
         "dst": "module:src/tools/indirect-callers.ts#waitForFileReady",
         "confidence": 0.95,
         "resolution": "local",
-        "source_line": 90
+        "source_line": 92
       },
       {
         "dst": "sourceText.split",
         "confidence": 0.7,
         "resolution": "member",
-        "source_line": 99
+        "source_line": 101
       },
       {
         "dst": "module:src/tools/indirect-callers.ts#findFunctionNameChar",
         "confidence": 0.95,
         "resolution": "local",
-        "source_line": 100
+        "source_line": 102
       },
       {
-        "dst": "module:src/lsp/types.js#ILanguageClient.prepareCallHierarchy",
+        "dst": "module:src/lsp/types.ts#ILanguageClient.prepareCallHierarchy",
         "confidence": 0.95,
         "resolution": "param-member",
-        "source_line": 203
+        "source_line": 221
       },
       {
         "dst": "Promise",
         "confidence": 0.7,
         "resolution": "constructor",
-        "source_line": 109
+        "source_line": 111
       },
       {
         "dst": "setTimeout",
         "confidence": 0.7,
         "resolution": "bare",
-        "source_line": 109
+        "source_line": 111
       },
       {
         "dst": "seed.uri.startsWith",
         "confidence": 0.7,
         "resolution": "member",
-        "source_line": 115
+        "source_line": 117
       },
       {
         "dst": "module:url#fileURLToPath",
         "confidence": 0.95,
         "resolution": "named-import",
-        "source_line": 207
+        "source_line": 225
       },
       {
-        "dst": "module:src/lsp/types.js#ILanguageClient.incomingCalls",
+        "dst": "module:src/lsp/types.ts#ILanguageClient.incomingCalls",
         "confidence": 0.95,
         "resolution": "param-member",
-        "source_line": 120
+        "source_line": 122
       },
       {
         "dst": "from.uri.startsWith",
         "confidence": 0.7,
         "resolution": "member",
-        "source_line": 128
+        "source_line": 130
       },
       {
         "dst": "map",
         "confidence": 0.7,
         "resolution": "member",
-        "source_line": 135
+        "source_line": 137
       },
       {
         "dst": "module:src/tools/indirect-callers.ts#classifyReference",
         "confidence": 0.95,
         "resolution": "local",
-        "source_line": 216
+        "source_line": 234
       },
       {
-        "dst": "module:src/tools/pattern-resolver/index.js#resolveChain",
+        "dst": "module:src/tools/pattern-resolver/index.ts#resolveChain",
         "confidence": 0.95,
         "resolution": "named-import",
-        "source_line": 219
+        "source_line": 237
+      },
+      {
+        "dst": "module:src/tools/indirect-callers.ts#tryDispatchChainTemplate",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 252
       },
       {
         "dst": "module:src/tools/indirect-callers.ts#IndirectCallerNode.push",
         "confidence": 0.95,
         "resolution": "var-member",
-        "source_line": 232
+        "source_line": 259
       },
       {
-        "dst": "module:src/lsp/types.js#ILanguageClient.references",
+        "dst": "module:src/lsp/types.ts#ILanguageClient.references",
         "confidence": 0.95,
         "resolution": "param-member",
-        "source_line": 188
+        "source_line": 206
       },
       {
         "dst": "Set",
         "confidence": 0.7,
         "resolution": "constructor",
-        "source_line": 189
+        "source_line": 207
       },
       {
         "dst": "refUri.startsWith",
         "confidence": 0.7,
         "resolution": "member",
-        "source_line": 197
+        "source_line": 215
       },
       {
         "dst": "enc.uri.startsWith",
         "confidence": 0.7,
         "resolution": "member",
-        "source_line": 207
+        "source_line": 225
       },
       {
         "dst": "module:src/tools/indirect-callers.ts#seenEnclosing.has",
         "confidence": 0.95,
         "resolution": "local-member",
-        "source_line": 212
+        "source_line": 230
       },
       {
         "dst": "module:src/tools/indirect-callers.ts#seenEnclosing.add",
         "confidence": 0.95,
         "resolution": "local-member",
-        "source_line": 213
+        "source_line": 231
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/init.ts#initIntelligenceBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 106
       }
     ],
     "contains_in": [
       {
         "src": "module:src/tools/indirect-callers.ts",
         "confidence": 1,
-        "source_line": 67
+        "source_line": 69
       }
     ]
   },
@@ -176,12 +190,12 @@
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 25,
-    "total_incoming_edges": 1
+    "total_outgoing_edges": 26,
+    "total_incoming_edges": 2
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.794Z"
+    "generated_at": "2026-04-09T12:15:49.003Z"
   }
 }

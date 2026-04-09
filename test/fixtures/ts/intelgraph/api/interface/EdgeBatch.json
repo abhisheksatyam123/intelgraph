@@ -12,7 +12,7 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/common.js#EdgeRow",
+        "dst": "module:src/intelligence/contracts/common.ts#EdgeRow",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 26
@@ -27,7 +27,7 @@
     ],
     "aggregates_out": [
       {
-        "dst": "module:src/intelligence/contracts/common.js#EdgeRow",
+        "dst": "module:src/intelligence/contracts/common.ts#EdgeRow",
         "confidence": 0.95,
         "source_line": 25
       }
@@ -51,6 +51,12 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 38
+      },
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.extractEdges",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 162
       }
     ],
     "field_of_type_in": [
@@ -74,11 +80,11 @@
       "interface"
     ],
     "total_outgoing_edges": 3,
-    "total_incoming_edges": 5
+    "total_incoming_edges": 6
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.107Z"
+    "generated_at": "2026-04-09T12:15:49.140Z"
   }
 }

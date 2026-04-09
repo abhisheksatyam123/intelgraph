@@ -4,7 +4,7 @@
   "category": "function",
   "source": {
     "file": "/home/abhi/qprojects/intelgraph/src/plugins/ts-core/extractor.ts",
-    "line": 2917,
+    "line": 2940,
     "character": 1
   },
   "exported": null,
@@ -12,36 +12,36 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode",
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode",
         "confidence": 0.95,
         "resolution": "named-import",
-        "source_line": 2917
+        "source_line": 2940
       }
     ],
     "calls_out": [
       {
-        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode.pop",
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode.pop",
         "confidence": 0.95,
         "resolution": "var-member",
-        "source_line": 2921
+        "source_line": 2944
       },
       {
         "dst": "current.namedChild",
         "confidence": 0.7,
         "resolution": "member",
-        "source_line": 2923
+        "source_line": 2946
       },
       {
         "dst": "module:src/plugins/ts-core/extractor.ts#out.push",
         "confidence": 0.95,
         "resolution": "local-member",
-        "source_line": 2926
+        "source_line": 2949
       },
       {
-        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode.push",
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode.push",
         "confidence": 0.95,
         "resolution": "var-member",
-        "source_line": 2928
+        "source_line": 2951
       }
     ],
     "calls_in": [
@@ -80,7 +80,7 @@
       {
         "src": "module:src/plugins/ts-core/extractor.ts",
         "confidence": 1,
-        "source_line": 2917
+        "source_line": 2940
       }
     ]
   },
@@ -94,6 +94,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.787Z"
+    "generated_at": "2026-04-09T12:15:48.995Z"
   }
 }

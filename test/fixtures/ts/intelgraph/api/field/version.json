@@ -1,19 +1,19 @@
 {
   "kind": "field",
-  "canonical_name": "module:src/daemon/index.ts#DaemonState.version",
+  "canonical_name": "module:src/intelligence/extraction/contract.ts#ExtractorMetadata.version",
   "category": "field",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/src/daemon/index.ts",
-    "line": 59
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/contract.ts",
+    "line": 87
   },
   "exported": null,
   "line_count": null,
   "relations": {
     "contains_in": [
       {
-        "src": "module:src/daemon/index.ts#DaemonState",
+        "src": "module:src/intelligence/extraction/contract.ts#ExtractorMetadata",
         "confidence": 1,
-        "source_line": 59
+        "source_line": 87
       }
     ]
   },
@@ -27,6 +27,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:03.190Z"
+    "generated_at": "2026-04-09T12:15:49.186Z"
   }
 }

@@ -12,13 +12,13 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/common.js#TypeRow",
+        "dst": "module:src/intelligence/contracts/common.ts#TypeRow",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 21
       },
       {
-        "dst": "module:src/intelligence/contracts/common.js#AggregateFieldRow",
+        "dst": "module:src/intelligence/contracts/common.ts#AggregateFieldRow",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 22
@@ -38,12 +38,12 @@
     ],
     "aggregates_out": [
       {
-        "dst": "module:src/intelligence/contracts/common.js#TypeRow",
+        "dst": "module:src/intelligence/contracts/common.ts#TypeRow",
         "confidence": 0.95,
         "source_line": 20
       },
       {
-        "dst": "module:src/intelligence/contracts/common.js#AggregateFieldRow",
+        "dst": "module:src/intelligence/contracts/common.ts#AggregateFieldRow",
         "confidence": 0.95,
         "source_line": 20
       }
@@ -67,6 +67,12 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 37
+      },
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.extractTypes",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 149
       }
     ],
     "field_of_type_in": [
@@ -90,11 +96,11 @@
       "interface"
     ],
     "total_outgoing_edges": 6,
-    "total_incoming_edges": 5
+    "total_incoming_edges": 6
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.107Z"
+    "generated_at": "2026-04-09T12:15:49.141Z"
   }
 }

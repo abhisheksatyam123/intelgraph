@@ -42,6 +42,7 @@ import { extractFieldAccess } from "./phases/field-access.js"
 import { extractCallbacks } from "./phases/callbacks.js"
 import { extractContainment } from "./phases/containment.js"
 import { extractTypeRefs } from "./phases/type-refs.js"
+import { extractSyscallMacros } from "./phases/syscall-macros.js"
 import type { FileSymbolMap } from "./phases/types.js"
 
 const CAPABILITIES: Capability[] = [
@@ -116,6 +117,9 @@ const clangdCoreExtractor = defineExtractor({
 
     // ── Phase 7: type references + field_of_type + aggregates ─────────
     yield* extractTypeRefs(ctx as any, fileSymbols)
+
+    // ── Phase 8: SYSCALL_DEFINE macro detection ───────────────────────
+    yield* extractSyscallMacros(ctx as any, files, dispatchTemplateMap)
   },
 })
 

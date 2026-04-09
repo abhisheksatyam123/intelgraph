@@ -30,10 +30,50 @@
         "source_line": 21
       },
       {
-        "dst": "module:src/intelligence/contracts/common.js#IngestReport",
+        "dst": "module:src/intelligence/contracts/common.ts#IngestReport",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 22
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 34
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 71
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend.ingestion",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 34
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.ingestion",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 71
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend",
+        "confidence": 0.95,
+        "source_line": 30
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps",
+        "confidence": 0.95,
+        "source_line": 56
       }
     ],
     "contains_in": [
@@ -42,6 +82,14 @@
         "confidence": 1,
         "source_line": 19
       }
+    ],
+    "implements_in": [
+      {
+        "src": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#IndirectCallerIngestionService",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 14
+      }
     ]
   },
   "contract": {
@@ -49,11 +97,11 @@
       "interface"
     ],
     "total_outgoing_edges": 4,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 8
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.108Z"
+    "generated_at": "2026-04-09T12:15:49.141Z"
   }
 }

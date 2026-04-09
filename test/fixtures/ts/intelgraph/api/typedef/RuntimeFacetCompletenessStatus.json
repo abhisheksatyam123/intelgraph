@@ -23,6 +23,12 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 268
+      },
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts#computeFacetCompletenessStatus",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 242
       }
     ],
     "field_of_type_in": [
@@ -70,11 +76,11 @@
       "typedef"
     ],
     "total_outgoing_edges": 0,
-    "total_incoming_edges": 8
+    "total_incoming_edges": 9
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:07.060Z"
+    "generated_at": "2026-04-09T12:15:49.149Z"
   }
 }

@@ -12,13 +12,13 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.js#RuntimeCallerBatch",
+        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#RuntimeCallerBatch",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 30
       },
       {
-        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.js#LinkReport",
+        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#LinkReport",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 30
@@ -32,7 +32,7 @@
         "source_line": 41
       },
       {
-        "dst": "module:src/intelligence/contracts/common.js#RuntimeCallerRow.push",
+        "dst": "module:src/intelligence/contracts/common.ts#RuntimeCallerRow.push",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 45
@@ -62,6 +62,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:00.477Z"
+    "generated_at": "2026-04-09T12:15:49.158Z"
   }
 }

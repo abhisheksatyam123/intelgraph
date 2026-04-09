@@ -4,7 +4,7 @@
   "category": "function",
   "source": {
     "file": "/home/abhi/qprojects/intelgraph/src/plugins/ts-core/extractor.ts",
-    "line": 2699,
+    "line": 2722,
     "character": 1
   },
   "exported": null,
@@ -12,48 +12,48 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode",
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode",
         "confidence": 0.95,
         "resolution": "named-import",
-        "source_line": 2700
+        "source_line": 2723
       },
       {
         "dst": "module:src/plugins/ts-core/extractor.ts#FileResolver",
         "confidence": 0.95,
         "resolution": "local",
-        "source_line": 2701
+        "source_line": 2724
       }
     ],
     "calls_out": [
       {
-        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode.namedChild",
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode.namedChild",
         "confidence": 0.95,
         "resolution": "param-member",
-        "source_line": 2706
+        "source_line": 2729
       },
       {
         "dst": "module:src/plugins/ts-core/extractor.ts#isComponentTagName",
         "confidence": 0.95,
         "resolution": "local",
-        "source_line": 2774
+        "source_line": 2797
       },
       {
         "dst": "module:src/plugins/ts-core/extractor.ts#resolveTypeName",
         "confidence": 0.95,
         "resolution": "local",
-        "source_line": 2775
+        "source_line": 2798
       },
       {
-        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode.childForFieldName",
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode.childForFieldName",
         "confidence": 0.95,
         "resolution": "var-member",
-        "source_line": 2735
+        "source_line": 2758
       },
       {
         "dst": "module:src/plugins/ts-core/extractor.ts#firstNamedChildOfType",
         "confidence": 0.95,
         "resolution": "local",
-        "source_line": 2772
+        "source_line": 2795
       }
     ],
     "calls_in": [
@@ -68,7 +68,7 @@
       {
         "src": "module:src/plugins/ts-core/extractor.ts",
         "confidence": 1,
-        "source_line": 2699
+        "source_line": 2722
       }
     ]
   },
@@ -82,6 +82,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.785Z"
+    "generated_at": "2026-04-09T12:15:48.992Z"
   }
 }

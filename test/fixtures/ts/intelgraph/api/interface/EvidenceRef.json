@@ -79,6 +79,24 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 233
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#evidenceRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 255
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#EvidenceFact",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 84
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#EvidenceFactInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 149
       }
     ],
     "field_of_type_in": [
@@ -111,6 +129,18 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 233
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#EvidenceFact.payload",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 84
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#EvidenceFactInput.payload",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 149
       }
     ],
     "aggregates_in": [
@@ -138,6 +168,16 @@
         "src": "module:src/intelligence/contracts/common.ts#Provenance",
         "confidence": 0.95,
         "source_line": 231
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#EvidenceFact",
+        "confidence": 0.95,
+        "source_line": 82
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#EvidenceFactInput",
+        "confidence": 0.95,
+        "source_line": 148
       }
     ]
   },
@@ -146,11 +186,11 @@
       "interface"
     ],
     "total_outgoing_edges": 5,
-    "total_incoming_edges": 16
+    "total_incoming_edges": 23
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.105Z"
+    "generated_at": "2026-04-09T12:15:49.131Z"
   }
 }

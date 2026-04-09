@@ -1,27 +1,27 @@
 {
   "kind": "field",
-  "canonical_name": "module:src/intelligence/backend-types.ts#IntelligenceBackend.db",
+  "canonical_name": "module:src/intelligence/db/sqlite/client.ts#SqliteClient.db",
   "category": "field",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/backend-types.ts",
-    "line": 32
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/client.ts",
+    "line": 41
   },
   "exported": null,
   "line_count": null,
   "relations": {
     "field_of_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/db-foundation.js#IDbFoundation",
+        "dst": "module:drizzle-orm/better-sqlite3#BetterSQLite3Database",
         "confidence": 0.95,
         "resolution": "named-import",
-        "source_line": 32
+        "source_line": 41
       }
     ],
     "contains_in": [
       {
-        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend",
+        "src": "module:src/intelligence/db/sqlite/client.ts#SqliteClient",
         "confidence": 1,
-        "source_line": 32
+        "source_line": 41
       }
     ]
   },
@@ -35,6 +35,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:03.198Z"
+    "generated_at": "2026-04-09T12:15:49.160Z"
   }
 }

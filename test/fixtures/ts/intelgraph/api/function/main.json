@@ -18,13 +18,13 @@
         "source_line": 90
       },
       {
-        "dst": "module:src/config/bootstrap.js#parseArgs",
+        "dst": "module:src/config/bootstrap.ts#parseArgs",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 91
       },
       {
-        "dst": "module:src/config/bootstrap.js#readWorkspaceConfig",
+        "dst": "module:src/config/bootstrap.ts#readWorkspaceConfig",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 92
@@ -42,37 +42,37 @@
         "source_line": 209
       },
       {
-        "dst": "module:src/daemon/index.js#normaliseRoot",
+        "dst": "module:src/daemon/index.ts#normaliseRoot",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 103
       },
       {
-        "dst": "module:src/daemon/index.js#computeWorkspaceId",
+        "dst": "module:src/daemon/index.ts#computeWorkspaceId",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 104
       },
       {
-        "dst": "module:src/logging/logger.js#initLogger",
+        "dst": "module:src/logging/logger.ts#initLogger",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 122
       },
       {
-        "dst": "module:src/logging/logger.js#log",
+        "dst": "module:src/logging/logger.ts#log",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 309
       },
       {
-        "dst": "module:src/tracking/index.js#IndexTracker",
+        "dst": "module:src/tracking/index.ts#IndexTracker",
         "confidence": 0.95,
         "resolution": "constructor",
         "source_line": 144
       },
       {
-        "dst": "module:src/intelligence/local-runtime.js#ensureLocalIntelligenceRuntime",
+        "dst": "module:src/intelligence/local-runtime.ts#ensureLocalIntelligenceRuntime",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 171
@@ -84,7 +84,7 @@
         "source_line": 174
       },
       {
-        "dst": "module:src/intelligence/init.js#initIntelligenceBackend",
+        "dst": "module:src/intelligence/init.ts#initIntelligenceBackend",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 174
@@ -96,7 +96,7 @@
         "source_line": 214
       },
       {
-        "dst": "module:src/logging/logger.js#getLogFile",
+        "dst": "module:src/logging/logger.ts#getLogFile",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 195
@@ -114,7 +114,7 @@
         "source_line": 276
       },
       {
-        "dst": "module:src/logging/logger.js#logError",
+        "dst": "module:src/logging/logger.ts#logError",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 212
@@ -126,13 +126,13 @@
         "source_line": 214
       },
       {
-        "dst": "module:src/core/lifecycle.js#makeGetClient",
+        "dst": "module:src/core/lifecycle.ts#makeGetClient",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 219
       },
       {
-        "dst": "module:src/core/lifecycle.js#connectToClangd",
+        "dst": "module:src/core/lifecycle.ts#connectToClangd",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 242
@@ -144,31 +144,31 @@
         "source_line": 276
       },
       {
-        "dst": "module:src/core/lifecycle.js#startAsHttpDaemon",
+        "dst": "module:src/core/lifecycle.ts#startAsHttpDaemon",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 284
       },
       {
-        "dst": "module:src/core/lifecycle.js#startAsStdioProxy",
+        "dst": "module:src/core/lifecycle.ts#startAsStdioProxy",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 293
       },
       {
-        "dst": "module:src/backend/unified-backend.js#createUnifiedBackend",
+        "dst": "module:src/backend/unified-backend.ts#createUnifiedBackend",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 306
       },
       {
-        "dst": "module:src/core/server.js#startHttp",
+        "dst": "module:src/core/server.ts#startHttp",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 300
       },
       {
-        "dst": "module:src/core/server.js#startStdio",
+        "dst": "module:src/core/server.ts#startStdio",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 308
@@ -200,6 +200,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.759Z"
+    "generated_at": "2026-04-09T12:15:48.965Z"
   }
 }

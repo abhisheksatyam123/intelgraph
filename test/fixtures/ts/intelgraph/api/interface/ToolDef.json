@@ -12,13 +12,13 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/tracking/index.js#IndexTracker",
+        "dst": "module:src/tracking/index.ts#IndexTracker",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 25
       },
       {
-        "dst": "module:src/lsp/types.js#ILanguageClient",
+        "dst": "module:src/lsp/types.ts#ILanguageClient",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 25
@@ -48,12 +48,12 @@
     ],
     "aggregates_out": [
       {
-        "dst": "module:src/lsp/types.js#ILanguageClient",
+        "dst": "module:src/lsp/types.ts#ILanguageClient",
         "confidence": 0.95,
         "source_line": 21
       },
       {
-        "dst": "module:src/tracking/index.js#IndexTracker",
+        "dst": "module:src/tracking/index.ts#IndexTracker",
         "confidence": 0.95,
         "source_line": 21
       }
@@ -64,6 +64,26 @@
         "confidence": 1,
         "source_line": 21
       }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/tools/index.ts#INTELLIGENCE_TOOLS",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 13
+      },
+      {
+        "src": "module:test/unit/intelligence/test-kit.ts#tool",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 13
+      },
+      {
+        "src": "module:test/unit/intelligence/test-kit.ts#ctx",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 19
+      }
     ]
   },
   "contract": {
@@ -71,11 +91,11 @@
       "interface"
     ],
     "total_outgoing_edges": 8,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 4
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.100Z"
+    "generated_at": "2026-04-09T12:15:49.104Z"
   }
 }

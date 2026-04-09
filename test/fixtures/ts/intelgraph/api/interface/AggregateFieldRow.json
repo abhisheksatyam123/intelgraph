@@ -53,6 +53,63 @@
         "confidence": 1,
         "source_line": 104
       }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/extraction-adapter.ts#TypeBatch",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 22
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#AggregateFieldFact",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 66
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#AggregateFieldFactInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 139
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/extraction-adapter.ts#TypeBatch.fields",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 22
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#AggregateFieldFact.payload",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 66
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#AggregateFieldFactInput.payload",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 139
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/contracts/extraction-adapter.ts#TypeBatch",
+        "confidence": 0.95,
+        "source_line": 20
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#AggregateFieldFact",
+        "confidence": 0.95,
+        "source_line": 64
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#AggregateFieldFactInput",
+        "confidence": 0.95,
+        "source_line": 138
+      }
     ]
   },
   "contract": {
@@ -60,11 +117,11 @@
       "interface"
     ],
     "total_outgoing_edges": 7,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 10
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.104Z"
+    "generated_at": "2026-04-09T12:15:49.128Z"
   }
 }

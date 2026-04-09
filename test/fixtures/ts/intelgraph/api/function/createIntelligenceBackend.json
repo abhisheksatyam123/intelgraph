@@ -18,13 +18,13 @@
         "source_line": 102
       },
       {
-        "dst": "module:src/intelligence/orchestrator-runner.js#OrchestratorRunnerDeps",
+        "dst": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 103
       },
       {
-        "dst": "module:src/intelligence/backend-types.js#LspClientForExtraction",
+        "dst": "module:src/intelligence/backend-types.ts#LspClientForExtraction",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 107
@@ -38,43 +38,43 @@
     ],
     "calls_out": [
       {
-        "dst": "module:src/intelligence/db/sqlite/client.js#openSqlite",
+        "dst": "module:src/intelligence/db/sqlite/client.ts#openSqlite",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 109
       },
       {
-        "dst": "module:src/intelligence/db/sqlite/foundation.js#SqliteDbFoundation",
+        "dst": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation",
         "confidence": 0.95,
         "resolution": "constructor",
         "source_line": 110
       },
       {
-        "dst": "module:src/intelligence/db/sqlite/foundation.js#SqliteDbFoundation.initSchema",
+        "dst": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.initSchema",
         "confidence": 0.95,
         "resolution": "var-member",
         "source_line": 111
       },
       {
-        "dst": "module:src/intelligence/db/sqlite/graph-store.js#SqliteGraphStore",
+        "dst": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteGraphStore",
         "confidence": 0.95,
         "resolution": "constructor",
         "source_line": 113
       },
       {
-        "dst": "module:src/intelligence/db/sqlite/db-lookup.js#SqliteDbLookup",
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup",
         "confidence": 0.95,
         "resolution": "constructor",
         "source_line": 114
       },
       {
-        "dst": "module:src/intelligence/db/sqlite/projection-service.js#SqliteGraphProjectionService",
+        "dst": "module:src/intelligence/db/sqlite/projection-service.ts#SqliteGraphProjectionService",
         "confidence": 0.95,
         "resolution": "constructor",
         "source_line": 115
       },
       {
-        "dst": "module:src/intelligence/db/extraction/clangd-extraction-adapter.js#ClangdExtractionAdapter",
+        "dst": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter",
         "confidence": 0.95,
         "resolution": "constructor",
         "source_line": 121
@@ -86,7 +86,7 @@
         "source_line": 129
       },
       {
-        "dst": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.js#IndirectCallerIngestionService",
+        "dst": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#IndirectCallerIngestionService",
         "confidence": 0.95,
         "resolution": "constructor",
         "source_line": 134
@@ -104,6 +104,14 @@
         "confidence": 1,
         "source_line": 101
       }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/init.ts#initIntelligenceBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 82
+      }
     ]
   },
   "contract": {
@@ -111,11 +119,11 @@
       "function"
     ],
     "total_outgoing_edges": 14,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 2
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.760Z"
+    "generated_at": "2026-04-09T12:15:48.965Z"
   }
 }

@@ -38,20 +38,31 @@
         "source_line": 128
       },
       {
-        "dst": "module:src/logging/logger.js#log",
+        "dst": "module:src/logging/logger.ts#log",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 141
       }
     ],
-    "contains_in": [
-      {
-        "src": "module:src/daemon/index.ts",
-        "confidence": 1,
-        "source_line": 124
-      }
-    ],
     "calls_in": [
+      {
+        "src": "module:src/core/lifecycle.ts#getOrStartDaemon",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 128
+      },
+      {
+        "src": "module:src/core/lifecycle.ts#startAsHttpDaemon",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 318
+      },
+      {
+        "src": "module:src/core/lifecycle.ts#startAsStdioProxy",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 415
+      },
       {
         "src": "module:src/daemon/index.ts#spawnDaemon",
         "confidence": 0.95,
@@ -63,6 +74,49 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 637
+      },
+      {
+        "src": "module:src/daemon/state.ts#getDaemonPort",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 15
+      },
+      {
+        "src": "module:src/daemon/state.ts#getDaemonBridgePid",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 20
+      },
+      {
+        "src": "module:src/daemon/state.ts#getHttpDaemonPort",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 25
+      },
+      {
+        "src": "module:src/daemon/state.ts#getHttpDaemonPid",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 30
+      },
+      {
+        "src": "module:src/daemon/state.ts#getPreflightResult",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 35
+      },
+      {
+        "src": "module:src/daemon/state.ts#hasDaemonState",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 40
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/daemon/index.ts",
+        "confidence": 1,
+        "source_line": 124
       }
     ]
   },
@@ -71,11 +125,11 @@
       "function"
     ],
     "total_outgoing_edges": 5,
-    "total_incoming_edges": 3
+    "total_incoming_edges": 12
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.752Z"
+    "generated_at": "2026-04-09T12:15:48.896Z"
   }
 }

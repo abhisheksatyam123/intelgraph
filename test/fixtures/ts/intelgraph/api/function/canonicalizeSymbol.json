@@ -79,6 +79,12 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 687
+      },
+      {
+        "src": "module:test/unit/get-callers.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 80
       }
     ]
   },
@@ -87,11 +93,11 @@
       "function"
     ],
     "total_outgoing_edges": 2,
-    "total_incoming_edges": 9
+    "total_incoming_edges": 10
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.791Z"
+    "generated_at": "2026-04-09T12:15:48.999Z"
   }
 }

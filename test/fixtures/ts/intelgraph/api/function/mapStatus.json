@@ -12,13 +12,13 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/orchestrator.js#NormalizedQueryResponse",
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#NormalizedQueryResponse",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 22
       },
       {
-        "dst": "module:src/intelligence/contracts/node-protocol.js#NodeProtocolResponse",
+        "dst": "module:src/intelligence/contracts/node-protocol.ts#NodeProtocolResponse",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 22
@@ -50,6 +50,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.775Z"
+    "generated_at": "2026-04-09T12:15:48.979Z"
   }
 }

@@ -1,79 +1,49 @@
 {
   "kind": "method",
-  "canonical_name": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl.count",
+  "canonical_name": "module:src/intelligence/extraction/context.ts#InMemoryPluginMetrics.count",
   "category": "method",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/ripgrep-service.ts",
-    "line": 200,
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/context.ts",
+    "line": 269,
     "character": 3
   },
   "exported": null,
-  "line_count": 26,
+  "line_count": 3,
   "relations": {
-    "references_type_out": [
+    "calls_out": [
       {
-        "dst": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepSearchOptions",
-        "confidence": 0.95,
-        "resolution": "local",
-        "source_line": 200
+        "dst": "this.counters.set",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 270
+      },
+      {
+        "dst": "this.counters.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 270
       }
     ],
     "reads_field_out": [
       {
-        "dst": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl.available",
+        "dst": "module:src/intelligence/extraction/context.ts#InMemoryPluginMetrics.counters",
         "confidence": 0.95,
-        "source_line": 201
-      }
-    ],
-    "calls_out": [
-      {
-        "dst": "args.push",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 210
-      },
-      {
-        "dst": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl.normalizeGlobs",
-        "confidence": 0.95,
-        "resolution": "this-method",
-        "source_line": 205
-      },
-      {
-        "dst": "toString",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 213
-      },
-      {
-        "dst": "module:node:child_process#execFileSync",
-        "confidence": 0.95,
-        "resolution": "named-import",
-        "source_line": 213
-      },
-      {
-        "dst": "filter",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 219
-      },
-      {
-        "dst": "module:src/intelligence/extraction/services/ripgrep-service.ts#raw.split",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 219
-      },
-      {
-        "dst": "l.trim",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 219
+        "source_line": 270
       }
     ],
     "contains_in": [
       {
-        "src": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl",
+        "src": "module:src/intelligence/extraction/context.ts#InMemoryPluginMetrics",
         "confidence": 1,
-        "source_line": 200
+        "source_line": 269
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/unit/extraction/context.test.ts",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 199
       }
     ]
   },
@@ -81,12 +51,12 @@
     "required_node_kinds": [
       "method"
     ],
-    "total_outgoing_edges": 9,
-    "total_incoming_edges": 1
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 2
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:00.495Z"
+    "generated_at": "2026-04-09T12:15:49.183Z"
   }
 }

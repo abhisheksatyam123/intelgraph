@@ -1,19 +1,19 @@
 {
   "kind": "field",
-  "canonical_name": "module:src/fixtures/intent-mapper.ts#ApiFixture.kind",
+  "canonical_name": "module:src/intelligence/db/graph-rows.ts#GraphObservationRow.kind",
   "category": "field",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/intent-mapper.ts",
-    "line": 131
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/graph-rows.ts",
+    "line": 45
   },
   "exported": null,
   "line_count": null,
   "relations": {
     "contains_in": [
       {
-        "src": "module:src/fixtures/intent-mapper.ts#ApiFixture",
+        "src": "module:src/intelligence/db/graph-rows.ts#GraphObservationRow",
         "confidence": 1,
-        "source_line": 131
+        "source_line": 45
       }
     ]
   },
@@ -27,6 +27,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:03.194Z"
+    "generated_at": "2026-04-09T12:15:49.156Z"
   }
 }

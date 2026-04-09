@@ -24,14 +24,37 @@
         "source_line": 356
       }
     ],
-    "contains_in": [
-      {
-        "src": "module:src/tools/pattern-detector/c-parser.ts",
-        "confidence": 1,
-        "source_line": 352
-      }
-    ],
     "calls_in": [
+      {
+        "src": "module:src/plugins/clangd-core/phases/callbacks.ts#extractCallbacks",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 298
+      },
+      {
+        "src": "module:src/plugins/clangd-core/phases/containment.ts#extractContainment",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 68
+      },
+      {
+        "src": "module:src/plugins/clangd-core/phases/field-access.ts#extractFieldAccess",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 32
+      },
+      {
+        "src": "module:src/plugins/clangd-core/phases/logs.ts#extractLogs",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 39
+      },
+      {
+        "src": "module:src/plugins/clangd-core/phases/type-refs.ts#extractTypeRefs",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 101
+      },
       {
         "src": "module:src/tools/pattern-detector/c-parser.ts#findStoreAssignments",
         "confidence": 0.95,
@@ -50,6 +73,13 @@
         "resolution": "local",
         "source_line": 504
       }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts",
+        "confidence": 1,
+        "source_line": 352
+      }
     ]
   },
   "contract": {
@@ -57,11 +87,11 @@
       "function"
     ],
     "total_outgoing_edges": 2,
-    "total_incoming_edges": 4
+    "total_incoming_edges": 9
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.797Z"
+    "generated_at": "2026-04-09T12:15:49.006Z"
   }
 }

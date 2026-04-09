@@ -43,6 +43,29 @@
         "confidence": 1,
         "source_line": 312
       }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 211
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps.cParserEnricher",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 211
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps",
+        "confidence": 0.95,
+        "source_line": 208
+      }
     ]
   },
   "contract": {
@@ -50,11 +73,11 @@
       "interface"
     ],
     "total_outgoing_edges": 4,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 4
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.108Z"
+    "generated_at": "2026-04-09T12:15:49.143Z"
   }
 }

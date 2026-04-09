@@ -53,6 +53,14 @@
         "confidence": 0.95,
         "source_line": 335
       }
+    ],
+    "implements_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 112
+      }
     ]
   },
   "contract": {
@@ -60,11 +68,11 @@
       "interface"
     ],
     "total_outgoing_edges": 2,
-    "total_incoming_edges": 4
+    "total_incoming_edges": 5
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.108Z"
+    "generated_at": "2026-04-09T12:15:49.144Z"
   }
 }

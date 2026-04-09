@@ -12,37 +12,37 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/orchestrator-runner.js#OrchestratorRunnerDeps",
+        "dst": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 31
       },
       {
-        "dst": "module:src/intelligence/contracts/db-foundation.js#IDbFoundation",
+        "dst": "module:src/intelligence/contracts/db-foundation.ts#IDbFoundation",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 32
       },
       {
-        "dst": "module:src/intelligence/contracts/db-foundation.js#ISnapshotIngestWriter",
+        "dst": "module:src/intelligence/contracts/db-foundation.ts#ISnapshotIngestWriter",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 33
       },
       {
-        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.js#IIndirectCallerIngestion",
+        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#IIndirectCallerIngestion",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 34
       },
       {
-        "dst": "module:src/intelligence/contracts/extraction-adapter.js#IExtractionAdapter",
+        "dst": "module:src/intelligence/contracts/extraction-adapter.ts#IExtractionAdapter",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 35
       },
       {
-        "dst": "module:src/intelligence/db/graph-rows.js#GraphWriteSink",
+        "dst": "module:src/intelligence/db/graph-rows.ts#GraphWriteSink",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 37
@@ -82,34 +82,42 @@
     ],
     "aggregates_out": [
       {
-        "dst": "module:src/intelligence/orchestrator-runner.js#OrchestratorRunnerDeps",
+        "dst": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps",
         "confidence": 0.95,
         "source_line": 30
       },
       {
-        "dst": "module:src/intelligence/contracts/db-foundation.js#IDbFoundation",
+        "dst": "module:src/intelligence/contracts/db-foundation.ts#IDbFoundation",
         "confidence": 0.95,
         "source_line": 30
       },
       {
-        "dst": "module:src/intelligence/contracts/db-foundation.js#ISnapshotIngestWriter",
+        "dst": "module:src/intelligence/contracts/db-foundation.ts#ISnapshotIngestWriter",
         "confidence": 0.95,
         "source_line": 30
       },
       {
-        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.js#IIndirectCallerIngestion",
+        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#IIndirectCallerIngestion",
         "confidence": 0.95,
         "source_line": 30
       },
       {
-        "dst": "module:src/intelligence/contracts/extraction-adapter.js#IExtractionAdapter",
+        "dst": "module:src/intelligence/contracts/extraction-adapter.ts#IExtractionAdapter",
         "confidence": 0.95,
         "source_line": 30
       },
       {
-        "dst": "module:src/intelligence/db/graph-rows.js#GraphWriteSink",
+        "dst": "module:src/intelligence/db/graph-rows.ts#GraphWriteSink",
         "confidence": 0.95,
         "source_line": 30
+      }
+    ],
+    "extends_in": [
+      {
+        "src": "module:src/intelligence/backend-factory.ts#SqliteIntelligenceBackend",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 97
       }
     ],
     "contains_in": [
@@ -118,6 +126,14 @@
         "confidence": 1,
         "source_line": 30
       }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/init.ts#backend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 82
+      }
     ]
   },
   "contract": {
@@ -125,11 +141,11 @@
       "interface"
     ],
     "total_outgoing_edges": 18,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 3
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.104Z"
+    "generated_at": "2026-04-09T12:15:49.127Z"
   }
 }

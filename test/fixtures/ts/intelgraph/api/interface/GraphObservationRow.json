@@ -66,6 +66,30 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 267
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteGraphStore.writeObservations",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 172
+      },
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#observations",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 328
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-db-lookup.test.ts#makeObservation",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 89
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-graph-store.test.ts#makeObservation",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 102
       }
     ],
     "field_of_type_in": [
@@ -89,11 +113,11 @@
       "interface"
     ],
     "total_outgoing_edges": 7,
-    "total_incoming_edges": 5
+    "total_incoming_edges": 9
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.112Z"
+    "generated_at": "2026-04-09T12:15:49.156Z"
   }
 }

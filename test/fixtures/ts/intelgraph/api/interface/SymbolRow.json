@@ -75,6 +75,156 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 129
+      },
+      {
+        "src": "module:src/intelligence/contracts/extraction-adapter.ts#SymbolBatch",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 17
+      },
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#mapKind",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 96
+      },
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#symbols",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 120
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#symbolNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 220
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#SymbolFact",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 56
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#SymbolFactInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 129
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 114
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink.toSymbolRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 129
+      },
+      {
+        "src": "module:src/plugins/clangd-core/phases/symbols.ts#mapLspSymbolKind",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 15
+      },
+      {
+        "src": "module:src/plugins/clangd-core/phases/symbols.ts#symbolsForFile",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 57
+      },
+      {
+        "src": "module:src/plugins/clangd-core/phases/symbols.ts#symbolRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 62
+      },
+      {
+        "src": "module:src/plugins/clangd-core/phases/types.ts#FileSymbolMap",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 12
+      },
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts#maybeEnterScope",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 200
+      },
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts#kind",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 244
+      },
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts#extractDeclaration",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 677
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#maybeEnterScope",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 267
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractDeclaration",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 973
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/extraction-adapter.ts#SymbolBatch.symbols",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 17
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#SymbolFact.payload",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 56
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#SymbolFactInput.payload",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 129
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink.functionSymbols",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 114
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/contracts/extraction-adapter.ts#SymbolBatch",
+        "confidence": 0.95,
+        "source_line": 16
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#SymbolFact",
+        "confidence": 0.95,
+        "source_line": 54
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#SymbolFactInput",
+        "confidence": 0.95,
+        "source_line": 128
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink",
+        "confidence": 0.95,
+        "source_line": 111
       }
     ]
   },
@@ -83,11 +233,11 @@
       "interface"
     ],
     "total_outgoing_edges": 9,
-    "total_incoming_edges": 2
+    "total_incoming_edges": 27
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.106Z"
+    "generated_at": "2026-04-09T12:15:49.137Z"
   }
 }

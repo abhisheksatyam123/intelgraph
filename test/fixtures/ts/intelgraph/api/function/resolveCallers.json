@@ -12,25 +12,25 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/lsp/types.js#ILanguageClient",
+        "dst": "module:src/lsp/types.ts#ILanguageClient",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 182
       },
       {
-        "dst": "module:src/tracking/index.js#IndexTracker",
+        "dst": "module:src/tracking/index.ts#IndexTracker",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 183
       },
       {
-        "dst": "module:src/backend/unified-backend.js#UnifiedBackend",
+        "dst": "module:src/backend/unified-backend.ts#UnifiedBackend",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 184
       },
       {
-        "dst": "module:src/intelligence/index.js#OrchestratorRunnerDeps",
+        "dst": "module:src/intelligence/index.ts#OrchestratorRunnerDeps",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 185
@@ -44,13 +44,13 @@
     ],
     "calls_out": [
       {
-        "dst": "module:src/logging/logger.js#getLogger",
+        "dst": "module:src/logging/logger.ts#getLogger",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 195
       },
       {
-        "dst": "module:src/lsp/types.js#ILanguageClient.prepareCallHierarchy",
+        "dst": "module:src/lsp/types.ts#ILanguageClient.prepareCallHierarchy",
         "confidence": 0.95,
         "resolution": "param-member",
         "source_line": 209
@@ -74,7 +74,7 @@
         "source_line": 213
       },
       {
-        "dst": "module:src/lsp/types.js#ILanguageClient.hover",
+        "dst": "module:src/lsp/types.ts#ILanguageClient.hover",
         "confidence": 0.95,
         "resolution": "param-member",
         "source_line": 223
@@ -92,13 +92,13 @@
         "source_line": 353
       },
       {
-        "dst": "module:src/tools/reason-engine/reason-config.js#readReasoningConfig",
+        "dst": "module:src/tools/reason-engine/reason-config.ts#readReasoningConfig",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 238
       },
       {
-        "dst": "module:src/tools/reason-engine/reason-query.js#prepareReasonQuery",
+        "dst": "module:src/tools/reason-engine/reason-query.ts#prepareReasonQuery",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 239
@@ -110,7 +110,7 @@
         "source_line": 245
       },
       {
-        "dst": "module:src/tools/reason-engine/runtime-flow-output.js#buildRuntimeFlowPayload",
+        "dst": "module:src/tools/reason-engine/runtime-flow-output.ts#buildRuntimeFlowPayload",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 256
@@ -158,7 +158,7 @@
         "source_line": 270
       },
       {
-        "dst": "module:src/intelligence/index.js#executeOrchestratedQuery",
+        "dst": "module:src/intelligence/index.ts#executeOrchestratedQuery",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 300
@@ -194,7 +194,7 @@
         "source_line": 339
       },
       {
-        "dst": "module:src/lsp/types.js#ILanguageClient.incomingCalls",
+        "dst": "module:src/lsp/types.ts#ILanguageClient.incomingCalls",
         "confidence": 0.95,
         "resolution": "param-member",
         "source_line": 355
@@ -224,6 +224,14 @@
         "confidence": 1,
         "source_line": 181
       }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/index.ts#execute",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 641
+      }
     ]
   },
   "contract": {
@@ -231,11 +239,11 @@
       "function"
     ],
     "total_outgoing_edges": 34,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 2
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.792Z"
+    "generated_at": "2026-04-09T12:15:49.001Z"
   }
 }

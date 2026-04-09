@@ -12,7 +12,7 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/common.js#RuntimeCallerRow",
+        "dst": "module:src/intelligence/contracts/common.ts#RuntimeCallerRow",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 10
@@ -27,7 +27,7 @@
     ],
     "aggregates_out": [
       {
-        "dst": "module:src/intelligence/contracts/common.js#RuntimeCallerRow",
+        "dst": "module:src/intelligence/contracts/common.ts#RuntimeCallerRow",
         "confidence": 0.95,
         "source_line": 9
       }
@@ -45,6 +45,18 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 20
+      },
+      {
+        "src": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#IndirectCallerIngestionService.parseRuntimeCallers",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 20
+      },
+      {
+        "src": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#IndirectCallerIngestionService.linkToSymbols",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 30
       }
     ]
   },
@@ -53,11 +65,11 @@
       "interface"
     ],
     "total_outgoing_edges": 3,
-    "total_incoming_edges": 2
+    "total_incoming_edges": 4
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.108Z"
+    "generated_at": "2026-04-09T12:15:49.142Z"
   }
 }

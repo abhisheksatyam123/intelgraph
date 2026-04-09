@@ -52,6 +52,12 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 375
+      },
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 213
       }
     ],
     "field_of_type_in": [
@@ -66,6 +72,12 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 375
+      },
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps.policy",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 213
       }
     ],
     "aggregates_in": [
@@ -78,6 +90,11 @@
         "src": "module:src/intelligence/contracts/orchestrator.ts#OrchestrationState",
         "confidence": 0.95,
         "source_line": 372
+      },
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps",
+        "confidence": 0.95,
+        "source_line": 208
       }
     ]
   },
@@ -86,11 +103,11 @@
       "interface"
     ],
     "total_outgoing_edges": 3,
-    "total_incoming_edges": 8
+    "total_incoming_edges": 11
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.109Z"
+    "generated_at": "2026-04-09T12:15:49.145Z"
   }
 }

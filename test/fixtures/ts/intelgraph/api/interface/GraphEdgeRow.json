@@ -89,6 +89,48 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 267
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteGraphStore.writeEdges",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 110
+      },
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#edges",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 326
+      },
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts#edges",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 385
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-db-lookup.test.ts#makeEdge",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 63
+      },
+      {
+        "src": "module:test/unit/intelligence/sqlite-graph-store.test.ts#makeEdge",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 71
+      },
+      {
+        "src": "module:test/unit/plugins/rust-core.test.ts#CaptureSink.allEdges",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 31
+      },
+      {
+        "src": "module:test/unit/plugins/ts-core.test.ts#CaptureSink.allEdges",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 36
       }
     ],
     "field_of_type_in": [
@@ -112,11 +154,11 @@
       "interface"
     ],
     "total_outgoing_edges": 8,
-    "total_incoming_edges": 8
+    "total_incoming_edges": 15
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.112Z"
+    "generated_at": "2026-04-09T12:15:49.154Z"
   }
 }

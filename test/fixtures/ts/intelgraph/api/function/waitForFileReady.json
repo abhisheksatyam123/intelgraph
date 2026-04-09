@@ -4,7 +4,7 @@
   "category": "function",
   "source": {
     "file": "/home/abhi/qprojects/intelgraph/src/tools/indirect-callers.ts",
-    "line": 570,
+    "line": 771,
     "character": 1
   },
   "exported": null,
@@ -12,10 +12,10 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/lsp/types.js#ILanguageClient",
+        "dst": "module:src/lsp/types.ts#ILanguageClient",
         "confidence": 0.95,
         "resolution": "named-import",
-        "source_line": 570
+        "source_line": 771
       }
     ],
     "calls_out": [
@@ -23,25 +23,25 @@
         "dst": "Date.now",
         "confidence": 0.7,
         "resolution": "member",
-        "source_line": 582
+        "source_line": 783
       },
       {
         "dst": "client.indexTracker.fileState",
         "confidence": 0.7,
         "resolution": "member",
-        "source_line": 583
+        "source_line": 784
       },
       {
         "dst": "Promise",
         "confidence": 0.7,
         "resolution": "constructor",
-        "source_line": 585
+        "source_line": 786
       },
       {
         "dst": "setTimeout",
         "confidence": 0.7,
         "resolution": "bare",
-        "source_line": 585
+        "source_line": 786
       }
     ],
     "calls_in": [
@@ -49,14 +49,14 @@
         "src": "module:src/tools/indirect-callers.ts#collectIndirectCallers",
         "confidence": 0.95,
         "resolution": "local",
-        "source_line": 90
+        "source_line": 92
       }
     ],
     "contains_in": [
       {
         "src": "module:src/tools/indirect-callers.ts",
         "confidence": 1,
-        "source_line": 570
+        "source_line": 771
       }
     ]
   },
@@ -70,6 +70,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.794Z"
+    "generated_at": "2026-04-09T12:15:49.004Z"
   }
 }

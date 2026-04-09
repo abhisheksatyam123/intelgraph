@@ -1,503 +1,98 @@
 {
   "kind": "module",
-  "canonical_name": "module:test/manual/wlan-source-audit.mjs",
+  "canonical_name": "module:scripts/wlan-fixture-normalize-relations.mjs",
   "category": "module",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/test/manual/wlan-source-audit.mjs",
+    "file": "/home/abhi/qprojects/intelgraph/scripts/wlan-fixture-normalize-relations.mjs",
     "line": 1,
     "character": 1
   },
   "exported": null,
-  "line_count": 629,
+  "line_count": 239,
   "relations": {
     "imports_out": [
       {
         "dst": "module:node:fs",
         "confidence": 1,
-        "source_line": 16
+        "source_line": 3
+      },
+      {
+        "dst": "module:node:fs/promises",
+        "confidence": 1,
+        "source_line": 4
       },
       {
         "dst": "module:node:path",
         "confidence": 1,
-        "source_line": 17
+        "source_line": 5
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#parseBool",
+        "confidence": 1,
+        "source_line": 7
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#parseArgs",
+        "confidence": 1,
+        "source_line": 15
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#listJsonFiles",
+        "confidence": 1,
+        "source_line": 51
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#applyMapToFixture",
+        "confidence": 1,
+        "source_line": 59
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#normalizeMissingList",
+        "confidence": 1,
+        "source_line": 92
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#buildPredictedAudit",
+        "confidence": 1,
+        "source_line": 97
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#main",
+        "confidence": 1,
+        "source_line": 164
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#replacementsByPair",
+        "confidence": 1,
+        "source_line": 176
       }
     ],
     "calls_out": [
       {
-        "dst": "path.resolve",
+        "dst": "catch",
         "confidence": 0.7,
         "resolution": "member",
-        "source_line": 22
+        "source_line": 235
       },
       {
-        "dst": "trim",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 23
-      },
-      {
-        "dst": "fs.existsSync",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 30
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#main",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 235
       },
       {
         "dst": "console.error",
         "confidence": 0.7,
         "resolution": "member",
-        "source_line": 612
+        "source_line": 236
       },
       {
         "dst": "process.exit",
         "confidence": 0.7,
         "resolution": "member",
-        "source_line": 620
-      },
-      {
-        "dst": "JSON.parse",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 35
-      },
-      {
-        "dst": "fs.readFileSync",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 35
-      },
-      {
-        "dst": "Array.isArray",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 495
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#pushFailure",
-        "confidence": 0.95,
-        "resolution": "local",
-        "source_line": 605
-      },
-      {
-        "dst": "apiGroundTruth.find",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 515
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#queryCasesForApiEntry",
-        "confidence": 0.95,
-        "resolution": "local",
-        "source_line": 516
-      },
-      {
-        "dst": "target.parserGapFeedback.trim",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 264
-      },
-      {
-        "dst": "Set",
-        "confidence": 0.7,
-        "resolution": "constructor",
-        "source_line": 577
-      },
-      {
-        "dst": "map",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 576
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#graphKinds.has",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 274
-      },
-      {
-        "dst": "queryCases.some",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 299
-      },
-      {
-        "dst": "pattern.name.trim",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 304
-      },
-      {
-        "dst": "pattern.description.trim",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 307
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#graphNames.has",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 314
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#readLine",
-        "confidence": 0.95,
-        "resolution": "local",
-        "source_line": 337
-      },
-      {
-        "dst": "lineText.trim",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 340
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#auditSourceAnchors",
-        "confidence": 0.95,
-        "resolution": "local",
-        "source_line": 345
-      },
-      {
-        "dst": "queryCase.feedbackIfMissing.trim",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 349
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#verifyComparableRow",
-        "confidence": 0.95,
-        "resolution": "local",
-        "source_line": 357
-      },
-      {
-        "dst": "Map",
-        "confidence": 0.7,
-        "resolution": "constructor",
-        "source_line": 402
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#mapRelationKind",
-        "confidence": 0.95,
-        "resolution": "local",
-        "source_line": 524
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#relationKinds.add",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 524
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#evidenceCountByRelation.set",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 369
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#evidenceCountByRelation.get",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 380
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#mapRelationDirections",
-        "confidence": 0.95,
-        "resolution": "local",
-        "source_line": 370
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#directions.add",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 371
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#relationKinds.has",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 546
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#directions.has",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 391
-      },
-      {
-        "dst": "verificationTargets.map",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 507
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#targetByName.get",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 405
-      },
-      {
-        "dst": "entry.verification_contract.feedback_if_missing.trim",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 434
-      },
-      {
-        "dst": "reduce",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 454
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#verifyApiGroundTruthRow",
-        "confidence": 0.95,
-        "resolution": "local",
-        "source_line": 481
-      },
-      {
-        "dst": "RELATION_TYPE_LIST_KEYS.flatMap",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 463
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#allowedRelationKinds.has",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 482
-      },
-      {
-        "dst": "RELATION_TYPE_LIST_KEYS.join",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 483
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#getByPath",
-        "confidence": 0.95,
-        "resolution": "local",
-        "source_line": 494
-      },
-      {
-        "dst": "Number",
-        "confidence": 0.7,
-        "resolution": "bare",
-        "source_line": 563
-      },
-      {
-        "dst": "apiGroundTruth.reduce",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 512
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#graphNodeKinds.add",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 518
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#intents.add",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 521
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#rowKinds.add",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 523
-      },
-      {
-        "dst": "String",
-        "confidence": 0.7,
-        "resolution": "bare",
-        "source_line": 595
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#categories.has",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 568
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#intents.has",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 541
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#rowKinds.has",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 551
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#graphNodeKinds.has",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 556
-      },
-      {
-        "dst": "apiGroundTruth.map",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 566
-      },
-      {
-        "dst": "includes",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 604
-      },
-      {
-        "dst": "toLowerCase",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 595
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#apiGroundTruthKinds.add",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 596
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#apiGroundTruthKinds.has",
-        "confidence": 0.95,
-        "resolution": "local-member",
-        "source_line": 601
-      },
-      {
-        "dst": "JSON.stringify",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 612
-      },
-      {
-        "dst": "console.log",
-        "confidence": 0.7,
-        "resolution": "member",
-        "source_line": 628
-      }
-    ],
-    "contains_out": [
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#pushFailure",
-        "confidence": 1,
-        "source_line": 79
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#readLine",
-        "confidence": 1,
-        "source_line": 83
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#getByPath",
-        "confidence": 1,
-        "source_line": 93
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#queryCasesForApiEntry",
-        "confidence": 1,
-        "source_line": 100
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#pushRows",
-        "confidence": 1,
-        "source_line": 102
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#auditSourceAnchors",
-        "confidence": 1,
-        "source_line": 132
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#verifyBaseComparableRow",
-        "confidence": 1,
-        "source_line": 155
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#verifyApiGroundTruthRow",
-        "confidence": 1,
-        "source_line": 163
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#verifyComparableRow",
-        "confidence": 1,
-        "source_line": 178
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#mapRelationKind",
-        "confidence": 1,
-        "source_line": 206
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#mapRelationDirections",
-        "confidence": 1,
-        "source_line": 225
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#directions",
-        "confidence": 1,
-        "source_line": 226
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#graphKinds",
-        "confidence": 1,
-        "source_line": 271
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#graphNames",
-        "confidence": 1,
-        "source_line": 272
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#relationKinds",
-        "confidence": 1,
-        "source_line": 362
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#evidenceCountByRelation",
-        "confidence": 1,
-        "source_line": 364
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#targetByName",
-        "confidence": 1,
-        "source_line": 402
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#allowedRelationKinds",
-        "confidence": 1,
-        "source_line": 479
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#categories",
-        "confidence": 1,
-        "source_line": 507
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#intents",
-        "confidence": 1,
-        "source_line": 508
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#rowKinds",
-        "confidence": 1,
-        "source_line": 510
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#graphNodeKinds",
-        "confidence": 1,
-        "source_line": 511
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#requiredKinds",
-        "confidence": 1,
-        "source_line": 576
-      },
-      {
-        "dst": "module:test/manual/wlan-source-audit.mjs#apiGroundTruthKinds",
-        "confidence": 1,
-        "source_line": 577
+        "source_line": 237
       }
     ]
   },
@@ -505,12 +100,12 @@
     "required_node_kinds": [
       "module"
     ],
-    "total_outgoing_edges": 85,
+    "total_outgoing_edges": 15,
     "total_incoming_edges": 0
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:02.509Z"
+    "generated_at": "2026-04-09T12:15:49.082Z"
   }
 }

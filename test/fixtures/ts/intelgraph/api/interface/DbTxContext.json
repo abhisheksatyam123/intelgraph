@@ -23,6 +23,18 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 15
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.withTransaction",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 115
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/foundation.ts#tx",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 120
       }
     ]
   },
@@ -31,11 +43,11 @@
       "interface"
     ],
     "total_outgoing_edges": 0,
-    "total_incoming_edges": 2
+    "total_incoming_edges": 4
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.106Z"
+    "generated_at": "2026-04-09T12:15:49.139Z"
   }
 }

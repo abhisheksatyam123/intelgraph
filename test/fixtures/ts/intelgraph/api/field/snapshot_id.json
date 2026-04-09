@@ -1,19 +1,19 @@
 {
   "kind": "field",
-  "canonical_name": "module:src/fixtures/exhaustive-relation-scanner.ts#FixtureEnrichmentReport.snapshot_id",
+  "canonical_name": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJson.snapshot_id",
   "category": "field",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/exhaustive-relation-scanner.ts",
-    "line": 171
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/graph-export.ts",
+    "line": 32
   },
   "exported": null,
   "line_count": null,
   "relations": {
     "contains_in": [
       {
-        "src": "module:src/fixtures/exhaustive-relation-scanner.ts#FixtureEnrichmentReport",
+        "src": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJson",
         "confidence": 1,
-        "source_line": 171
+        "source_line": 32
       }
     ]
   },
@@ -27,6 +27,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:03.193Z"
+    "generated_at": "2026-04-09T12:15:49.173Z"
   }
 }

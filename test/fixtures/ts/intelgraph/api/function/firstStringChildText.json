@@ -12,7 +12,7 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode",
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 2546
@@ -20,7 +20,7 @@
     ],
     "calls_out": [
       {
-        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode.namedChild",
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode.namedChild",
         "confidence": 0.95,
         "resolution": "param-member",
         "source_line": 2548
@@ -64,6 +64,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.786Z"
+    "generated_at": "2026-04-09T12:15:48.993Z"
   }
 }

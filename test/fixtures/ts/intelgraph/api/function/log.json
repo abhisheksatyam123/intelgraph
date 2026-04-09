@@ -12,7 +12,7 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/logging/log-levels.js#LogLevelName",
+        "dst": "module:src/logging/log-levels.ts#LogLevelName",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 206
@@ -26,7 +26,7 @@
         "source_line": 207
       },
       {
-        "dst": "module:src/logging/log-levels.js#parseLogLevel",
+        "dst": "module:src/logging/log-levels.ts#parseLogLevel",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 208
@@ -56,6 +56,260 @@
         "source_line": 221
       }
     ],
+    "calls_in": [
+      {
+        "src": "module:src/config/bootstrap.ts#retryWithBackoff",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 223
+      },
+      {
+        "src": "module:src/config/config.ts#readConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 244
+      },
+      {
+        "src": "module:src/config/config.ts#writeConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 275
+      },
+      {
+        "src": "module:src/core/lifecycle.ts#getOrStartDaemon",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 186
+      },
+      {
+        "src": "module:src/core/lifecycle.ts#connectToClangd",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 241
+      },
+      {
+        "src": "module:src/core/lifecycle.ts#makeGetClient",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 283
+      },
+      {
+        "src": "module:src/core/lifecycle.ts#startAsHttpDaemon",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 338
+      },
+      {
+        "src": "module:src/core/lifecycle.ts#startAsStdioProxy",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 437
+      },
+      {
+        "src": "module:src/core/server.ts#createMcpServer",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 56
+      },
+      {
+        "src": "module:src/core/server.ts#startStdio",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 101
+      },
+      {
+        "src": "module:src/core/server.ts#startHttp",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 233
+      },
+      {
+        "src": "module:src/core/server.ts#gracefulExit",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 135
+      },
+      {
+        "src": "module:src/core/server.ts#onsessioninitialized",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 177
+      },
+      {
+        "src": "module:src/core/server.ts#startStdioProxy",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 336
+      },
+      {
+        "src": "module:src/core/server.ts#exitProxy",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 318
+      },
+      {
+        "src": "module:src/daemon/index.ts#normaliseRoot",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 46
+      },
+      {
+        "src": "module:src/daemon/index.ts#readState",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 141
+      },
+      {
+        "src": "module:src/daemon/index.ts#writeState",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 150
+      },
+      {
+        "src": "module:src/daemon/index.ts#clearState",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 170
+      },
+      {
+        "src": "module:src/daemon/index.ts#tryAcquireSpawnLock",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 218
+      },
+      {
+        "src": "module:src/daemon/index.ts#releaseSpawnLock",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 245
+      },
+      {
+        "src": "module:src/daemon/index.ts#waitForSpawnLockRelease",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 290
+      },
+      {
+        "src": "module:src/daemon/index.ts#isProcessAlive",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 303
+      },
+      {
+        "src": "module:src/daemon/index.ts#isTcpPortOpen",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 325
+      },
+      {
+        "src": "module:src/daemon/index.ts#checkDaemonAlive",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 355
+      },
+      {
+        "src": "module:src/daemon/index.ts#spawnDaemon",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 499
+      },
+      {
+        "src": "module:src/daemon/index.ts#spawnHttpDaemon",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 652
+      },
+      {
+        "src": "module:src/index.ts#main",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 309
+      },
+      {
+        "src": "module:src/index.ts#shutdown",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 260
+      },
+      {
+        "src": "module:src/intelligence/local-runtime.ts#resolveEffectiveRoot",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 44
+      },
+      {
+        "src": "module:src/intelligence/local-runtime.ts#ensureWorkspaceConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 106
+      },
+      {
+        "src": "module:src/intelligence/local-runtime.ts#startCompose",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 156
+      },
+      {
+        "src": "module:src/lsp/index.ts#LspClient.create",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 301
+      },
+      {
+        "src": "module:src/lsp/index.ts#LspClient.createFromSocket",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 410
+      },
+      {
+        "src": "module:src/lsp/index.ts#LspClient._trackedRequest",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 439
+      },
+      {
+        "src": "module:src/lsp/index.ts#LspClient.openFile",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 461
+      },
+      {
+        "src": "module:src/lsp/index.ts#LspClient.prepareCallHierarchy",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 657
+      },
+      {
+        "src": "module:src/lsp/index.ts#LspClient.incomingCalls",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 691
+      },
+      {
+        "src": "module:src/lsp/index.ts#LspClient.outgoingCalls",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 725
+      },
+      {
+        "src": "module:src/lsp/index.ts#LspClient.shutdown",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 825
+      },
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts#cleanCompileCommands",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 478
+      },
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts#updateCleaningConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 538
+      }
+    ],
     "contains_in": [
       {
         "src": "module:src/logging/logger.ts",
@@ -69,11 +323,11 @@
       "function"
     ],
     "total_outgoing_edges": 7,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 43
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.779Z"
+    "generated_at": "2026-04-09T12:15:48.983Z"
   }
 }

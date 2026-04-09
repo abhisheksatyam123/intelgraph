@@ -12,7 +12,7 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/intelligence/contracts/common.js#CallerGraph",
+        "dst": "module:src/intelligence/contracts/common.ts#CallerGraph",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 10
@@ -24,13 +24,13 @@
         "source_line": 10
       },
       {
-        "dst": "module:src/intelligence/contracts/common.js#CalleeGraph",
+        "dst": "module:src/intelligence/contracts/common.ts#CalleeGraph",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 11
       },
       {
-        "dst": "module:src/intelligence/contracts/common.js#Provenance",
+        "dst": "module:src/intelligence/contracts/common.ts#Provenance",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 12
@@ -54,6 +54,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.111Z"
+    "generated_at": "2026-04-09T12:15:49.152Z"
   }
 }

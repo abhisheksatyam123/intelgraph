@@ -18,7 +18,7 @@
         "source_line": 141
       },
       {
-        "dst": "module:src/intelligence/db/graph-rows.js#GraphEvidenceRow",
+        "dst": "module:src/intelligence/db/graph-rows.ts#GraphEvidenceRow",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 142
@@ -50,7 +50,7 @@
         "source_line": 145
       },
       {
-        "dst": "module:src/intelligence/db/graph-rows.js#GraphEvidenceRow.map",
+        "dst": "module:src/intelligence/db/graph-rows.ts#GraphEvidenceRow.map",
         "confidence": 0.95,
         "resolution": "param-member",
         "source_line": 147
@@ -88,6 +88,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:00.489Z"
+    "generated_at": "2026-04-09T12:15:49.177Z"
   }
 }

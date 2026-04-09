@@ -24,14 +24,13 @@
         "source_line": 199
       }
     ],
-    "contains_in": [
-      {
-        "src": "module:src/config/config.ts",
-        "confidence": 1,
-        "source_line": 195
-      }
-    ],
     "calls_in": [
+      {
+        "src": "module:src/config/bootstrap.ts#readWorkspaceConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 45
+      },
       {
         "src": "module:src/config/config.ts#readConfig",
         "confidence": 0.95,
@@ -43,6 +42,37 @@
         "confidence": 0.95,
         "resolution": "local",
         "source_line": 265
+      },
+      {
+        "src": "module:src/intelligence/local-runtime.ts#ensureWorkspaceConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 82
+      },
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts#readCleaningConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 502
+      },
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts#updateCleaningConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 521
+      },
+      {
+        "src": "module:test/unit/config/rename-fallback.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 81
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/config/config.ts",
+        "confidence": 1,
+        "source_line": 195
       }
     ]
   },
@@ -51,11 +81,11 @@
       "function"
     ],
     "total_outgoing_edges": 2,
-    "total_incoming_edges": 3
+    "total_incoming_edges": 8
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.748Z"
+    "generated_at": "2026-04-09T12:15:48.802Z"
   }
 }

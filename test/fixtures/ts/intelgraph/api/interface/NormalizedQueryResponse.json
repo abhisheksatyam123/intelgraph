@@ -79,6 +79,54 @@
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 19
+      },
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts#rowsToResponseData",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 216
+      },
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts#computeFacetCompletenessStatus",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 242
+      },
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts#buildFacetCompletenessStatusMap",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 248
+      },
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts#buildResponse",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 259
+      },
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts#path",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 268
+      },
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts#executeOrchestratedQuery",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 295
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#mapStatus",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 22
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#toNodeResponse",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 431
       }
     ],
     "contains_in": [
@@ -94,11 +142,11 @@
       "interface"
     ],
     "total_outgoing_edges": 11,
-    "total_incoming_edges": 2
+    "total_incoming_edges": 10
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:59.110Z"
+    "generated_at": "2026-04-09T12:15:49.146Z"
   }
 }

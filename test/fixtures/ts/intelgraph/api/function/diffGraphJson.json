@@ -140,6 +140,26 @@
         "confidence": 1,
         "source_line": 378
       }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/index.ts#execute",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 907
+      },
+      {
+        "src": "module:test/integration/snapshot-stats-cli.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 603
+      },
+      {
+        "src": "module:test/integration/snapshot-stats-real-workspaces.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 740
+      }
     ]
   },
   "contract": {
@@ -147,11 +167,11 @@
       "function"
     ],
     "total_outgoing_edges": 20,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 4
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.768Z"
+    "generated_at": "2026-04-09T12:15:48.972Z"
   }
 }

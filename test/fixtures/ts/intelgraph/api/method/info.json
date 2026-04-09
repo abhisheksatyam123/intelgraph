@@ -1,10 +1,10 @@
 {
   "kind": "method",
-  "canonical_name": "module:src/logging/logger.ts#Logger.info",
+  "canonical_name": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger.info",
   "category": "method",
   "source": {
-    "file": "/home/abhi/qprojects/intelgraph/src/logging/logger.ts",
-    "line": 90,
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/context.ts",
+    "line": 228,
     "character": 3
   },
   "exported": null,
@@ -12,25 +12,17 @@
   "relations": {
     "calls_out": [
       {
-        "dst": "module:src/logging/logger.ts#Logger.log",
+        "dst": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger.emit",
         "confidence": 0.95,
         "resolution": "this-method",
-        "source_line": 91
+        "source_line": 229
       }
     ],
     "contains_in": [
       {
-        "src": "module:src/logging/logger.ts#Logger",
+        "src": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger",
         "confidence": 1,
-        "source_line": 90
-      }
-    ],
-    "calls_in": [
-      {
-        "src": "module:src/logging/logger.ts#initLogger",
-        "confidence": 0.95,
-        "resolution": "var-member",
-        "source_line": 193
+        "source_line": 228
       }
     ]
   },
@@ -39,11 +31,11 @@
       "method"
     ],
     "total_outgoing_edges": 1,
-    "total_incoming_edges": 2
+    "total_incoming_edges": 1
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:56:00.500Z"
+    "generated_at": "2026-04-09T12:15:49.185Z"
   }
 }

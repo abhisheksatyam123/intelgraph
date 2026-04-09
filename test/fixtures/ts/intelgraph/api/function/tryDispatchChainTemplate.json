@@ -1,0 +1,93 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/indirect-callers.ts#tryDispatchChainTemplate",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/indirect-callers.ts",
+    "line": 631,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 82,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-resolver/types.ts#ResolvedChain",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 636
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/tools/indirect-callers.ts#getDispatchTemplateMap",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 637
+      },
+      {
+        "dst": "map.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 656
+      },
+      {
+        "dst": "tmpl.chain.map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 664
+      },
+      {
+        "dst": "replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 672
+      },
+      {
+        "dst": "s.replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 665
+      },
+      {
+        "dst": "tmpl.triggerDescription.replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 672
+      },
+      {
+        "dst": "module:src/tools/pattern-resolver/types.ts#ResolvedChain.join",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 701
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/indirect-callers.ts#collectIndirectCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 252
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/indirect-callers.ts",
+        "confidence": 1,
+        "source_line": 631
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.004Z"
+  }
+}

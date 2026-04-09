@@ -1,0 +1,285 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/clangd-core/phases/callbacks.ts#extractCallbacks",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/clangd-core/phases/callbacks.ts",
+    "line": 41,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 282,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#PhaseCtx",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 42
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#FileSymbolMap",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 43
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/callbacks.ts#CallbackPhaseConfig",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 44
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 51
+      },
+      {
+        "dst": "callPatterns.map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 47
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#FileSymbolMap.values",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 52
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/callbacks.ts#knownFunctions.add",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 54
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#FileSymbolMap.entries",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 198
+      },
+      {
+        "dst": "ctx.workspace.readFile",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 200
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#parseSource",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 203
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#findAllNodes",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 298
+      },
+      {
+        "dst": "callNode.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 217
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/callbacks.ts#registrationApis.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 211
+      },
+      {
+        "dst": "callPatterns.find",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 214
+      },
+      {
+        "dst": "argsNode.child",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 221
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/callbacks.ts#argTexts.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 223
+      },
+      {
+        "dst": "child.text.trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 223
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/callbacks.ts#knownFunctions.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 302
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/callbacks.ts#emitRegistration",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 318
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/callbacks.ts#emitRuntimeCall",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 319
+      },
+      {
+        "dst": "pair.child",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 245
+      },
+      {
+        "dst": "trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 315
+      },
+      {
+        "dst": "child.text.replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 248
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/callbacks.ts#fullText.split",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 262
+      },
+      {
+        "dst": "lhs.match",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 263
+      },
+      {
+        "dst": "idents.filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 264
+      },
+      {
+        "dst": "id.startsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 264
+      },
+      {
+        "dst": "parent.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 268
+      },
+      {
+        "dst": "typeNode.text.trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 289
+      },
+      {
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 284
+      },
+      {
+        "dst": "decl.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 287
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#walkAst",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 290
+      },
+      {
+        "dst": "child.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 292
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/callbacks.ts#varTypeMap.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 293
+      },
+      {
+        "dst": "assign.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 304
+      },
+      {
+        "dst": "left.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 307
+      },
+      {
+        "dst": "argNode.text.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 311
+      },
+      {
+        "dst": "replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 315
+      },
+      {
+        "dst": "containerExpr.replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 315
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/callbacks.ts#varTypeMap.get",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 316
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/clangd-core/extractor.ts#extract",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 109
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/clangd-core/phases/callbacks.ts",
+        "confidence": 1,
+        "source_line": 41
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 40,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.985Z"
+  }
+}

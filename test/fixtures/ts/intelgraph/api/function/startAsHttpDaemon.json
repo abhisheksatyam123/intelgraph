@@ -12,13 +12,13 @@
   "relations": {
     "references_type_out": [
       {
-        "dst": "module:src/lsp/index.js#LspClient",
+        "dst": "module:src/lsp/index.ts#LspClient",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 305
       },
       {
-        "dst": "module:src/tracking/index.js#IndexTracker",
+        "dst": "module:src/tracking/index.ts#IndexTracker",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 306
@@ -26,19 +26,19 @@
     ],
     "calls_out": [
       {
-        "dst": "module:src/logging/logger.js#log",
+        "dst": "module:src/logging/logger.ts#log",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 338
       },
       {
-        "dst": "module:src/daemon/index.js#readState",
+        "dst": "module:src/daemon/index.ts#readState",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 318
       },
       {
-        "dst": "module:src/daemon/index.js#writeState",
+        "dst": "module:src/daemon/index.ts#writeState",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 319
@@ -56,13 +56,13 @@
         "source_line": 328
       },
       {
-        "dst": "module:src/backend/unified-backend.js#createUnifiedBackend",
+        "dst": "module:src/backend/unified-backend.ts#createUnifiedBackend",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 335
       },
       {
-        "dst": "module:src/core/server.js#startHttp",
+        "dst": "module:src/core/server.ts#startHttp",
         "confidence": 0.95,
         "resolution": "named-import",
         "source_line": 337
@@ -74,6 +74,14 @@
         "confidence": 1,
         "source_line": 304
       }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/index.ts#main",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 284
+      }
     ]
   },
   "contract": {
@@ -81,11 +89,11 @@
       "function"
     ],
     "total_outgoing_edges": 9,
-    "total_incoming_edges": 1
+    "total_incoming_edges": 2
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:55:58.749Z"
+    "generated_at": "2026-04-09T12:15:48.804Z"
   }
 }
