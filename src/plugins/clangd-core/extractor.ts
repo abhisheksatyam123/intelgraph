@@ -460,104 +460,244 @@ const clangdCoreExtractor = defineExtractor({
       }
     }
 
-    // ---- Phase 5: runtime_calls edges via dispatch chain templates ----
+    // ---- Phase 5: callback registration + runtime_calls + registers_callback ----
     //
-    // For functions that are registered as callbacks (via function-call
-    // registration APIs), emit `runtime_calls` edges to the SQLite graph
-    // so the dispatch chain is persistently queryable. Scans each file
-    // for call_expressions to known registration APIs where a function
-    // symbol is passed as an argument. Uses the dispatch chain templates
-    // from the sub-plugin packs to build the full runtime dispatch path.
+    // Comprehensive indirect-call detection during extraction. Moves the
+    // logic from query-time (tools/pattern-detector + tools/indirect-callers)
+    // into extraction time so results are persistently in the SQLite graph.
+    //
+    // Architecture layering:
+    //   CORE (this code):   generic AST walk patterns for any C/C++ code
+    //   PLUGIN (clangd-core): orchestrates the walk + emits edges
+    //   SUB-PLUGIN (packs):  registration API lists + dispatch chain templates
+    //
+    // Detects THREE patterns:
+    //   5a) Function-call registration: request_irq(IRQ, handler)
+    //   5b) Struct-field initializer:   .read = handler in file_operations
+    //   5c) Function-body assignment:   ptr->field = handler in function body
+    //
+    // For each detected registration, emits:
+    //   - registers_callback edge (src=registrar, dst=callback)
+    //   - runtime_calls edge with dispatch chain (if template available)
+
     const allCallPatterns = collectAllCallPatterns()
     const registrationApis = new Set(allCallPatterns.map((p) => p.registrationApi))
     const dispatchTemplateMap = collectAllDispatchChains()
 
-    if (dispatchTemplateMap.size > 0 && registrationApis.size > 0) {
-      // Build a set of all known function names for fast membership test
-      const knownFunctions = new Set<string>()
-      for (const syms of fileSymbols.values()) {
-        for (const s of syms) {
-          if (s.kind === "function") knownFunctions.add(s.name)
+    // Build a set of all known function names for fast membership test
+    const knownFunctions = new Set<string>()
+    for (const syms of fileSymbols.values()) {
+      for (const s of syms) {
+        if (s.kind === "function") knownFunctions.add(s.name)
+      }
+    }
+
+    // Helper: emit a registers_callback edge
+    function* emitRegistration(
+      registrar: string,
+      callbackName: string,
+      registrationKind: string,
+      dispatchKey: string,
+      file: string,
+      line: number,
+    ) {
+      yield ctx.edge({
+        payload: {
+          edgeKind: "registers_callback",
+          srcSymbolName: registrar,
+          dstSymbolName: callbackName,
+          confidence: 0.9,
+          derivation: "clangd",
+          metadata: {
+            registrationKind,
+            dispatchKey,
+          },
+          evidence: {
+            sourceKind: "file_line",
+            location: { filePath: file, line },
+          },
+        },
+      })
+      ctx.metrics.count("edges.registers_callback")
+    }
+
+    // Helper: emit a runtime_calls edge from dispatch chain template
+    function* emitRuntimeCall(
+      tmplKey: string,
+      callbackName: string,
+      dispatchKey: string,
+      file: string,
+      line: number,
+    ) {
+      // Try exact template match, then struct-field patterns
+      let tmpl = dispatchTemplateMap.get(tmplKey)
+      if (!tmpl) {
+        // Try __struct_field:<type>.<field> synthetic keys
+        const structFieldCandidates = [
+          `__struct_field:file_operations.${dispatchKey}`,
+          `__struct_field:net_device_ops.${dispatchKey}`,
+          `__struct_field:block_device_operations.${dispatchKey}`,
+          `__struct_field:inode_operations.${dispatchKey}`,
+          `__struct_field:seq_operations.${dispatchKey}`,
+        ]
+        for (const key of structFieldCandidates) {
+          tmpl = dispatchTemplateMap.get(key)
+          if (tmpl) break
         }
       }
+      if (!tmpl) return
 
-      for (const [file] of fileSymbols.entries()) {
-        if (ctx.signal.aborted) return
-        const text = ctx.workspace.readFile(file)
-        if (!text) continue
+      const chain = tmpl.chain.map((s: string) =>
+        s.replace(/%CALLBACK%/g, callbackName).replace(/%KEY%/g, dispatchKey),
+      )
 
-        // Quick check: does this file reference any registration API?
-        let hasAnyApi = false
-        for (const api of registrationApis) {
-          if (text.includes(api)) { hasAnyApi = true; break }
+      yield ctx.edge({
+        payload: {
+          edgeKind: "runtime_calls",
+          srcSymbolName: chain.length >= 3 ? chain[chain.length - 2] : chain[0],
+          dstSymbolName: callbackName,
+          confidence: 0.9,
+          derivation: "clangd",
+          metadata: {
+            dispatchChain: chain,
+            registrationApi: tmplKey,
+            dispatchKey,
+            triggerKind: tmpl.triggerKind,
+            triggerDescription: tmpl.triggerDescription
+              .replace(/%KEY%/g, dispatchKey)
+              .replace(/%CALLBACK%/g, callbackName),
+          },
+          evidence: {
+            sourceKind: "file_line",
+            location: { filePath: file, line },
+          },
+        },
+      })
+      ctx.metrics.count("edges.runtime_calls")
+    }
+
+    for (const [file] of fileSymbols.entries()) {
+      if (ctx.signal.aborted) return
+      const text = ctx.workspace.readFile(file)
+      if (!text) continue
+
+      const root = parseSource(text)
+      if (!root) continue
+
+      // ── 5a) Function-call registrations ──────────────────────────────
+      // e.g. request_irq(I8042_AUX_IRQ, i8042_interrupt, ...)
+      const callNodes = findAllNodes(root, "call_expression")
+      for (const callNode of callNodes) {
+        const fnNode = callNode.childForFieldName?.("function")
+        if (!fnNode || fnNode.type !== "identifier") continue
+        if (!registrationApis.has(fnNode.text)) continue
+
+        const calleeName = fnNode.text
+        const pattern = allCallPatterns.find((p: any) => p.registrationApi === calleeName)
+        if (!pattern) continue
+
+        const argsNode = callNode.childForFieldName?.("arguments")
+        if (!argsNode) continue
+        const argTexts: string[] = []
+        for (let i = 0; i < argsNode.childCount; i++) {
+          const child = argsNode.child(i)
+          if (!child || child.type === "(" || child.type === ")" || child.type === ",") continue
+          argTexts.push(child.text.trim())
         }
-        if (!hasAnyApi) continue
 
-        const root = parseSource(text)
-        if (!root) continue
-
-        const callNodes = findAllNodes(root, "call_expression")
-        for (const callNode of callNodes) {
-          const fnNode = callNode.childForFieldName?.("function")
-          if (!fnNode || fnNode.type !== "identifier") continue
-          if (!registrationApis.has(fnNode.text)) continue
-
-          const calleeName = fnNode.text
-          const pattern = allCallPatterns.find((p) => p.registrationApi === calleeName)
-          if (!pattern) continue
-
-          // Extract arguments
-          const argsNode = callNode.childForFieldName?.("arguments")
-          if (!argsNode) continue
-          const argTexts: string[] = []
-          for (let i = 0; i < argsNode.childCount; i++) {
-            const child = argsNode.child(i)
-            if (!child || child.type === "(" || child.type === ")" || child.type === ",") continue
-            argTexts.push(child.text.trim())
-          }
-
-          // Find which arg is a known function name (the callback)
-          let callbackName: string | null = null
-          for (const arg of argTexts) {
-            if (knownFunctions.has(arg)) { callbackName = arg; break }
-          }
-          if (!callbackName) continue
-
-          const dispatchKey = argTexts[pattern.keyArgIndex] ?? ""
-          const tmpl = dispatchTemplateMap.get(calleeName)
-          if (!tmpl) continue
-
-          const chain = tmpl.chain.map((s: string) =>
-            s.replace(/%CALLBACK%/g, callbackName!).replace(/%KEY%/g, dispatchKey),
-          )
-
-          yield ctx.edge({
-            payload: {
-              edgeKind: "runtime_calls",
-              srcSymbolName: chain.length >= 3 ? chain[chain.length - 2] : chain[0],
-              dstSymbolName: callbackName,
-              confidence: 0.9,
-              derivation: "clangd",
-              metadata: {
-                dispatchChain: chain,
-                registrationApi: calleeName,
-                dispatchKey,
-                triggerKind: tmpl.triggerKind,
-                triggerDescription: tmpl.triggerDescription
-                  .replace(/%KEY%/g, dispatchKey)
-                  .replace(/%CALLBACK%/g, callbackName!),
-              },
-              evidence: {
-                sourceKind: "file_line",
-                location: {
-                  filePath: file,
-                  line: (callNode.startPosition?.row ?? 0) + 1,
-                },
-              },
-            },
-          })
-          ctx.metrics.count("edges.runtime_calls")
+        // Find which arg is a known function name (the callback)
+        let callbackName: string | null = null
+        for (const arg of argTexts) {
+          if (knownFunctions.has(arg)) { callbackName = arg; break }
         }
+        if (!callbackName) continue
+
+        const dispatchKey = argTexts[pattern.keyArgIndex] ?? ""
+        const callLine = (callNode.startPosition?.row ?? 0) + 1
+
+        yield* emitRegistration(calleeName, callbackName, "function_call", dispatchKey, file, callLine)
+        yield* emitRuntimeCall(calleeName, callbackName, dispatchKey, file, callLine)
+      }
+
+      // ── 5b) Struct-field initializer registrations ────────────────────
+      // e.g. static const struct file_operations mem_fops = {
+      //        .read = read_mem,
+      //        .write = write_mem,
+      //      };
+      // Uses tree-sitter to find initializer_pair nodes where the value
+      // is a known function identifier. This is the same detection logic
+      // as classifyGenericStructFieldCallback in detector.ts, but moved
+      // into extraction time.
+      const initPairs = findAllNodes(root, "initializer_pair")
+      for (const pair of initPairs) {
+        // Find the field designator (.read, .write, etc.)
+        let fieldName: string | null = null
+        let valueName: string | null = null
+        for (let i = 0; i < pair.childCount; i++) {
+          const child = pair.child(i)
+          if (!child) continue
+          if (child.type === "field_designator") {
+            fieldName = child.text?.replace(/^\./, "").trim() ?? null
+          }
+          if (child.type === "identifier" && knownFunctions.has(child.text)) {
+            valueName = child.text
+          }
+        }
+        if (!fieldName || !valueName) continue
+
+        // Walk up to find the container variable + struct type
+        let containerVar: string | null = null
+        let containerType: string | null = null
+        let parent = pair.parent  // initializer_list
+        while (parent) {
+          if (parent.type === "init_declarator") {
+            const fullText: string = parent.text ?? ""
+            const lhs = fullText.split("=")[0] ?? ""
+            const idents = lhs.match(/[a-zA-Z_][a-zA-Z0-9_]*/g) ?? []
+            const nonAttr = idents.filter((id: string) => !id.startsWith("__"))
+            containerVar = (nonAttr[nonAttr.length - 1] ?? idents[idents.length - 1]) ?? null
+          }
+          if (parent.type === "declaration") {
+            const typeNode = parent.childForFieldName?.("type")
+            if (typeNode) containerType = typeNode.text?.trim() ?? null
+            break
+          }
+          parent = parent.parent
+        }
+
+        const registrar = containerVar ?? "(struct_init)"
+        const pairLine = (pair.startPosition?.row ?? 0) + 1
+
+        yield* emitRegistration(registrar, valueName, `struct_field:${containerType ?? "unknown"}.${fieldName}`, fieldName, file, pairLine)
+        yield* emitRuntimeCall(registrar, valueName, fieldName, file, pairLine)
+      }
+
+      // ── 5c) Function-body assignment registrations ────────────────────
+      // e.g. current->restart_block.fn = do_no_restart_syscall
+      //      timer->function = my_timer_fn
+      // Detects assignment_expression where the RHS is a known function.
+      const assignments = findAllNodes(root, "assignment_expression")
+      for (const assign of assignments) {
+        const right = assign.childForFieldName?.("right")
+        if (!right || right.type !== "identifier") continue
+        if (!knownFunctions.has(right.text)) continue
+
+        const left = assign.childForFieldName?.("left")
+        if (!left) continue
+
+        // LHS should be a field_expression (ptr->field or obj.field)
+        if (left.type !== "field_expression") continue
+        const fieldNode = left.childForFieldName?.("field")
+        const argNode = left.childForFieldName?.("argument")
+        if (!fieldNode || !argNode) continue
+
+        const fieldName = fieldNode.text
+        const containerExpr = argNode.text?.slice(0, 60) ?? ""
+        const callbackName = right.text
+        const assignLine = (assign.startPosition?.row ?? 0) + 1
+
+        yield* emitRegistration(`${containerExpr}.${fieldName}`, callbackName, `fn_body_assign:${containerExpr}.${fieldName}`, fieldName, file, assignLine)
+        yield* emitRuntimeCall(`${containerExpr}.${fieldName}`, callbackName, fieldName, file, assignLine)
       }
     }
   },
