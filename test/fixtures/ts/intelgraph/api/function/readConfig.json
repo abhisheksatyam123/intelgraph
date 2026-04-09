@@ -1,32 +1,105 @@
 {
   "kind": "function",
   "canonical_name": "module:src/config/config.ts#readConfig",
-  "category": "exported_function",
+  "category": "function",
   "source": {
-    "file": "src/config/config.ts",
-    "line": 207
+    "file": "/home/abhi/qprojects/intelgraph/src/config/config.ts",
+    "line": 207,
+    "character": 8
   },
-  "description": "Reads .intelgraph.json (or legacy .clangd-mcp.json) from the workspace and returns an IntelgraphConfig. The canonical entry point for workspace config loading. Called by lifecycle, daemon, and CLI bootstrap.",
+  "exported": true,
+  "line_count": 49,
   "relations": {
-    "calls_in_direct": [
-      { "caller": "module:src/index.ts",         "callee": "readConfig" },
-      { "caller": "module:src/daemon/index.ts",  "callee": "readConfig" }
+    "references_type_out": [
+      {
+        "dst": "module:src/config/config.ts#IntelgraphConfig",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 207
+      }
     ],
     "calls_out": [
-      { "caller": "readConfig", "callee": "resolveConfigPath" },
-      { "caller": "readConfig", "callee": "JSON.parse" },
-      { "caller": "readConfig", "callee": "logError" }
+      {
+        "dst": "module:src/config/config.ts#resolveConfigPath",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 208
+      },
+      {
+        "dst": "module:fs#existsSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 211
+      },
+      {
+        "dst": "module:src/logging/logger.js#log",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 244
+      },
+      {
+        "dst": "module:fs#readFileSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 219
+      },
+      {
+        "dst": "JSON.parse",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 220
+      },
+      {
+        "dst": "module:src/logging/logger.js#logError",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 252
+      }
     ],
-    "references_type": ["IntelgraphConfig"]
+    "contains_in": [
+      {
+        "src": "module:src/config/config.ts",
+        "confidence": 1,
+        "source_line": 207
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/config/config.ts#updateConfig",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 288
+      },
+      {
+        "src": "module:src/config/config.ts#addRecentFile",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 364
+      },
+      {
+        "src": "module:src/config/config.ts#dismissWarning",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 385
+      },
+      {
+        "src": "module:src/config/config.ts#isWarningDismissed",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 402
+      }
+    ]
   },
   "contract": {
-    "required_node_kinds": ["function"],
-    "minimum_caller_count": 1,
-    "minimum_callee_count": 2,
-    "notes": "Function returns IntelgraphConfig — references_type edge to that interface required."
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 5
   },
   "ground_truth_metadata": {
-    "extracted_from": "intelgraph_self",
-    "method": "manual_grep"
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.748Z"
   }
 }

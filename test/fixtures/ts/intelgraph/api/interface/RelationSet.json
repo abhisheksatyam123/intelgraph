@@ -1,0 +1,103 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/fixtures/completeness-audit.ts#RelationSet",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/completeness-audit.ts",
+    "line": 13,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 11,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#RelationSet.calls_in_direct",
+        "confidence": 1,
+        "source_line": 14
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#RelationSet.calls_in_runtime",
+        "confidence": 1,
+        "source_line": 15
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#RelationSet.calls_out",
+        "confidence": 1,
+        "source_line": 16
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#RelationSet.registrations_in",
+        "confidence": 1,
+        "source_line": 17
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#RelationSet.registrations_out",
+        "confidence": 1,
+        "source_line": 18
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#RelationSet.structures",
+        "confidence": 1,
+        "source_line": 19
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#RelationSet.logs",
+        "confidence": 1,
+        "source_line": 20
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#RelationSet.owns",
+        "confidence": 1,
+        "source_line": 21
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#RelationSet.uses",
+        "confidence": 1,
+        "source_line": 22
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/completeness-audit.ts",
+        "confidence": 1,
+        "source_line": 13
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/fixtures/completeness-audit.ts#ApiFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 28
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/fixtures/completeness-audit.ts#ApiFixture.relations",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 28
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/fixtures/completeness-audit.ts#ApiFixture",
+        "confidence": 0.95,
+        "source_line": 25
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.101Z"
+  }
+}

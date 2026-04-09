@@ -1,0 +1,111 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/fixtures/fixture-comparator.ts#buildComparatorReport",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/fixture-comparator.ts",
+    "line": 244,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 32,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/fixture-comparator.ts#ComparisonResult",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 244
+      },
+      {
+        "dst": "module:src/fixtures/fixture-comparator.ts#ComparatorReport",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 244
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 245
+      },
+      {
+        "dst": "module:src/fixtures/fixture-comparator.ts#ComparisonResult.map",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 245
+      },
+      {
+        "dst": "module:src/fixtures/fixture-comparator.ts#deriveRunId",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 246
+      },
+      {
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 249
+      },
+      {
+        "dst": "module:src/fixtures/fixture-comparator.ts#entityOutcomes.get",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 251
+      },
+      {
+        "dst": "module:src/fixtures/fixture-comparator.ts#entityOutcomes.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 253
+      },
+      {
+        "dst": "module:src/fixtures/fixture-comparator.ts#mergeOutcome",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 253
+      },
+      {
+        "dst": "filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 258
+      },
+      {
+        "dst": "module:src/fixtures/fixture-comparator.ts#entityOutcomes.values",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 258
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/fixture-comparator.ts",
+        "confidence": 1,
+        "source_line": 244
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/unit/fixtures/fixture-comparator.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 320
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.756Z"
+  }
+}

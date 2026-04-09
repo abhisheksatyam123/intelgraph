@@ -1,0 +1,65 @@
+{
+  "kind": "function",
+  "canonical_name": "module:tests/normalization_loss_tests.rs#ix01_stale_index_replaced_not_duplicated",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/tests/normalization_loss_tests.rs",
+    "line": 807,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 34,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:markdown_oxide::notes::normalize#normalize_note",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 809
+      },
+      {
+        "dst": "module:tests/normalization_loss_tests.rs#vault",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 839
+      },
+      {
+        "dst": "count",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 833
+      },
+      {
+        "dst": "matches",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 833
+      },
+      {
+        "dst": "module:tests/normalization_loss_tests.rs#assert_idempotent",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 839
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:tests/normalization_loss_tests.rs",
+        "confidence": 1,
+        "source_line": 807
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.090Z"
+  }
+}

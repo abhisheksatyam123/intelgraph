@@ -1,0 +1,55 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/bin/snapshot-stats.ts#printUsage",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/bin/snapshot-stats.ts",
+    "line": 157,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 46,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "console.error",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 158
+      },
+      {
+        "dst": "join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 159
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts#parseArgs",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 139
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts",
+        "confidence": 1,
+        "source_line": 157
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.746Z"
+  }
+}

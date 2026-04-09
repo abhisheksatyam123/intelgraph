@@ -1,0 +1,85 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/vault/metadata.rs#TagsVisitor.visit_seq",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/metadata.rs",
+    "line": 49,
+    "character": 9
+  },
+  "exported": null,
+  "line_count": 13,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/vault/metadata.rs#Value",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 49
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Vec::new",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 53
+      },
+      {
+        "dst": "seq.next_element::<String>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 54
+      },
+      {
+        "dst": "to_string",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 55
+      },
+      {
+        "dst": "trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 55
+      },
+      {
+        "dst": "is_empty",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 56
+      },
+      {
+        "dst": "push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 57
+      },
+      {
+        "dst": "Ok",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 60
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/metadata.rs#TagsVisitor",
+        "confidence": 1,
+        "source_line": 49
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.788Z"
+  }
+}

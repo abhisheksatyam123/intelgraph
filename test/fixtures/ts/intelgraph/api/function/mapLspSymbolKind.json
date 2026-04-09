@@ -1,0 +1,49 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/clangd-core/extractor.ts#mapLspSymbolKind",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/clangd-core/extractor.ts",
+    "line": 53,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 18,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.js#SymbolRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 53
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/clangd-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 53
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/clangd-core/extractor.ts#extract",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 149
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.779Z"
+  }
+}

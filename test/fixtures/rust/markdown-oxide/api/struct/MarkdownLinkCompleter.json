@@ -1,0 +1,173 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/completion/link_completer.rs#MarkdownLinkCompleter",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/link_completer.rs",
+    "line": 34,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 16,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:tower_lsp::lsp_types#Position",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 34
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LineRange",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 34
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#PartialInfileRef",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 34
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.display",
+        "confidence": 1,
+        "source_line": 36
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.path",
+        "confidence": 1,
+        "source_line": 38
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.infile_ref",
+        "confidence": 1,
+        "source_line": 40
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.full_range",
+        "confidence": 1,
+        "source_line": 42
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.line_nr",
+        "confidence": 1,
+        "source_line": 43
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.position",
+        "confidence": 1,
+        "source_line": 44
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.vault",
+        "confidence": 1,
+        "source_line": 45
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.context_path",
+        "confidence": 1,
+        "source_line": 46
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.settings",
+        "confidence": 1,
+        "source_line": 47
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.completion_index",
+        "confidence": 1,
+        "source_line": 48
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.entered_refname",
+        "confidence": 1,
+        "source_line": 194
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.completion_text_edit",
+        "confidence": 1,
+        "source_line": 206
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.construct",
+        "confidence": 1,
+        "source_line": 261
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.completions",
+        "confidence": 1,
+        "source_line": 357
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.completion_filter_text",
+        "confidence": 1,
+        "source_line": 381
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#LineRange",
+        "confidence": 0.95,
+        "source_line": 34
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#PartialInfileRef",
+        "confidence": 0.95,
+        "source_line": 34
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Position",
+        "confidence": 0.95,
+        "source_line": 34
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompleter",
+        "confidence": 1,
+        "source_line": 174
+      },
+      {
+        "dst": "Completer",
+        "confidence": 1,
+        "source_line": 260
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/link_completer.rs",
+        "confidence": 1,
+        "source_line": 34
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.completions",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 357
+      },
+      {
+        "src": "module:src/completion/link_completer.rs#LinkCompletion.completions",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 893
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 23,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.854Z"
+  }
+}

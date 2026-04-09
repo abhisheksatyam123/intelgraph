@@ -1,0 +1,99 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/pattern-detector/c-parser.ts#tsNodeToFunctionCall",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-detector/c-parser.ts",
+    "line": 274,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 34,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#FunctionCall",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 274
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "node.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 281
+      },
+      {
+        "dst": "test",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 279
+      },
+      {
+        "dst": "argListNode.child",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 287
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#args.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 289
+      },
+      {
+        "dst": "child.text.trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 289
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#lineColToOffset",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 291
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#argOffsets.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 292
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#tsEnclosingCall",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 192
+      },
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#tsEnclosingConstruct",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 208
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts",
+        "confidence": 1,
+        "source_line": 274
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.799Z"
+  }
+}

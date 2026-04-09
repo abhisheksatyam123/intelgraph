@@ -1,0 +1,85 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/backend/state.rs#Backend.bind_vault",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/backend/state.rs",
+    "line": 49,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 7,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:tower_lsp::jsonrpc#Result",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 49
+      },
+      {
+        "dst": "module:src/vault/mod.rs#Vault",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 49
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "read",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 50
+      },
+      {
+        "dst": "deref",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 51
+      },
+      {
+        "dst": "Err",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 52
+      },
+      {
+        "dst": "module:tower_lsp::jsonrpc#Error.new",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 52
+      },
+      {
+        "dst": "module:tower_lsp::jsonrpc#ErrorCode.ServerError",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 52
+      },
+      {
+        "dst": "callback",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 54
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/backend/state.rs#Backend",
+        "confidence": 1,
+        "source_line": 49
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.771Z"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/unit/fixtures/completeness-validator.test.ts#TierExpectation",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/unit/fixtures/completeness-validator.test.ts",
+    "line": 45,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 5,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#TierExpectation.tier1Required",
+        "confidence": 1,
+        "source_line": 46
+      },
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#TierExpectation.tier2Expected",
+        "confidence": 1,
+        "source_line": 47
+      },
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#TierExpectation.tier3Optional",
+        "confidence": 1,
+        "source_line": 48
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/unit/fixtures/completeness-validator.test.ts",
+        "confidence": 1,
+        "source_line": 45
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/unit/fixtures/completeness-validator.test.ts#getTierExpectation",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 51
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.132Z"
+  }
+}

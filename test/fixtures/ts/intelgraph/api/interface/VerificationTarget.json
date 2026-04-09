@@ -1,0 +1,150 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/unit/intelligence/wlan-ground-truth.test.ts",
+    "line": 117,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 22,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeKindSpec",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 123
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#SourceAnchor",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 135
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#GraphContract",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 136
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget.name",
+        "confidence": 1,
+        "source_line": 118
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget.category",
+        "confidence": 1,
+        "source_line": 119
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget.goal",
+        "confidence": 1,
+        "source_line": 120
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget.definition",
+        "confidence": 1,
+        "source_line": 121
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget.coverageTags",
+        "confidence": 1,
+        "source_line": 122
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget.requiredNodeKinds",
+        "confidence": 1,
+        "source_line": 123
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget.graphNodes",
+        "confidence": 1,
+        "source_line": 124
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget.expectedDbArtifacts",
+        "confidence": 1,
+        "source_line": 129
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget.sourceAnchors",
+        "confidence": 1,
+        "source_line": 135
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget.graphContract",
+        "confidence": 1,
+        "source_line": 136
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget.parserGapFeedback",
+        "confidence": 1,
+        "source_line": 137
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeKindSpec",
+        "confidence": 0.95,
+        "source_line": 117
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#SourceAnchor",
+        "confidence": 0.95,
+        "source_line": 117
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#GraphContract",
+        "confidence": 0.95,
+        "source_line": 117
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts",
+        "confidence": 1,
+        "source_line": 117
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#GroundTruthFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 151
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#GroundTruthFixture.verificationTargets",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 151
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#GroundTruthFixture",
+        "confidence": 0.95,
+        "source_line": 140
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 17,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.135Z"
+  }
+}

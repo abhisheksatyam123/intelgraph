@@ -1,0 +1,129 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/completion/mod.rs#get_completions",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/mod.rs",
+    "line": 60,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 37,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:std::path#Path",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 60
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#CompletionParams",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 60
+      },
+      {
+        "dst": "module:std::path#PathBuf",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 60
+      },
+      {
+        "dst": "module:index#CompletionIndex",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 60
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#CompletionResponse",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 60
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "or_else",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 79
+      },
+      {
+        "dst": "run_completer::<UnindexedBlockCompleter<MarkdownLinkCompleter>>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 79
+      },
+      {
+        "dst": "run_completer::<UnindexedBlockCompleter<WikiLinkCompleter>>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 85
+      },
+      {
+        "dst": "run_completer::<MarkdownLinkCompleter>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 91
+      },
+      {
+        "dst": "run_completer::<WikiLinkCompleter>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 92
+      },
+      {
+        "dst": "run_completer::<TagCompleter>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 93
+      },
+      {
+        "dst": "run_completer::<FootnoteCompleter>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 94
+      },
+      {
+        "dst": "run_completer::<CalloutCompleter>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 95
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/backend/handlers.rs#Backend.completion",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 336
+      },
+      {
+        "src": "module:src/backend/handlers.rs#impl_LanguageServer.completion",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 336
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/mod.rs",
+        "confidence": 1,
+        "source_line": 60
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 13,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.074Z"
+  }
+}

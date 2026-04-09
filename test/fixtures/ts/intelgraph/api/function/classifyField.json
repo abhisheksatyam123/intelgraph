@@ -1,0 +1,69 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/fixtures/fixture-comparator.ts#classifyField",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/fixture-comparator.ts",
+    "line": 83,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 24,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/comparator-classifier.ts#DiffRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 88
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "field.startsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 100
+      },
+      {
+        "dst": "field.includes",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 98
+      },
+      {
+        "dst": "module:src/fixtures/comparator-classifier.ts#classifyDiffRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 104
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/fixture-comparator.ts",
+        "confidence": 1,
+        "source_line": 83
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/fixtures/fixture-comparator.ts#compareEntityToBackend",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 209
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.756Z"
+  }
+}

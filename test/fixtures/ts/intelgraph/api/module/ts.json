@@ -1,0 +1,41 @@
+{
+  "kind": "module",
+  "canonical_name": "module:vitest.config.ts",
+  "category": "module",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/vitest.config.ts",
+    "line": 1,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 32,
+  "relations": {
+    "imports_out": [
+      {
+        "dst": "module:vitest/config",
+        "confidence": 1,
+        "source_line": 1
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:vitest/config#defineConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 3
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "module"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:02.518Z"
+  }
+}

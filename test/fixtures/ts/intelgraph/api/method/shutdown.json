@@ -1,0 +1,96 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/lsp/index.ts#LspClient.shutdown",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/lsp/index.ts",
+    "line": 809,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 19,
+  "relations": {
+    "writes_field_out": [
+      {
+        "dst": "module:src/lsp/index.ts#LspClient._shuttingDown",
+        "confidence": 0.95,
+        "source_line": 810
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/logging/logger.js#log",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 825
+      },
+      {
+        "dst": "this._conn.sendRequest",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 813
+      },
+      {
+        "dst": "this._conn.sendNotification",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 814
+      },
+      {
+        "dst": "module:src/logging/logger.js#logError",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 817
+      },
+      {
+        "dst": "this._conn.end",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 819
+      },
+      {
+        "dst": "this._conn.dispose",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 820
+      },
+      {
+        "dst": "this._proc.kill",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 824
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "module:src/lsp/index.ts#LspClient._conn",
+        "confidence": 0.95,
+        "source_line": 820
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient._proc",
+        "confidence": 0.95,
+        "source_line": 825
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/lsp/index.ts#LspClient",
+        "confidence": 1,
+        "source_line": 809
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.505Z"
+  }
+}

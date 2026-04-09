@@ -1,0 +1,32 @@
+{
+  "kind": "enum_variant",
+  "canonical_name": "module:src/config.rs#Case.Respect",
+  "category": "enum_variant",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/config.rs",
+    "line": 45
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/config.rs#Case",
+        "confidence": 1,
+        "source_line": 45
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "enum_variant"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:13.169Z"
+  }
+}

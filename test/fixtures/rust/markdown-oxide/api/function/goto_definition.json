@@ -1,22 +1,141 @@
 {
   "kind": "function",
   "canonical_name": "module:src/gotodef.rs#goto_definition",
-  "category": "exported_function",
+  "category": "function",
   "source": {
-    "file": "src/gotodef.rs",
-    "line": 7
+    "file": "/home/abhi/qprojects/markdown-oxide/src/gotodef.rs",
+    "line": 7,
+    "character": 1
   },
-  "description": "pub fn goto_definition — handles textDocument/definition. Mirror of hover() in shape.",
+  "exported": true,
+  "line_count": 38,
   "relations": {
-    "calls_in_direct": [
-      { "caller": "module:src/backend/handlers.rs#impl_LanguageServer.goto_definition", "callee": "goto_definition" }
+    "references_type_out": [
+      {
+        "dst": "module:std::path#Path",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 7
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Position",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 7
+      },
+      {
+        "dst": "module:src/vault/mod.rs#Vault",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 7
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Location",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 7
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "select_reference_at_position",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 13
+      },
+      {
+        "dst": "select_referenceables_for_reference",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 17
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 37
+      },
+      {
+        "dst": "collect",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 20
+      },
+      {
+        "dst": "filter_map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 20
+      },
+      {
+        "dst": "into_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 20
+      },
+      {
+        "dst": "get_range",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 34
+      },
+      {
+        "dst": "unwrap",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 38
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Url.from_file_path",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 38
+      },
+      {
+        "dst": "to_str",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 38
+      },
+      {
+        "dst": "get_path",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 38
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/backend/handlers.rs#Backend.goto_definition",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 286
+      },
+      {
+        "src": "module:src/backend/handlers.rs#impl_LanguageServer.goto_definition",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 286
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/gotodef.rs",
+        "confidence": 1,
+        "source_line": 7
+      }
     ]
   },
   "contract": {
-    "required_node_kinds": ["function"]
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 15,
+    "total_incoming_edges": 3
   },
   "ground_truth_metadata": {
-    "extracted_from": "markdown-oxide",
-    "method": "manual_grep"
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.075Z"
   }
 }

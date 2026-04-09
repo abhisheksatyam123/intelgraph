@@ -1,0 +1,60 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/contracts/orchestrator.ts#ClangdEnricher",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/orchestrator.ts",
+    "line": 307,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 4,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#EnrichmentResult",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 309
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#EnricherContext",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 309
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryRequest",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 309
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#ClangdEnricher.source",
+        "confidence": 1,
+        "source_line": 308
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/orchestrator.ts",
+        "confidence": 1,
+        "source_line": 307
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.108Z"
+  }
+}

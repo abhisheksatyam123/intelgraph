@@ -1,0 +1,79 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/contracts/orchestrator.ts#decideOrchestrationAction",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/orchestrator.ts",
+    "line": 379,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 40,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#OrchestrationState",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 379
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#OrchestrationAction",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 379
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 387
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#attemptedDeterministic.add",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 390
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#attemptedDeterministic.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 395
+      },
+      {
+        "dst": "state.attempts.find",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 400
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#shouldRunLlmFallback",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 409
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/orchestrator.ts",
+        "confidence": 1,
+        "source_line": 379
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.760Z"
+  }
+}

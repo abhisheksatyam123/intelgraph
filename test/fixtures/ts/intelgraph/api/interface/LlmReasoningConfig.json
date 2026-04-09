@@ -1,0 +1,93 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/tools/reason-engine/llm-advisor.ts#LlmReasoningConfig",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/reason-engine/llm-advisor.ts",
+    "line": 33,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 17,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#LlmReasoningConfig.enabled",
+        "confidence": 1,
+        "source_line": 34
+      },
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#LlmReasoningConfig.baseURL",
+        "confidence": 1,
+        "source_line": 35
+      },
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#LlmReasoningConfig.model",
+        "confidence": 1,
+        "source_line": 36
+      },
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#LlmReasoningConfig.fallbackModels",
+        "confidence": 1,
+        "source_line": 38
+      },
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#LlmReasoningConfig.apiKeyEnv",
+        "confidence": 1,
+        "source_line": 39
+      },
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#LlmReasoningConfig.maxCallsPerQuery",
+        "confidence": 1,
+        "source_line": 41
+      },
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#LlmReasoningConfig.maxAttemptsPerModel",
+        "confidence": 1,
+        "source_line": 43
+      },
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#LlmReasoningConfig.backoffBaseMs",
+        "confidence": 1,
+        "source_line": 45
+      },
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#LlmReasoningConfig.backoffMaxMs",
+        "confidence": 1,
+        "source_line": 47
+      },
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#LlmReasoningConfig.ruleFile",
+        "confidence": 1,
+        "source_line": 48
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/reason-engine/llm-advisor.ts",
+        "confidence": 1,
+        "source_line": 33
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/tools/reason-engine/llm-advisor.ts#requestReasonProposals",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 896
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.128Z"
+  }
+}

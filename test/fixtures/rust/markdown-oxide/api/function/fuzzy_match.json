@@ -1,0 +1,87 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/completion/matcher.rs#fuzzy_match",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/matcher.rs",
+    "line": 79,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 24,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/config.rs#Case",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 79
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 98
+      },
+      {
+        "dst": "into_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 98
+      },
+      {
+        "dst": "Matcher::new",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 86
+      },
+      {
+        "dst": "match_list",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 87
+      },
+      {
+        "dst": "pattern::Pattern::parse",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 87
+      },
+      {
+        "dst": "collect",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 98
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/completion/matcher.rs#fuzzy_match_completions",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 71
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/matcher.rs",
+        "confidence": 1,
+        "source_line": 79
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.074Z"
+  }
+}

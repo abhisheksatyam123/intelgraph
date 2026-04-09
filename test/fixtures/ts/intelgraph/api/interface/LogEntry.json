@@ -1,0 +1,94 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/logging/log-formatter.ts#LogEntry",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/logging/log-formatter.ts",
+    "line": 7,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 8,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/logging/log-levels.js#LogLevel",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 9
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/logging/log-formatter.ts#LogEntry.timestamp",
+        "confidence": 1,
+        "source_line": 8
+      },
+      {
+        "dst": "module:src/logging/log-formatter.ts#LogEntry.level",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:src/logging/log-formatter.ts#LogEntry.component",
+        "confidence": 1,
+        "source_line": 10
+      },
+      {
+        "dst": "module:src/logging/log-formatter.ts#LogEntry.message",
+        "confidence": 1,
+        "source_line": 11
+      },
+      {
+        "dst": "module:src/logging/log-formatter.ts#LogEntry.context",
+        "confidence": 1,
+        "source_line": 12
+      },
+      {
+        "dst": "module:src/logging/log-formatter.ts#LogEntry.error",
+        "confidence": 1,
+        "source_line": 13
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/logging/log-levels.js#LogLevel",
+        "confidence": 0.95,
+        "source_line": 7
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/logging/log-formatter.ts",
+        "confidence": 1,
+        "source_line": 7
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/logging/log-formatter.ts#formatLogEntry",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 19
+      },
+      {
+        "src": "module:src/logging/log-formatter.ts#formatConsoleEntry",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 47
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.122Z"
+  }
+}

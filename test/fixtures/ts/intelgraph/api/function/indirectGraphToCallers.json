@@ -1,0 +1,111 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/get-callers.ts#indirectGraphToCallers",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/get-callers.ts",
+    "line": 625,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 51,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/get-callers.ts#WaterfallStep",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 627
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#CallerEntry",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 628
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "import",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 626
+      },
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 630
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#canonicalizeSymbol",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 656
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#seen.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 660
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#seen.add",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 661
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#CallerEntry.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 662
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#preferSrcPath",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 664
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#confidenceLevelToScore",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 668
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#classificationToCallerType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 658
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/get-callers.ts#resolveCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 336
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/get-callers.ts",
+        "confidence": 1,
+        "source_line": 625
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.791Z"
+  }
+}

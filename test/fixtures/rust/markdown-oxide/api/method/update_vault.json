@@ -1,0 +1,79 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/vault/build.rs#Vault.update_vault",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/build.rs",
+    "line": 71,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 17,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/config.rs#Settings",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 71
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "MDFile::new",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 72
+      },
+      {
+        "dst": "clone",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 72
+      },
+      {
+        "dst": "get_mut",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 81
+      },
+      {
+        "dst": "insert",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 84
+      },
+      {
+        "dst": "into",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 84
+      },
+      {
+        "dst": "module:ropey#Rope.from_str",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 80
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/build.rs#Vault",
+        "confidence": 1,
+        "source_line": 71
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.784Z"
+  }
+}

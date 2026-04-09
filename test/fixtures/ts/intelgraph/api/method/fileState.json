@@ -1,0 +1,56 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/tracking/index.ts#IndexTracker.fileState",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tracking/index.ts",
+    "line": 56,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tracking/index.ts#FileParseState",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 56
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "this._fileStates.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 57
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "module:src/tracking/index.ts#IndexTracker._fileStates",
+        "confidence": 0.95,
+        "source_line": 57
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tracking/index.ts#IndexTracker",
+        "confidence": 1,
+        "source_line": 56
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.506Z"
+  }
+}

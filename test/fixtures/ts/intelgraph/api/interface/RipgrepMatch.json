@@ -1,0 +1,86 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepMatch",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/ripgrep-service.ts",
+    "line": 33,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 15,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepMatch.filePath",
+        "confidence": 1,
+        "source_line": 35
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepMatch.line",
+        "confidence": 1,
+        "source_line": 37
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepMatch.lineText",
+        "confidence": 1,
+        "source_line": 39
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepMatch.absoluteOffset",
+        "confidence": 1,
+        "source_line": 41
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepMatch.submatches",
+        "confidence": 1,
+        "source_line": 46
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/ripgrep-service.ts",
+        "confidence": 1,
+        "source_line": 33
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepService",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 98
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl.search",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 143
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl.parseJsonOutput",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 256
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/ripgrep-service.ts#out",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 257
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.120Z"
+  }
+}

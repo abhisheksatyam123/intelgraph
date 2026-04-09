@@ -1,0 +1,99 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/indirect-callers.ts#classifyReference",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/indirect-callers.ts",
+    "line": 277,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 27,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/indirect-callers.ts#ClassificationResult",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 282
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/tools/indirect-callers.ts#readFileSafe",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 283
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/index.js#findEnclosingCall",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 289
+      },
+      {
+        "dst": "module:src/tools/indirect-callers.ts#classifyFunctionCall",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 291
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/index.js#findEnclosingConstruct",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 295
+      },
+      {
+        "dst": "module:src/tools/indirect-callers.ts#classifyInitializer",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 297
+      },
+      {
+        "dst": "slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 301
+      },
+      {
+        "dst": "trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 301
+      },
+      {
+        "dst": "source.split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 301
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/indirect-callers.ts#collectIndirectCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 216
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/indirect-callers.ts",
+        "confidence": 1,
+        "source_line": 277
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.794Z"
+  }
+}

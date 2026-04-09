@@ -1,0 +1,119 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl.openFileIfNeeded",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/lsp-service.ts",
+    "line": 140,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 21,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "Date.now",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 154
+      },
+      {
+        "dst": "this.client.openFile",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 144
+      },
+      {
+        "dst": "this.logger.debug",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 152
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/lsp-service.ts#classifyLspError",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 155
+      },
+      {
+        "dst": "slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 156
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/lsp-service.ts#errorMessage",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 156
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl",
+        "confidence": 1,
+        "source_line": 140
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl.prepareCallHierarchy",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 169
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl.incomingCalls",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 205
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl.outgoingCalls",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 239
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl.documentSymbol",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 271
+      }
+    ],
+    "reads_field_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl.prepareCallHierarchy",
+        "confidence": 0.95,
+        "source_line": 169
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl.incomingCalls",
+        "confidence": 0.95,
+        "source_line": 205
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl.outgoingCalls",
+        "confidence": 0.95,
+        "source_line": 239
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl.documentSymbol",
+        "confidence": 0.95,
+        "source_line": 271
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 9
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.495Z"
+  }
+}

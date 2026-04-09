@@ -1,0 +1,81 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:src/intelligence/contracts/common.ts#RuntimeGraphNodeKind",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/common.ts",
+    "line": 128,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 14,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#SymbolRow",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 129
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/common.ts",
+        "confidence": 1,
+        "source_line": 128
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/common.ts#RuntimeGraphParticipantRow",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 147
+      },
+      {
+        "src": "module:src/intelligence/contracts/common.ts#RuntimeCallerRow",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 168
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/common.ts#RuntimeGraphParticipantRow.kind",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 147
+      },
+      {
+        "src": "module:src/intelligence/contracts/common.ts#RuntimeCallerRow.targetKind",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 168
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/contracts/common.ts#RuntimeGraphParticipantRow",
+        "confidence": 0.95,
+        "source_line": 143
+      },
+      {
+        "src": "module:src/intelligence/contracts/common.ts#RuntimeCallerRow",
+        "confidence": 0.95,
+        "source_line": 156
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 7
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:07.059Z"
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/integration/sqlite-backend.test.ts",
+    "line": 32,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 16,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow.kind",
+        "confidence": 1,
+        "source_line": 33
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow.canonical_name",
+        "confidence": 1,
+        "source_line": 34
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow.caller",
+        "confidence": 1,
+        "source_line": 35
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow.callee",
+        "confidence": 1,
+        "source_line": 36
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow.edge_kind",
+        "confidence": 1,
+        "source_line": 37
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow.derivation",
+        "confidence": 1,
+        "source_line": 38
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow.confidence",
+        "confidence": 1,
+        "source_line": 39
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow.file_path",
+        "confidence": 1,
+        "source_line": 40
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow.line_number",
+        "confidence": 1,
+        "source_line": 41
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow.registrar",
+        "confidence": 1,
+        "source_line": 42
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow.callback",
+        "confidence": 1,
+        "source_line": 43
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow.registration_api",
+        "confidence": 1,
+        "source_line": 44
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow.api_name",
+        "confidence": 1,
+        "source_line": 45
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow.template",
+        "confidence": 1,
+        "source_line": 46
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts",
+        "confidence": 1,
+        "source_line": 32
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts#FixtureEntry",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 53
+      },
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts#assertRowsContainFixtureNames",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 306
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts#FixtureEntry.relations",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 53
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts#FixtureEntry",
+        "confidence": 0.95,
+        "source_line": 49
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 14,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.131Z"
+  }
+}

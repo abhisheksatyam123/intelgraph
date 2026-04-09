@@ -1,0 +1,61 @@
+{
+  "kind": "function",
+  "canonical_name": "module:scripts/wlan-fixture-normalize-relations.mjs#applyMapToFixture",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/scripts/wlan-fixture-normalize-relations.mjs",
+    "line": 59,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 32,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "Array.isArray",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 75
+      },
+      {
+        "dst": "Object.prototype.hasOwnProperty.call",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 80
+      },
+      {
+        "dst": "changes.push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 85
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:scripts/wlan-fixture-normalize-relations.mjs",
+        "confidence": 1,
+        "source_line": 59
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:scripts/wlan-fixture-normalize-relations.mjs#main",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 181
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.742Z"
+  }
+}

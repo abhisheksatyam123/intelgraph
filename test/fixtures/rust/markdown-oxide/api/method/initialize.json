@@ -1,0 +1,139 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/backend/handlers.rs#Backend.initialize",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/backend/handlers.rs",
+    "line": 21,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 68,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:tower_lsp::jsonrpc#Result",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 21
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "log_message",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 67
+      },
+      {
+        "dst": "or",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 57
+      },
+      {
+        "dst": "to_file_path",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 37
+      },
+      {
+        "dst": "Err",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 78
+      },
+      {
+        "dst": "module:tower_lsp::jsonrpc#Error.new",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 78
+      },
+      {
+        "dst": "next",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 36
+      },
+      {
+        "dst": "iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 36
+      },
+      {
+        "dst": "std::env::current_dir",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 57
+      },
+      {
+        "dst": "module:src/config.rs#new",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 64
+      },
+      {
+        "dst": "module:tower_lsp::jsonrpc#ErrorCode.ServerError",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 78
+      },
+      {
+        "dst": "module:src/vault/mod.rs#construct_vault",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 77
+      },
+      {
+        "dst": "write",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 82
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 82
+      },
+      {
+        "dst": "rebuild_completion_index",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 85
+      },
+      {
+        "dst": "Ok",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 87
+      },
+      {
+        "dst": "module:super::capabilities#build_initialize_result",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 87
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/backend/handlers.rs#Backend",
+        "confidence": 1,
+        "source_line": 21
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 17,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.768Z"
+  }
+}

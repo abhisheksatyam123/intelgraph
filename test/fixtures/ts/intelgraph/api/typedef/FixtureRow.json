@@ -1,0 +1,140 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:test/unit/intelligence/wlan-ground-truth.test.ts#FixtureRow",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/unit/intelligence/wlan-ground-truth.test.ts",
+    "line": 155,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 1,
+  "relations": {
+    "references_type_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#ApiGroundTruthEntry",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 84
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#makeDeps",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 240
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#runQuery",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 265
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#edgeKindFromRow",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 300
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#relationKindFromQueryCase",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 316
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#relationDirectionsFromQueryCase",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 322
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#rowKey",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 348
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#verifyBaseComparableRow",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 421
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#verifyApiGroundTruthRow",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 428
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#verifyComparableRow",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 439
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#expectedRelation",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 482
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#assertEdge",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 579
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#rows",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 663
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#consolidatedRows",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 823
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#ApiGroundTruthEntry.relations",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 84
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#ApiGroundTruthEntry.relation_type_lists",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 104
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#ApiGroundTruthEntry",
+        "confidence": 0.95,
+        "source_line": 76
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts",
+        "confidence": 1,
+        "source_line": 155
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 18
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:07.070Z"
+  }
+}

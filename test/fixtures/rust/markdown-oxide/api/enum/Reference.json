@@ -1,0 +1,253 @@
+{
+  "kind": "enum",
+  "canonical_name": "module:src/vault/reference.rs#Reference",
+  "category": "enum",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/reference.rs",
+    "line": 47,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 11,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/vault/reference.rs#ReferenceData",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 47
+      },
+      {
+        "dst": "module:src/vault/reference.rs#File",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 47
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Specialref",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 47
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/vault/reference.rs#Reference.Tag",
+        "confidence": 1,
+        "source_line": 48
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.WikiFileLink",
+        "confidence": 1,
+        "source_line": 49
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.WikiHeadingLink",
+        "confidence": 1,
+        "source_line": 50
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.WikiIndexedBlockLink",
+        "confidence": 1,
+        "source_line": 51
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.MDFileLink",
+        "confidence": 1,
+        "source_line": 52
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.MDHeadingLink",
+        "confidence": 1,
+        "source_line": 53
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.MDIndexedBlockLink",
+        "confidence": 1,
+        "source_line": 54
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.Footnote",
+        "confidence": 1,
+        "source_line": 55
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.LinkRef",
+        "confidence": 1,
+        "source_line": 56
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.hash",
+        "confidence": 1,
+        "source_line": 62
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.deref",
+        "confidence": 1,
+        "source_line": 69
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.default",
+        "confidence": 1,
+        "source_line": 75
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.range",
+        "confidence": 1,
+        "source_line": 81
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.data",
+        "confidence": 1,
+        "source_line": 87
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.matches_type",
+        "confidence": 1,
+        "source_line": 101
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.new",
+        "confidence": 1,
+        "source_line": 116
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference.references",
+        "confidence": 1,
+        "source_line": 226
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/vault/reference.rs#ReferenceData",
+        "confidence": 0.95,
+        "source_line": 47
+      },
+      {
+        "dst": "module:src/vault/reference.rs#File",
+        "confidence": 0.95,
+        "source_line": 47
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Specialref",
+        "confidence": 0.95,
+        "source_line": 47
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "Hash",
+        "confidence": 1,
+        "source_line": 61
+      },
+      {
+        "dst": "Deref",
+        "confidence": 1,
+        "source_line": 67
+      },
+      {
+        "dst": "Default",
+        "confidence": 1,
+        "source_line": 74
+      },
+      {
+        "dst": "Rangeable",
+        "confidence": 1,
+        "source_line": 80
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/reference.rs",
+        "confidence": 1,
+        "source_line": 47
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/vault/reference.rs#Reference.matches_type",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 101
+      },
+      {
+        "src": "module:src/vault/reference.rs#ParseableReferenceConstructor",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 363
+      },
+      {
+        "src": "module:src/vault/reference.rs#new_heading",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 364
+      },
+      {
+        "src": "module:src/vault/reference.rs#new_file_link",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 365
+      },
+      {
+        "src": "module:src/vault/reference.rs#new_indexed_block_link",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 366
+      },
+      {
+        "src": "module:src/vault/reference.rs#WikiReferenceConstructor.new_heading",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 373
+      },
+      {
+        "src": "module:src/vault/reference.rs#WikiReferenceConstructor.new_file_link",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 376
+      },
+      {
+        "src": "module:src/vault/reference.rs#WikiReferenceConstructor.new_indexed_block_link",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 379
+      },
+      {
+        "src": "module:src/vault/reference.rs#MDReferenceConstructor.new_heading",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 385
+      },
+      {
+        "src": "module:src/vault/reference.rs#MDReferenceConstructor.new_file_link",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 388
+      },
+      {
+        "src": "module:src/vault/reference.rs#MDReferenceConstructor.new_indexed_block_link",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 391
+      },
+      {
+        "src": "module:src/vault/reference.rs#generic_link_constructor",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 403
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "enum"
+    ],
+    "total_outgoing_edges": 27,
+    "total_incoming_edges": 13
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:13.171Z"
+  }
+}

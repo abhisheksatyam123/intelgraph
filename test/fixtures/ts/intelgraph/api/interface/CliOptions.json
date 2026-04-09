@@ -1,0 +1,104 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/bin/snapshot-stats.ts#CliOptions",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/bin/snapshot-stats.ts",
+    "line": 55,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 22,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#CliOptions.workspace",
+        "confidence": 1,
+        "source_line": 56
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#CliOptions.format",
+        "confidence": 1,
+        "source_line": 57
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#CliOptions.edgeKinds",
+        "confidence": 1,
+        "source_line": 59
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#CliOptions.symbolKinds",
+        "confidence": 1,
+        "source_line": 61
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#CliOptions.centerOf",
+        "confidence": 1,
+        "source_line": 63
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#CliOptions.centerHops",
+        "confidence": 1,
+        "source_line": 65
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#CliOptions.centerDirection",
+        "confidence": 1,
+        "source_line": 67
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#CliOptions.maxNodes",
+        "confidence": 1,
+        "source_line": 69
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#CliOptions.dataPathFrom",
+        "confidence": 1,
+        "source_line": 71
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#CliOptions.dataPathTo",
+        "confidence": 1,
+        "source_line": 73
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#CliOptions.dataPathDepth",
+        "confidence": 1,
+        "source_line": 75
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts",
+        "confidence": 1,
+        "source_line": 55
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts#parseArgs",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 78
+      },
+      {
+        "src": "module:src/bin/snapshot-stats.ts#format",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 81
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.099Z"
+  }
+}

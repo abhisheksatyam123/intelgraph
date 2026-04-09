@@ -1,0 +1,223 @@
+{
+  "kind": "module",
+  "canonical_name": "module:vscode-extension/server/src/server.ts",
+  "category": "module",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/vscode-extension/server/src/server.ts",
+    "line": 1,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 231,
+  "relations": {
+    "imports_out": [
+      {
+        "dst": "module:vscode-languageserver/node",
+        "confidence": 1,
+        "source_line": 5
+      },
+      {
+        "dst": "module:vscode-languageserver-textdocument",
+        "confidence": 1,
+        "source_line": 20
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:vscode-languageserver/node#createConnection",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 26
+      },
+      {
+        "dst": "module:vscode-languageserver/node#TextDocuments",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 29
+      },
+      {
+        "dst": "connection.onInitialize",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 35
+      },
+      {
+        "dst": "connection.onInitialized",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 71
+      },
+      {
+        "dst": "connection.client.register",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 74
+      },
+      {
+        "dst": "connection.workspace.onDidChangeWorkspaceFolders",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 77
+      },
+      {
+        "dst": "connection.console.log",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 186
+      },
+      {
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 95
+      },
+      {
+        "dst": "connection.onDidChangeConfiguration",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 97
+      },
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#documentSettings.clear",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 100
+      },
+      {
+        "dst": "forEach",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 108
+      },
+      {
+        "dst": "module:vscode-languageserver/node#TextDocuments.all",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 108
+      },
+      {
+        "dst": "module:vscode-languageserver/node#TextDocuments.onDidClose",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 127
+      },
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#documentSettings.delete",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 128
+      },
+      {
+        "dst": "module:vscode-languageserver/node#TextDocuments.onDidChangeContent",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 133
+      },
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#validateTextDocument",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 134
+      },
+      {
+        "dst": "connection.onDidChangeWatchedFiles",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 184
+      },
+      {
+        "dst": "connection.onCompletion",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 190
+      },
+      {
+        "dst": "connection.onCompletionResolve",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 212
+      },
+      {
+        "dst": "module:vscode-languageserver/node#TextDocuments.listen",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 227
+      },
+      {
+        "dst": "connection.listen",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 230
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#documents",
+        "confidence": 1,
+        "source_line": 29
+      },
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#result",
+        "confidence": 1,
+        "source_line": 52
+      },
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#ExampleSettings",
+        "confidence": 1,
+        "source_line": 84
+      },
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#defaultSettings",
+        "confidence": 1,
+        "source_line": 91
+      },
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#globalSettings",
+        "confidence": 1,
+        "source_line": 92
+      },
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#documentSettings",
+        "confidence": 1,
+        "source_line": 95
+      },
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#getDocumentSettings",
+        "confidence": 1,
+        "source_line": 111
+      },
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#validateTextDocument",
+        "confidence": 1,
+        "source_line": 137
+      },
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#m",
+        "confidence": 1,
+        "source_line": 144
+      },
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#diagnostics",
+        "confidence": 1,
+        "source_line": 147
+      },
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#diagnostic",
+        "confidence": 1,
+        "source_line": 150
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "module"
+    ],
+    "total_outgoing_edges": 34,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:13.675Z"
+  }
+}

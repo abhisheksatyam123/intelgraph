@@ -1,0 +1,64 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/bin/enrich-fixtures.ts#CliArgs",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/bin/enrich-fixtures.ts",
+    "line": 21,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 5,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/bin/enrich-fixtures.ts#CliArgs.api",
+        "confidence": 1,
+        "source_line": 22
+      },
+      {
+        "dst": "module:src/bin/enrich-fixtures.ts#CliArgs.snapshotId",
+        "confidence": 1,
+        "source_line": 23
+      },
+      {
+        "dst": "module:src/bin/enrich-fixtures.ts#CliArgs.dryRun",
+        "confidence": 1,
+        "source_line": 24
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/bin/enrich-fixtures.ts",
+        "confidence": 1,
+        "source_line": 21
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/bin/enrich-fixtures.ts#parseArgs",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 30
+      },
+      {
+        "src": "module:src/bin/enrich-fixtures.ts#args",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 31
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.098Z"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/fixtures/schema-validator.ts#validateCorpus",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/schema-validator.ts",
+    "line": 258,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 30,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/schema-validator.ts#ValidationResult",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 260
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 263
+      },
+      {
+        "dst": "filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 263
+      },
+      {
+        "dst": "module:node:fs#readdirSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 263
+      },
+      {
+        "dst": "module:src/fixtures/schema-validator.ts#f.endsWith",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 264
+      },
+      {
+        "dst": "module:node:path#join",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 265
+      },
+      {
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 273
+      },
+      {
+        "dst": "Promise.all",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 277
+      },
+      {
+        "dst": "module:src/fixtures/schema-validator.ts#files.map",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 278
+      },
+      {
+        "dst": "module:src/fixtures/schema-validator.ts#validateFixtureFile",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 279
+      },
+      {
+        "dst": "module:src/fixtures/schema-validator.ts#results.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 280
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/schema-validator.ts",
+        "confidence": 1,
+        "source_line": 258
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/unit/fixtures/schema-validator.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 461
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.758Z"
+  }
+}

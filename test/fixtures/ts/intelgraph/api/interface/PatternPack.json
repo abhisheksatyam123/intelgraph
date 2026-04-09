@@ -1,0 +1,86 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/plugins/clangd-core/packs/types.ts#PatternPack",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/clangd-core/packs/types.ts",
+    "line": 36,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 26,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/types.js#CallPattern",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 44
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.js#InitPattern",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 47
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/plugins/clangd-core/packs/types.ts#PatternPack.name",
+        "confidence": 1,
+        "source_line": 38
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/packs/types.ts#PatternPack.description",
+        "confidence": 1,
+        "source_line": 41
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/packs/types.ts#PatternPack.callPatterns",
+        "confidence": 1,
+        "source_line": 44
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/packs/types.ts#PatternPack.initPatterns",
+        "confidence": 1,
+        "source_line": 47
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/packs/types.ts#PatternPack.appliesTo",
+        "confidence": 1,
+        "source_line": 60
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/types.js#CallPattern",
+        "confidence": 0.95,
+        "source_line": 36
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.js#InitPattern",
+        "confidence": 0.95,
+        "source_line": 36
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/clangd-core/packs/types.ts",
+        "confidence": 1,
+        "source_line": 36
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.123Z"
+  }
+}

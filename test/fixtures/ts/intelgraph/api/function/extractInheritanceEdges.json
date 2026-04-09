@@ -1,0 +1,93 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/ts-core/extractor.ts#extractInheritanceEdges",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/ts-core/extractor.ts",
+    "line": 2404,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 73,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 2405
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#FileResolver",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2408
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#InheritanceEdgePayload",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2410
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 2422
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#firstNamedChildOfType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2466
+      },
+      {
+        "dst": "heritage.namedChild",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 2453
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#namedDescendantTexts",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2471
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#pushEdge",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2472
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#visit",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 385
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 2404
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.785Z"
+  }
+}

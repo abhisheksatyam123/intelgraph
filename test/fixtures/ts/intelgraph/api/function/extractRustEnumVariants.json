@@ -1,0 +1,99 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/rust-core/extractor.ts#extractRustEnumVariants",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/rust-core/extractor.ts",
+    "line": 1118,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 68,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 1119
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/plugins/rust-core/extractor.ts#firstNamedChildOfType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1155
+      },
+      {
+        "dst": "variantList.namedChild",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1140
+      },
+      {
+        "dst": "variant.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1142
+      },
+      {
+        "dst": "tupleList.namedChild",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1160
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 1171
+      },
+      {
+        "dst": "namedList.namedChild",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1168
+      },
+      {
+        "dst": "fd.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1170
+      },
+      {
+        "dst": "module:src/plugins/rust-core/extractor.ts#out.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 1176
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts#visit",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 404
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 1118
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.780Z"
+  }
+}

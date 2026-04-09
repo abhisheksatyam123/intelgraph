@@ -1,0 +1,57 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/vault/reference.rs#WikiReferenceConstructor",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/reference.rs",
+    "line": 369,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 1,
+  "relations": {
+    "implements_out": [
+      {
+        "dst": "module:src/vault/reference.rs#ParseableReferenceConstructor",
+        "confidence": 1,
+        "source_line": 372
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/vault/reference.rs#WikiReferenceConstructor.new_heading",
+        "confidence": 1,
+        "source_line": 373
+      },
+      {
+        "dst": "module:src/vault/reference.rs#WikiReferenceConstructor.new_file_link",
+        "confidence": 1,
+        "source_line": 376
+      },
+      {
+        "dst": "module:src/vault/reference.rs#WikiReferenceConstructor.new_indexed_block_link",
+        "confidence": 1,
+        "source_line": 379
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/reference.rs",
+        "confidence": 1,
+        "source_line": 369
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.859Z"
+  }
+}

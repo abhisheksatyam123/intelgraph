@@ -1,0 +1,53 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/formatters.ts#formatWorkspaceSymbol",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/formatters.ts",
+    "line": 49,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 9,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 51
+      },
+      {
+        "dst": "results.map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 51
+      },
+      {
+        "dst": "module:src/tools/schemas.js#fmtLocation",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 54
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/formatters.ts",
+        "confidence": 1,
+        "source_line": 49
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.790Z"
+  }
+}

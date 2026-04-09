@@ -1,0 +1,67 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#IndirectCallerIngestionService.linkToSymbols",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts",
+    "line": 30,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 22,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.js#RuntimeCallerBatch",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 30
+      },
+      {
+        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.js#LinkReport",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 30
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "this.finder.hasSymbol",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 41
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.js#RuntimeCallerRow.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 45
+      },
+      {
+        "dst": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#warnings.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 46
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#IndirectCallerIngestionService",
+        "confidence": 1,
+        "source_line": 30
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.477Z"
+  }
+}

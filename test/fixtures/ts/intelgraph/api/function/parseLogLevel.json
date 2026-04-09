@@ -1,0 +1,49 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/logging/log-levels.ts#parseLogLevel",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/logging/log-levels.ts",
+    "line": 14,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 15,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/logging/log-levels.ts#LogLevel",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 14
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "level.toUpperCase",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 15
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/logging/log-levels.ts",
+        "confidence": 1,
+        "source_line": 14
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.778Z"
+  }
+}

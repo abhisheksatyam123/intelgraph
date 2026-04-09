@@ -1,0 +1,104 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/completion/index.rs#CompletionIndex",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/index.rs",
+    "line": 88,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 6,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/completion/index.rs#CompletionCandidate",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 88
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/completion/index.rs#CompletionIndex.resolved",
+        "confidence": 1,
+        "source_line": 90
+      },
+      {
+        "dst": "module:src/completion/index.rs#CompletionIndex.unresolved",
+        "confidence": 1,
+        "source_line": 92
+      },
+      {
+        "dst": "module:src/completion/index.rs#CompletionIndex.build",
+        "confidence": 1,
+        "source_line": 100
+      },
+      {
+        "dst": "module:src/completion/index.rs#CompletionIndex.candidates",
+        "confidence": 1,
+        "source_line": 260
+      },
+      {
+        "dst": "module:src/completion/index.rs#CompletionIndex.recent_candidates",
+        "confidence": 1,
+        "source_line": 293
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/completion/index.rs#CompletionCandidate",
+        "confidence": 0.95,
+        "source_line": 88
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/backend/state.rs#Backend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 23
+      },
+      {
+        "src": "module:src/backend/state.rs#Backend.bind_completion_index",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 132
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/backend/state.rs#Backend.completion_index",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 29
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/backend/state.rs#Backend",
+        "confidence": 0.95,
+        "source_line": 23
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/index.rs",
+        "confidence": 1,
+        "source_line": 88
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.853Z"
+  }
+}

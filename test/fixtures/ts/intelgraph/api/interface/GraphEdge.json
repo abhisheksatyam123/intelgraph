@@ -1,0 +1,120 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/contracts/common.ts#GraphEdge",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/common.ts",
+    "line": 206,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 8,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EdgeKind",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 208
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#GraphEdge.id",
+        "confidence": 1,
+        "source_line": 207
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#GraphEdge.kind",
+        "confidence": 1,
+        "source_line": 208
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#GraphEdge.src",
+        "confidence": 1,
+        "source_line": 209
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#GraphEdge.dst",
+        "confidence": 1,
+        "source_line": 210
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#GraphEdge.confidence",
+        "confidence": 1,
+        "source_line": 211
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#GraphEdge.derivation",
+        "confidence": 1,
+        "source_line": 212
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EdgeKind",
+        "confidence": 0.95,
+        "source_line": 206
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/common.ts",
+        "confidence": 1,
+        "source_line": 206
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/common.ts#CallerGraph",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 220
+      },
+      {
+        "src": "module:src/intelligence/contracts/common.ts#CalleeGraph",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 228
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/common.ts#CallerGraph.edges",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 220
+      },
+      {
+        "src": "module:src/intelligence/contracts/common.ts#CalleeGraph.edges",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 228
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/contracts/common.ts#CallerGraph",
+        "confidence": 0.95,
+        "source_line": 215
+      },
+      {
+        "src": "module:src/intelligence/contracts/common.ts#CalleeGraph",
+        "confidence": 0.95,
+        "source_line": 223
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 7
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.105Z"
+  }
+}

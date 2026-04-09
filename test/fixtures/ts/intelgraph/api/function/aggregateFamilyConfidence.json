@@ -1,0 +1,117 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/fixtures/confidence-scorer.ts#aggregateFamilyConfidence",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/confidence-scorer.ts",
+    "line": 105,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 30,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/confidence-scorer.ts#ConfidenceResult",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 106
+      },
+      {
+        "dst": "module:src/fixtures/confidence-scorer.ts#FamilyConfidenceSummary",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 107
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 108
+      },
+      {
+        "dst": "module:src/fixtures/confidence-scorer.ts#byFamily.get",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 111
+      },
+      {
+        "dst": "bucket.push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 112
+      },
+      {
+        "dst": "module:src/fixtures/confidence-scorer.ts#byFamily.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 113
+      },
+      {
+        "dst": "entries.reduce",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 119
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 120
+      },
+      {
+        "dst": "entries.filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 120
+      },
+      {
+        "dst": "module:src/fixtures/confidence-scorer.ts#FamilyConfidenceSummary.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 124
+      },
+      {
+        "dst": "module:src/fixtures/confidence-scorer.ts#deriveOutcome",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 128
+      },
+      {
+        "dst": "entries.some",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 128
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/confidence-scorer.ts",
+        "confidence": 1,
+        "source_line": 105
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/unit/fixtures/confidence-scorer.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 239
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 12,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.755Z"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "kind": "class",
+  "canonical_name": "module:src/intelligence/db/sqlite/projection-service.ts#SqliteGraphProjectionService",
+  "category": "class",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/projection-service.ts",
+    "line": 23,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 7,
+  "relations": {
+    "implements_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#GraphProjectionRepository",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 23
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/projection-service.ts#SqliteGraphProjectionService.syncFromAuthoritative",
+        "confidence": 1,
+        "source_line": 24
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/projection-service.ts",
+        "confidence": 1,
+        "source_line": 23
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "class"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:57.973Z"
+  }
+}

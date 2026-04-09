@@ -1,0 +1,40 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/logging/file-logger.ts#FileLogger.getFilePath",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/logging/file-logger.ts",
+    "line": 79,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "reads_field_out": [
+      {
+        "dst": "module:src/logging/file-logger.ts#FileLogger.filePath",
+        "confidence": 0.95,
+        "source_line": 80
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/logging/file-logger.ts#FileLogger",
+        "confidence": 1,
+        "source_line": 79
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.499Z"
+  }
+}

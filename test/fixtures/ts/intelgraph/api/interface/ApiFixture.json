@@ -1,0 +1,191 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/fixtures/intent-mapper.ts#ApiFixture",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/intent-mapper.ts",
+    "line": 130,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 14,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relations",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 140
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Contract",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 141
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#EnrichmentMetadata",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 142
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#ApiFixture.kind",
+        "confidence": 1,
+        "source_line": 131
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#ApiFixture.kind_verbose",
+        "confidence": 1,
+        "source_line": 132
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#ApiFixture.canonical_name",
+        "confidence": 1,
+        "source_line": 133
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#ApiFixture.aliases",
+        "confidence": 1,
+        "source_line": 134
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#ApiFixture.source",
+        "confidence": 1,
+        "source_line": 135
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#ApiFixture.description",
+        "confidence": 1,
+        "source_line": 139
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#ApiFixture.relations",
+        "confidence": 1,
+        "source_line": 140
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#ApiFixture.contract",
+        "confidence": 1,
+        "source_line": 141
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#ApiFixture.enrichment_metadata",
+        "confidence": 1,
+        "source_line": 142
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relations",
+        "confidence": 0.95,
+        "source_line": 130
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Contract",
+        "confidence": 0.95,
+        "source_line": 130
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#EnrichmentMetadata",
+        "confidence": 0.95,
+        "source_line": 130
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/bin/enrich-fixtures.ts#loadFixture",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 79
+      },
+      {
+        "src": "module:src/bin/enrich-fixtures.ts#saveFixture",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 88
+      },
+      {
+        "src": "module:src/fixtures/exhaustive-relation-scanner.ts#loadFixture",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 41
+      },
+      {
+        "src": "module:src/fixtures/exhaustive-relation-scanner.ts#saveFixture",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 59
+      },
+      {
+        "src": "module:src/fixtures/exhaustive-relation-scanner.ts#enrichApiFixture",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 84
+      },
+      {
+        "src": "module:src/fixtures/fixture-comparator.ts#compareEntityToBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 140
+      },
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#selectIntentsForApi",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 206
+      },
+      {
+        "src": "module:test/integration/fixture-enrichment.test.ts#baseline",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 49
+      },
+      {
+        "src": "module:test/integration/fixture-enrichment.test.ts#mockEnrichedFixture",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 65
+      },
+      {
+        "src": "module:test/integration/fixture-enrichment.test.ts#fixtureWithPopulatedArrays",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 341
+      },
+      {
+        "src": "module:test/unit/fixtures/fixture-comparator.test.ts#makeFixture",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 23
+      },
+      {
+        "src": "module:test/unit/fixtures/intent-mapper.test.ts#fixture",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 49
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/intent-mapper.ts",
+        "confidence": 1,
+        "source_line": 130
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 15,
+    "total_incoming_edges": 13
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.103Z"
+  }
+}

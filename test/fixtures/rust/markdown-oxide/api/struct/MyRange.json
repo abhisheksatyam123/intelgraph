@@ -1,0 +1,217 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/vault/types.rs#MyRange",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/types.rs",
+    "line": 28,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 1,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/vault/types.rs#MyRange.0",
+        "confidence": 1,
+        "source_line": 28
+      },
+      {
+        "dst": "module:src/vault/types.rs#MyRange.from_range",
+        "confidence": 1,
+        "source_line": 31
+      },
+      {
+        "dst": "module:src/vault/types.rs#MyRange.hash",
+        "confidence": 1,
+        "source_line": 56
+      },
+      {
+        "dst": "module:src/vault/types.rs#MyRange.deref",
+        "confidence": 1,
+        "source_line": 66
+      },
+      {
+        "dst": "module:src/vault/types.rs#MyRange.from",
+        "confidence": 1,
+        "source_line": 72
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "Hash",
+        "confidence": 1,
+        "source_line": 55
+      },
+      {
+        "dst": "Deref",
+        "confidence": 1,
+        "source_line": 64
+      },
+      {
+        "dst": "From",
+        "confidence": 1,
+        "source_line": 71
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/types.rs",
+        "confidence": 1,
+        "source_line": 28
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/vault/types.rs#MyRange.from_range",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 31
+      },
+      {
+        "src": "module:src/vault/types.rs#Rangeable",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 79
+      },
+      {
+        "src": "module:src/vault/types.rs#range",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 80
+      },
+      {
+        "src": "module:src/vault/types.rs#MDHeading",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 117
+      },
+      {
+        "src": "module:src/vault/types.rs#MDIndexedBlock",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 166
+      },
+      {
+        "src": "module:src/vault/types.rs#MDFootnote",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 205
+      },
+      {
+        "src": "module:src/vault/types.rs#MDTag",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 248
+      },
+      {
+        "src": "module:src/vault/types.rs#MDLinkReferenceDefinition",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 347
+      },
+      {
+        "src": "module:src/vault/types.rs#Block",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 385
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/vault/types.rs#MyRange.from",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 73
+      },
+      {
+        "src": "module:src/vault/types.rs#impl_From.from",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 73
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/vault/types.rs#MDHeading.range",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 119
+      },
+      {
+        "src": "module:src/vault/types.rs#MDIndexedBlock.range",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 169
+      },
+      {
+        "src": "module:src/vault/types.rs#MDFootnote.range",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 208
+      },
+      {
+        "src": "module:src/vault/types.rs#MDTag.range",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 250
+      },
+      {
+        "src": "module:src/vault/types.rs#MDLinkReferenceDefinition.range",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 349
+      },
+      {
+        "src": "module:src/vault/types.rs#Block.range",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 387
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/vault/types.rs#MDHeading",
+        "confidence": 0.95,
+        "source_line": 117
+      },
+      {
+        "src": "module:src/vault/types.rs#MDIndexedBlock",
+        "confidence": 0.95,
+        "source_line": 166
+      },
+      {
+        "src": "module:src/vault/types.rs#MDFootnote",
+        "confidence": 0.95,
+        "source_line": 205
+      },
+      {
+        "src": "module:src/vault/types.rs#MDTag",
+        "confidence": 0.95,
+        "source_line": 248
+      },
+      {
+        "src": "module:src/vault/types.rs#MDLinkReferenceDefinition",
+        "confidence": 0.95,
+        "source_line": 347
+      },
+      {
+        "src": "module:src/vault/types.rs#Block",
+        "confidence": 0.95,
+        "source_line": 385
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 24
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.861Z"
+  }
+}

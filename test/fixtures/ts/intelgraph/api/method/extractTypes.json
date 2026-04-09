@@ -1,0 +1,74 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.extractTypes",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/extraction/clangd-extraction-adapter.ts",
+    "line": 149,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 12,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/extraction-adapter.js#ExtractionInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 149
+      },
+      {
+        "dst": "module:src/intelligence/contracts/extraction-adapter.js#TypeBatch",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 149
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.extractSymbols",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 151
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 152
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.js#SymbolRow.filter",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 152
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.extractSymbols",
+        "confidence": 0.95,
+        "source_line": 151
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter",
+        "confidence": 1,
+        "source_line": 149
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.473Z"
+  }
+}

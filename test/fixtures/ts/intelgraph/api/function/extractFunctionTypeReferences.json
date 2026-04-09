@@ -1,0 +1,93 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/rust-core/extractor.ts#extractFunctionTypeReferences",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/rust-core/extractor.ts",
+    "line": 1438,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 68,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 1439
+      },
+      {
+        "dst": "module:src/plugins/rust-core/extractor.ts#FileResolver",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1441
+      },
+      {
+        "dst": "module:src/plugins/rust-core/extractor.ts#TypeRefEdgePayload",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1444
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 1446
+      },
+      {
+        "dst": "module:src/plugins/rust-core/extractor.ts#firstNamedChildOfType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1449
+      },
+      {
+        "dst": "module:src/plugins/rust-core/extractor.ts#namedDescendantTexts",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1474
+      },
+      {
+        "dst": "pushTypeRef",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 1475
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode.namedChild",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 1461
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts#visit",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 299
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 1438
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.780Z"
+  }
+}

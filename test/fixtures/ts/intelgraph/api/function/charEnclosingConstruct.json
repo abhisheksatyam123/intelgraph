@@ -1,0 +1,117 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/pattern-detector/c-parser.ts#charEnclosingConstruct",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-detector/c-parser.ts",
+    "line": 585,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 15,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#FunctionCall",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 585
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#charEnclosingCall",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 586
+      },
+      {
+        "dst": "source.split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 588
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#charLineColToOffset",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 589
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#findEnclosingOpenBrace",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 591
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#findMatchingCloseBrace",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 593
+      },
+      {
+        "dst": "source.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 598
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#splitArguments",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 596
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#charOffsetToLineCol",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 597
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#args.map",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 598
+      },
+      {
+        "dst": "a.trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 598
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#findEnclosingConstruct",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 176
+      },
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#tsEnclosingConstruct",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 216
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts",
+        "confidence": 1,
+        "source_line": 585
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.796Z"
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/db/sqlite/graph-export.ts#loadGraphJsonFromDb",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/graph-export.ts",
+    "line": 166,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 155,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJsonFilters",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 170
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJson",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 171
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "all",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 193
+      },
+      {
+        "dst": "raw.prepare",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 193
+      },
+      {
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 192
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#nodeIdLookup.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 199
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#NodeRow.map",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 202
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#parseLocation",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 203
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#parseMetadata",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 258
+      },
+      {
+        "dst": "Number",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 219
+      },
+      {
+        "dst": "allNodes.filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 231
+      },
+      {
+        "dst": "has",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 231
+      },
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 234
+      },
+      {
+        "dst": "nodes.map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 234
+      },
+      {
+        "dst": "filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 237
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#EdgeRow.map",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 237
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#nodeIdLookup.get",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 240
+      },
+      {
+        "dst": "filters.edgeKinds.has",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 247
+      },
+      {
+        "dst": "survivingNodeIds.has",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 254
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#centerSubgraph",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 293
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#dataPathSubgraph",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 305
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#topNByDegree",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 317
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-export.ts",
+        "confidence": 1,
+        "source_line": 166
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 22,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.768Z"
+  }
+}

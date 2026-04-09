@@ -1,0 +1,75 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/notes/frontmatter.rs#Frontmatter",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/notes/frontmatter.rs",
+    "line": 9,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 9,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/notes/frontmatter.rs#Frontmatter.tags",
+        "confidence": 1,
+        "source_line": 10
+      },
+      {
+        "dst": "module:src/notes/frontmatter.rs#Frontmatter.tags_explicit",
+        "confidence": 1,
+        "source_line": 13
+      },
+      {
+        "dst": "module:src/notes/frontmatter.rs#Frontmatter.description",
+        "confidence": 1,
+        "source_line": 14
+      },
+      {
+        "dst": "module:src/notes/frontmatter.rs#Frontmatter.other_lines",
+        "confidence": 1,
+        "source_line": 16
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/notes/frontmatter.rs",
+        "confidence": 1,
+        "source_line": 9
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/notes/frontmatter.rs#parse",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 22
+      },
+      {
+        "src": "module:src/notes/frontmatter.rs#complete",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 105
+      },
+      {
+        "src": "module:src/notes/frontmatter.rs#render",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 132
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.857Z"
+  }
+}

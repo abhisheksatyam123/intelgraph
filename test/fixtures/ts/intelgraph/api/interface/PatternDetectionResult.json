@@ -1,0 +1,70 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/tools/pattern-detector/types.ts#PatternDetectionResult",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-detector/types.ts",
+    "line": 92,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 10,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#ClassifiedSite",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 96
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#PatternDetectionResult.seed",
+        "confidence": 1,
+        "source_line": 94
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#PatternDetectionResult.sites",
+        "confidence": 1,
+        "source_line": 96
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#PatternDetectionResult.matchedSites",
+        "confidence": 1,
+        "source_line": 98
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#PatternDetectionResult.unclassifiedSites",
+        "confidence": 1,
+        "source_line": 100
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#ClassifiedSite",
+        "confidence": 0.95,
+        "source_line": 92
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-detector/types.ts",
+        "confidence": 1,
+        "source_line": 92
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.127Z"
+  }
+}

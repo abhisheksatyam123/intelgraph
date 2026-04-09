@@ -3,19 +3,83 @@
   "canonical_name": "module:src/config.rs#Case",
   "category": "enum",
   "source": {
-    "file": "src/config.rs",
-    "line": 42
+    "file": "/home/abhi/qprojects/markdown-oxide/src/config.rs",
+    "line": 42,
+    "character": 1
   },
-  "description": "Case-handling preference enum from the config. Three unit variants — minimal exercise of enum_variant extraction.",
+  "exported": true,
+  "line_count": 5,
   "relations": {
-    "contains_variants": ["Ignore", "Smart", "Respect"]
+    "contains_out": [
+      {
+        "dst": "module:src/config.rs#Case.Ignore",
+        "confidence": 1,
+        "source_line": 43
+      },
+      {
+        "dst": "module:src/config.rs#Case.Smart",
+        "confidence": 1,
+        "source_line": 44
+      },
+      {
+        "dst": "module:src/config.rs#Case.Respect",
+        "confidence": 1,
+        "source_line": 45
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/completion/matcher.rs#fuzzy_match_completions",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 66
+      },
+      {
+        "src": "module:src/completion/matcher.rs#fuzzy_match",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 79
+      },
+      {
+        "src": "module:src/config.rs#Settings",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 11
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/config.rs#Settings.case_matching",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 26
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/config.rs#Settings",
+        "confidence": 0.95,
+        "source_line": 11
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/config.rs",
+        "confidence": 1,
+        "source_line": 42
+      }
+    ]
   },
   "contract": {
-    "required_node_kinds": ["enum", "enum_variant"],
-    "minimum_variant_count": 3
+    "required_node_kinds": [
+      "enum"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 6
   },
   "ground_truth_metadata": {
-    "extracted_from": "markdown-oxide",
-    "method": "manual_grep"
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:13.169Z"
   }
 }

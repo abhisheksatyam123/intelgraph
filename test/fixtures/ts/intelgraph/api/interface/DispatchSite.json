@@ -1,0 +1,90 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/tools/reason-engine/contracts.ts#DispatchSite",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/reason-engine/contracts.ts",
+    "line": 25,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 8,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#DispatchSite.file",
+        "confidence": 1,
+        "source_line": 27
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#DispatchSite.line",
+        "confidence": 1,
+        "source_line": 29
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#DispatchSite.snippet",
+        "confidence": 1,
+        "source_line": 31
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/reason-engine/contracts.ts",
+        "confidence": 1,
+        "source_line": 25
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/tools/reason-engine/contracts.ts#InvocationReason",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 70
+      },
+      {
+        "src": "module:src/tools/reason-engine/contracts.ts#RuntimeFlowRecord",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 91
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/tools/reason-engine/contracts.ts#InvocationReason.dispatchSite",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 70
+      },
+      {
+        "src": "module:src/tools/reason-engine/contracts.ts#RuntimeFlowRecord.dispatchSite",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 91
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/tools/reason-engine/contracts.ts#InvocationReason",
+        "confidence": 0.95,
+        "source_line": 46
+      },
+      {
+        "src": "module:src/tools/reason-engine/contracts.ts#RuntimeFlowRecord",
+        "confidence": 0.95,
+        "source_line": 83
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 7
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.127Z"
+  }
+}

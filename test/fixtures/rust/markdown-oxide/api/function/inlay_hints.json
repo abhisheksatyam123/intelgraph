@@ -1,0 +1,201 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/inlay_hints.rs#inlay_hints",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/inlay_hints.rs",
+    "line": 8,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 79,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:tower_lsp::lsp_types#InlayHintParams",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 8
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#InlayHint",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 8
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "ok",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 17
+      },
+      {
+        "dst": "to_file_path",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 17
+      },
+      {
+        "dst": "select_references",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 18
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 85
+      },
+      {
+        "dst": "flat_map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 67
+      },
+      {
+        "dst": "filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 20
+      },
+      {
+        "dst": "into_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 20
+      },
+      {
+        "dst": "range",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 32
+      },
+      {
+        "dst": "and_then",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 44
+      },
+      {
+        "dst": "select_line",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 28
+      },
+      {
+        "dst": "data",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 29
+      },
+      {
+        "dst": "get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 54
+      },
+      {
+        "dst": "checked_sub",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 32
+      },
+      {
+        "dst": "select_referenceables_for_reference",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 42
+      },
+      {
+        "dst": "first",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 43
+      },
+      {
+        "dst": "select_referenceable_preview",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 44
+      },
+      {
+        "dst": "trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 52
+      },
+      {
+        "dst": "rfind",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 51
+      },
+      {
+        "dst": "unwrap_or",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 53
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 53
+      },
+      {
+        "dst": "to_string",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 61
+      },
+      {
+        "dst": "collect",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 67
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#InlayHintLabel.String",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 74
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/backend/handlers.rs#Backend.inlay_hint",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 449
+      },
+      {
+        "src": "module:src/backend/handlers.rs#impl_LanguageServer.inlay_hint",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 449
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/inlay_hints.rs",
+        "confidence": 1,
+        "source_line": 8
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 25,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.076Z"
+  }
+}

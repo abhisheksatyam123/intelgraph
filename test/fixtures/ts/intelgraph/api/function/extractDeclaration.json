@@ -1,0 +1,87 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/ts-core/extractor.ts#extractDeclaration",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/ts-core/extractor.ts",
+    "line": 971,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 99,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 972
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.js#SymbolRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 973
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode.childForFieldName",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 1003
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#firstNamedChildOfType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1050
+      },
+      {
+        "dst": "declarator.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1040
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#visit",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 304
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#collectTopLevelDocs",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1467
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#visitTopLevel",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1505
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 971
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.784Z"
+  }
+}

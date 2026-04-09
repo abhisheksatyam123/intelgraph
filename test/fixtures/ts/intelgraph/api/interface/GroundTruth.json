@@ -1,0 +1,68 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/integration/sqlite-backend.test.ts#GroundTruth",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/integration/sqlite-backend.test.ts",
+    "line": 66,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 4,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureEntry",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 68
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#GroundTruth.workspace",
+        "confidence": 1,
+        "source_line": 67
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#GroundTruth.apiGroundTruth",
+        "confidence": 1,
+        "source_line": 68
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureEntry",
+        "confidence": 0.95,
+        "source_line": 66
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts",
+        "confidence": 1,
+        "source_line": 66
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts#groundTruth",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 77
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.131Z"
+  }
+}

@@ -1,0 +1,182 @@
+{
+  "kind": "enum",
+  "canonical_name": "module:src/completion/callout_completer.rs#CalloutCompletion",
+  "category": "enum",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/callout_completer.rs",
+    "line": 88,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 29,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Note",
+        "confidence": 1,
+        "source_line": 89
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Abstract",
+        "confidence": 1,
+        "source_line": 90
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Summary",
+        "confidence": 1,
+        "source_line": 91
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Tldr",
+        "confidence": 1,
+        "source_line": 92
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Info",
+        "confidence": 1,
+        "source_line": 93
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Todo",
+        "confidence": 1,
+        "source_line": 94
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Tip",
+        "confidence": 1,
+        "source_line": 95
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Hint",
+        "confidence": 1,
+        "source_line": 96
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Important",
+        "confidence": 1,
+        "source_line": 97
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Success",
+        "confidence": 1,
+        "source_line": 98
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Check",
+        "confidence": 1,
+        "source_line": 99
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Done",
+        "confidence": 1,
+        "source_line": 100
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Question",
+        "confidence": 1,
+        "source_line": 101
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Help",
+        "confidence": 1,
+        "source_line": 102
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Faq",
+        "confidence": 1,
+        "source_line": 103
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Warning",
+        "confidence": 1,
+        "source_line": 104
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Caution",
+        "confidence": 1,
+        "source_line": 105
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Attention",
+        "confidence": 1,
+        "source_line": 106
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Failure",
+        "confidence": 1,
+        "source_line": 107
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Fail",
+        "confidence": 1,
+        "source_line": 108
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Missing",
+        "confidence": 1,
+        "source_line": 109
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Danger",
+        "confidence": 1,
+        "source_line": 110
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Error",
+        "confidence": 1,
+        "source_line": 111
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Bug",
+        "confidence": 1,
+        "source_line": 112
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Example",
+        "confidence": 1,
+        "source_line": 113
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Quote",
+        "confidence": 1,
+        "source_line": 114
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.Cite",
+        "confidence": 1,
+        "source_line": 115
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompletion.completions",
+        "confidence": 1,
+        "source_line": 119
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "module:super#Completable",
+        "confidence": 1,
+        "source_line": 118
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/callout_completer.rs",
+        "confidence": 1,
+        "source_line": 88
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "enum"
+    ],
+    "total_outgoing_edges": 29,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:13.164Z"
+  }
+}

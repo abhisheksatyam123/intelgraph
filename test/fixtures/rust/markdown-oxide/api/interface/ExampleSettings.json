@@ -1,0 +1,66 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:vscode-extension/server/src/server.ts#ExampleSettings",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/vscode-extension/server/src/server.ts",
+    "line": 84,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#ExampleSettings.maxNumberOfProblems",
+        "confidence": 1,
+        "source_line": 85
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:vscode-extension/server/src/server.ts",
+        "confidence": 1,
+        "source_line": 84
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:vscode-extension/server/src/server.ts#defaultSettings",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 91
+      },
+      {
+        "src": "module:vscode-extension/server/src/server.ts#globalSettings",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 92
+      },
+      {
+        "src": "module:vscode-extension/server/src/server.ts#documentSettings",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 95
+      },
+      {
+        "src": "module:vscode-extension/server/src/server.ts#getDocumentSettings",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 111
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:19.976Z"
+  }
+}

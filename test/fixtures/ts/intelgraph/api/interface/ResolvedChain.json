@@ -1,0 +1,80 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/tools/pattern-resolver/types.ts#ResolvedChain",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-resolver/types.ts",
+    "line": 18,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 53,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-resolver/types.ts#ConfidenceLevel",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 66
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/tools/pattern-resolver/types.ts#ResolvedChain.registration",
+        "confidence": 1,
+        "source_line": 20
+      },
+      {
+        "dst": "module:src/tools/pattern-resolver/types.ts#ResolvedChain.store",
+        "confidence": 1,
+        "source_line": 30
+      },
+      {
+        "dst": "module:src/tools/pattern-resolver/types.ts#ResolvedChain.dispatch",
+        "confidence": 1,
+        "source_line": 46
+      },
+      {
+        "dst": "module:src/tools/pattern-resolver/types.ts#ResolvedChain.trigger",
+        "confidence": 1,
+        "source_line": 56
+      },
+      {
+        "dst": "module:src/tools/pattern-resolver/types.ts#ResolvedChain.confidenceLevel",
+        "confidence": 1,
+        "source_line": 66
+      },
+      {
+        "dst": "module:src/tools/pattern-resolver/types.ts#ResolvedChain.confidenceScore",
+        "confidence": 1,
+        "source_line": 69
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/tools/pattern-resolver/types.ts#ConfidenceLevel",
+        "confidence": 0.95,
+        "source_line": 18
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-resolver/types.ts",
+        "confidence": 1,
+        "source_line": 18
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.127Z"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/extraction/fact-bus.ts#FactBusOptions",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/fact-bus.ts",
+    "line": 63,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 14,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphWriteSink",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 67
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBusLogger",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 75
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBusOptions.snapshotId",
+        "confidence": 1,
+        "source_line": 65
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBusOptions.sink",
+        "confidence": 1,
+        "source_line": 67
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBusOptions.flushThreshold",
+        "confidence": 1,
+        "source_line": 73
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBusOptions.logger",
+        "confidence": 1,
+        "source_line": 75
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphWriteSink",
+        "confidence": 0.95,
+        "source_line": 63
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBusLogger",
+        "confidence": 0.95,
+        "source_line": 63
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts",
+        "confidence": 1,
+        "source_line": 63
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBus.constructor",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 135
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.115Z"
+  }
+}

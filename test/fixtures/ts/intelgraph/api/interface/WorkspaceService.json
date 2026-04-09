@@ -1,0 +1,67 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/extraction/services/workspace-service.ts#WorkspaceService",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/workspace-service.ts",
+    "line": 67,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 27,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/workspace-service.ts#WalkFilesOptions",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 79
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/workspace-service.ts#CompileCommandEntry",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 92
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/workspace-service.ts#WorkspaceService.root",
+        "confidence": 1,
+        "source_line": 69
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/workspace-service.ts#WorkspaceService.hasCompileCommands",
+        "confidence": 1,
+        "source_line": 72
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/workspace-service.ts",
+        "confidence": 1,
+        "source_line": 67
+      }
+    ],
+    "implements_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/workspace-service.ts#WorkspaceServiceImpl",
+        "confidence": 1,
+        "resolution": "local",
+        "source_line": 101
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.122Z"
+  }
+}

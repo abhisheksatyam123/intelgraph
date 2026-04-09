@@ -1,0 +1,80 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:src/tools/get-callers.ts#CallerInvocationType",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/get-callers.ts",
+    "line": 47,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 8,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/tools/get-callers.ts",
+        "confidence": 1,
+        "source_line": 47
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/tools/get-callers.ts#CallerEntry",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 71
+      },
+      {
+        "src": "module:src/tools/get-callers.ts#roleFromInvocationType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 411
+      },
+      {
+        "src": "module:src/tools/get-callers.ts#dbInvocationTypeToCallerType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 710
+      },
+      {
+        "src": "module:src/tools/get-callers.ts#staticEdgeKindToCallerType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 729
+      },
+      {
+        "src": "module:src/tools/get-callers.ts#classificationToCallerType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 745
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/tools/get-callers.ts#CallerEntry.invocationType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 71
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/tools/get-callers.ts#CallerEntry",
+        "confidence": 0.95,
+        "source_line": 56
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 8
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:07.067Z"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "kind": "enum_variant",
+  "canonical_name": "module:src/completion/link_completer.rs#PartialInfileRef.BlockRef",
+  "category": "enum_variant",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/link_completer.rs",
+    "line": 407
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.construct",
+        "confidence": 0.95,
+        "resolution": "scoped-local",
+        "source_line": 326
+      },
+      {
+        "src": "module:src/completion/link_completer.rs#impl_Completer.construct",
+        "confidence": 0.95,
+        "resolution": "scoped-local",
+        "source_line": 326
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#PartialInfileRef",
+        "confidence": 1,
+        "source_line": 407
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "enum_variant"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:13.168Z"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:test/unit/intelligence/backend-reconciliation.test.ts#DiffRow",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/unit/intelligence/backend-reconciliation.test.ts",
+    "line": 323,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 5,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/comparator-classifier.js#DiffRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 323
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/unit/intelligence/backend-reconciliation.test.ts",
+        "confidence": 1,
+        "source_line": 323
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/unit/intelligence/backend-reconciliation.test.ts#rowsToClassifiedDiffs",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 336
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:07.069Z"
+  }
+}

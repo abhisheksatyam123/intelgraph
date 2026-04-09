@@ -1,0 +1,175 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/backend/commands.rs#Backend.dispatch_command",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/backend/commands.rs",
+    "line": 16,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 67,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/config.rs#Settings",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 16
+      },
+      {
+        "dst": "module:tower_lsp::jsonrpc#Result",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 16
+      },
+      {
+        "dst": "module:serde_json#Value",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 16
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "collect_vec",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 24
+      },
+      {
+        "dst": "filter_map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 24
+      },
+      {
+        "dst": "into_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 43
+      },
+      {
+        "dst": "ok",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 44
+      },
+      {
+        "dst": "serde_json::from_value::<WorkspaceEdit>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 27
+      },
+      {
+        "dst": "apply_edit",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 31
+      },
+      {
+        "dst": "Ok",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 61
+      },
+      {
+        "dst": "and_then",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 38
+      },
+      {
+        "dst": "first",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 48
+      },
+      {
+        "dst": "as_str",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 65
+      },
+      {
+        "dst": "module:src/commands.rs#jump",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 66
+      },
+      {
+        "dst": "find_map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 43
+      },
+      {
+        "dst": "serde_json::from_value::<crate::codelens::FindReferencesData>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 44
+      },
+      {
+        "dst": "show_document",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 49
+      },
+      {
+        "dst": "clone",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 52
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 66
+      },
+      {
+        "dst": "contains",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 65
+      },
+      {
+        "dst": "log_message",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 68
+      },
+      {
+        "dst": "Err",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 74
+      },
+      {
+        "dst": "into",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 76
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/backend/commands.rs#Backend",
+        "confidence": 1,
+        "source_line": 16
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 23,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.765Z"
+  }
+}

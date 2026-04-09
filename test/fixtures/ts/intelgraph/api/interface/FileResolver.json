@@ -1,0 +1,163 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/plugins/ts-core/extractor.ts#FileResolver",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/ts-core/extractor.ts",
+    "line": 202,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 24,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#FileResolver.namedImports",
+        "confidence": 1,
+        "source_line": 204
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#FileResolver.defaultImports",
+        "confidence": 1,
+        "source_line": 206
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#FileResolver.namespaceImports",
+        "confidence": 1,
+        "source_line": 208
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#FileResolver.localSymbols",
+        "confidence": 1,
+        "source_line": 210
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#FileResolver.varTypes",
+        "confidence": 1,
+        "source_line": 216
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#FileResolver.paramTypeStack",
+        "confidence": 1,
+        "source_line": 224
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 202
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#resolver",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 240
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractCalleeWithResolution",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1136
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#populateResolverFromImport",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1279
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#inferVarTypeFromValue",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1332
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#collectParamTypes",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1380
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#lookupParamType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1412
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#prepopulateLocalSymbols",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1487
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractTypeReferences",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1535
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractTypeReferencesFromAnnotations",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1594
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractGenericConstraintReferences",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1650
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractTypeAliasBodyReferences",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1716
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractFieldTypeEdges",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2055
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractFieldTypeReferences",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2311
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#resolveTypeName",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2381
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractInheritanceEdges",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2408
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractJsxComponentRef",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2701
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 17
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.124Z"
+  }
+}

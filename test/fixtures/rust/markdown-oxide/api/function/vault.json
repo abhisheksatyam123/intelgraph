@@ -1,0 +1,375 @@
+{
+  "kind": "function",
+  "canonical_name": "module:tests/normalization_loss_tests.rs#vault",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/tests/normalization_loss_tests.rs",
+    "line": 28,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:std::path#PathBuf",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 28
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:std::path#PathBuf.from",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 29
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:tests/normalization_loss_tests.rs",
+        "confidence": 1,
+        "source_line": 28
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:tests/normalization_loss_tests.rs#fm01_empty_tags_inline_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 92
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#fm02_inline_tags_with_values_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 110
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#fm03_block_tags_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 128
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#fm04_quoted_tag_values_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 147
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#fm05_id_field_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 160
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#fm06_aliases_multiline_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 183
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#fm07_existing_description_not_overwritten",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 196
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#fm08_description_with_quotes_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 210
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#fm09_multiple_unknown_fields_preserved_in_order",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 237
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#fm10_no_frontmatter_body_fully_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 256
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#fm11_no_tags_key_not_emitted",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 271
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#fm12_field_order_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 292
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd01_content_before_h1_preserved_when_no_h1",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 348
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd02_h3_before_first_h2_preserved_in_body",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 376
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd03_thematic_breaks_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 395
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd04_headings_inside_code_blocks_not_indexed",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 423
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd05_thematic_break_inside_code_block_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 446
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd06_blank_lines_between_sections_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 464
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd07_wiki_links_in_body_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 487
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd08_wiki_links_in_headings_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 510
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd09_checkboxes_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 538
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd10_numbered_lists_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 561
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd11_inline_formatting_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 589
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd12_urls_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 607
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd13_multiple_code_blocks_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 630
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd14_code_block_at_end_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 649
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd15_special_characters_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 682
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd16_unicode_content_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 710
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd17_very_long_lines_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 726
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd18_thematic_break_after_frontmatter_not_misinterpreted",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 746
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd19_deep_headings_preserved_in_body",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 757
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd20_table_content_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 780
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#bd21_blockquotes_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 798
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#ix01_stale_index_replaced_not_duplicated",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 839
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#ix02_h3_after_index_survives",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 862
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#ix03_index_at_end_of_file_no_loss",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 880
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#ix04_no_existing_index_body_untouched",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 903
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#ix05_h3_before_h2_top_level_in_index",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 924
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#ix06_h3_after_h2_indented_in_index",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 937
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#ix07_index_heading_not_self_referenced",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 957
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#id01_already_normalized_is_stable",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 969
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#id02_stale_line_numbers_corrected_then_stable",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 986
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#id03_wrong_index_entries_replaced_then_stable",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1005
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#id04_complex_note_idempotent",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1013
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#eg01_empty_note_no_crash",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1024
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#eg02_frontmatter_only_no_crash",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1033
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#eg03_only_h1_empty_index_generated",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1061
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#eg04_no_h1_title_body_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1085
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#eg05_frontmatter_and_h1_only_stable",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1093
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#eg06_trailing_whitespace_on_lines_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1109
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#eg07_crlf_content_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1118
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#eg08_deeply_nested_headings_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1148
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#eg09_multiple_thematic_breaks_no_h2_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1168
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#eg10_inline_html_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1186
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 55
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.091Z"
+  }
+}

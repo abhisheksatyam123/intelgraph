@@ -1,0 +1,219 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/fixtures/exhaustive-relation-scanner.ts#enrichApiFixture",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/exhaustive-relation-scanner.ts",
+    "line": 81,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 87,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#ApiFixture",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 84
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#loadFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 86
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#selectIntentsForApi",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 89
+      },
+      {
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 92
+      },
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#queryBackend",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 108
+      },
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#intentResults.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 109
+      },
+      {
+        "dst": "console.warn",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 111
+      },
+      {
+        "dst": "JSON.parse",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 117
+      },
+      {
+        "dst": "JSON.stringify",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 117
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#mapIntentToArray",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 135
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#normalizeEdge",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 125
+      },
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#Relation.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 126
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#deduplicateRelations",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 131
+      },
+      {
+        "dst": "push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 139
+      },
+      {
+        "dst": "Object.keys",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 143
+      },
+      {
+        "dst": "sort",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 144
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#generateContractFromRelations",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 148
+      },
+      {
+        "dst": "toISOString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 156
+      },
+      {
+        "dst": "Date",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 156
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 158
+      },
+      {
+        "dst": "filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 158
+      },
+      {
+        "dst": "Array.from",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 158
+      },
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#intentResults.entries",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 158
+      },
+      {
+        "dst": "reduce",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 161
+      },
+      {
+        "dst": "Object.values",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 161
+      },
+      {
+        "dst": "Array.isArray",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 162
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/bin/enrich-fixtures.ts#enrichSingleApi",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 113
+      },
+      {
+        "src": "module:src/bin/enrich-fixtures.ts#enrichAllApisBatch",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 182
+      },
+      {
+        "src": "module:src/fixtures/exhaustive-relation-scanner.ts#enrichAllApis",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 207
+      },
+      {
+        "src": "module:test/unit/fixtures/exhaustive-relation-scanner.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 104
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/exhaustive-relation-scanner.ts",
+        "confidence": 1,
+        "source_line": 81
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 26,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.756Z"
+  }
+}

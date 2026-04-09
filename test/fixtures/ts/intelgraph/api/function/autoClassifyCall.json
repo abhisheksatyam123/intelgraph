@@ -1,0 +1,145 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/pattern-detector/auto-classifier.ts#autoClassifyCall",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-detector/auto-classifier.ts",
+    "line": 60,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 81,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.js#FunctionCall",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 61
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/auto-classifier.ts#AutoClassifierDeps",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 66
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.js#ClassifiedSite",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 67
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/auto-classifier.ts#findCallNameChar",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 70
+      },
+      {
+        "dst": "deps.lspClientFull.definition",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 73
+      },
+      {
+        "dst": "defs.find",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 77
+      },
+      {
+        "dst": "uri.endsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 79
+      },
+      {
+        "dst": "defUri.startsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 82
+      },
+      {
+        "dst": "module:url#fileURLToPath",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 82
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/auto-classifier.ts#AutoClassifierDeps.readFile",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 84
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/auto-classifier.ts#followMacroExpansion",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 88
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.js#parseSource",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 93
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.js#extractFunctionParams",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 97
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/auto-classifier.ts#extractParamsFallback",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 98
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/auto-classifier.ts#detectFnPtrArgIndex",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 102
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/auto-classifier.ts#deriveConnectionKind",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 110
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/auto-classifier.ts#extractDispatchKey",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 111
+      },
+      {
+        "dst": "console.error",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 137
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-detector/auto-classifier.ts",
+        "confidence": 1,
+        "source_line": 60
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 18,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.795Z"
+  }
+}

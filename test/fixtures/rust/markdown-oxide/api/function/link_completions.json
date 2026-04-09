@@ -1,0 +1,295 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/completion/link_completer.rs#link_completions",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/link_completer.rs",
+    "line": 67,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 105,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 67
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "entered_refname",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 72
+      },
+      {
+        "dst": "find",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 118
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 165
+      },
+      {
+        "dst": "as_str",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 76
+      },
+      {
+        "dst": "unwrap_or",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 78
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 164
+      },
+      {
+        "dst": "starts_with",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 78
+      },
+      {
+        "dst": "completion_index",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 81
+      },
+      {
+        "dst": "candidates",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 82
+      },
+      {
+        "dst": "date_naive",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 163
+      },
+      {
+        "dst": "chrono::Local::now",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 163
+      },
+      {
+        "dst": "collect",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 170
+      },
+      {
+        "dst": "filter_map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 96
+      },
+      {
+        "dst": "iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 85
+      },
+      {
+        "dst": "clone",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 154
+      },
+      {
+        "dst": "into_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 170
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion.from_candidate",
+        "confidence": 0.95,
+        "resolution": "scoped-local",
+        "source_line": 98
+      },
+      {
+        "dst": "filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 164
+      },
+      {
+        "dst": "flat_map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 164
+      },
+      {
+        "dst": "chrono::Duration::try_days",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 165
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MDDailyNote.from_date",
+        "confidence": 0.95,
+        "resolution": "scoped-local",
+        "source_line": 166
+      },
+      {
+        "dst": "contains",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 167
+      },
+      {
+        "dst": "extend",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 109
+      },
+      {
+        "dst": "select_referenceable_nodes",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 114
+      },
+      {
+        "dst": "vault",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 130
+      },
+      {
+        "dst": "position",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 116
+      },
+      {
+        "dst": "flatten",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 143
+      },
+      {
+        "dst": "select_reference_at_position",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 118
+      },
+      {
+        "dst": "path",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 123
+      },
+      {
+        "dst": "select_referenceables_for_reference",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 122
+      },
+      {
+        "dst": "is_unresolved",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 127
+      },
+      {
+        "dst": "and_then",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 129
+      },
+      {
+        "dst": "len",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 130
+      },
+      {
+        "dst": "select_references_for_referenceable",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 130
+      },
+      {
+        "dst": "settings",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 141
+      },
+      {
+        "dst": "into_par_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 143
+      },
+      {
+        "dst": "as_ref",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 145
+      },
+      {
+        "dst": "par_bridge",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 154
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion.new",
+        "confidence": 0.95,
+        "resolution": "scoped-local",
+        "source_line": 154
+      },
+      {
+        "dst": "par_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 161
+      },
+      {
+        "dst": "refname",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 161
+      },
+      {
+        "dst": "chain",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 170
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/link_completer.rs",
+        "confidence": 1,
+        "source_line": 67
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 43,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.073Z"
+  }
+}

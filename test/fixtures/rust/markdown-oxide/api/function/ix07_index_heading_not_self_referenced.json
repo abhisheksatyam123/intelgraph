@@ -1,0 +1,77 @@
+{
+  "kind": "function",
+  "canonical_name": "module:tests/normalization_loss_tests.rs#ix07_index_heading_not_self_referenced",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/tests/normalization_loss_tests.rs",
+    "line": 942,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 17,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:markdown_oxide::notes::normalize#normalize_note",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 944
+      },
+      {
+        "dst": "module:tests/normalization_loss_tests.rs#vault",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 957
+      },
+      {
+        "dst": "unwrap",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 946
+      },
+      {
+        "dst": "find",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 948
+      },
+      {
+        "dst": "unwrap_or",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 948
+      },
+      {
+        "dst": "len",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 950
+      },
+      {
+        "dst": "module:tests/normalization_loss_tests.rs#assert_idempotent",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 957
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:tests/normalization_loss_tests.rs",
+        "confidence": 1,
+        "source_line": 942
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.091Z"
+  }
+}

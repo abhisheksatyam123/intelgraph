@@ -1,0 +1,61 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/indirect-caller-cache.ts#cacheFile",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/indirect-caller-cache.ts",
+    "line": 38,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "path.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 39
+      },
+      {
+        "dst": "module:src/tools/indirect-caller-cache.ts#cacheDir",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 39
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/indirect-caller-cache.ts",
+        "confidence": 1,
+        "source_line": 38
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/indirect-caller-cache.ts#readCache",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 74
+      },
+      {
+        "src": "module:src/tools/indirect-caller-cache.ts#writeCache",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 122
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.793Z"
+  }
+}

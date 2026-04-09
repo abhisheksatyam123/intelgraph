@@ -1,0 +1,151 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/completion/link_completer.rs#LinkCompletion.default_completion",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/link_completer.rs",
+    "line": 792,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 85,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompleter",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 792
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#CompletionTextEdit",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 792
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#CompletionItem",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 792
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "vault",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 798
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 869
+      },
+      {
+        "dst": "to_owned",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 807
+      },
+      {
+        "dst": "to_string",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 869
+      },
+      {
+        "dst": "match_string",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 812
+      },
+      {
+        "dst": "referenceable",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 811
+      },
+      {
+        "dst": "clone",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 814
+      },
+      {
+        "dst": "into",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 844
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 870
+      },
+      {
+        "dst": "as_ref",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 870
+      },
+      {
+        "dst": "relative_name",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 865
+      },
+      {
+        "dst": "entered_refname",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 867
+      },
+      {
+        "dst": "refname",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 867
+      },
+      {
+        "dst": "and_then",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 870
+      },
+      {
+        "dst": "preview_referenceable",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 872
+      },
+      {
+        "dst": "Default::default",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 874
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#LinkCompletion",
+        "confidence": 1,
+        "source_line": 792
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 19,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.778Z"
+  }
+}

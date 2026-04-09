@@ -1,0 +1,116 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/fixtures/completeness-audit.ts#AuditReport",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/completeness-audit.ts",
+    "line": 52,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 28,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#ApiCompletenessScore",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 78
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#AuditReport.timestamp",
+        "confidence": 1,
+        "source_line": 53
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#AuditReport.total_apis",
+        "confidence": 1,
+        "source_line": 54
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#AuditReport.average_completeness_score",
+        "confidence": 1,
+        "source_line": 55
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#AuditReport.tier_distribution",
+        "confidence": 1,
+        "source_line": 56
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#AuditReport.total_relations",
+        "confidence": 1,
+        "source_line": 61
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#AuditReport.relation_distribution",
+        "confidence": 1,
+        "source_line": 62
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#AuditReport.apis_needing_followup",
+        "confidence": 1,
+        "source_line": 73
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#AuditReport.per_api_scores",
+        "confidence": 1,
+        "source_line": 78
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#ApiCompletenessScore",
+        "confidence": 0.95,
+        "source_line": 52
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/completeness-audit.ts",
+        "confidence": 1,
+        "source_line": 52
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/fixtures/completeness-audit.ts#generateCompletenessAudit",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 152
+      },
+      {
+        "src": "module:src/fixtures/completeness-audit.ts#formatAuditReport",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 245
+      },
+      {
+        "src": "module:src/fixtures/completeness-audit.ts#formatAuditReportJson",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 324
+      },
+      {
+        "src": "module:src/fixtures/completeness-audit.ts#formatAuditReportMarkdown",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 331
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.101Z"
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/unit/intelligence/wlan-ground-truth.test.ts#CoverageExpectations",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/unit/intelligence/wlan-ground-truth.test.ts",
+    "line": 107,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 9,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeKindSpec",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 114
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#CoverageExpectations.minimumVerificationTargets",
+        "confidence": 1,
+        "source_line": 108
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#CoverageExpectations.minimumQueryCases",
+        "confidence": 1,
+        "source_line": 109
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#CoverageExpectations.requiredCategories",
+        "confidence": 1,
+        "source_line": 110
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#CoverageExpectations.requiredQueryIntents",
+        "confidence": 1,
+        "source_line": 111
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#CoverageExpectations.requiredRelationKinds",
+        "confidence": 1,
+        "source_line": 112
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#CoverageExpectations.requiredQueryRowKinds",
+        "confidence": 1,
+        "source_line": 113
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#CoverageExpectations.requiredVerificationGraphNodeKinds",
+        "confidence": 1,
+        "source_line": 114
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeKindSpec",
+        "confidence": 0.95,
+        "source_line": 107
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts",
+        "confidence": 1,
+        "source_line": 107
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#GroundTruthFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 142
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#GroundTruthFixture.coverageExpectations",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 142
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#GroundTruthFixture",
+        "confidence": 0.95,
+        "source_line": 140
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.133Z"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/extraction/fact-bus.ts#FactBus.bufferSize",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/fact-bus.ts",
+    "line": 240,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 10,
+  "relations": {
+    "reads_field_out": [
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.symbols",
+        "confidence": 0.95,
+        "source_line": 242
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.types",
+        "confidence": 0.95,
+        "source_line": 243
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.aggregateFields",
+        "confidence": 0.95,
+        "source_line": 244
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.edges",
+        "confidence": 0.95,
+        "source_line": 245
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.evidence",
+        "confidence": 0.95,
+        "source_line": 246
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.observations",
+        "confidence": 0.95,
+        "source_line": 247
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBus.emit",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 181
+      },
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBus.flush",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 196
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBus",
+        "confidence": 1,
+        "source_line": 240
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.492Z"
+  }
+}

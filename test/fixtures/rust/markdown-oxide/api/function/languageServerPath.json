@@ -1,0 +1,123 @@
+{
+  "kind": "function",
+  "canonical_name": "module:vscode-extension/client/src/extension.ts#languageServerPath",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/vscode-extension/client/src/extension.ts",
+    "line": 243,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 45,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:vscode#ExtensionContext",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 243
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:vscode-extension/client/src/extension.ts#serverBinName",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 266
+      },
+      {
+        "dst": "Promise",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 246
+      },
+      {
+        "dst": "which",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 247
+      },
+      {
+        "dst": "reject",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 252
+      },
+      {
+        "dst": "Error",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 252
+      },
+      {
+        "dst": "resolve",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 254
+      },
+      {
+        "dst": "module:vscode-extension/client/src/extension.ts#inPath.catch",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 258
+      },
+      {
+        "dst": "vscode.Uri.joinPath",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 266
+      },
+      {
+        "dst": "vscode.workspace.fs.stat",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 280
+      },
+      {
+        "dst": "console.log",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 275
+      },
+      {
+        "dst": "module:vscode-extension/client/src/extension.ts#downloadServerFromGH",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 273
+      },
+      {
+        "dst": "console.error",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 283
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:vscode-extension/client/src/extension.ts#activate",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 166
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:vscode-extension/client/src/extension.ts",
+        "confidence": 1,
+        "source_line": 243
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 13,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.103Z"
+  }
+}

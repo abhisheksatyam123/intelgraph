@@ -1,0 +1,93 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/fixtures/intent-mapper.ts#EnrichmentMetadata",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/intent-mapper.ts",
+    "line": 193,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 6,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryIntent",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 195
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#EnrichmentMetadata.timestamp",
+        "confidence": 1,
+        "source_line": 194
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#EnrichmentMetadata.intents_queried",
+        "confidence": 1,
+        "source_line": 195
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#EnrichmentMetadata.intents_hit",
+        "confidence": 1,
+        "source_line": 196
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#EnrichmentMetadata.total_relations",
+        "confidence": 1,
+        "source_line": 197
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryIntent",
+        "confidence": 0.95,
+        "source_line": 193
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#ApiFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 142
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#ApiFixture.enrichment_metadata",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 142
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#ApiFixture",
+        "confidence": 0.95,
+        "source_line": 130
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/intent-mapper.ts",
+        "confidence": 1,
+        "source_line": 193
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.103Z"
+  }
+}

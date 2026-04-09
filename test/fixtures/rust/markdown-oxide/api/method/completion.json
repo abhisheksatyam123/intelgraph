@@ -1,0 +1,145 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/backend/handlers.rs#Backend.completion",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/backend/handlers.rs",
+    "line": 301,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 58,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:tower_lsp::jsonrpc#Result",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 301
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/logging.rs#append_log",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 355
+      },
+      {
+        "dst": "log_message",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 341
+      },
+      {
+        "dst": "std::time::Instant::now",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 311
+      },
+      {
+        "dst": "bind_opened_files",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 316
+      },
+      {
+        "dst": "Ok",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 336
+      },
+      {
+        "dst": "files.clone().into_iter().collect::<Box<[_]>>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 317
+      },
+      {
+        "dst": "into_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 317
+      },
+      {
+        "dst": "clone",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 327
+      },
+      {
+        "dst": "bind_settings",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 320
+      },
+      {
+        "dst": "to_owned",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 320
+      },
+      {
+        "dst": "Err",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 321
+      },
+      {
+        "dst": "module:tower_lsp::jsonrpc#Error.new",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 321
+      },
+      {
+        "dst": "module:tower_lsp::jsonrpc#ErrorCode.ServerError",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 321
+      },
+      {
+        "dst": "bind_completion_index",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 326
+      },
+      {
+        "dst": "bind_vault",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 335
+      },
+      {
+        "dst": "module:src/completion/mod.rs#get_completions",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 336
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 331
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/backend/handlers.rs#Backend",
+        "confidence": 1,
+        "source_line": 301
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 18,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.766Z"
+  }
+}

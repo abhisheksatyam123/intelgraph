@@ -1,0 +1,32 @@
+{
+  "kind": "field",
+  "canonical_name": "module:src/fixtures/completeness-audit.ts#ApiCompletenessScore.tier2_complete",
+  "category": "field",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/completeness-audit.ts",
+    "line": 35
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/completeness-audit.ts#ApiCompletenessScore",
+        "confidence": 1,
+        "source_line": 35
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "field"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:03.191Z"
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/unit/intelligence/backend-reconciliation.test.ts#Mismatch",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/unit/intelligence/backend-reconciliation.test.ts",
+    "line": 314,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 8,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:test/unit/intelligence/backend-reconciliation.test.ts#Mismatch.entity",
+        "confidence": 1,
+        "source_line": 315
+      },
+      {
+        "dst": "module:test/unit/intelligence/backend-reconciliation.test.ts#Mismatch.family",
+        "confidence": 1,
+        "source_line": 316
+      },
+      {
+        "dst": "module:test/unit/intelligence/backend-reconciliation.test.ts#Mismatch.intent",
+        "confidence": 1,
+        "source_line": 317
+      },
+      {
+        "dst": "module:test/unit/intelligence/backend-reconciliation.test.ts#Mismatch.field",
+        "confidence": 1,
+        "source_line": 318
+      },
+      {
+        "dst": "module:test/unit/intelligence/backend-reconciliation.test.ts#Mismatch.expected",
+        "confidence": 1,
+        "source_line": 319
+      },
+      {
+        "dst": "module:test/unit/intelligence/backend-reconciliation.test.ts#Mismatch.actual",
+        "confidence": 1,
+        "source_line": 320
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/unit/intelligence/backend-reconciliation.test.ts",
+        "confidence": 1,
+        "source_line": 314
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/unit/intelligence/backend-reconciliation.test.ts#reportMismatches",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 329
+      },
+      {
+        "src": "module:test/unit/intelligence/backend-reconciliation.test.ts#rowsToClassifiedDiffs",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 336
+      },
+      {
+        "src": "module:test/unit/intelligence/backend-reconciliation.test.ts#mismatches",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 404
+      },
+      {
+        "src": "module:test/unit/intelligence/backend-reconciliation.test.ts#row",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 654
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.132Z"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.findEnclosingCall",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/treesitter-service.ts",
+    "line": 148,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 8,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.js#FunctionCall",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 152
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.ensureReady",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 153
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.js#findEnclosingCall",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 154
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.ensureReady",
+        "confidence": 0.95,
+        "source_line": 153
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl",
+        "confidence": 1,
+        "source_line": 148
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.findEnclosingCallAt",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 177
+      }
+    ],
+    "reads_field_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.findEnclosingCallAt",
+        "confidence": 0.95,
+        "source_line": 177
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.497Z"
+  }
+}

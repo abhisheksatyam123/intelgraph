@@ -1,0 +1,108 @@
+{
+  "kind": "class",
+  "canonical_name": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl",
+  "category": "class",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/treesitter-service.ts",
+    "line": 125,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 83,
+  "relations": {
+    "implements_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterService",
+        "confidence": 1,
+        "resolution": "local",
+        "source_line": 125
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.initialized",
+        "confidence": 1,
+        "source_line": 126
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.initFailed",
+        "confidence": 1,
+        "source_line": 127
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.initPromise",
+        "confidence": 1,
+        "source_line": 128
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.isReady",
+        "confidence": 1,
+        "source_line": 130
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.ensureReady",
+        "confidence": 1,
+        "source_line": 134
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.findEnclosingCall",
+        "confidence": 1,
+        "source_line": 148
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.findEnclosingConstruct",
+        "confidence": 1,
+        "source_line": 157
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.findEnclosingCallAt",
+        "confidence": 1,
+        "source_line": 166
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.parseSource",
+        "confidence": 1,
+        "source_line": 182
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.parseFile",
+        "confidence": 1,
+        "source_line": 189
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.inferLanguage",
+        "confidence": 1,
+        "source_line": 196
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.walk",
+        "confidence": 1,
+        "source_line": 200
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.findDescendant",
+        "confidence": 1,
+        "source_line": 204
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts",
+        "confidence": 1,
+        "source_line": 125
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "class"
+    ],
+    "total_outgoing_edges": 14,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:57.975Z"
+  }
+}

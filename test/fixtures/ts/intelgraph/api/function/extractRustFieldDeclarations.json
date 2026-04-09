@@ -1,0 +1,81 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/rust-core/extractor.ts#extractRustFieldDeclarations",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/rust-core/extractor.ts",
+    "line": 927,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 71,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 928
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/plugins/rust-core/extractor.ts#firstNamedChildOfType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 967
+      },
+      {
+        "dst": "fieldList.namedChild",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 950
+      },
+      {
+        "dst": "member.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 980
+      },
+      {
+        "dst": "module:src/plugins/rust-core/extractor.ts#out.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 986
+      },
+      {
+        "dst": "tupleList.namedChild",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 974
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts#visit",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 330
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 927
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.781Z"
+  }
+}

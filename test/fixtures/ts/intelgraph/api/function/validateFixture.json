@@ -1,0 +1,117 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/fixtures/schema-validator.ts#validateFixture",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/schema-validator.ts",
+    "line": 101,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 123,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/schema-validator.ts#ValidationResult",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 101
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Array.isArray",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 212
+      },
+      {
+        "dst": "module:src/fixtures/schema-validator.ts#ValidationError.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 213
+      },
+      {
+        "dst": "module:src/fixtures/schema-validator.ts#err",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 213
+      },
+      {
+        "dst": "module:src/fixtures/schema-validator.ts#isNonEmptyString",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 160
+      },
+      {
+        "dst": "module:src/fixtures/schema-validator.ts#VALID_KINDS.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 117
+      },
+      {
+        "dst": "join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 118
+      },
+      {
+        "dst": "module:src/fixtures/schema-validator.ts#isPositiveInt",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 152
+      },
+      {
+        "dst": "module:src/fixtures/schema-validator.ts#warn",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 163
+      },
+      {
+        "dst": "required.some",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 185
+      },
+      {
+        "dst": "required.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 193
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/schema-validator.ts",
+        "confidence": 1,
+        "source_line": 101
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/fixtures/schema-validator.ts#validateFixtureFile",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 251
+      },
+      {
+        "src": "module:test/unit/fixtures/schema-validator.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 435
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.758Z"
+  }
+}

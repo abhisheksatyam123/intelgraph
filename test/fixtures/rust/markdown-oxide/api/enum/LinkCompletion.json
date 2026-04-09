@@ -1,0 +1,153 @@
+{
+  "kind": "enum",
+  "canonical_name": "module:src/completion/link_completer.rs#LinkCompletion",
+  "category": "enum",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/link_completer.rs",
+    "line": 652,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 39,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#MDDailyNote",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 652
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion.File",
+        "confidence": 1,
+        "source_line": 653
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion.Alias",
+        "confidence": 1,
+        "source_line": 658
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion.Heading",
+        "confidence": 1,
+        "source_line": 663
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion.Block",
+        "confidence": 1,
+        "source_line": 668
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion.Unresolved",
+        "confidence": 1,
+        "source_line": 672
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion.DailyNote",
+        "confidence": 1,
+        "source_line": 678
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion.Cached",
+        "confidence": 1,
+        "source_line": 680
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion.from_candidate",
+        "confidence": 1,
+        "source_line": 696
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion.new",
+        "confidence": 1,
+        "source_line": 710
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion.default_completion",
+        "confidence": 1,
+        "source_line": 792
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion.refname",
+        "confidence": 1,
+        "source_line": 879
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion.completions",
+        "confidence": 1,
+        "source_line": 893
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion.match_string",
+        "confidence": 1,
+        "source_line": 989
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#MDDailyNote",
+        "confidence": 0.95,
+        "source_line": 652
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "Completable",
+        "confidence": 1,
+        "source_line": 961
+      },
+      {
+        "dst": "Matchable",
+        "confidence": 1,
+        "source_line": 987
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#LinkCompleter",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 51
+      },
+      {
+        "src": "module:src/completion/link_completer.rs#link_completions",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 67
+      },
+      {
+        "src": "module:src/completion/link_completer.rs#LinkCompletion.from_candidate",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 696
+      },
+      {
+        "src": "module:src/completion/link_completer.rs#LinkCompletion.new",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 710
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/link_completer.rs",
+        "confidence": 1,
+        "source_line": 652
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "enum"
+    ],
+    "total_outgoing_edges": 17,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:13.168Z"
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/db/sqlite/graph-export.ts#dataPathSubgraph",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/graph-export.ts",
+    "line": 603,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 104,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJson",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 604
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#resolveCenterSymbol",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 619
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#empty",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 671
+      },
+      {
+        "dst": "Math.min",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 625
+      },
+      {
+        "dst": "Math.max",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 625
+      },
+      {
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 647
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#succ.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 635
+      },
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 681
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#isDataEdge",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 701
+      },
+      {
+        "dst": "add",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 663
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#succ.get",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 653
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#distance.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 657
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#distance.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 671
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#parents.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 658
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#next.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 659
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#distance.get",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 660
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#parents.get",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 685
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#stack.pop",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 684
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#keptEdges.add",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 688
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#keptNodes.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 699
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#keptNodes.add",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 690
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#stack.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 691
+      },
+      {
+        "dst": "graph.nodes.filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 699
+      },
+      {
+        "dst": "graph.edges.filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 700
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#keptEdges.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 701
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-export.ts#loadGraphJsonFromDb",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 305
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-export.ts",
+        "confidence": 1,
+        "source_line": 603
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 25,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.768Z"
+  }
+}

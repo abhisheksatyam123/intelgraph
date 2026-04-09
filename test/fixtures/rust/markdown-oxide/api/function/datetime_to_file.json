@@ -1,0 +1,99 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/commands.rs#datetime_to_file",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/commands.rs",
+    "line": 17,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 10,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:std::path#Path",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 17
+      },
+      {
+        "dst": "module:chrono#NaiveDateTime",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 17
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Url",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 17
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "to_string",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 22
+      },
+      {
+        "dst": "format",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 22
+      },
+      {
+        "dst": "join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 23
+      },
+      {
+        "dst": "ok",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 25
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Url.from_file_path",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 25
+      },
+      {
+        "dst": "with_extension",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 25
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/commands.rs",
+        "confidence": 1,
+        "source_line": 17
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/commands.rs#jump",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 86
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.070Z"
+  }
+}

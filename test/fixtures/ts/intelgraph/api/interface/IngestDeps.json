@@ -1,0 +1,181 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/tools/ingest-tool.ts",
+    "line": 56,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 18,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/db-foundation.js#IDbFoundation",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 57
+      },
+      {
+        "dst": "module:src/lsp/types.js#ILanguageClient",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 59
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphWriteSink",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 61
+      },
+      {
+        "dst": "module:src/intelligence/extraction/contract.js#IExtractor",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 63
+      },
+      {
+        "dst": "module:src/intelligence/extraction/runner.js#ExtractorRunner",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 65
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#GraphProjectionRepository",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 70
+      },
+      {
+        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.js#IIndirectCallerIngestion",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 71
+      },
+      {
+        "dst": "module:src/tools/indirect-callers.js#IndirectCallerGraph",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 72
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.db",
+        "confidence": 1,
+        "source_line": 57
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.lsp",
+        "confidence": 1,
+        "source_line": 59
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.sink",
+        "confidence": 1,
+        "source_line": 61
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.plugins",
+        "confidence": 1,
+        "source_line": 63
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.runnerFactory",
+        "confidence": 1,
+        "source_line": 65
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.projection",
+        "confidence": 1,
+        "source_line": 70
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.ingestion",
+        "confidence": 1,
+        "source_line": 71
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.indirectCallerResolver",
+        "confidence": 1,
+        "source_line": 72
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/db-foundation.js#IDbFoundation",
+        "confidence": 0.95,
+        "source_line": 56
+      },
+      {
+        "dst": "module:src/lsp/types.js#ILanguageClient",
+        "confidence": 0.95,
+        "source_line": 56
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphWriteSink",
+        "confidence": 0.95,
+        "source_line": 56
+      },
+      {
+        "dst": "module:src/intelligence/extraction/contract.js#IExtractor",
+        "confidence": 0.95,
+        "source_line": 56
+      },
+      {
+        "dst": "module:src/intelligence/extraction/runner.js#ExtractorRunner",
+        "confidence": 0.95,
+        "source_line": 56
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#GraphProjectionRepository",
+        "confidence": 0.95,
+        "source_line": 56
+      },
+      {
+        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.js#IIndirectCallerIngestion",
+        "confidence": 0.95,
+        "source_line": 56
+      },
+      {
+        "dst": "module:src/tools/indirect-callers.js#IndirectCallerGraph",
+        "confidence": 0.95,
+        "source_line": 56
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts",
+        "confidence": 1,
+        "source_line": 56
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#INGEST_DEPS",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 75
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#setIngestDeps",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 77
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 24,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.122Z"
+  }
+}

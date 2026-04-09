@@ -1,0 +1,157 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/notes/frontmatter.rs#parse",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/notes/frontmatter.rs",
+    "line": 22,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 80,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/notes/frontmatter.rs#Frontmatter",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 22
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "collect",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 23
+      },
+      {
+        "dst": "lines",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 23
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 25
+      },
+      {
+        "dst": "first",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 25
+      },
+      {
+        "dst": "trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 81
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 100
+      },
+      {
+        "dst": "position",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 29
+      },
+      {
+        "dst": "iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 29
+      },
+      {
+        "dst": "module:src/notes/frontmatter.rs#Frontmatter.default",
+        "confidence": 0.95,
+        "resolution": "scoped-local",
+        "source_line": 36
+      },
+      {
+        "dst": "starts_with",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 94
+      },
+      {
+        "dst": "trim_start_matches",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 81
+      },
+      {
+        "dst": "trim_end_matches",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 51
+      },
+      {
+        "dst": "split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 52
+      },
+      {
+        "dst": "trim_matches",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 82
+      },
+      {
+        "dst": "is_empty",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 94
+      },
+      {
+        "dst": "push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 92
+      },
+      {
+        "dst": "to_string",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 92
+      },
+      {
+        "dst": "ends_with",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 95
+      },
+      {
+        "dst": "contains",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 95
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/notes/frontmatter.rs",
+        "confidence": 1,
+        "source_line": 22
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 20,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.076Z"
+  }
+}

@@ -3,25 +3,143 @@
   "canonical_name": "module:src/config/config.ts#IntelgraphConfig",
   "category": "interface",
   "source": {
-    "file": "src/config/config.ts",
-    "line": 18
+    "file": "/home/abhi/qprojects/intelgraph/src/config/config.ts",
+    "line": 18,
+    "character": 8
   },
-  "description": "Top-level workspace config interface for intelgraph. Renamed from ClangdMcpConfig during the project rename. Heavily referenced across config.ts, lifecycle, and the daemon.",
+  "exported": true,
+  "line_count": 136,
   "relations": {
-    "references_type_in": [
-      { "referrer": "module:src/config/config.ts#readConfig",   "type": "IntelgraphConfig" },
-      { "referrer": "module:src/config/config.ts#writeConfig",  "type": "IntelgraphConfig" },
-      { "referrer": "module:src/config/config.ts#updateConfig", "type": "IntelgraphConfig" }
+    "contains_out": [
+      {
+        "dst": "module:src/config/config.ts#IntelgraphConfig.root",
+        "confidence": 1,
+        "source_line": 22
+      },
+      {
+        "dst": "module:src/config/config.ts#IntelgraphConfig.clangd",
+        "confidence": 1,
+        "source_line": 25
+      },
+      {
+        "dst": "module:src/config/config.ts#IntelgraphConfig.args",
+        "confidence": 1,
+        "source_line": 28
+      },
+      {
+        "dst": "module:src/config/config.ts#IntelgraphConfig.enabled",
+        "confidence": 1,
+        "source_line": 31
+      },
+      {
+        "dst": "module:src/config/config.ts#IntelgraphConfig.compileCommandsCleaning",
+        "confidence": 1,
+        "source_line": 35
+      },
+      {
+        "dst": "module:src/config/config.ts#IntelgraphConfig.daemon",
+        "confidence": 1,
+        "source_line": 64
+      },
+      {
+        "dst": "module:src/config/config.ts#IntelgraphConfig.index",
+        "confidence": 1,
+        "source_line": 86
+      },
+      {
+        "dst": "module:src/config/config.ts#IntelgraphConfig.memory",
+        "confidence": 1,
+        "source_line": 99
+      },
+      {
+        "dst": "module:src/config/config.ts#IntelgraphConfig.llmReasoning",
+        "confidence": 1,
+        "source_line": 120
+      },
+      {
+        "dst": "module:src/config/config.ts#IntelgraphConfig.version",
+        "confidence": 1,
+        "source_line": 146
+      },
+      {
+        "dst": "module:src/config/config.ts#IntelgraphConfig.updatedAt",
+        "confidence": 1,
+        "source_line": 149
+      },
+      {
+        "dst": "module:src/config/config.ts#IntelgraphConfig.notes",
+        "confidence": 1,
+        "source_line": 152
+      }
     ],
-    "field_kinds_present": ["root", "clangd", "args", "enabled", "compileCommandsCleaning", "intelligenceLocal", "daemon", "index"]
+    "contains_in": [
+      {
+        "src": "module:src/config/config.ts",
+        "confidence": 1,
+        "source_line": 18
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/config/config.ts#DEFAULT_CONFIG",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 158
+      },
+      {
+        "src": "module:src/config/config.ts#readConfig",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 207
+      },
+      {
+        "src": "module:src/config/config.ts#config",
+        "confidence": 0.9,
+        "resolution": "local",
+        "source_line": 220
+      },
+      {
+        "src": "module:src/config/config.ts#writeConfig",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 264
+      },
+      {
+        "src": "module:src/config/config.ts#updateConfig",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 286
+      },
+      {
+        "src": "module:src/config/config.ts#updateDaemonState",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 338
+      },
+      {
+        "src": "module:src/config/config.ts#updateIndexState",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 350
+      },
+      {
+        "src": "module:src/config/config.ts#example",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 410
+      }
+    ]
   },
   "contract": {
-    "required_node_kinds": ["interface"],
-    "minimum_field_count": 4,
-    "notes": "Backend must extract this interface as a node with kind=interface and emit references_type edges from every function in config.ts that takes or returns it."
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 12,
+    "total_incoming_edges": 9
   },
   "ground_truth_metadata": {
-    "extracted_from": "intelgraph_self",
-    "method": "manual_grep_against_/home/abhi/qprojects/intelgraph"
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.100Z"
   }
 }

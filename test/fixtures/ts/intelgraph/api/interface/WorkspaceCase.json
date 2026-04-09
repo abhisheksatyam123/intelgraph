@@ -1,0 +1,73 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/integration/snapshot-stats-real-workspaces.test.ts#WorkspaceCase",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/integration/snapshot-stats-real-workspaces.test.ts",
+    "line": 71,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 17,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:test/integration/snapshot-stats-real-workspaces.test.ts#WorkspaceCase.name",
+        "confidence": 1,
+        "source_line": 72
+      },
+      {
+        "dst": "module:test/integration/snapshot-stats-real-workspaces.test.ts#WorkspaceCase.path",
+        "confidence": 1,
+        "source_line": 73
+      },
+      {
+        "dst": "module:test/integration/snapshot-stats-real-workspaces.test.ts#WorkspaceCase.minNodes",
+        "confidence": 1,
+        "source_line": 75
+      },
+      {
+        "dst": "module:test/integration/snapshot-stats-real-workspaces.test.ts#WorkspaceCase.minEdges",
+        "confidence": 1,
+        "source_line": 77
+      },
+      {
+        "dst": "module:test/integration/snapshot-stats-real-workspaces.test.ts#WorkspaceCase.expectedSubstring",
+        "confidence": 1,
+        "source_line": 79
+      },
+      {
+        "dst": "module:test/integration/snapshot-stats-real-workspaces.test.ts#WorkspaceCase.centerSymbol",
+        "confidence": 1,
+        "source_line": 86
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/integration/snapshot-stats-real-workspaces.test.ts",
+        "confidence": 1,
+        "source_line": 71
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/integration/snapshot-stats-real-workspaces.test.ts#CASES",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 89
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.130Z"
+  }
+}

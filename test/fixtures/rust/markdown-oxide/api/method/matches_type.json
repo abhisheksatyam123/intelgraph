@@ -1,0 +1,41 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/vault/reference.rs#Reference.matches_type",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/reference.rs",
+    "line": 101,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 13,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/vault/reference.rs#Reference",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 101
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/reference.rs#Reference",
+        "confidence": 1,
+        "source_line": 101
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.790Z"
+  }
+}

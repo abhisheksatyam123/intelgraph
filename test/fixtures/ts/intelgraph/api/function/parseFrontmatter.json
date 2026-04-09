@@ -1,0 +1,151 @@
+{
+  "kind": "function",
+  "canonical_name": "module:scripts/upgrade-frontmatter.mjs#parseFrontmatter",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/scripts/upgrade-frontmatter.mjs",
+    "line": 155,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 67,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "content.startsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 156
+      },
+      {
+        "dst": "content.indexOf",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 159
+      },
+      {
+        "dst": "content.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 165
+      },
+      {
+        "dst": "fmText.split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 167
+      },
+      {
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 168
+      },
+      {
+        "dst": "line.trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 172
+      },
+      {
+        "dst": "line.match",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 176
+      },
+      {
+        "dst": "test",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 187
+      },
+      {
+        "dst": "items.push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 188
+      },
+      {
+        "dst": "trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 209
+      },
+      {
+        "dst": "replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 212
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#fields.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 217
+      },
+      {
+        "dst": "rest.startsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 208
+      },
+      {
+        "dst": "rest.endsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 208
+      },
+      {
+        "dst": "rest.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 209
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 212
+      },
+      {
+        "dst": "inner.split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 212
+      },
+      {
+        "dst": "s.trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 212
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:scripts/upgrade-frontmatter.mjs",
+        "confidence": 1,
+        "source_line": 155
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:scripts/upgrade-frontmatter.mjs#processFile",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 504
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 18,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.740Z"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "kind": "class",
+  "canonical_name": "module:test/unit/plugins/ts-core.test.ts#CaptureSink",
+  "category": "class",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/unit/plugins/ts-core.test.ts",
+    "line": 28,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 12,
+  "relations": {
+    "implements_out": [
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphWriteSink",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 28
+      }
+    ],
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphWriteBatch",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 29
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:test/unit/plugins/ts-core.test.ts#CaptureSink.batches",
+        "confidence": 1,
+        "source_line": 29
+      },
+      {
+        "dst": "module:test/unit/plugins/ts-core.test.ts#CaptureSink.write",
+        "confidence": 1,
+        "source_line": 30
+      },
+      {
+        "dst": "module:test/unit/plugins/ts-core.test.ts#CaptureSink.allNodes",
+        "confidence": 1,
+        "source_line": 33
+      },
+      {
+        "dst": "module:test/unit/plugins/ts-core.test.ts#CaptureSink.allEdges",
+        "confidence": 1,
+        "source_line": 36
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphWriteBatch",
+        "confidence": 0.95,
+        "source_line": 28
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/unit/plugins/ts-core.test.ts",
+        "confidence": 1,
+        "source_line": 28
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/unit/plugins/ts-core.test.ts#sink",
+        "confidence": 0.9,
+        "resolution": "local",
+        "source_line": 372
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/unit/plugins/ts-core.test.ts",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 2246
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "class"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:57.978Z"
+  }
+}

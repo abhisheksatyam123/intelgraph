@@ -1,0 +1,159 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/bin/snapshot-stats.ts#printDashboard",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/bin/snapshot-stats.ts",
+    "line": 552,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 128,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 552
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "repeat",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 553
+      },
+      {
+        "dst": "console.log",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 678
+      },
+      {
+        "dst": "ek.edge_kind.padEnd",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 563
+      },
+      {
+        "dst": "padEnd",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 568
+      },
+      {
+        "dst": "padStart",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 673
+      },
+      {
+        "dst": "m.incoming_count.toString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 589
+      },
+      {
+        "dst": "f.incoming_count.toString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 596
+      },
+      {
+        "dst": "m.line_count.toString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 603
+      },
+      {
+        "dst": "c.coupling_count.toString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 610
+      },
+      {
+        "dst": "e.usage_count.toString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 624
+      },
+      {
+        "dst": "t.toucher_count.toString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 632
+      },
+      {
+        "dst": "t.field_count.toString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 633
+      },
+      {
+        "dst": "f.field_count.toString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 648
+      },
+      {
+        "dst": "f.toucher_count.toString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 656
+      },
+      {
+        "dst": "f.read_count.toString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 657
+      },
+      {
+        "dst": "f.write_count.toString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 657
+      },
+      {
+        "dst": "c.field_count.toString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 665
+      },
+      {
+        "dst": "cp.co_occurrence.toString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 673
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts",
+        "confidence": 1,
+        "source_line": 552
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts#main",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 911
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 19,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.746Z"
+  }
+}

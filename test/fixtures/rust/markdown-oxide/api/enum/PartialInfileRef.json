@@ -1,0 +1,85 @@
+{
+  "kind": "enum",
+  "canonical_name": "module:src/completion/link_completer.rs#PartialInfileRef",
+  "category": "enum",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/link_completer.rs",
+    "line": 404,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 5,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#PartialInfileRef.HeadingRef",
+        "confidence": 1,
+        "source_line": 405
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#PartialInfileRef.BlockRef",
+        "confidence": 1,
+        "source_line": 407
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#PartialInfileRef.fmt",
+        "confidence": 1,
+        "source_line": 411
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#PartialInfileRef.completion_string",
+        "confidence": 1,
+        "source_line": 420
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "Display",
+        "confidence": 1,
+        "source_line": 410
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#MarkdownLinkCompleter",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 34
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#MarkdownLinkCompleter.infile_ref",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 40
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#MarkdownLinkCompleter",
+        "confidence": 0.95,
+        "source_line": 34
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/link_completer.rs",
+        "confidence": 1,
+        "source_line": 404
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "enum"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:13.168Z"
+  }
+}

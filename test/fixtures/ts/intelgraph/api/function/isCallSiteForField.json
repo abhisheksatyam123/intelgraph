@@ -1,0 +1,53 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/pattern-detector/c-parser.ts#isCallSiteForField",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-detector/c-parser.ts",
+    "line": 518,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 4,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#fieldName.replace",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 519
+      },
+      {
+        "dst": "test",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 520
+      },
+      {
+        "dst": "RegExp",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 520
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts",
+        "confidence": 1,
+        "source_line": 518
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.798Z"
+  }
+}

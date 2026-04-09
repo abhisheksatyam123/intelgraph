@@ -1,0 +1,78 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/db/sqlite/graph-export.ts#GraphDiff",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/graph-export.ts",
+    "line": 341,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 18,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphDiff.nodes_only_in_a",
+        "confidence": 1,
+        "source_line": 342
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphDiff.nodes_only_in_b",
+        "confidence": 1,
+        "source_line": 343
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphDiff.nodes_in_both",
+        "confidence": 1,
+        "source_line": 344
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphDiff.edges_only_in_a",
+        "confidence": 1,
+        "source_line": 345
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphDiff.edges_only_in_b",
+        "confidence": 1,
+        "source_line": 346
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphDiff.edges_in_both",
+        "confidence": 1,
+        "source_line": 347
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphDiff.summary",
+        "confidence": 1,
+        "source_line": 348
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-export.ts",
+        "confidence": 1,
+        "source_line": 341
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-export.ts#diffGraphJson",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 378
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.113Z"
+  }
+}

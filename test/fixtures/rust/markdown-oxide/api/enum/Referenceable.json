@@ -3,21 +3,103 @@
   "canonical_name": "module:src/vault/referenceable.rs#Referenceable",
   "category": "enum",
   "source": {
-    "file": "src/vault/referenceable.rs",
-    "line": 130
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/referenceable.rs",
+    "line": 130,
+    "character": 1
   },
-  "description": "Sum type representing every kind of referenceable item in the vault (heading, tag, footnote, file, etc.). Has a lifetime parameter `'a`. Tests rust-core's enum extraction with variants.",
+  "exported": true,
+  "line_count": 13,
   "relations": {
-    "contains_variants": ["File", "Heading", "Tag", "Footnote", "IndexedBlock"],
-    "has_lifetime_param": true
+    "contains_out": [
+      {
+        "dst": "module:src/vault/referenceable.rs#Referenceable.File",
+        "confidence": 1,
+        "source_line": 131
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Referenceable.Heading",
+        "confidence": 1,
+        "source_line": 132
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Referenceable.IndexedBlock",
+        "confidence": 1,
+        "source_line": 133
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Referenceable.Tag",
+        "confidence": 1,
+        "source_line": 134
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Referenceable.Footnote",
+        "confidence": 1,
+        "source_line": 135
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Referenceable.UnresovledFile",
+        "confidence": 1,
+        "source_line": 137
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Referenceable.UnresolvedHeading",
+        "confidence": 1,
+        "source_line": 138
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Referenceable.UnresovledIndexedBlock",
+        "confidence": 1,
+        "source_line": 140
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Referenceable.LinkRefDef",
+        "confidence": 1,
+        "source_line": 141
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Referenceable.get_refname",
+        "confidence": 1,
+        "source_line": 147
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Referenceable.matches_reference",
+        "confidence": 1,
+        "source_line": 216
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Referenceable.get_path",
+        "confidence": 1,
+        "source_line": 269
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Referenceable.get_range",
+        "confidence": 1,
+        "source_line": 283
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Referenceable.is_unresolved",
+        "confidence": 1,
+        "source_line": 297
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/referenceable.rs",
+        "confidence": 1,
+        "source_line": 130
+      }
+    ]
   },
   "contract": {
-    "required_node_kinds": ["enum", "enum_variant"],
-    "minimum_variant_count": 3,
-    "notes": "Backend must emit one enum_variant node per arm, contained inside the enum. Lifetime parameters are usually ignored by tree-sitter walks but the enum identifier should still extract correctly."
+    "required_node_kinds": [
+      "enum"
+    ],
+    "total_outgoing_edges": 14,
+    "total_incoming_edges": 1
   },
   "ground_truth_metadata": {
-    "extracted_from": "markdown-oxide",
-    "method": "manual_grep"
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:13.172Z"
   }
 }

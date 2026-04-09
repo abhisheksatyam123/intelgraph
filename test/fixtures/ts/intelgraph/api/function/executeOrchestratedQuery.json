@@ -1,0 +1,115 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/orchestrator-runner.ts#executeOrchestratedQuery",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/orchestrator-runner.ts",
+    "line": 292,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 94,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 294
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#NormalizedQueryResponse",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 295
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#validateQueryRequest",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 296
+      },
+      {
+        "dst": "deps.persistence.dbLookup.lookup",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 365
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#decideOrchestrationAction",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 320
+      },
+      {
+        "dst": "module:src/intelligence/orchestrator-runner.ts#buildResponse",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 378
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#EnrichmentAttempt.some",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 330
+      },
+      {
+        "dst": "enricher.enrich",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 340
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#EnrichmentAttempt.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 358
+      },
+      {
+        "dst": "deps.persistence.authoritativeStore.persistEnrichment",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 359
+      },
+      {
+        "dst": "deps.persistence.graphProjection.syncFromAuthoritative",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 360
+      },
+      {
+        "dst": "deps.llmEnricher.canRun",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 352
+      },
+      {
+        "dst": "deps.llmEnricher.enrich",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 357
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts",
+        "confidence": 1,
+        "source_line": 292
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 13,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.773Z"
+  }
+}

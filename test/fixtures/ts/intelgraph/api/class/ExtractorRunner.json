@@ -3,26 +3,76 @@
   "canonical_name": "module:src/intelligence/extraction/runner.ts#ExtractorRunner",
   "category": "class",
   "source": {
-    "file": "src/intelligence/extraction/runner.ts",
-    "line": 126
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/runner.ts",
+    "line": 126,
+    "character": 8
   },
-  "description": "Orchestrates the extraction phase: takes a workspace, an LSP client, a sink, and a list of plugins, then walks each plugin's extract() generator and routes facts into the SQLite store. Has constructor + run() method + helpers.",
+  "exported": true,
+  "line_count": 175,
   "relations": {
-    "calls_in_direct": [
-      { "caller": "module:src/intelligence/init.ts",                "callee": "ExtractorRunner",          "construct": "new"  },
-      { "caller": "module:src/bin/snapshot-stats.ts#buildDashboard","callee": "ExtractorRunner",          "construct": "new"  }
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/runner.ts#ExtractorRunner.constructor",
+        "confidence": 1,
+        "source_line": 127
+      },
+      {
+        "dst": "module:src/intelligence/extraction/runner.ts#ExtractorRunner.run",
+        "confidence": 1,
+        "source_line": 129
+      },
+      {
+        "dst": "module:src/intelligence/extraction/runner.ts#ExtractorRunner.runPlugin",
+        "confidence": 1,
+        "source_line": 244
+      }
     ],
-    "contains_methods": ["constructor", "run"],
-    "extends": null,
-    "implements": null
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/runner.ts",
+        "confidence": 1,
+        "source_line": 126
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/fixtures/run-multi-lang.mjs#runner",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 116
+      },
+      {
+        "src": "module:test/fixtures/verify-fixtures.mjs#runner",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 97
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/fixtures/run-multi-lang.mjs",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 116
+      },
+      {
+        "src": "module:test/fixtures/verify-fixtures.mjs",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 97
+      }
+    ]
   },
   "contract": {
-    "required_node_kinds": ["class", "method"],
-    "minimum_method_count": 2,
-    "notes": "Backend must emit a `class` node + `contains` edges from the class to each method (constructor, run, plus any private helpers)."
+    "required_node_kinds": [
+      "class"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 5
   },
   "ground_truth_metadata": {
-    "extracted_from": "intelgraph_self",
-    "method": "manual_grep"
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:57.974Z"
   }
 }

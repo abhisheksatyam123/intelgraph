@@ -1,0 +1,95 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/core/lifecycle.ts#startAsStdioProxy",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/core/lifecycle.ts",
+    "line": 345,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 94,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:src/logging/logger.js#log",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 437
+      },
+      {
+        "dst": "module:src/daemon/index.js#readState",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 415
+      },
+      {
+        "dst": "module:src/daemon/index.js#isTcpPortOpen",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 401
+      },
+      {
+        "dst": "module:src/daemon/index.js#resolveBridgeScript",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 381
+      },
+      {
+        "dst": "module:src/daemon/index.js#spawnHttpDaemon",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 384
+      },
+      {
+        "dst": "module:src/logging/logger.js#logError",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 408
+      },
+      {
+        "dst": "module:src/daemon/index.js#writeState",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 417
+      },
+      {
+        "dst": "Promise",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 431
+      },
+      {
+        "dst": "setTimeout",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 431
+      },
+      {
+        "dst": "module:src/core/server.js#startStdioProxy",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 436
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/core/lifecycle.ts",
+        "confidence": 1,
+        "source_line": 345
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.750Z"
+  }
+}

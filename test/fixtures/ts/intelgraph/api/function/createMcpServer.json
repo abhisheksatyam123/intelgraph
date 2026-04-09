@@ -1,0 +1,117 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/core/server.ts#createMcpServer",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/core/server.ts",
+    "line": 27,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 51,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/core/types.js#BackendDeps",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 28
+      },
+      {
+        "dst": "module:@modelcontextprotocol/sdk/server/mcp.js#McpServer",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 29
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/tools/index.js#setUnifiedBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 30
+      },
+      {
+        "dst": "module:@modelcontextprotocol/sdk/server/mcp.js#McpServer",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 32
+      },
+      {
+        "dst": "module:@modelcontextprotocol/sdk/server/mcp.js#McpServer.tool",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 46
+      },
+      {
+        "dst": "Date.now",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 56
+      },
+      {
+        "dst": "module:src/logging/logger.js#log",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 56
+      },
+      {
+        "dst": "module:src/core/types.js#BackendDeps.getClient",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 54
+      },
+      {
+        "dst": "tool.execute",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 55
+      },
+      {
+        "dst": "module:src/logging/logger.js#logError",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 61
+      },
+      {
+        "dst": "String",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 66
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/core/server.ts",
+        "confidence": 1,
+        "source_line": 27
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/core/server.ts#startStdio",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 83
+      },
+      {
+        "src": "module:src/core/server.ts#startHttp",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 185
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.750Z"
+  }
+}

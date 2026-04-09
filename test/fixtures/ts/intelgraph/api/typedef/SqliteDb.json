@@ -1,0 +1,73 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteDb",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/graph-store.ts",
+    "line": 44,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 1,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:drizzle-orm/better-sqlite3#BetterSQLite3Database",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 44
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-store.ts",
+        "confidence": 1,
+        "source_line": 44
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteGraphStore.constructor",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 47
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteGraphStore.writeNodes",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 81
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteGraphStore.writeEdges",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 109
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteGraphStore.writeEvidence",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 141
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteGraphStore.writeObservations",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 171
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 6
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:07.063Z"
+  }
+}

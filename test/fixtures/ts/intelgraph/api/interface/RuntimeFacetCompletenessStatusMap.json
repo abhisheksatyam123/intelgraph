@@ -1,0 +1,98 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/contracts/orchestrator.ts#RuntimeFacetCompletenessStatusMap",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/orchestrator.ts",
+    "line": 267,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 7,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#RuntimeFacetCompletenessStatus",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 268
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#RuntimeFacetCompletenessStatusMap.runtime_callers_facet_completeness_status",
+        "confidence": 1,
+        "source_line": 268
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#RuntimeFacetCompletenessStatusMap.runtime_callees_facet_completeness_status",
+        "confidence": 1,
+        "source_line": 269
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#RuntimeFacetCompletenessStatusMap.runtime_structure_access_facet_completeness_status",
+        "confidence": 1,
+        "source_line": 270
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#RuntimeFacetCompletenessStatusMap.runtime_logs_facet_completeness_status",
+        "confidence": 1,
+        "source_line": 271
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#RuntimeFacetCompletenessStatusMap.runtime_timers_facet_completeness_status",
+        "confidence": 1,
+        "source_line": 272
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#RuntimeFacetCompletenessStatus",
+        "confidence": 0.95,
+        "source_line": 267
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/orchestrator.ts",
+        "confidence": 1,
+        "source_line": 267
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/orchestrator.ts#NormalizedQueryResponse",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 290
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/orchestrator.ts#NormalizedQueryResponse.runtime_facet_completeness_status_map",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 290
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/contracts/orchestrator.ts#NormalizedQueryResponse",
+        "confidence": 0.95,
+        "source_line": 275
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.111Z"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/extraction/fact-bus.ts#FactBus.report",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/fact-bus.ts",
+    "line": 228,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 10,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBusReport",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 228
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.totalAccepted",
+        "confidence": 0.95,
+        "source_line": 230
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.totalEmits",
+        "confidence": 0.95,
+        "source_line": 231
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.byKind",
+        "confidence": 0.95,
+        "source_line": 232
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.byExtractor",
+        "confidence": 0.95,
+        "source_line": 233
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.flushCount",
+        "confidence": 0.95,
+        "source_line": 234
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.closedFlag",
+        "confidence": 0.95,
+        "source_line": 235
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBus",
+        "confidence": 1,
+        "source_line": 228
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.493Z"
+  }
+}

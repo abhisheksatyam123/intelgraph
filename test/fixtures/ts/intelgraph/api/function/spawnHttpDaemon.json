@@ -1,0 +1,151 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/daemon/index.ts#spawnHttpDaemon",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/daemon/index.ts",
+    "line": 552,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 107,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/daemon/index.ts#SpawnHttpDaemonOptions",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 553
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/daemon/index.ts#normaliseRoot",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 556
+      },
+      {
+        "dst": "module:src/logging/logger.js#log",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 652
+      },
+      {
+        "dst": "module:src/daemon/index.ts#tryAcquireSpawnLock",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 588
+      },
+      {
+        "dst": "module:src/daemon/index.ts#waitForSpawnLockRelease",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 566
+      },
+      {
+        "dst": "module:src/daemon/index.ts#releaseSpawnLock",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 656
+      },
+      {
+        "dst": "Error",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 650
+      },
+      {
+        "dst": "module:src/daemon/index.ts#readState",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 637
+      },
+      {
+        "dst": "module:src/daemon/index.ts#isTcpPortOpen",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 579
+      },
+      {
+        "dst": "module:src/daemon/index.ts#findFreePort",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 595
+      },
+      {
+        "dst": "opts.bridgeScript.replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 599
+      },
+      {
+        "dst": "String",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 606
+      },
+      {
+        "dst": "args.push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 611
+      },
+      {
+        "dst": "opts.serverArgs.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 611
+      },
+      {
+        "dst": "module:child_process#spawn",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 622
+      },
+      {
+        "dst": "daemon.on",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 633
+      },
+      {
+        "dst": "module:src/daemon/index.ts#writeState",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 640
+      },
+      {
+        "dst": "daemon.unref",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 644
+      },
+      {
+        "dst": "module:src/daemon/index.ts#waitForPort",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 649
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/daemon/index.ts",
+        "confidence": 1,
+        "source_line": 552
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 19,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.753Z"
+  }
+}

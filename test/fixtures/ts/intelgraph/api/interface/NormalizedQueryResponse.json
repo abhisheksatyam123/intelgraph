@@ -1,0 +1,104 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/contracts/orchestrator.ts#NormalizedQueryResponse",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/orchestrator.ts",
+    "line": 275,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 18,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryIntent",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 277
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#RuntimeFacetCompletenessStatusMap",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 290
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#NormalizedQueryResponse.snapshotId",
+        "confidence": 1,
+        "source_line": 276
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#NormalizedQueryResponse.intent",
+        "confidence": 1,
+        "source_line": 277
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#NormalizedQueryResponse.status",
+        "confidence": 1,
+        "source_line": 278
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#NormalizedQueryResponse.data",
+        "confidence": 1,
+        "source_line": 279
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#NormalizedQueryResponse.provenance",
+        "confidence": 1,
+        "source_line": 285
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#NormalizedQueryResponse.runtime_facet_completeness_status_map",
+        "confidence": 1,
+        "source_line": 290
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#NormalizedQueryResponse.errors",
+        "confidence": 1,
+        "source_line": 291
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryIntent",
+        "confidence": 0.95,
+        "source_line": 275
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#RuntimeFacetCompletenessStatusMap",
+        "confidence": 0.95,
+        "source_line": 275
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/fixtures/exhaustive-relation-scanner.ts#queryBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 19
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/orchestrator.ts",
+        "confidence": 1,
+        "source_line": 275
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.110Z"
+  }
+}

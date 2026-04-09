@@ -1,0 +1,33 @@
+{
+  "kind": "global_var",
+  "canonical_name": "module:src/vault/types.rs#FRONTMATTER_RE",
+  "category": "global_var",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/types.rs",
+    "line": 141,
+    "character": 9
+  },
+  "exported": null,
+  "line_count": 2,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/vault/types.rs",
+        "confidence": 1,
+        "source_line": 141
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "global_var"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:16.143Z"
+  }
+}

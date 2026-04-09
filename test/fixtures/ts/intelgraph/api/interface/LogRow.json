@@ -1,0 +1,107 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/contracts/common.ts#LogRow",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/common.ts",
+    "line": 51,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 16,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#LogLevel",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 55
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#SourceLocation",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 61
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EvidenceRef",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 65
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#LogRow.apiName",
+        "confidence": 1,
+        "source_line": 53
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#LogRow.level",
+        "confidence": 1,
+        "source_line": 55
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#LogRow.template",
+        "confidence": 1,
+        "source_line": 57
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#LogRow.subsystem",
+        "confidence": 1,
+        "source_line": 59
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#LogRow.location",
+        "confidence": 1,
+        "source_line": 61
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#LogRow.confidence",
+        "confidence": 1,
+        "source_line": 63
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#LogRow.evidence",
+        "confidence": 1,
+        "source_line": 65
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#LogLevel",
+        "confidence": 0.95,
+        "source_line": 51
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#SourceLocation",
+        "confidence": 0.95,
+        "source_line": 51
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EvidenceRef",
+        "confidence": 0.95,
+        "source_line": 51
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/common.ts",
+        "confidence": 1,
+        "source_line": 51
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 13,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.105Z"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/vault/parsing.rs#MDCodeBlock",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/parsing.rs",
+    "line": 8,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 3,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:super::types#MyRange",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 8
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/vault/parsing.rs#MDCodeBlock.range",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:src/vault/parsing.rs#MDCodeBlock.new",
+        "confidence": 1,
+        "source_line": 13
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:super::types#MyRange",
+        "confidence": 0.95,
+        "source_line": 8
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "module:super::types#Rangeable",
+        "confidence": 1,
+        "source_line": 39
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/parsing.rs",
+        "confidence": 1,
+        "source_line": 8
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.859Z"
+  }
+}

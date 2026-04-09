@@ -1,0 +1,115 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/ts-core/extractor.ts#hasTsFilesShallow",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/ts-core/extractor.ts",
+    "line": 2582,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 56,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:node:fs#existsSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 2583
+      },
+      {
+        "dst": "module:node:fs#statSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 2586
+      },
+      {
+        "dst": "st.isDirectory",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 2590
+      },
+      {
+        "dst": "module:node:fs#readdirSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 2615
+      },
+      {
+        "dst": "entry.isFile",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 2599
+      },
+      {
+        "dst": "name.endsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 2608
+      },
+      {
+        "dst": "entry.isDirectory",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 2612
+      },
+      {
+        "dst": "name.startsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 2612
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#SKIP_DIRS.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 2612
+      },
+      {
+        "dst": "module:node:path#join",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 2615
+      },
+      {
+        "dst": "sub.isFile",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 2617
+      },
+      {
+        "dst": "subName.endsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 2625
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#appliesTo",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 102
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 2582
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 12,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.786Z"
+  }
+}

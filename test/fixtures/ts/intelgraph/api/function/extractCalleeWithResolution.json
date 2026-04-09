@@ -1,0 +1,111 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/ts-core/extractor.ts#extractCalleeWithResolution",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/ts-core/extractor.ts",
+    "line": 1134,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 123,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 1135
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#FileResolver",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1136
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.js#TsNode.childForFieldName",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 1140
+      },
+      {
+        "dst": "resolver.namedImports.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1217
+      },
+      {
+        "dst": "resolver.defaultImports.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1149
+      },
+      {
+        "dst": "resolver.localSymbols.has",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1228
+      },
+      {
+        "dst": "fn.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1161
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#lookupParamType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1181
+      },
+      {
+        "dst": "resolver.varTypes.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1193
+      },
+      {
+        "dst": "resolver.namespaceImports.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1202
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#memberExpressionDottedName",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1243
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#visit",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 889
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 1134
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.783Z"
+  }
+}

@@ -1,0 +1,213 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/commands.rs#jump",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/commands.rs",
+    "line": 59,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 63,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/config.rs#Settings",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 59
+      },
+      {
+        "dst": "module:std::path#Path",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 59
+      },
+      {
+        "dst": "module:tower_lsp::jsonrpc#Result",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 59
+      },
+      {
+        "dst": "module:serde_json#Value",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 59
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 66
+      },
+      {
+        "dst": "module:src/commands.rs#parse_relative_directive",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 70
+      },
+      {
+        "dst": "date_naive",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 71
+      },
+      {
+        "dst": "module:chrono::offset#Local.now",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 87
+      },
+      {
+        "dst": "checked_add_days",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 74
+      },
+      {
+        "dst": "module:chrono#Days.new",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 76
+      },
+      {
+        "dst": "checked_sub_days",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 76
+      },
+      {
+        "dst": "and_then",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 81
+      },
+      {
+        "dst": "module:src/commands.rs#date_to_file",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 79
+      },
+      {
+        "dst": "ok",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 81
+      },
+      {
+        "dst": "module:fuzzydate#parse",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 81
+      },
+      {
+        "dst": "module:src/commands.rs#datetime_to_file",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 86
+      },
+      {
+        "dst": "naive_local",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 87
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 100
+      },
+      {
+        "dst": "to_file_path",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 94
+      },
+      {
+        "dst": "parent",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 95
+      },
+      {
+        "dst": "module:std::fs#File.create_new",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 97
+      },
+      {
+        "dst": "as_path",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 97
+      },
+      {
+        "dst": "show_document",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 100
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 108
+      },
+      {
+        "dst": "into",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 108
+      },
+      {
+        "dst": "log_message",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 110
+      },
+      {
+        "dst": "Err",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 116
+      },
+      {
+        "dst": "module:tower_lsp::jsonrpc#Error.invalid_params",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 116
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/backend/commands.rs#Backend.dispatch_command",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 66
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/commands.rs",
+        "confidence": 1,
+        "source_line": 59
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 28,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.071Z"
+  }
+}

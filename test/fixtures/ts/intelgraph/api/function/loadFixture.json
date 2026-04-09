@@ -1,0 +1,81 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/fixtures/exhaustive-relation-scanner.ts#loadFixture",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/exhaustive-relation-scanner.ts",
+    "line": 41,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 14,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#ApiFixture",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 41
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "path.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 42
+      },
+      {
+        "dst": "process.cwd",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 43
+      },
+      {
+        "dst": "fs.readFile",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 49
+      },
+      {
+        "dst": "JSON.parse",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 50
+      },
+      {
+        "dst": "Error",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 52
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/exhaustive-relation-scanner.ts",
+        "confidence": 1,
+        "source_line": 41
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/fixtures/exhaustive-relation-scanner.ts#enrichApiFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 86
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.756Z"
+  }
+}

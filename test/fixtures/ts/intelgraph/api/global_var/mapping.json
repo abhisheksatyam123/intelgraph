@@ -1,0 +1,47 @@
+{
+  "kind": "global_var",
+  "canonical_name": "module:src/fixtures/intent-mapper.ts#mapping",
+  "category": "global_var",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/intent-mapper.ts",
+    "line": 19,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 107,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryIntent",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 19
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#RelationArrayName",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 19
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/intent-mapper.ts",
+        "confidence": 1,
+        "source_line": 19
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "global_var"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:05.091Z"
+  }
+}

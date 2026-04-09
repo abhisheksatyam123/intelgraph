@@ -1,0 +1,91 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/query-node-adapter.ts#toNodeResponse",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/query-node-adapter.ts",
+    "line": 431,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 21,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#QueryRequest",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 431
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#NormalizedQueryResponse",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 431
+      },
+      {
+        "dst": "module:src/intelligence/contracts/node-protocol.js#NodeProtocolResponse",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 431
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "res.data.nodes.map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 432
+      },
+      {
+        "dst": "module:src/intelligence/query-node-adapter.ts#rowToNode",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 432
+      },
+      {
+        "dst": "module:src/intelligence/query-node-adapter.ts#mapStatus",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 438
+      },
+      {
+        "dst": "module:src/intelligence/query-node-adapter.ts#str",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 442
+      },
+      {
+        "dst": "module:src/intelligence/query-node-adapter.ts#mapErrors",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 448
+      },
+      {
+        "dst": "module:src/intelligence/contracts/node-protocol.js#nodeResponseSchema.parse",
+        "confidence": 0.95,
+        "resolution": "named-member",
+        "source_line": 450
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts",
+        "confidence": 1,
+        "source_line": 431
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.777Z"
+  }
+}

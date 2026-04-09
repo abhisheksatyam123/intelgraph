@@ -1,0 +1,72 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl.available",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/ripgrep-service.ts",
+    "line": 132,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 10,
+  "relations": {
+    "reads_field_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl._available",
+        "confidence": 0.95,
+        "source_line": 140
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:node:child_process#execFileSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 135
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl._available",
+        "confidence": 0.95,
+        "source_line": 138
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl",
+        "confidence": 1,
+        "source_line": 132
+      }
+    ],
+    "reads_field_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl.search",
+        "confidence": 0.95,
+        "source_line": 144
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl.count",
+        "confidence": 0.95,
+        "source_line": 201
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl.findFiles",
+        "confidence": 0.95,
+        "source_line": 228
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.495Z"
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/tools/pattern-detector/types.ts#CallPattern",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-detector/types.ts",
+    "line": 21,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 12,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#PatternConnectionKind",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 27
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#CallPattern.name",
+        "confidence": 1,
+        "source_line": 23
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#CallPattern.registrationApi",
+        "confidence": 1,
+        "source_line": 25
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#CallPattern.connectionKind",
+        "confidence": 1,
+        "source_line": 27
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#CallPattern.keyArgIndex",
+        "confidence": 1,
+        "source_line": 29
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#CallPattern.keyDescription",
+        "confidence": 1,
+        "source_line": 31
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#PatternConnectionKind",
+        "confidence": 0.95,
+        "source_line": 21
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-detector/types.ts",
+        "confidence": 1,
+        "source_line": 21
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/tools/pattern-detector/types.ts#ClassifiedSite",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 69
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/tools/pattern-detector/types.ts#ClassifiedSite.matchedPattern",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 69
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/tools/pattern-detector/types.ts#ClassifiedSite",
+        "confidence": 0.95,
+        "source_line": 57
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.126Z"
+  }
+}

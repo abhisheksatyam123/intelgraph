@@ -1,0 +1,83 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/tracking/index.ts#IndexTracker._update",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tracking/index.ts",
+    "line": 137,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 7,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tracking/index.ts#IndexState",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 137
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "module:src/tracking/index.ts#IndexTracker._state",
+        "confidence": 0.95,
+        "source_line": 138
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "module:src/tracking/index.ts#IndexTracker._state",
+        "confidence": 0.95,
+        "source_line": 139
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "toISOString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 141
+      },
+      {
+        "dst": "Date",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 141
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tracking/index.ts#IndexTracker.onProgress",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 94
+      },
+      {
+        "src": "module:src/tracking/index.ts#IndexTracker.markReady",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 130
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tracking/index.ts#IndexTracker",
+        "confidence": 1,
+        "source_line": 137
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.506Z"
+  }
+}

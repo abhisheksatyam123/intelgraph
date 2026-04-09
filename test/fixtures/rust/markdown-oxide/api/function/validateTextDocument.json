@@ -1,0 +1,93 @@
+{
+  "kind": "function",
+  "canonical_name": "module:vscode-extension/server/src/server.ts#validateTextDocument",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/vscode-extension/server/src/server.ts",
+    "line": 137,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 46,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:vscode-languageserver-textdocument#TextDocument",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 137
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:vscode-extension/server/src/server.ts#getDocumentSettings",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 139
+      },
+      {
+        "dst": "module:vscode-languageserver-textdocument#TextDocument.getText",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 142
+      },
+      {
+        "dst": "pattern.exec",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 148
+      },
+      {
+        "dst": "module:vscode-languageserver-textdocument#TextDocument.positionAt",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 154
+      },
+      {
+        "dst": "Object.assign",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 171
+      },
+      {
+        "dst": "module:vscode-languageserver/node#Diagnostic.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 177
+      },
+      {
+        "dst": "connection.sendDiagnostics",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 181
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:vscode-extension/server/src/server.ts",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 134
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:vscode-extension/server/src/server.ts",
+        "confidence": 1,
+        "source_line": 137
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.103Z"
+  }
+}

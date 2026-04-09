@@ -1,0 +1,150 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/extraction/fact-bus.ts#FactBus.buildBatch",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/fact-bus.ts",
+    "line": 324,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 69,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphWriteBatch",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 324
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "this.symbols.values",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 331
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphNodeRow.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 332
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.injectProvenance",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 371
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#symbolNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 332
+      },
+      {
+        "dst": "this.edges.values",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 336
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#edgeRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 337
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphEdgeRow.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 338
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#evidenceRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 340
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphEvidenceRow.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 352
+      },
+      {
+        "dst": "this.evidence.values",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 346
+      },
+      {
+        "dst": "this.observations.values",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 369
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphObservationRow.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 370
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.symbols",
+        "confidence": 0.95,
+        "source_line": 331
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.snapshotId",
+        "confidence": 0.95,
+        "source_line": 373
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.edges",
+        "confidence": 0.95,
+        "source_line": 336
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.evidence",
+        "confidence": 0.95,
+        "source_line": 346
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.observations",
+        "confidence": 0.95,
+        "source_line": 369
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBus.flush",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 197
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBus",
+        "confidence": 1,
+        "source_line": 324
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 18,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.492Z"
+  }
+}

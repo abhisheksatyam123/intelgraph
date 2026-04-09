@@ -1,0 +1,81 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/completion/link_completer.rs#LinkCompletion.from_candidate",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/link_completer.rs",
+    "line": 696,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 13,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompleter",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 696
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompletion",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 696
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 700
+      },
+      {
+        "dst": "clone",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 706
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#link_completions",
+        "confidence": 0.95,
+        "resolution": "scoped-local",
+        "source_line": 98
+      },
+      {
+        "src": "module:src/completion/link_completer.rs#WikiLinkCompleter.completions",
+        "confidence": 0.95,
+        "resolution": "scoped-local",
+        "source_line": 575
+      },
+      {
+        "src": "module:src/completion/link_completer.rs#impl_Completer.completions",
+        "confidence": 0.95,
+        "resolution": "scoped-local",
+        "source_line": 575
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#LinkCompletion",
+        "confidence": 1,
+        "source_line": 696
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.778Z"
+  }
+}

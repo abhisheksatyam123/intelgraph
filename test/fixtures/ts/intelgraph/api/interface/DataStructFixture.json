@@ -1,0 +1,69 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#DataStructFixture",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/integration/intelligence-query-mcp-roundtrip.test.ts",
+    "line": 799,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 6,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#DataStructFixture.client",
+        "confidence": 1,
+        "source_line": 800
+      },
+      {
+        "dst": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#DataStructFixture.cleanup",
+        "confidence": 1,
+        "source_line": 801
+      },
+      {
+        "dst": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#DataStructFixture.snapshotId",
+        "confidence": 1,
+        "source_line": 802
+      },
+      {
+        "dst": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#DataStructFixture.tempRoot",
+        "confidence": 1,
+        "source_line": 803
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts",
+        "confidence": 1,
+        "source_line": 799
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#buildDataStructFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 806
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#dsFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 887
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.130Z"
+  }
+}

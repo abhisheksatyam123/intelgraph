@@ -1,0 +1,101 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/formatters.ts#formatIntelligenceResponse",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/formatters.ts",
+    "line": 253,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 42,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "import",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 253
+      },
+      {
+        "dst": "module:src/tools/formatters.ts#lines.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 289
+      },
+      {
+        "dst": "res.provenance.deterministicAttempts.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 259
+      },
+      {
+        "dst": "res.errors.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 265
+      },
+      {
+        "dst": "module:src/tools/formatters.ts#lines.join",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 293
+      },
+      {
+        "dst": "nodes.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 277
+      },
+      {
+        "dst": "Object.entries",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 279
+      },
+      {
+        "dst": "module:src/tools/formatters.ts#parts.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 280
+      },
+      {
+        "dst": "JSON.stringify",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 289
+      },
+      {
+        "dst": "module:src/tools/formatters.ts#parts.join",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 282
+      },
+      {
+        "dst": "res.data.edges.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 288
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/formatters.ts",
+        "confidence": 1,
+        "source_line": 253
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.790Z"
+  }
+}

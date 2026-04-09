@@ -1,0 +1,25 @@
+{
+  "kind": "module",
+  "canonical_name": "module:vscode-extension/.eslintrc.js",
+  "category": "module",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/vscode-extension/.eslintrc.js",
+    "line": 1,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 20,
+  "relations": {},
+  "contract": {
+    "required_node_kinds": [
+      "module"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:13.674Z"
+  }
+}

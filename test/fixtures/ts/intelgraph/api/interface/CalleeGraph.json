@@ -1,0 +1,86 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/contracts/common.ts#CalleeGraph",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/common.ts",
+    "line": 223,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 7,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#GraphNode",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 227
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#GraphEdge",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 228
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#CalleeGraph.snapshotId",
+        "confidence": 1,
+        "source_line": 224
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#CalleeGraph.apiName",
+        "confidence": 1,
+        "source_line": 225
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#CalleeGraph.depth",
+        "confidence": 1,
+        "source_line": 226
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#CalleeGraph.nodes",
+        "confidence": 1,
+        "source_line": 227
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#CalleeGraph.edges",
+        "confidence": 1,
+        "source_line": 228
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#GraphNode",
+        "confidence": 0.95,
+        "source_line": 223
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#GraphEdge",
+        "confidence": 0.95,
+        "source_line": 223
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/common.ts",
+        "confidence": 1,
+        "source_line": 223
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.104Z"
+  }
+}

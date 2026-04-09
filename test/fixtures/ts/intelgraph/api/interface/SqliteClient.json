@@ -1,0 +1,68 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/db/sqlite/client.ts#SqliteClient",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/client.ts",
+    "line": 39,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 8,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:drizzle-orm/better-sqlite3#BetterSQLite3Database",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 41
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/client.ts#SqliteClient.db",
+        "confidence": 1,
+        "source_line": 41
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/client.ts#SqliteClient.raw",
+        "confidence": 1,
+        "source_line": 43
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:drizzle-orm/better-sqlite3#BetterSQLite3Database",
+        "confidence": 0.95,
+        "source_line": 39
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/client.ts",
+        "confidence": 1,
+        "source_line": 39
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/client.ts#openSqlite",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 48
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.113Z"
+  }
+}

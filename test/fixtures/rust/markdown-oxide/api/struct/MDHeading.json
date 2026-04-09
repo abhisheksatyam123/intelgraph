@@ -3,20 +3,96 @@
   "canonical_name": "module:src/vault/types.rs#MDHeading",
   "category": "struct",
   "source": {
-    "file": "src/vault/types.rs",
-    "line": 117
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/types.rs",
+    "line": 117,
+    "character": 1
   },
-  "description": "Markdown heading representation. Annotated with #[derive(Debug, Default, PartialEq, Eq, Clone)] — exercises the rust-core extractor's derive-attribute parsing path.",
+  "exported": true,
+  "line_count": 5,
   "relations": {
-    "derives": ["Debug", "Default", "PartialEq", "Eq", "Clone"],
-    "field_kinds_present": ["heading_text", "level", "range"]
+    "references_type_out": [
+      {
+        "dst": "module:src/vault/types.rs#HeadingLevel",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 117
+      },
+      {
+        "dst": "module:src/vault/types.rs#MyRange",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 117
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/vault/types.rs#MDHeading.heading_text",
+        "confidence": 1,
+        "source_line": 118
+      },
+      {
+        "dst": "module:src/vault/types.rs#MDHeading.range",
+        "confidence": 1,
+        "source_line": 119
+      },
+      {
+        "dst": "module:src/vault/types.rs#MDHeading.level",
+        "confidence": 1,
+        "source_line": 120
+      },
+      {
+        "dst": "module:src/vault/types.rs#MDHeading.hash",
+        "confidence": 1,
+        "source_line": 124
+      },
+      {
+        "dst": "module:src/vault/types.rs#MDHeading.new",
+        "confidence": 1,
+        "source_line": 137
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/vault/types.rs#MyRange",
+        "confidence": 0.95,
+        "source_line": 117
+      },
+      {
+        "dst": "module:src/vault/types.rs#HeadingLevel",
+        "confidence": 0.95,
+        "source_line": 117
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "Hash",
+        "confidence": 1,
+        "source_line": 123
+      },
+      {
+        "dst": "module:src/vault/types.rs#Rangeable",
+        "confidence": 1,
+        "source_line": 130
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/types.rs",
+        "confidence": 1,
+        "source_line": 117
+      }
+    ]
   },
   "contract": {
-    "required_node_kinds": ["struct"],
-    "notes": "Backend should produce a struct node and at minimum one field-of-type edge per declared field."
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 1
   },
   "ground_truth_metadata": {
-    "extracted_from": "markdown-oxide",
-    "method": "manual_grep"
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.860Z"
   }
 }

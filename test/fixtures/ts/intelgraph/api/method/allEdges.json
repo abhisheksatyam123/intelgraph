@@ -1,0 +1,64 @@
+{
+  "kind": "method",
+  "canonical_name": "module:test/unit/plugins/ts-core.test.ts#CaptureSink.allEdges",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/unit/plugins/ts-core.test.ts",
+    "line": 36,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphEdgeRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 36
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "this.batches.flatMap",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 37
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "module:test/unit/plugins/ts-core.test.ts#CaptureSink.batches",
+        "confidence": 0.95,
+        "source_line": 37
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/unit/plugins/ts-core.test.ts#CaptureSink",
+        "confidence": 1,
+        "source_line": 36
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/unit/plugins/ts-core.test.ts",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 2272
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.509Z"
+  }
+}

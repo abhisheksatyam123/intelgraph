@@ -1,0 +1,97 @@
+{
+  "kind": "function",
+  "canonical_name": "module:scripts/upgrade-frontmatter.mjs#processFile",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/scripts/upgrade-frontmatter.mjs",
+    "line": 501,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 17,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:node:path#relative",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 502
+      },
+      {
+        "dst": "module:node:fs#readFileSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 503
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#parseFrontmatter",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 504
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#needsUpgrade",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 508
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#buildCanonical",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 511
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#buildSourceFilesSection",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 512
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#insertSourceFiles",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 513
+      },
+      {
+        "dst": "notes.push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 514
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#renderFrontmatter",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 515
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:scripts/upgrade-frontmatter.mjs",
+        "confidence": 1,
+        "source_line": 501
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:scripts/upgrade-frontmatter.mjs",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 534
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.740Z"
+  }
+}

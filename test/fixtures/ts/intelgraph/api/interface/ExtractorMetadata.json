@@ -1,0 +1,109 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/extraction/contract.ts#ExtractorMetadata",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/contract.ts",
+    "line": 85,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 7,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/contract.ts#Capability",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 89
+      },
+      {
+        "dst": "module:src/intelligence/extraction/contract.ts#WorkspaceProbe",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 90
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/contract.ts#ExtractorMetadata.name",
+        "confidence": 1,
+        "source_line": 86
+      },
+      {
+        "dst": "module:src/intelligence/extraction/contract.ts#ExtractorMetadata.version",
+        "confidence": 1,
+        "source_line": 87
+      },
+      {
+        "dst": "module:src/intelligence/extraction/contract.ts#ExtractorMetadata.description",
+        "confidence": 1,
+        "source_line": 88
+      },
+      {
+        "dst": "module:src/intelligence/extraction/contract.ts#ExtractorMetadata.capabilities",
+        "confidence": 1,
+        "source_line": 89
+      },
+      {
+        "dst": "module:src/intelligence/extraction/contract.ts#ExtractorMetadata.appliesTo",
+        "confidence": 1,
+        "source_line": 90
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/extraction/contract.ts#Capability",
+        "confidence": 0.95,
+        "source_line": 85
+      },
+      {
+        "dst": "module:src/intelligence/extraction/contract.ts#WorkspaceProbe",
+        "confidence": 0.95,
+        "source_line": 85
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/contract.ts",
+        "confidence": 1,
+        "source_line": 85
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/contract.ts#IExtractor",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 117
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/contract.ts#IExtractor.metadata",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 117
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/extraction/contract.ts#IExtractor",
+        "confidence": 0.95,
+        "source_line": 116
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.114Z"
+  }
+}

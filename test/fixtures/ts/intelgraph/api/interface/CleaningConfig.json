@@ -1,0 +1,95 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/utils/compile-commands-cleaner.ts#CleaningConfig",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/utils/compile-commands-cleaner.ts",
+    "line": 19,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 21,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/utils/compile-commands-cleaner.ts#CleaningConfig.enabled",
+        "confidence": 1,
+        "source_line": 20
+      },
+      {
+        "dst": "module:src/utils/compile-commands-cleaner.ts#CleaningConfig.removeTests",
+        "confidence": 1,
+        "source_line": 21
+      },
+      {
+        "dst": "module:src/utils/compile-commands-cleaner.ts#CleaningConfig.cleanFlags",
+        "confidence": 1,
+        "source_line": 22
+      },
+      {
+        "dst": "module:src/utils/compile-commands-cleaner.ts#CleaningConfig.requireZeroUnmatched",
+        "confidence": 1,
+        "source_line": 23
+      },
+      {
+        "dst": "module:src/utils/compile-commands-cleaner.ts#CleaningConfig.preflightPolicy",
+        "confidence": 1,
+        "source_line": 24
+      },
+      {
+        "dst": "module:src/utils/compile-commands-cleaner.ts#CleaningConfig.lastCleanedHash",
+        "confidence": 1,
+        "source_line": 25
+      },
+      {
+        "dst": "module:src/utils/compile-commands-cleaner.ts#CleaningConfig.lastCleanedAt",
+        "confidence": 1,
+        "source_line": 26
+      },
+      {
+        "dst": "module:src/utils/compile-commands-cleaner.ts#CleaningConfig.preflight",
+        "confidence": 1,
+        "source_line": 27
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts",
+        "confidence": 1,
+        "source_line": 19
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts#cleanCompileCommands",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 292
+      },
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts#readCleaningConfig",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 501
+      },
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts#updateCleaningConfig",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 519
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.129Z"
+  }
+}

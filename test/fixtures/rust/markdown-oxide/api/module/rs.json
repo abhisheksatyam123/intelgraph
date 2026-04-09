@@ -1,0 +1,405 @@
+{
+  "kind": "module",
+  "canonical_name": "module:tests/vault_tests.rs",
+  "category": "module",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/tests/vault_tests.rs",
+    "line": 1,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 1963,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:tests/vault_tests.rs#common",
+        "confidence": 1,
+        "source_line": 1
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#wiki_link_parsing",
+        "confidence": 1,
+        "source_line": 18
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#wiki_link_heading_parsing",
+        "confidence": 1,
+        "source_line": 74
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#wiki_link_indexedblock_parsing",
+        "confidence": 1,
+        "source_line": 102
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#wiki_link_parsin_with_display_text",
+        "confidence": 1,
+        "source_line": 130
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#md_link_parsing",
+        "confidence": 1,
+        "source_line": 186
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#advanced_md_link_parsing",
+        "confidence": 1,
+        "source_line": 255
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#md_heading_link_parsing",
+        "confidence": 1,
+        "source_line": 306
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#md_block_link_parsing",
+        "confidence": 1,
+        "source_line": 361
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#md_link_with_trailing_parentheses_parsing",
+        "confidence": 1,
+        "source_line": 416
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#footnote_link_parsing",
+        "confidence": 1,
+        "source_line": 451
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#multi_footnote_link_parsing",
+        "confidence": 1,
+        "source_line": 476
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#link_parsing_with_png",
+        "confidence": 1,
+        "source_line": 535
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#wiki_link_with_dot_in_filename",
+        "confidence": 1,
+        "source_line": 561
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#wiki_link_with_dot_in_filename_and_heading",
+        "confidence": 1,
+        "source_line": 618
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#wiki_link_with_dot_in_filename_and_md_extension",
+        "confidence": 1,
+        "source_line": 646
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#md_link_with_dot_in_filename",
+        "confidence": 1,
+        "source_line": 671
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#md_link_with_dot_in_filename_and_heading",
+        "confidence": 1,
+        "source_line": 695
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#md_link_with_dot_in_filename_and_md_extension",
+        "confidence": 1,
+        "source_line": 723
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#heading_parsing",
+        "confidence": 1,
+        "source_line": 747
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#heading_parsing_skips_frontmatter_comments",
+        "confidence": 1,
+        "source_line": 800
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#indexed_block_parsing",
+        "confidence": 1,
+        "source_line": 853
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_linkable_reference",
+        "confidence": 1,
+        "source_line": 873
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_linkable_reference_heading",
+        "confidence": 1,
+        "source_line": 893
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_linkable_reference_indexed_block",
+        "confidence": 1,
+        "source_line": 917
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#parsing_special_text",
+        "confidence": 1,
+        "source_line": 940
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_comprehensive_tag_parsing",
+        "confidence": 1,
+        "source_line": 996
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_all_quote_types_in_tags",
+        "confidence": 1,
+        "source_line": 1190
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_obsidian_footnote",
+        "confidence": 1,
+        "source_line": 1292
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#parse_link_ref_def",
+        "confidence": 1,
+        "source_line": 1377
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#parse_link_ref",
+        "confidence": 1,
+        "source_line": 1403
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#parse_url_encoded_link",
+        "confidence": 1,
+        "source_line": 1427
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_frontmatter_tags_block_list",
+        "confidence": 1,
+        "source_line": 1451
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_frontmatter_tags_inline_list",
+        "confidence": 1,
+        "source_line": 1472
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_frontmatter_tags_single_string",
+        "confidence": 1,
+        "source_line": 1484
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_frontmatter_tags_not_duplicated_with_body_tags",
+        "confidence": 1,
+        "source_line": 1495
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_frontmatter_tag_named_tag",
+        "confidence": 1,
+        "source_line": 1511
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_frontmatter_no_tags",
+        "confidence": 1,
+        "source_line": 1527
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#parse_weird_url_encoded_file_link",
+        "confidence": 1,
+        "source_line": 1537
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_vault_root",
+        "confidence": 1,
+        "source_line": 1570
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#build_test_vault",
+        "confidence": 1,
+        "source_line": 1574
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_lowercase_slug_heading_reference_matches",
+        "confidence": 1,
+        "source_line": 1585
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_same_file_lowercase_slug_not_unresolved",
+        "confidence": 1,
+        "source_line": 1620
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_cross_file_lowercase_slug_not_unresolved",
+        "confidence": 1,
+        "source_line": 1651
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_obsidian_wiki_links_still_resolved",
+        "confidence": 1,
+        "source_line": 1681
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#make_heading_ref",
+        "confidence": 1,
+        "source_line": 1716
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_slug_strips_parentheses",
+        "confidence": 1,
+        "source_line": 1742
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_slug_strips_parentheses_2",
+        "confidence": 1,
+        "source_line": 1759
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_slug_strips_parentheses_3",
+        "confidence": 1,
+        "source_line": 1777
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_slug_strips_slash",
+        "confidence": 1,
+        "source_line": 1795
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_slug_strips_parens_and_slash",
+        "confidence": 1,
+        "source_line": 1813
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_punctuation_slug_same_file_not_unresolved",
+        "confidence": 1,
+        "source_line": 1832
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_punctuation_slug_cross_file_not_unresolved",
+        "confidence": 1,
+        "source_line": 1861
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_slug_em_dash_collapses_1",
+        "confidence": 1,
+        "source_line": 1897
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_slug_em_dash_collapses_2",
+        "confidence": 1,
+        "source_line": 1914
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_slug_em_dash_collapses_3",
+        "confidence": 1,
+        "source_line": 1932
+      },
+      {
+        "dst": "module:tests/vault_tests.rs#test_slug_em_dash_and_arrow_collapses",
+        "confidence": 1,
+        "source_line": 1950
+      }
+    ],
+    "imports_out": [
+      {
+        "dst": "module:std::path#Path",
+        "confidence": 1,
+        "source_line": 3
+      },
+      {
+        "dst": "module:itertools#Itertools",
+        "confidence": 1,
+        "source_line": 5
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Position",
+        "confidence": 1,
+        "source_line": 6
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Range",
+        "confidence": 1,
+        "source_line": 6
+      },
+      {
+        "dst": "module:markdown_oxide::config#Settings",
+        "confidence": 1,
+        "source_line": 1575
+      },
+      {
+        "dst": "module:markdown_oxide::vault#HeadingLevel",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:markdown_oxide::vault#MDFile",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:markdown_oxide::vault#MDFootnote",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:markdown_oxide::vault#MDHeading",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:markdown_oxide::vault#MDIndexedBlock",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:markdown_oxide::vault#MDLinkReferenceDefinition",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:markdown_oxide::vault#MDTag",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:markdown_oxide::vault#Reference",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:markdown_oxide::vault#ReferenceData",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:markdown_oxide::vault#Referenceable",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:markdown_oxide::vault#Refname",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:markdown_oxide::vault#Vault",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:markdown_oxide::vault::Reference",
+        "confidence": 1,
+        "source_line": 15
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "module"
+    ],
+    "total_outgoing_edges": 75,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:13.674Z"
+  }
+}

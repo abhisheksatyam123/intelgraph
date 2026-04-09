@@ -1,0 +1,41 @@
+{
+  "kind": "global_var",
+  "canonical_name": "module:src/intelligence/db/sqlite/client.ts#raw",
+  "category": "global_var",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/client.ts",
+    "line": 68,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 4,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:better-sqlite3",
+        "confidence": 0.9,
+        "resolution": "default-import",
+        "source_line": 68
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/client.ts",
+        "confidence": 1,
+        "source_line": 68
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "global_var"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:05.096Z"
+  }
+}

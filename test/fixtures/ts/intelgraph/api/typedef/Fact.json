@@ -1,0 +1,91 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:src/intelligence/extraction/facts.ts#Fact",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/facts.ts",
+    "line": 110,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 7,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/facts.ts#ObservationFact",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 111
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.ts#EvidenceFact",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 111
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.ts#EdgeFact",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 111
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.ts#AggregateFieldFact",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 111
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.ts#TypeFact",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 111
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.ts#SymbolFact",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 111
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/facts.ts",
+        "confidence": 1,
+        "source_line": 110
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#FactKind",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 118
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#canonicalKey",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 185
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#validateFact",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 248
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:07.064Z"
+  }
+}

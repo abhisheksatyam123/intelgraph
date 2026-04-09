@@ -1,0 +1,65 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/vault/referenceable.rs#Refname.link_file_key",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/referenceable.rs",
+    "line": 89,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 5,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "clone",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 90
+      },
+      {
+        "dst": "next_back",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 91
+      },
+      {
+        "dst": "split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 91
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 92
+      },
+      {
+        "dst": "to_string",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 92
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/referenceable.rs#Refname",
+        "confidence": 1,
+        "source_line": 89
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.792Z"
+  }
+}

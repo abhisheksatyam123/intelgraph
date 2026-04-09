@@ -1,0 +1,132 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/completion/link_completer.rs#WikiLinkCompleter",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/link_completer.rs",
+    "line": 428,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 12,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.vault",
+        "confidence": 1,
+        "source_line": 429
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.cmp_text",
+        "confidence": 1,
+        "source_line": 430
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.files",
+        "confidence": 1,
+        "source_line": 431
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.index",
+        "confidence": 1,
+        "source_line": 432
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.character",
+        "confidence": 1,
+        "source_line": 433
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.line",
+        "confidence": 1,
+        "source_line": 434
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.context_path",
+        "confidence": 1,
+        "source_line": 435
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.settings",
+        "confidence": 1,
+        "source_line": 436
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.chars_in_line",
+        "confidence": 1,
+        "source_line": 437
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.completion_index",
+        "confidence": 1,
+        "source_line": 438
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.path",
+        "confidence": 1,
+        "source_line": 446
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.position",
+        "confidence": 1,
+        "source_line": 450
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.entered_refname",
+        "confidence": 1,
+        "source_line": 465
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.completion_text_edit",
+        "confidence": 1,
+        "source_line": 469
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.construct",
+        "confidence": 1,
+        "source_line": 505
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.completions",
+        "confidence": 1,
+        "source_line": 561
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.completion_filter_text",
+        "confidence": 1,
+        "source_line": 646
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompleter",
+        "confidence": 1,
+        "source_line": 441
+      },
+      {
+        "dst": "Completer",
+        "confidence": 1,
+        "source_line": 504
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/link_completer.rs",
+        "confidence": 1,
+        "source_line": 428
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 19,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.854Z"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "kind": "function",
+  "canonical_name": "module:vscode-extension/client/src/extension.ts#getDateWithOffset",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/vscode-extension/client/src/extension.ts",
+    "line": 42,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 5,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "Date",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 43
+      },
+      {
+        "dst": "module:vscode-extension/client/src/extension.ts#date.setDate",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 44
+      },
+      {
+        "dst": "module:vscode-extension/client/src/extension.ts#date.getDate",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 44
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:vscode-extension/client/src/extension.ts",
+        "confidence": 1,
+        "source_line": 42
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:vscode-extension/client/src/extension.ts#generateDateOptions",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 81
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.103Z"
+  }
+}

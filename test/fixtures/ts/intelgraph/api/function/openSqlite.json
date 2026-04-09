@@ -1,0 +1,111 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/db/sqlite/client.ts#openSqlite",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/client.ts",
+    "line": 48,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 47,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/client.ts#OpenSqliteOptions",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 48
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/client.ts#SqliteClient",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 48
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:node:path#isAbsolute",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 52
+      },
+      {
+        "dst": "module:node:path#resolve",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 54
+      },
+      {
+        "dst": "process.cwd",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 54
+      },
+      {
+        "dst": "module:node:fs#mkdirSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 61
+      },
+      {
+        "dst": "module:node:path#dirname",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 61
+      },
+      {
+        "dst": "module:better-sqlite3",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 68
+      },
+      {
+        "dst": "module:better-sqlite3.pragma",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 79
+      },
+      {
+        "dst": "module:drizzle-orm/better-sqlite3#drizzle",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 82
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/client.ts",
+        "confidence": 1,
+        "source_line": 48
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/fixtures/run-multi-lang.mjs",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 102
+      },
+      {
+        "src": "module:test/fixtures/verify-fixtures.mjs",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 83
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.764Z"
+  }
+}

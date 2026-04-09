@@ -1,0 +1,87 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/codelens.rs#FindReferencesData",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/codelens.rs",
+    "line": 11,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 5,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:tower_lsp::lsp_types#Location",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 11
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Position",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 11
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Url",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 11
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/codelens.rs#FindReferencesData.uri",
+        "confidence": 1,
+        "source_line": 12
+      },
+      {
+        "dst": "module:src/codelens.rs#FindReferencesData.position",
+        "confidence": 1,
+        "source_line": 13
+      },
+      {
+        "dst": "module:src/codelens.rs#FindReferencesData.locations",
+        "confidence": 1,
+        "source_line": 14
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:tower_lsp::lsp_types#Url",
+        "confidence": 0.95,
+        "source_line": 11
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Position",
+        "confidence": 0.95,
+        "source_line": 11
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Location",
+        "confidence": 0.95,
+        "source_line": 11
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/codelens.rs",
+        "confidence": 1,
+        "source_line": 11
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.852Z"
+  }
+}

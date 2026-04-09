@@ -1,0 +1,41 @@
+{
+  "kind": "global_var",
+  "canonical_name": "module:src/index.ts#tracker",
+  "category": "global_var",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/index.ts",
+    "line": 144,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 1,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tracking/index.js#IndexTracker",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 144
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/index.ts",
+        "confidence": 1,
+        "source_line": 144
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "global_var"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:05.093Z"
+  }
+}

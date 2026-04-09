@@ -1,0 +1,100 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/contracts/orchestrator.ts#OrchestrationState",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/orchestrator.ts",
+    "line": 372,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 6,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryRequest",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 374
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#FallbackPolicy",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 375
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#EnrichmentAttempt",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 376
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#OrchestrationState.lookupHit",
+        "confidence": 1,
+        "source_line": 373
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#OrchestrationState.request",
+        "confidence": 1,
+        "source_line": 374
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#OrchestrationState.policy",
+        "confidence": 1,
+        "source_line": 375
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#OrchestrationState.attempts",
+        "confidence": 1,
+        "source_line": 376
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryRequest",
+        "confidence": 0.95,
+        "source_line": 372
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#FallbackPolicy",
+        "confidence": 0.95,
+        "source_line": 372
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#EnrichmentAttempt",
+        "confidence": 0.95,
+        "source_line": 372
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/orchestrator.ts",
+        "confidence": 1,
+        "source_line": 372
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/orchestrator.ts#decideOrchestrationAction",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 379
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.110Z"
+  }
+}

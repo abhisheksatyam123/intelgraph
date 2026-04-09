@@ -1,0 +1,55 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.loadGraphJson",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/db-lookup.ts",
+    "line": 135,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 7,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.js#GraphJsonFilters",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 138
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.js#GraphJson",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 139
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.js#loadGraphJsonFromDb",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 140
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup",
+        "confidence": 1,
+        "source_line": 135
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.483Z"
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "kind": "class",
+  "canonical_name": "module:src/intelligence/extraction/context.ts#InMemoryKeyedCache",
+  "category": "class",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/context.ts",
+    "line": 184,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 24,
+  "relations": {
+    "implements_out": [
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#KeyedCache",
+        "confidence": 1,
+        "resolution": "local",
+        "source_line": 184
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#InMemoryKeyedCache.store",
+        "confidence": 1,
+        "source_line": 185
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#InMemoryKeyedCache.get",
+        "confidence": 1,
+        "source_line": 187
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#InMemoryKeyedCache.set",
+        "confidence": 1,
+        "source_line": 191
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#InMemoryKeyedCache.has",
+        "confidence": 1,
+        "source_line": 195
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#InMemoryKeyedCache.getOrCompute",
+        "confidence": 1,
+        "source_line": 199
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts",
+        "confidence": 1,
+        "source_line": 184
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.constructor",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 356
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "class"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:57.973Z"
+  }
+}

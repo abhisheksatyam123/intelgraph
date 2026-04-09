@@ -1,0 +1,87 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/core/types.ts#BackendDeps",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/core/types.ts",
+    "line": 7,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 5,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/lsp/types.js#ILanguageClient",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 8
+      },
+      {
+        "dst": "module:src/tracking/index.js#IndexTracker",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 9
+      },
+      {
+        "dst": "module:src/backend/unified-backend.js#UnifiedBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 10
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/core/types.ts#BackendDeps.getClient",
+        "confidence": 1,
+        "source_line": 8
+      },
+      {
+        "dst": "module:src/core/types.ts#BackendDeps.tracker",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:src/core/types.ts#BackendDeps.backend",
+        "confidence": 1,
+        "source_line": 10
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/lsp/types.js#ILanguageClient",
+        "confidence": 0.95,
+        "source_line": 7
+      },
+      {
+        "dst": "module:src/tracking/index.js#IndexTracker",
+        "confidence": 0.95,
+        "source_line": 7
+      },
+      {
+        "dst": "module:src/backend/unified-backend.js#UnifiedBackend",
+        "confidence": 0.95,
+        "source_line": 7
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/core/types.ts",
+        "confidence": 1,
+        "source_line": 7
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.100Z"
+  }
+}

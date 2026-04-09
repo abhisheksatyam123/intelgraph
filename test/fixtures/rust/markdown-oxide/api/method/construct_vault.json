@@ -1,0 +1,223 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/vault/build.rs#Vault.construct_vault",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/build.rs",
+    "line": 18,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 52,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/config.rs#Settings",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 18
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "collect_vec",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 20
+      },
+      {
+        "dst": "filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 20
+      },
+      {
+        "dst": "flatten",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 20
+      },
+      {
+        "dst": "filter_entry",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 20
+      },
+      {
+        "dst": "into_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 20
+      },
+      {
+        "dst": "module:walkdir#WalkDir.new",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 20
+      },
+      {
+        "dst": "path",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 60
+      },
+      {
+        "dst": "is_dir",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 27
+      },
+      {
+        "dst": "file_type",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 27
+      },
+      {
+        "dst": "unwrap_or",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 37
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 37
+      },
+      {
+        "dst": "to_str",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 43
+      },
+      {
+        "dst": "file_name",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 37
+      },
+      {
+        "dst": "any",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 30
+      },
+      {
+        "dst": "iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 55
+      },
+      {
+        "dst": "starts_with",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 39
+      },
+      {
+        "dst": "and_then",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 43
+      },
+      {
+        "dst": "extension",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 43
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 43
+      },
+      {
+        "dst": "collect",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 55
+      },
+      {
+        "dst": "flat_map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 55
+      },
+      {
+        "dst": "par_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 46
+      },
+      {
+        "dst": "std::fs::read_to_string",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 58
+      },
+      {
+        "dst": "MDFile::new",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 50
+      },
+      {
+        "dst": "PathBuf::from",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 50
+      },
+      {
+        "dst": "Ok::<(PathBuf, MDFile), std::io::Error>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 51
+      },
+      {
+        "dst": "into",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 67
+      },
+      {
+        "dst": "module:ropey#Rope.from_str",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 59
+      },
+      {
+        "dst": "Ok::<(PathBuf, Rope), std::io::Error>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 60
+      },
+      {
+        "dst": "Ok",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 64
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/build.rs#Vault",
+        "confidence": 1,
+        "source_line": 18
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 31,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.784Z"
+  }
+}

@@ -3,29 +3,97 @@
   "canonical_name": "module:src/vault/core.rs#Vault",
   "category": "struct",
   "source": {
-    "file": "src/vault/core.rs",
-    "line": 21
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/core.rs",
+    "line": 21,
+    "character": 1
   },
-  "description": "The central Vault struct — owns the parsed state of every markdown file in the user's vault. Cross-file references everywhere (preview.rs, backend/handlers.rs, completion/, references.rs).",
+  "exported": true,
+  "line_count": 5,
   "relations": {
-    "implements": [
-      { "type": "Hash", "file": "src/vault/core.rs", "line": 33 }
+    "references_type_out": [
+      {
+        "dst": "module:src/vault/core.rs#MyHashMap",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 21
+      },
+      {
+        "dst": "module:ropey#Rope",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 21
+      },
+      {
+        "dst": "module:super::md_file#MDFile",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 21
+      }
     ],
-    "field_kinds_present": ["md_files", "ropes", "root_dir"],
-    "references_type_in": [
-      { "referrer": "Backend",           "type": "Vault" },
-      { "referrer": "goto_definition",   "type": "Vault" },
-      { "referrer": "references",        "type": "Vault" },
-      { "referrer": "workspace_symbol",  "type": "Vault" }
+    "contains_out": [
+      {
+        "dst": "module:src/vault/core.rs#Vault.md_files",
+        "confidence": 1,
+        "source_line": 22
+      },
+      {
+        "dst": "module:src/vault/core.rs#Vault.ropes",
+        "confidence": 1,
+        "source_line": 23
+      },
+      {
+        "dst": "module:src/vault/core.rs#Vault.root_dir",
+        "confidence": 1,
+        "source_line": 24
+      },
+      {
+        "dst": "module:src/vault/core.rs#Vault.hash",
+        "confidence": 1,
+        "source_line": 34
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/vault/core.rs#MyHashMap",
+        "confidence": 0.95,
+        "source_line": 21
+      },
+      {
+        "dst": "module:super::md_file#MDFile",
+        "confidence": 0.95,
+        "source_line": 21
+      },
+      {
+        "dst": "module:ropey#Rope",
+        "confidence": 0.95,
+        "source_line": 21
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "Hash",
+        "confidence": 1,
+        "source_line": 33
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/core.rs",
+        "confidence": 1,
+        "source_line": 21
+      }
     ]
   },
   "contract": {
-    "required_node_kinds": ["struct"],
-    "minimum_field_count": 2,
-    "notes": "Must emit struct node + field nodes + implements edge to Hash trait + references_type edges from at least 2 other modules."
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 1
   },
   "ground_truth_metadata": {
-    "extracted_from": "markdown-oxide",
-    "method": "manual_grep"
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.857Z"
   }
 }

@@ -1,0 +1,125 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/extraction/fact-bus.ts#FactBus.lookupExisting",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/fact-bus.ts",
+    "line": 255,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 16,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/facts.js#FactKind",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 255
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.js#Fact",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 255
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "this.symbols.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 258
+      },
+      {
+        "dst": "this.types.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 260
+      },
+      {
+        "dst": "this.aggregateFields.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 262
+      },
+      {
+        "dst": "this.edges.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 264
+      },
+      {
+        "dst": "this.evidence.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 266
+      },
+      {
+        "dst": "this.observations.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 268
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.symbols",
+        "confidence": 0.95,
+        "source_line": 258
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.types",
+        "confidence": 0.95,
+        "source_line": 260
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.aggregateFields",
+        "confidence": 0.95,
+        "source_line": 262
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.edges",
+        "confidence": 0.95,
+        "source_line": 264
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.evidence",
+        "confidence": 0.95,
+        "source_line": 266
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.observations",
+        "confidence": 0.95,
+        "source_line": 268
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBus.emit",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 160
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBus",
+        "confidence": 1,
+        "source_line": 255
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 14,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.493Z"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:src/intelligence/db/sqlite/graph-export.ts#NodeRow",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/graph-export.ts",
+    "line": 127,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 6,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-export.ts",
+        "confidence": 1,
+        "source_line": 127
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-export.ts#nodeRows",
+        "confidence": 0.9,
+        "resolution": "local",
+        "source_line": 172
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:07.062Z"
+  }
+}

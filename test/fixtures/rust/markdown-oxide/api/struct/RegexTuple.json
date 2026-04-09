@@ -1,0 +1,94 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/vault/reference.rs#RegexTuple",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/reference.rs",
+    "line": 334,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 7,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:regex#Match",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 334
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/vault/reference.rs#RegexTuple.range",
+        "confidence": 1,
+        "source_line": 335
+      },
+      {
+        "dst": "module:src/vault/reference.rs#RegexTuple.file_path",
+        "confidence": 1,
+        "source_line": 336
+      },
+      {
+        "dst": "module:src/vault/reference.rs#RegexTuple.infile_ref",
+        "confidence": 1,
+        "source_line": 337
+      },
+      {
+        "dst": "module:src/vault/reference.rs#RegexTuple.display_text",
+        "confidence": 1,
+        "source_line": 338
+      },
+      {
+        "dst": "module:src/vault/reference.rs#RegexTuple.has_md_ending",
+        "confidence": 1,
+        "source_line": 339
+      },
+      {
+        "dst": "module:src/vault/reference.rs#RegexTuple.new",
+        "confidence": 1,
+        "source_line": 343
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:regex#Match",
+        "confidence": 0.95,
+        "source_line": 334
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/reference.rs",
+        "confidence": 1,
+        "source_line": 334
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/vault/reference.rs#RegexTuple.new",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 343
+      },
+      {
+        "src": "module:src/vault/reference.rs#generic_link_constructor",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 403
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.859Z"
+  }
+}

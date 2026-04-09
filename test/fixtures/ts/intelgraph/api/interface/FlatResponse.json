@@ -1,0 +1,83 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#FlatResponse",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/integration/intelligence-query-mcp-roundtrip.test.ts",
+    "line": 177,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 4,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#FlatResponse.status",
+        "confidence": 1,
+        "source_line": 178
+      },
+      {
+        "dst": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#FlatResponse.data",
+        "confidence": 1,
+        "source_line": 179
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts",
+        "confidence": 1,
+        "source_line": 177
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#callTool",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 184
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#apiWrites",
+        "confidence": 0.9,
+        "resolution": "local",
+        "source_line": 1093
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#apiReads",
+        "confidence": 0.9,
+        "resolution": "local",
+        "source_line": 1111
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#writers",
+        "confidence": 0.9,
+        "resolution": "local",
+        "source_line": 1129
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#readers",
+        "confidence": 0.9,
+        "resolution": "local",
+        "source_line": 1147
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#validateRes",
+        "confidence": 0.9,
+        "resolution": "local",
+        "source_line": 1621
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 7
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.130Z"
+  }
+}

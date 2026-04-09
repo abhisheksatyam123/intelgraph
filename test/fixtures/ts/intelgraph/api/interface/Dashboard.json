@@ -1,0 +1,190 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/bin/snapshot-stats.ts#Dashboard",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/bin/snapshot-stats.ts",
+    "line": 204,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 46,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.workspace",
+        "confidence": 1,
+        "source_line": 205
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.files_discovered",
+        "confidence": 1,
+        "source_line": 206
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.total_nodes",
+        "confidence": 1,
+        "source_line": 207
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.total_edges",
+        "confidence": 1,
+        "source_line": 208
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.edge_kinds",
+        "confidence": 1,
+        "source_line": 209
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.resolution_kinds",
+        "confidence": 1,
+        "source_line": 210
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.top_imported_modules",
+        "confidence": 1,
+        "source_line": 211
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.top_called_functions",
+        "confidence": 1,
+        "source_line": 212
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.largest_modules",
+        "confidence": 1,
+        "source_line": 213
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.tightly_coupled",
+        "confidence": 1,
+        "source_line": 214
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.cycles",
+        "confidence": 1,
+        "source_line": 219
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.dead_exports_count",
+        "confidence": 1,
+        "source_line": 220
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.undocumented_exports_count",
+        "confidence": 1,
+        "source_line": 221
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.entry_points_count",
+        "confidence": 1,
+        "source_line": 222
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.orphan_modules_count",
+        "confidence": 1,
+        "source_line": 223
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.external_imports",
+        "confidence": 1,
+        "source_line": 224
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.unused_fields_count",
+        "confidence": 1,
+        "source_line": 228
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.call_cycles_count",
+        "confidence": 1,
+        "source_line": 229
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.struct_cycles_count",
+        "confidence": 1,
+        "source_line": 230
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.top_touched_types",
+        "confidence": 1,
+        "source_line": 231
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.top_field_writers",
+        "confidence": 1,
+        "source_line": 232
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.top_field_readers",
+        "confidence": 1,
+        "source_line": 233
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.top_hot_fields",
+        "confidence": 1,
+        "source_line": 235
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.top_field_classes",
+        "confidence": 1,
+        "source_line": 242
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.field_clumps",
+        "confidence": 1,
+        "source_line": 244
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.unique_callers_count",
+        "confidence": 1,
+        "source_line": 246
+      },
+      {
+        "dst": "module:src/bin/snapshot-stats.ts#Dashboard.recursive_methods_count",
+        "confidence": 1,
+        "source_line": 248
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts",
+        "confidence": 1,
+        "source_line": 204
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts#buildDashboard",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 251
+      },
+      {
+        "src": "module:src/bin/snapshot-stats.ts#printDashboard",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 552
+      },
+      {
+        "src": "module:src/bin/snapshot-stats.ts#dashboardToMarkdown",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 686
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 27,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.099Z"
+  }
+}

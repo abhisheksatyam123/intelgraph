@@ -1,0 +1,73 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:src/fixtures/fixture-comparator.ts#BackendResponse",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/fixture-comparator.ts",
+    "line": 58,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 5,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/fixture-comparator.ts#BackendItem",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 58
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/fixture-comparator.ts",
+        "confidence": 1,
+        "source_line": 58
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/fixtures/fixture-comparator.ts#compareEntityToBackend",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 141
+      },
+      {
+        "src": "module:test/unit/fixtures/fixture-comparator.test.ts#makeBackendHit",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 61
+      },
+      {
+        "src": "module:test/unit/fixtures/fixture-comparator.test.ts#backend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 147
+      },
+      {
+        "src": "module:test/unit/fixtures/fixture-comparator.test.ts#badStatusBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 176
+      },
+      {
+        "src": "module:test/unit/fixtures/fixture-comparator.test.ts#failBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 258
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 6
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:07.056Z"
+  }
+}

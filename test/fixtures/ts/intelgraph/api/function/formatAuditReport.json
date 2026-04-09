@@ -1,0 +1,99 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/fixtures/completeness-audit.ts#formatAuditReport",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/completeness-audit.ts",
+    "line": 245,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 75,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#AuditReport",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 245
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#lines.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 316
+      },
+      {
+        "dst": "padEnd",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 300
+      },
+      {
+        "dst": "report.apis_needing_followup.forEach",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 307
+      },
+      {
+        "dst": "join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 308
+      },
+      {
+        "dst": "api.missing_relations.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 308
+      },
+      {
+        "dst": "Math.round",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 309
+      },
+      {
+        "dst": "label.padEnd",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 310
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#lines.join",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 318
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/completeness-audit.ts",
+        "confidence": 1,
+        "source_line": 245
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/unit/fixtures/completeness-audit.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 90
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.754Z"
+  }
+}

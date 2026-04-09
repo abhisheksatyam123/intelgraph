@@ -1,0 +1,99 @@
+{
+  "kind": "class",
+  "canonical_name": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink",
+  "category": "class",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/tools/ingest-tool.ts",
+    "line": 111,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 33,
+  "relations": {
+    "implements_out": [
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphWriteSink",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 111
+      }
+    ],
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.js#SymbolRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 114
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink.functionSymbols",
+        "confidence": 1,
+        "source_line": 114
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink.constructor",
+        "confidence": 1,
+        "source_line": 112
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink.write",
+        "confidence": 1,
+        "source_line": 116
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink.isFunctionNode",
+        "confidence": 1,
+        "source_line": 125
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink.toSymbolRow",
+        "confidence": 1,
+        "source_line": 129
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.js#SymbolRow",
+        "confidence": 0.95,
+        "source_line": 111
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts",
+        "confidence": 1,
+        "source_line": 111
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#captureSink",
+        "confidence": 0.9,
+        "resolution": "local",
+        "source_line": 233
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#executeIngestTool",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 233
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "class"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:57.976Z"
+  }
+}

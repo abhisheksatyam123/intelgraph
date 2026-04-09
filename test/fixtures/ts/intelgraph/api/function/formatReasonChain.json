@@ -1,0 +1,53 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/formatters.ts#formatReasonChain",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/formatters.ts",
+    "line": 238,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 14,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "import",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 240
+      },
+      {
+        "dst": "module:src/tools/reason-engine/format-reason-chain.js#formatReasonChainText",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 250
+      },
+      {
+        "dst": "module:src/tools/schemas.js#displayPath",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 250
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/formatters.ts",
+        "confidence": 1,
+        "source_line": 238
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.790Z"
+  }
+}

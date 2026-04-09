@@ -1,0 +1,257 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/extraction/context.ts#ExtractionContext",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/context.ts",
+    "line": 112,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 58,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/index.js#LspService",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 127
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.js#TreeSitterService",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 128
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.js#RipgrepService",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 129
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.js#WorkspaceService",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 130
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.js#SymbolFact",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 139
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.js#SymbolFactInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 139
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.js#TypeFact",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 142
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.js#TypeFactInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 142
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.js#AggregateFieldFact",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 145
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.js#AggregateFieldFactInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 145
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.js#EdgeFact",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 148
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.js#EdgeFactInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 148
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.js#EvidenceFact",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 151
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.js#EvidenceFactInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 151
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.js#ObservationFact",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 154
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.js#ObservationFactInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 154
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.js#SourceLocation",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 161
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#KeyedCache",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 165
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#PluginLogger",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 166
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#PluginMetrics",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 167
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContext.snapshotId",
+        "confidence": 1,
+        "source_line": 116
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContext.workspaceRoot",
+        "confidence": 1,
+        "source_line": 118
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContext.extractorName",
+        "confidence": 1,
+        "source_line": 123
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContext.lsp",
+        "confidence": 1,
+        "source_line": 127
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContext.treesitter",
+        "confidence": 1,
+        "source_line": 128
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContext.ripgrep",
+        "confidence": 1,
+        "source_line": 129
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContext.workspace",
+        "confidence": 1,
+        "source_line": 130
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContext.cache",
+        "confidence": 1,
+        "source_line": 165
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContext.log",
+        "confidence": 1,
+        "source_line": 166
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContext.metrics",
+        "confidence": 1,
+        "source_line": 167
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContext.signal",
+        "confidence": 1,
+        "source_line": 168
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/index.js#LspService",
+        "confidence": 0.95,
+        "source_line": 112
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.js#TreeSitterService",
+        "confidence": 0.95,
+        "source_line": 112
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.js#RipgrepService",
+        "confidence": 0.95,
+        "source_line": 112
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.js#WorkspaceService",
+        "confidence": 0.95,
+        "source_line": 112
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#KeyedCache",
+        "confidence": 0.95,
+        "source_line": 112
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#PluginLogger",
+        "confidence": 0.95,
+        "source_line": 112
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#PluginMetrics",
+        "confidence": 0.95,
+        "source_line": 112
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts",
+        "confidence": 1,
+        "source_line": 112
+      }
+    ],
+    "implements_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl",
+        "confidence": 1,
+        "resolution": "local",
+        "source_line": 330
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 38,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.113Z"
+  }
+}

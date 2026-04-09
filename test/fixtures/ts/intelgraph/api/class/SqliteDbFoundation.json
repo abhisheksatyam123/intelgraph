@@ -1,0 +1,111 @@
+{
+  "kind": "class",
+  "canonical_name": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation",
+  "category": "class",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/foundation.ts",
+    "line": 28,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 98,
+  "relations": {
+    "implements_out": [
+      {
+        "dst": "module:src/intelligence/contracts/db-foundation.js#IDbFoundation",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 28
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.constructor",
+        "confidence": 1,
+        "source_line": 29
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.initSchema",
+        "confidence": 1,
+        "source_line": 34
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.runMigrations",
+        "confidence": 1,
+        "source_line": 44
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.beginSnapshot",
+        "confidence": 1,
+        "source_line": 48
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.commitSnapshot",
+        "confidence": 1,
+        "source_line": 72
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.failSnapshot",
+        "confidence": 1,
+        "source_line": 81
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.getLatestReadySnapshot",
+        "confidence": 1,
+        "source_line": 90
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.withTransaction",
+        "confidence": 1,
+        "source_line": 115
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/foundation.ts",
+        "confidence": 1,
+        "source_line": 28
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/fixtures/run-multi-lang.mjs#foundation",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 103
+      },
+      {
+        "src": "module:test/fixtures/verify-fixtures.mjs#foundation",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 84
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/fixtures/run-multi-lang.mjs",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 103
+      },
+      {
+        "src": "module:test/fixtures/verify-fixtures.mjs",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 84
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "class"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:57.972Z"
+  }
+}

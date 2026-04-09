@@ -1,0 +1,97 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.materializeSnapshot",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/extraction/clangd-extraction-adapter.ts",
+    "line": 198,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 30,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/extraction-adapter.js#ExtractionBatches",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 198
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.js#IngestReport",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 198
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "batches.symbolBatch.symbols.map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 199
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#symbolNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 199
+      },
+      {
+        "dst": "batches.edgeBatch.edges.map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 201
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#edgeRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 200
+      },
+      {
+        "dst": "filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 201
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#evidenceRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 202
+      },
+      {
+        "dst": "Boolean",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 203
+      },
+      {
+        "dst": "this.sink.write",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 206
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter",
+        "confidence": 1,
+        "source_line": 198
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.473Z"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterService",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/treesitter-service.ts",
+    "line": 45,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 75,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.js#FunctionCall",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 62
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.js#TsTree",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 97
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.js#SupportedLanguage",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 97
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.js#TsNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 115
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts",
+        "confidence": 1,
+        "source_line": 45
+      }
+    ],
+    "implements_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl",
+        "confidence": 1,
+        "resolution": "local",
+        "source_line": 125
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.121Z"
+  }
+}

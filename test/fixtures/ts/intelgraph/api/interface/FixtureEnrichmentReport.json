@@ -1,0 +1,104 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/fixtures/exhaustive-relation-scanner.ts#FixtureEnrichmentReport",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/exhaustive-relation-scanner.ts",
+    "line": 169,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 10,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryIntent",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 176
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#FixtureEnrichmentReport.timestamp",
+        "confidence": 1,
+        "source_line": 170
+      },
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#FixtureEnrichmentReport.snapshot_id",
+        "confidence": 1,
+        "source_line": 171
+      },
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#FixtureEnrichmentReport.total_apis",
+        "confidence": 1,
+        "source_line": 172
+      },
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#FixtureEnrichmentReport.successful_apis",
+        "confidence": 1,
+        "source_line": 173
+      },
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#FixtureEnrichmentReport.failed_apis",
+        "confidence": 1,
+        "source_line": 174
+      },
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#FixtureEnrichmentReport.total_relations_added",
+        "confidence": 1,
+        "source_line": 175
+      },
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#FixtureEnrichmentReport.intents_queried_per_api",
+        "confidence": 1,
+        "source_line": 176
+      },
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#FixtureEnrichmentReport.intents_hit_per_api",
+        "confidence": 1,
+        "source_line": 177
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryIntent",
+        "confidence": 0.95,
+        "source_line": 169
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/exhaustive-relation-scanner.ts",
+        "confidence": 1,
+        "source_line": 169
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/fixtures/exhaustive-relation-scanner.ts#enrichAllApis",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 185
+      },
+      {
+        "src": "module:src/fixtures/exhaustive-relation-scanner.ts#report",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 193
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.103Z"
+  }
+}

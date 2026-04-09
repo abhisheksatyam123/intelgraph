@@ -1,0 +1,62 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/completion/matcher.rs#NucleoMatchable",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/matcher.rs",
+    "line": 17,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 1,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/completion/matcher.rs#NucleoMatchable.0",
+        "confidence": 1,
+        "source_line": 17
+      },
+      {
+        "dst": "module:src/completion/matcher.rs#NucleoMatchable.deref",
+        "confidence": 1,
+        "source_line": 20
+      },
+      {
+        "dst": "module:src/completion/matcher.rs#NucleoMatchable.as_ref",
+        "confidence": 1,
+        "source_line": 26
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "module:std::ops#Deref",
+        "confidence": 1,
+        "source_line": 18
+      },
+      {
+        "dst": "AsRef",
+        "confidence": 1,
+        "source_line": 25
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/matcher.rs",
+        "confidence": 1,
+        "source_line": 17
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.855Z"
+  }
+}

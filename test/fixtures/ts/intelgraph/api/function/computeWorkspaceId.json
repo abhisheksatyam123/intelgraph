@@ -1,26 +1,65 @@
 {
   "kind": "function",
   "canonical_name": "module:src/daemon/index.ts#computeWorkspaceId",
-  "category": "exported_function",
+  "category": "function",
   "source": {
-    "file": "src/daemon/index.ts",
-    "line": 119
+    "file": "/home/abhi/qprojects/intelgraph/src/daemon/index.ts",
+    "line": 119,
+    "character": 8
   },
-  "description": "Computes a stable, hash-based identifier for a workspace root. Used as a key for the spawn lock and the per-workspace state directory.",
+  "exported": true,
+  "line_count": 4,
   "relations": {
-    "calls_in_direct": [
-      { "caller": "module:src/index.ts", "callee": "computeWorkspaceId" }
-    ],
     "calls_out": [
-      { "caller": "computeWorkspaceId", "callee": "createHash" }
+      {
+        "dst": "module:src/daemon/index.ts#normaliseRoot",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 120
+      },
+      {
+        "dst": "slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 121
+      },
+      {
+        "dst": "digest",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 121
+      },
+      {
+        "dst": "update",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 121
+      },
+      {
+        "dst": "module:crypto#createHash",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 121
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/daemon/index.ts",
+        "confidence": 1,
+        "source_line": 119
+      }
     ]
   },
   "contract": {
-    "required_node_kinds": ["function"],
-    "notes": "Single callee, single caller — minimal fixture for round-trip caller-graph verification."
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 1
   },
   "ground_truth_metadata": {
-    "extracted_from": "intelgraph_self",
-    "method": "manual_grep"
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.751Z"
   }
 }

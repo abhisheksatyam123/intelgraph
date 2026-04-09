@@ -1,0 +1,75 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/indirect-callers.ts#classifyInitializer",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/indirect-callers.ts",
+    "line": 338,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 50,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/index.js#FunctionCall",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 339
+      },
+      {
+        "dst": "module:src/tools/indirect-callers.ts#ClassificationResult",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 344
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 351
+      },
+      {
+        "dst": "pattern.markerRegex.test",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 349
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/index.js#classifyGenericStructFieldCallback",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 367
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/indirect-callers.ts#classifyReference",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 297
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/indirect-callers.ts",
+        "confidence": 1,
+        "source_line": 338
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.793Z"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/core/lifecycle.ts#LifecycleConfig",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/core/lifecycle.ts",
+    "line": 35,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 9,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/core/lifecycle.ts#LifecycleConfig.root",
+        "confidence": 1,
+        "source_line": 36
+      },
+      {
+        "dst": "module:src/core/lifecycle.ts#LifecycleConfig.workspaceId",
+        "confidence": 1,
+        "source_line": 37
+      },
+      {
+        "dst": "module:src/core/lifecycle.ts#LifecycleConfig.serverPath",
+        "confidence": 1,
+        "source_line": 38
+      },
+      {
+        "dst": "module:src/core/lifecycle.ts#LifecycleConfig.serverArgs",
+        "confidence": 1,
+        "source_line": 39
+      },
+      {
+        "dst": "module:src/core/lifecycle.ts#LifecycleConfig.language",
+        "confidence": 1,
+        "source_line": 41
+      },
+      {
+        "dst": "module:src/core/lifecycle.ts#LifecycleConfig.wsCompileCommandsPolicy",
+        "confidence": 1,
+        "source_line": 42
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/core/lifecycle.ts",
+        "confidence": 1,
+        "source_line": 35
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/core/lifecycle.ts#getOrStartDaemon",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 57
+      },
+      {
+        "src": "module:src/core/lifecycle.ts#connectToClangd",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 209
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.100Z"
+  }
+}

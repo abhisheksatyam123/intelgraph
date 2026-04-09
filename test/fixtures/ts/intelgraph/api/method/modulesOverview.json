@@ -1,0 +1,85 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.modulesOverview",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/db-lookup.ts",
+    "line": 1757,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 70,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "all",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1807
+      },
+      {
+        "dst": "this.raw.prepare",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1807
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#rows.map",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 1810
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#extractFilePath",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1818
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#extractLine",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1819
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#toNumber",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1823
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#toNumberOrNull",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1824
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.dispatch",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 344
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup",
+        "confidence": 1,
+        "source_line": 1757
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.484Z"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/lsp/types.ts#ILanguageClient",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/lsp/types.ts",
+    "line": 18,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 55,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tracking/index.js#IndexTracker",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 22
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/lsp/types.ts#ILanguageClient.root",
+        "confidence": 1,
+        "source_line": 20
+      },
+      {
+        "dst": "module:src/lsp/types.ts#ILanguageClient.indexTracker",
+        "confidence": 1,
+        "source_line": 22
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/tracking/index.js#IndexTracker",
+        "confidence": 0.95,
+        "source_line": 18
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/lsp/types.ts",
+        "confidence": 1,
+        "source_line": 18
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.123Z"
+  }
+}

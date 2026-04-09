@@ -1,0 +1,125 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/tools/pattern-detector/c-parser.ts#FunctionCall",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-detector/c-parser.ts",
+    "line": 33,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 12,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#FunctionCall.name",
+        "confidence": 1,
+        "source_line": 34
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#FunctionCall.nameLine",
+        "confidence": 1,
+        "source_line": 35
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#FunctionCall.nameCol",
+        "confidence": 1,
+        "source_line": 36
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#FunctionCall.args",
+        "confidence": 1,
+        "source_line": 37
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#FunctionCall.argOffsets",
+        "confidence": 1,
+        "source_line": 39
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#FunctionCall.fullText",
+        "confidence": 1,
+        "source_line": 40
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#FunctionCall.nodeType",
+        "confidence": 1,
+        "source_line": 41
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#FunctionCall.tsNode",
+        "confidence": 1,
+        "source_line": 43
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts",
+        "confidence": 1,
+        "source_line": 33
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#findEnclosingCall",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 158
+      },
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#findEnclosingConstruct",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 172
+      },
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#tsEnclosingCall",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 187
+      },
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#tsEnclosingConstruct",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 202
+      },
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#tsNodeToFunctionCall",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 274
+      },
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#tsInitNodeToFunctionCall",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 312
+      },
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#charEnclosingCall",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 565
+      },
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#charEnclosingConstruct",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 585
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 9
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.126Z"
+  }
+}

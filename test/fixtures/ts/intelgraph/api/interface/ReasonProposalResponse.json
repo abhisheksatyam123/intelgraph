@@ -1,0 +1,86 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/tools/reason-engine/llm-advisor.ts#ReasonProposalResponse",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/reason-engine/llm-advisor.ts",
+    "line": 114,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 4,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#ProposedReasonPath",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 115
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#ReasonProposalResponse.proposedPaths",
+        "confidence": 1,
+        "source_line": 115
+      },
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#ReasonProposalResponse.openQuestions",
+        "confidence": 1,
+        "source_line": 116
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#ProposedReasonPath",
+        "confidence": 0.95,
+        "source_line": 114
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/reason-engine/llm-advisor.ts",
+        "confidence": 1,
+        "source_line": 114
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/tools/reason-engine/llm-advisor.ts#normalizeProposalResponse",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 120
+      },
+      {
+        "src": "module:src/tools/reason-engine/llm-advisor.ts#extractJson",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 539
+      },
+      {
+        "src": "module:src/tools/reason-engine/llm-advisor.ts#parsed",
+        "confidence": 0.9,
+        "resolution": "local",
+        "source_line": 555
+      },
+      {
+        "src": "module:src/tools/reason-engine/llm-advisor.ts#requestReasonProposals",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 899
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.129Z"
+  }
+}

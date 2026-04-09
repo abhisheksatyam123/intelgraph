@@ -1,0 +1,49 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/completion/tag_completer.rs#TagCompletable.from_referenceable",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/tag_completer.rs",
+    "line": 122,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 6,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/completion/tag_completer.rs#TagCompletable",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 122
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 124
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/tag_completer.rs#TagCompletable",
+        "confidence": 1,
+        "source_line": 122
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.781Z"
+  }
+}

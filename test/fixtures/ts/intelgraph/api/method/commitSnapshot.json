@@ -1,0 +1,85 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.commitSnapshot",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/foundation.ts",
+    "line": 72,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 8,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/foundation.ts#nowIso",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 73
+      },
+      {
+        "dst": "run",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 74
+      },
+      {
+        "dst": "where",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 74
+      },
+      {
+        "dst": "set",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 74
+      },
+      {
+        "dst": "this.db.update",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 74
+      },
+      {
+        "dst": "module:drizzle-orm#eq",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 77
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation",
+        "confidence": 1,
+        "source_line": 72
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/fixtures/run-multi-lang.mjs",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 124
+      },
+      {
+        "src": "module:test/fixtures/verify-fixtures.mjs",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 101
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.487Z"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteGraphStore.writeEvidence",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/graph-store.ts",
+    "line": 140,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 29,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteDb",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 141
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphEvidenceRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 142
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "run",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 145
+      },
+      {
+        "dst": "onConflictDoUpdate",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 145
+      },
+      {
+        "dst": "values",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 145
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteDb.insert",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 145
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphEvidenceRow.map",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 147
+      },
+      {
+        "dst": "module:drizzle-orm#sql",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 164
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteGraphStore.write",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 71
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteGraphStore",
+        "confidence": 1,
+        "source_line": 140
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.489Z"
+  }
+}

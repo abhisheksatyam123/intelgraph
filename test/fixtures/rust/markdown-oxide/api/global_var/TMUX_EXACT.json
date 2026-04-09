@@ -1,0 +1,33 @@
+{
+  "kind": "global_var",
+  "canonical_name": "module:tests/notes_tests.rs#TMUX_EXACT",
+  "category": "global_var",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/tests/notes_tests.rs",
+    "line": 758,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 1,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:tests/notes_tests.rs",
+        "confidence": 1,
+        "source_line": 758
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "global_var"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:16.145Z"
+  }
+}

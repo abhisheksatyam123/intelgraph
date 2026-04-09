@@ -1,0 +1,97 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.getLatestReadySnapshot",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/foundation.ts",
+    "line": 90,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 24,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.js#SnapshotRef",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 90
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "all",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 91
+      },
+      {
+        "dst": "limit",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 91
+      },
+      {
+        "dst": "orderBy",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 91
+      },
+      {
+        "dst": "where",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 91
+      },
+      {
+        "dst": "from",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 91
+      },
+      {
+        "dst": "this.db.select",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 91
+      },
+      {
+        "dst": "module:drizzle-orm#and",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 98
+      },
+      {
+        "dst": "module:drizzle-orm#eq",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 100
+      },
+      {
+        "dst": "module:drizzle-orm#desc",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 103
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation",
+        "confidence": 1,
+        "source_line": 90
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.488Z"
+  }
+}

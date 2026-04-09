@@ -1,0 +1,85 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/completion/callout_completer.rs#CalloutCompleter",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/callout_completer.rs",
+    "line": 10,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 6,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompleter.nested_level",
+        "confidence": 1,
+        "source_line": 11
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompleter.line",
+        "confidence": 1,
+        "source_line": 12
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompleter.character",
+        "confidence": 1,
+        "source_line": 13
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompleter.preceding_text",
+        "confidence": 1,
+        "source_line": 14
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompleter.construct",
+        "confidence": 1,
+        "source_line": 18
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompleter.completions",
+        "confidence": 1,
+        "source_line": 46
+      },
+      {
+        "dst": "module:src/completion/callout_completer.rs#CalloutCompleter.completion_filter_text",
+        "confidence": 1,
+        "source_line": 83
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "module:super#Completer",
+        "confidence": 1,
+        "source_line": 17
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/callout_completer.rs",
+        "confidence": 1,
+        "source_line": 10
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/completion/callout_completer.rs#CalloutCompletion.completions",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 119
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.852Z"
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/utils/compile-commands-cleaner.ts#CompileCommand",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/utils/compile-commands-cleaner.ts",
+    "line": 41,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 7,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/utils/compile-commands-cleaner.ts#CompileCommand.directory",
+        "confidence": 1,
+        "source_line": 42
+      },
+      {
+        "dst": "module:src/utils/compile-commands-cleaner.ts#CompileCommand.file",
+        "confidence": 1,
+        "source_line": 43
+      },
+      {
+        "dst": "module:src/utils/compile-commands-cleaner.ts#CompileCommand.arguments",
+        "confidence": 1,
+        "source_line": 44
+      },
+      {
+        "dst": "module:src/utils/compile-commands-cleaner.ts#CompileCommand.command",
+        "confidence": 1,
+        "source_line": 45
+      },
+      {
+        "dst": "module:src/utils/compile-commands-cleaner.ts#CompileCommand.output",
+        "confidence": 1,
+        "source_line": 46
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts",
+        "confidence": 1,
+        "source_line": 41
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts#hashCompileCommands",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 52
+      },
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts#createRomEntry",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 177
+      },
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts#cleanFlags",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 231
+      },
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts#rewriteEntryPath",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 271
+      },
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts#entries",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 302
+      },
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts#newEntries",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 348
+      },
+      {
+        "src": "module:src/utils/compile-commands-cleaner.ts#remappedOrKept",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 373
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 8
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.130Z"
+  }
+}

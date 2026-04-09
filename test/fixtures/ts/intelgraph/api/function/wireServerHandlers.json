@@ -1,0 +1,99 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/lsp/index.ts#wireServerHandlers",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/lsp/index.ts",
+    "line": 129,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 25,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:vscode-jsonrpc/node.js#MessageConnection",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 130
+      },
+      {
+        "dst": "module:src/tracking/index.js#IndexTracker",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 131
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:vscode-jsonrpc/node.js#MessageConnection.onRequest",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 150
+      },
+      {
+        "dst": "module:src/tracking/index.js#IndexTracker.onProgressCreate",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 135
+      },
+      {
+        "dst": "module:vscode-jsonrpc/node.js#MessageConnection.onNotification",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 142
+      },
+      {
+        "dst": "module:src/tracking/index.js#IndexTracker.onProgress",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 139
+      },
+      {
+        "dst": "module:src/tracking/index.js#IndexTracker.onFileStatus",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 144
+      },
+      {
+        "dst": "module:url#pathToFileURL",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 151
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/lsp/index.ts",
+        "confidence": 1,
+        "source_line": 129
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/lsp/index.ts#LspClient.create",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 273
+      },
+      {
+        "src": "module:src/lsp/index.ts#LspClient.createFromSocket",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 385
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.779Z"
+  }
+}

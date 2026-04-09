@@ -1,28 +1,121 @@
 {
   "kind": "function",
   "canonical_name": "module:src/daemon/index.ts#normaliseRoot",
-  "category": "exported_function",
+  "category": "function",
   "source": {
-    "file": "src/daemon/index.ts",
-    "line": 38
+    "file": "/home/abhi/qprojects/intelgraph/src/daemon/index.ts",
+    "line": 38,
+    "character": 8
   },
-  "description": "Normalizes a workspace root path: strips trailing VCS marker dirs (.git, .hg, .svn) so state files always land in the real project root. Single source of truth for root normalisation in intelgraph.",
+  "exported": true,
+  "line_count": 17,
   "relations": {
-    "calls_in_direct": [
-      { "caller": "module:src/index.ts", "callee": "normaliseRoot" }
-    ],
     "calls_out": [
-      { "caller": "normaliseRoot", "callee": "path.resolve" },
-      { "caller": "normaliseRoot", "callee": "path.basename" },
-      { "caller": "normaliseRoot", "callee": "statSync" }
+      {
+        "dst": "path.resolve",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 39
+      },
+      {
+        "dst": "path.basename",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 40
+      },
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 41
+      },
+      {
+        "dst": "module:src/daemon/index.ts#markerDirs.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 42
+      },
+      {
+        "dst": "module:fs#statSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 44
+      },
+      {
+        "dst": "st.isDirectory",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 45
+      },
+      {
+        "dst": "module:src/logging/logger.js#log",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 46
+      },
+      {
+        "dst": "path.dirname",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 47
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/daemon/index.ts",
+        "confidence": 1,
+        "source_line": 38
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/daemon/index.ts#stateFilePath",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 111
+      },
+      {
+        "src": "module:src/daemon/index.ts#computeWorkspaceId",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 120
+      },
+      {
+        "src": "module:src/daemon/index.ts#clearState",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 162
+      },
+      {
+        "src": "module:src/daemon/index.ts#spawnLockPath",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 184
+      },
+      {
+        "src": "module:src/daemon/index.ts#spawnDaemon",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 396
+      },
+      {
+        "src": "module:src/daemon/index.ts#spawnHttpDaemon",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 556
+      }
     ]
   },
   "contract": {
-    "required_node_kinds": ["function"],
-    "notes": "Pure leaf function with bounded fan-out — easy fixture for verifying basic call extraction."
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 7
   },
   "ground_truth_metadata": {
-    "extracted_from": "intelgraph_self",
-    "method": "manual_grep"
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.752Z"
   }
 }

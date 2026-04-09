@@ -1,0 +1,66 @@
+{
+  "kind": "enum_variant",
+  "canonical_name": "module:src/vault/reference.rs#Reference.MDIndexedBlockLink",
+  "category": "enum_variant",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/reference.rs",
+    "line": 54
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "field_of_type_out": [
+      {
+        "dst": "module:src/vault/reference.rs#ReferenceData",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 54
+      },
+      {
+        "dst": "module:src/vault/reference.rs#File",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 54
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Specialref",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 54
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/reference.rs#Reference",
+        "confidence": 1,
+        "source_line": 54
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/vault/reference.rs#MDReferenceConstructor.new_indexed_block_link",
+        "confidence": 0.95,
+        "resolution": "scoped-local",
+        "source_line": 392
+      },
+      {
+        "src": "module:src/vault/reference.rs#impl_ParseableReferenceConstructor.new_indexed_block_link",
+        "confidence": 0.95,
+        "resolution": "scoped-local",
+        "source_line": 392
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "enum_variant"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:13.171Z"
+  }
+}

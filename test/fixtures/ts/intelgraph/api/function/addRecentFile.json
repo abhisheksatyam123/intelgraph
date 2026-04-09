@@ -1,0 +1,59 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/config/config.ts#addRecentFile",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/config/config.ts",
+    "line": 363,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 17,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:src/config/config.ts#readConfig",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 364
+      },
+      {
+        "dst": "slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 368
+      },
+      {
+        "dst": "recentFiles.filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 370
+      },
+      {
+        "dst": "module:src/config/config.ts#updateConfig",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 373
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/config/config.ts",
+        "confidence": 1,
+        "source_line": 363
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.747Z"
+  }
+}

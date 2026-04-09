@@ -1,0 +1,79 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/completion/index.rs#CompletionIndex.recent_candidates",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/index.rs",
+    "line": 293,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 11,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/completion/index.rs#CompletionCandidate",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 293
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "collect",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 294
+      },
+      {
+        "dst": "filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 294
+      },
+      {
+        "dst": "iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 294
+      },
+      {
+        "dst": "sort_by",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 300
+      },
+      {
+        "dst": "cmp",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 300
+      },
+      {
+        "dst": "truncate",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 301
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/index.rs#CompletionIndex",
+        "confidence": 1,
+        "source_line": 293
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.777Z"
+  }
+}
