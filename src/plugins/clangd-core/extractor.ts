@@ -106,13 +106,16 @@ const clangdCoreExtractor = defineExtractor({
     // Step 1: discover source files. Default lexicographic walk; no
     // project-specific ranking. Project-specific ordering moves into
     // a workspace-specific plugin in Problem 2.
+    //
+    // INTELGRAPH_C_FILE_LIMIT env var overrides the default file walk
+    // cap. Default is 5000 to match ts-core/rust-core and reach large
+    // trees (e.g. Linux kernel has ~7.8k compile units; the old 200
+    // cap died in arch/alpha/... before reaching lib/, drivers/, etc.).
+    const envLimit = Number.parseInt(process.env.INTELGRAPH_C_FILE_LIMIT ?? "", 10)
+    const fileLimit = Number.isFinite(envLimit) && envLimit > 0 ? envLimit : 5000
     const files = await ctx.workspace.walkFiles({
       extensions: C_FAMILY_EXTENSIONS,
-      // Default limit is 500 in walkFiles; intentionally use the same
-      // ceiling as the legacy adapter's `fileLimit ?? 200` would have
-      // produced for typical ingests. Plugins can later be made
-      // configurable via plugin-specific options (Problem 6).
-      limit: 200,
+      limit: fileLimit,
     })
 
     ctx.metrics.count("files-discovered", files.length)
