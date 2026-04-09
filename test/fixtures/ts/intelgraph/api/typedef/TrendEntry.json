@@ -1,0 +1,53 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:src/fixtures/trend-tracker.ts#TrendEntry",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/trend-tracker.ts",
+    "line": 16,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 8,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/trend-tracker.ts",
+        "confidence": 1,
+        "source_line": 16
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/fixtures/trend-tracker.ts#TrendAnalysis",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 25
+      },
+      {
+        "src": "module:src/fixtures/trend-tracker.ts#analyzeTrend",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 81
+      },
+      {
+        "src": "module:src/fixtures/trend-tracker.ts#createTrendEntry",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 130
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.124Z"
+  }
+}

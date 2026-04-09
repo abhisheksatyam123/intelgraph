@@ -1,0 +1,96 @@
+{
+  "kind": "function",
+  "canonical_name": "btree_geo",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/btree.c",
+    "line": 48,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "logs_event_out": [
+      {
+        "dst": "log:BUG_ON:401",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:404",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:437",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:450",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:462",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:492",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:508",
+        "confidence": 0.9
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "head.mempool",
+        "confidence": 0.85
+      },
+      {
+        "dst": "geo.keylen",
+        "confidence": 0.85
+      },
+      {
+        "dst": "geo.no_longs",
+        "confidence": 0.85
+      },
+      {
+        "dst": "head.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "head.height",
+        "confidence": 0.85
+      },
+      {
+        "dst": "geo.no_pairs",
+        "confidence": 0.85
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "head.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "head.height",
+        "confidence": 0.85
+      },
+      {
+        "dst": "head.mempool",
+        "confidence": 0.85
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 16,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.793Z"
+  }
+}

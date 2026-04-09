@@ -1,0 +1,117 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/clangd-core/phases/field-access.ts#extractFieldAccess",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/clangd-core/phases/field-access.ts",
+    "line": 13,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 58,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#PhaseCtx",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 14
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#FileSymbolMap",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 15
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#FileSymbolMap.entries",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 17
+      },
+      {
+        "dst": "ctx.workspace.readFile",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 19
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#parseSource",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 22
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/field-access.ts#fnRanges.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 28
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#findAllNodes",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 32
+      },
+      {
+        "dst": "fe.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 35
+      },
+      {
+        "dst": "argNode.text.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 39
+      },
+      {
+        "dst": "parent.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 47
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#PhaseCtx.edge",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 56
+      },
+      {
+        "dst": "ctx.metrics.count",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 67
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/clangd-core/extractor.ts#extract",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 106
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/clangd-core/phases/field-access.ts",
+        "confidence": 1,
+        "source_line": 13
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 12,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.986Z"
+  }
+}

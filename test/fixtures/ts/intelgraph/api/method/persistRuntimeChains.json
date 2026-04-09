@@ -1,0 +1,129 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#IndirectCallerIngestionService.persistRuntimeChains",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts",
+    "line": 53,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 54,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#LinkReport",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 53
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#IngestReport",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 53
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 57
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.ts#runtimeRows",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 60
+      },
+      {
+        "dst": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#nodeMap.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 62
+      },
+      {
+        "dst": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#edgeMap.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 65
+      },
+      {
+        "dst": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#observationMap.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 67
+      },
+      {
+        "dst": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#evidenceMap.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 69
+      },
+      {
+        "dst": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#nodeMap.values",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 73
+      },
+      {
+        "dst": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#edgeMap.values",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 74
+      },
+      {
+        "dst": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#observationMap.values",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 75
+      },
+      {
+        "dst": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#evidenceMap.values",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 76
+      },
+      {
+        "dst": "this.sink.write",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 79
+      },
+      {
+        "dst": "report.warnings.push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 102
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#IndirectCallerIngestionService",
+        "confidence": 1,
+        "source_line": 53
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/unit/intelligence/runtime-graph-materialization.test.ts",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 147
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 14,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.159Z"
+  }
+}

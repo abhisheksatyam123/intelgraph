@@ -1,0 +1,99 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/hover.rs#hover",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/hover.rs",
+    "line": 7,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 23,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:std::path#Path",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 7
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#HoverParams",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 7
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Hover",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 7
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "select_reference_at_position",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 20
+      },
+      {
+        "dst": "select_referenceable_at_position",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 21
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 23
+      },
+      {
+        "dst": "preview_reference",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 23
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#HoverContents.Markup",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 24
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/backend/handlers.rs#Backend.hover",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 370
+      },
+      {
+        "src": "module:src/backend/handlers.rs#impl_LanguageServer.hover",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 370
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/hover.rs",
+        "confidence": 1,
+        "source_line": 7
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.075Z"
+  }
+}

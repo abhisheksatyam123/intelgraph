@@ -1,0 +1,115 @@
+{
+  "kind": "function",
+  "canonical_name": "module:scripts/lint-vault.mjs#loadRegisteredTags",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/scripts/lint-vault.mjs",
+    "line": 144,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 24,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:node:path#join",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 145
+      },
+      {
+        "dst": "module:node:fs#readFileSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 148
+      },
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 154
+      },
+      {
+        "dst": "content.split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 155
+      },
+      {
+        "dst": "line.match",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 156
+      },
+      {
+        "dst": "trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 158
+      },
+      {
+        "dst": "tag.startsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 161
+      },
+      {
+        "dst": "tag.endsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 161
+      },
+      {
+        "dst": "tag.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 161
+      },
+      {
+        "dst": "tag.toLowerCase",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 162
+      },
+      {
+        "dst": "test",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 163
+      },
+      {
+        "dst": "module:scripts/lint-vault.mjs#tags.add",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 164
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:scripts/lint-vault.mjs",
+        "confidence": 1,
+        "source_line": 144
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:scripts/lint-vault.mjs",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 222
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 12,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.791Z"
+  }
+}

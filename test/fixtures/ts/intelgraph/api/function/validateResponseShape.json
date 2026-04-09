@@ -1,0 +1,53 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/contracts/orchestrator.ts#validateResponseShape",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/orchestrator.ts",
+    "line": 536,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 26,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#errors.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 556
+      },
+      {
+        "dst": "includes",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 542
+      },
+      {
+        "dst": "Array.isArray",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 552
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/orchestrator.ts",
+        "confidence": 1,
+        "source_line": 536
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.966Z"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "kind": "function",
+  "canonical_name": "asn1_encode_integer",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/asn1_encoder.c",
+    "line": 23,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "logs_event_out": [
+      {
+        "dst": "log:WARN:32",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:WARN:148",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:WARN:151",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:WARN:229",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:WARN:276",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:WARN:279",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:WARN:379",
+        "confidence": 0.9
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.625Z"
+  }
+}

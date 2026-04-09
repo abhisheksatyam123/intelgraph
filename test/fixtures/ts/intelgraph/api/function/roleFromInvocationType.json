@@ -1,0 +1,61 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/get-callers.ts#roleFromInvocationType",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/get-callers.ts",
+    "line": 411,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 18,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/get-callers.ts#CallerInvocationType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 411
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#CallerRole",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 411
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/get-callers.ts",
+        "confidence": 1,
+        "source_line": 411
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/get-callers.ts#dbRuntimeNodesToCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 565
+      },
+      {
+        "src": "module:src/tools/get-callers.ts#dbStaticNodesToCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 606
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.001Z"
+  }
+}

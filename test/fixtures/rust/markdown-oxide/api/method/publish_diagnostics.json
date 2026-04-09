@@ -1,0 +1,151 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/backend/lifecycle.rs#Backend.publish_diagnostics",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/backend/lifecycle.rs",
+    "line": 118,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 46,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:tower_lsp::jsonrpc#Result",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 118
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "std::time::Instant::now",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 119
+      },
+      {
+        "dst": "log_message",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 155
+      },
+      {
+        "dst": "bind_opened_files",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 125
+      },
+      {
+        "dst": "Ok",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 162
+      },
+      {
+        "dst": "files\n                    .into_par_iter()\n                    .filter_map(|url| Url::from_file_path(url).ok())\n                    .collect::<Vec<_>>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 127
+      },
+      {
+        "dst": "filter_map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 138
+      },
+      {
+        "dst": "into_par_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 127
+      },
+      {
+        "dst": "ok",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 141
+      },
+      {
+        "dst": "Url::from_file_path",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 129
+      },
+      {
+        "dst": "bind_settings",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 134
+      },
+      {
+        "dst": "clone",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 143
+      },
+      {
+        "dst": "bind_vault",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 136
+      },
+      {
+        "dst": "par_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 138
+      },
+      {
+        "dst": "to_file_path",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 141
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 142
+      },
+      {
+        "dst": "module:src/diagnostics.rs#diagnostics",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 142
+      },
+      {
+        "dst": "publish_diagnostics",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 150
+      },
+      {
+        "dst": "elapsed",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 153
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/backend/lifecycle.rs#Backend",
+        "confidence": 1,
+        "source_line": 118
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 19,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.769Z"
+  }
+}

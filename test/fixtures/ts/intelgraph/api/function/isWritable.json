@@ -1,0 +1,49 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/local-runtime.ts#isWritable",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/local-runtime.ts",
+    "line": 15,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 8,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:node:fs#accessSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 17
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/local-runtime.ts",
+        "confidence": 1,
+        "source_line": 15
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/local-runtime.ts#resolveEffectiveRoot",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 29
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.976Z"
+  }
+}

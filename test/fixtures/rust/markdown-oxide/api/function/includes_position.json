@@ -1,0 +1,49 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/vault/types.rs#includes_position",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/types.rs",
+    "line": 94,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 7,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:tower_lsp::lsp_types#Position",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 94
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "range",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 95
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/types.rs",
+        "confidence": 1,
+        "source_line": 94
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.080Z"
+  }
+}

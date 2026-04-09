@@ -1,0 +1,67 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/formatters.ts#formatDiagnostics",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/formatters.ts",
+    "line": 94,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 15,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "diagMap.entries",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 96
+      },
+      {
+        "dst": "module:src/tools/formatters.ts#lines.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 104
+      },
+      {
+        "dst": "module:src/tools/schemas.ts#displayPath",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 98
+      },
+      {
+        "dst": "module:src/tools/formatters.ts#lines.join",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 107
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/formatters.ts",
+        "confidence": 1,
+        "source_line": 94
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/index.ts#execute",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 526
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.997Z"
+  }
+}

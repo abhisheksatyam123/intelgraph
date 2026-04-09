@@ -1,0 +1,174 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:src/intelligence/contracts/node-protocol.ts#NodeProtocolResponse",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/node-protocol.ts",
+    "line": 257,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 1,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/node-protocol.ts",
+        "confidence": 1,
+        "source_line": 257
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#NodeItem",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 4
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#mapStatus",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 22
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#mapErrors",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 30
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#toNodeResponse",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 431
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#response",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 433
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#toNodeErrorResponse",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 457
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#LegacyFlatResponse",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 502
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#toLegacyFlatResponse",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 512
+      },
+      {
+        "src": "module:test/unit/intelligence/backend-reconciliation.test.ts#runQuery",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 283
+      },
+      {
+        "src": "module:test/unit/intelligence/backend-reconciliation.test.ts#parsed",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 286
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeKindSpec",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 24
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeKindProbe",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 35
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeItem",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 156
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#runQuery",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 265
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#parsed",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 268
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#LegacyFlatResponse.status",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 502
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#LegacyFlatResponse.nodeProtocol",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 509
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeKindSpec.kind",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 24
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeKindSpec.kind_verbose",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 25
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeKindProbe.expect",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 35
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#LegacyFlatResponse",
+        "confidence": 0.95,
+        "source_line": 501
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeKindSpec",
+        "confidence": 0.95,
+        "source_line": 23
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeKindProbe",
+        "confidence": 0.95,
+        "source_line": 29
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 24
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.143Z"
+  }
+}

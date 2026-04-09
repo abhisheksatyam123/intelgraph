@@ -1,0 +1,125 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/vault/core.rs#MyHashMap",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/core.rs",
+    "line": 41,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 1,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/vault/core.rs#MyHashMap.0",
+        "confidence": 1,
+        "source_line": 41
+      },
+      {
+        "dst": "module:src/vault/core.rs#MyHashMap.hash",
+        "confidence": 1,
+        "source_line": 44
+      },
+      {
+        "dst": "module:src/vault/core.rs#MyHashMap.deref",
+        "confidence": 1,
+        "source_line": 54
+      },
+      {
+        "dst": "module:src/vault/core.rs#MyHashMap.deref_mut",
+        "confidence": 1,
+        "source_line": 60
+      },
+      {
+        "dst": "module:src/vault/core.rs#MyHashMap.from",
+        "confidence": 1,
+        "source_line": 66
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "Hash",
+        "confidence": 1,
+        "source_line": 43
+      },
+      {
+        "dst": "Deref",
+        "confidence": 1,
+        "source_line": 52
+      },
+      {
+        "dst": "DerefMut",
+        "confidence": 1,
+        "source_line": 59
+      },
+      {
+        "dst": "From",
+        "confidence": 1,
+        "source_line": 65
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/vault/core.rs#Vault",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 21
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/vault/core.rs#Vault.md_files",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 22
+      },
+      {
+        "src": "module:src/vault/core.rs#Vault.ropes",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 23
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/vault/core.rs#Vault",
+        "confidence": 0.95,
+        "source_line": 21
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/core.rs",
+        "confidence": 1,
+        "source_line": 41
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/vault/core.rs#MyHashMap.from",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 67
+      },
+      {
+        "src": "module:src/vault/core.rs#impl_From.from",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 67
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 7
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.857Z"
+  }
+}

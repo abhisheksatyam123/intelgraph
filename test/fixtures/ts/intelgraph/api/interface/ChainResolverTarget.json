@@ -1,0 +1,108 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/integration/wlan-targets.ts#ChainResolverTarget",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/integration/wlan-targets.ts",
+    "line": 637,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 31,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:test/integration/wlan-targets.ts#ChainResolverTarget.id",
+        "confidence": 1,
+        "source_line": 639
+      },
+      {
+        "dst": "module:test/integration/wlan-targets.ts#ChainResolverTarget.targetFile",
+        "confidence": 1,
+        "source_line": 641
+      },
+      {
+        "dst": "module:test/integration/wlan-targets.ts#ChainResolverTarget.targetLine",
+        "confidence": 1,
+        "source_line": 643
+      },
+      {
+        "dst": "module:test/integration/wlan-targets.ts#ChainResolverTarget.registrationFile",
+        "confidence": 1,
+        "source_line": 645
+      },
+      {
+        "dst": "module:test/integration/wlan-targets.ts#ChainResolverTarget.registrationLine",
+        "confidence": 1,
+        "source_line": 647
+      },
+      {
+        "dst": "module:test/integration/wlan-targets.ts#ChainResolverTarget.registrationSourceText",
+        "confidence": 1,
+        "source_line": 649
+      },
+      {
+        "dst": "module:test/integration/wlan-targets.ts#ChainResolverTarget.registrationApi",
+        "confidence": 1,
+        "source_line": 651
+      },
+      {
+        "dst": "module:test/integration/wlan-targets.ts#ChainResolverTarget.dispatchKey",
+        "confidence": 1,
+        "source_line": 653
+      },
+      {
+        "dst": "module:test/integration/wlan-targets.ts#ChainResolverTarget.callbackParamName",
+        "confidence": 1,
+        "source_line": 658
+      },
+      {
+        "dst": "module:test/integration/wlan-targets.ts#ChainResolverTarget.expectedStoreFieldName",
+        "confidence": 1,
+        "source_line": 660
+      },
+      {
+        "dst": "module:test/integration/wlan-targets.ts#ChainResolverTarget.expectedDispatchFn",
+        "confidence": 1,
+        "source_line": 662
+      },
+      {
+        "dst": "module:test/integration/wlan-targets.ts#ChainResolverTarget.expectedDispatchLine",
+        "confidence": 1,
+        "source_line": 664
+      },
+      {
+        "dst": "module:test/integration/wlan-targets.ts#ChainResolverTarget.expectedTriggerKind",
+        "confidence": 1,
+        "source_line": 666
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/integration/wlan-targets.ts",
+        "confidence": 1,
+        "source_line": 637
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/integration/wlan-targets.ts#getChainResolverTargets",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 669
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 13,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.131Z"
+  }
+}

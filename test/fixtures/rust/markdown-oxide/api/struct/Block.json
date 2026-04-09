@@ -1,0 +1,77 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/vault/types.rs#Block",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/types.rs",
+    "line": 385,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 5,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/vault/types.rs#MyRange",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 385
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/vault/types.rs#Block.text",
+        "confidence": 1,
+        "source_line": 386
+      },
+      {
+        "dst": "module:src/vault/types.rs#Block.range",
+        "confidence": 1,
+        "source_line": 387
+      },
+      {
+        "dst": "module:src/vault/types.rs#Block.file",
+        "confidence": 1,
+        "source_line": 388
+      },
+      {
+        "dst": "module:src/vault/types.rs#Block.as_ref",
+        "confidence": 1,
+        "source_line": 392
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/vault/types.rs#MyRange",
+        "confidence": 0.95,
+        "source_line": 385
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "AsRef",
+        "confidence": 1,
+        "source_line": 391
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/types.rs",
+        "confidence": 1,
+        "source_line": 385
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.859Z"
+  }
+}

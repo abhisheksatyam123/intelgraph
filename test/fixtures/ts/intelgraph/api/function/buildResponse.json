@@ -1,0 +1,81 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/get-callers.ts#buildResponse",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/get-callers.ts",
+    "line": 767,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 35,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/get-callers.ts#CallerEntry",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 771
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#WaterfallStep",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 772
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#GetCallersResponse",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 776
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/tools/get-callers.ts#CallerEntry.filter",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 780
+      },
+      {
+        "dst": "runtimeCallers.sort",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 790
+      },
+      {
+        "dst": "registrars.sort",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 791
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/get-callers.ts#resolveCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 378
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/get-callers.ts",
+        "confidence": 1,
+        "source_line": 767
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.999Z"
+  }
+}

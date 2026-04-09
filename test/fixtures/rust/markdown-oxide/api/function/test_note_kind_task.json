@@ -1,0 +1,47 @@
+{
+  "kind": "function",
+  "canonical_name": "module:tests/notes_tests.rs#test_note_kind_task",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/tests/notes_tests.rs",
+    "line": 32,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 6,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "common::logger::run_test",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 33
+      },
+      {
+        "dst": "module:std::path#PathBuf.from",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 34
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:tests/notes_tests.rs",
+        "confidence": 1,
+        "source_line": 32
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.094Z"
+  }
+}

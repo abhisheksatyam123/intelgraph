@@ -1,0 +1,63 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/orchestrator-runner.ts#buildFacetCompletenessStatusMap",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/orchestrator-runner.ts",
+    "line": 248,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 10,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#NormalizedQueryResponse",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 248
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#RuntimeFacetCompletenessStatusMap",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 248
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/orchestrator-runner.ts#computeFacetCompletenessStatus",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 249
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts",
+        "confidence": 1,
+        "source_line": 248
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts#buildResponse",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 287
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.977Z"
+  }
+}

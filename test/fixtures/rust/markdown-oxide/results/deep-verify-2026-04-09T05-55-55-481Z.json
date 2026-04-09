@@ -1,0 +1,216 @@
+{
+  "language": "rust",
+  "project": "markdown-oxide",
+  "workspace": "/home/abhi/qprojects/markdown-oxide",
+  "timestamp": "2026-04-09T05:55:55.481Z",
+  "summary": {
+    "pass": 5,
+    "partial": 1,
+    "failAll": 2,
+    "nodeOnly": 2,
+    "nodeMiss": 0,
+    "total": 10,
+    "allExpected": 44,
+    "allMatched": 35,
+    "relationPct": 80
+  },
+  "results": [
+    {
+      "fixture": "derive/Settings.json",
+      "canonical_name": "module:src/config.rs#Settings",
+      "status": "pass",
+      "checks": [
+        {
+          "key": "field_kinds_present",
+          "kind": "contains fields",
+          "expected": 3,
+          "found": 21,
+          "matched": 3,
+          "missing": []
+        }
+      ],
+      "unhandledKeys": [
+        "derives"
+      ],
+      "totalExpected": 3,
+      "totalMatched": 3
+    },
+    {
+      "fixture": "enum/Case.json",
+      "canonical_name": "module:src/config.rs#Case",
+      "status": "pass",
+      "checks": [
+        {
+          "key": "contains_variants",
+          "kind": "contains enum_variants",
+          "expected": 3,
+          "found": 3,
+          "matched": 3,
+          "missing": []
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 3,
+      "totalMatched": 3
+    },
+    {
+      "fixture": "enum/Referenceable.json",
+      "canonical_name": "module:src/vault/referenceable.rs#Referenceable",
+      "status": "pass",
+      "checks": [
+        {
+          "key": "contains_variants",
+          "kind": "contains enum_variants",
+          "expected": 5,
+          "found": 9,
+          "matched": 5,
+          "missing": []
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 5,
+      "totalMatched": 5
+    },
+    {
+      "fixture": "function/goto_definition.json",
+      "canonical_name": "module:src/gotodef.rs#goto_definition",
+      "status": "fail-all-relations",
+      "checks": [
+        {
+          "key": "calls_in_direct",
+          "kind": "calls (incoming)",
+          "expected": 1,
+          "found": 0,
+          "matched": 0,
+          "missing": [
+            "module:src/backend/handlers.rs#impl_LanguageServer.goto_definition"
+          ]
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 1,
+      "totalMatched": 0
+    },
+    {
+      "fixture": "function/hover.json",
+      "canonical_name": "module:src/hover.rs#hover",
+      "status": "fail-all-relations",
+      "checks": [
+        {
+          "key": "calls_in_direct",
+          "kind": "calls (incoming)",
+          "expected": 1,
+          "found": 0,
+          "matched": 0,
+          "missing": [
+            "module:src/backend/handlers.rs#impl_LanguageServer.hover"
+          ]
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 1,
+      "totalMatched": 0
+    },
+    {
+      "fixture": "impl_trait/Backend_LanguageServer.json",
+      "canonical_name": "module:src/backend/handlers.rs#Backend.hover",
+      "status": "node-only",
+      "checks": [],
+      "unhandledKeys": [
+        "calls_out_expected"
+      ],
+      "totalExpected": 0,
+      "totalMatched": 0
+    },
+    {
+      "fixture": "impl_trait/Vault_Hash.json",
+      "canonical_name": "module:src/vault/core.rs#Vault.hash",
+      "status": "node-only",
+      "checks": [],
+      "unhandledKeys": [],
+      "totalExpected": 0,
+      "totalMatched": 0
+    },
+    {
+      "fixture": "module/lib_rs.json",
+      "canonical_name": "module:src/lib.rs",
+      "status": "pass",
+      "checks": [
+        {
+          "key": "contains_modules",
+          "kind": "contains modules",
+          "expected": 20,
+          "found": 20,
+          "matched": 20,
+          "missing": []
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 20,
+      "totalMatched": 20
+    },
+    {
+      "fixture": "struct/MDHeading.json",
+      "canonical_name": "module:src/vault/types.rs#MDHeading",
+      "status": "pass",
+      "checks": [
+        {
+          "key": "field_kinds_present",
+          "kind": "contains fields",
+          "expected": 3,
+          "found": 3,
+          "matched": 3,
+          "missing": []
+        }
+      ],
+      "unhandledKeys": [
+        "derives"
+      ],
+      "totalExpected": 3,
+      "totalMatched": 3
+    },
+    {
+      "fixture": "struct/Vault.json",
+      "canonical_name": "module:src/vault/core.rs#Vault",
+      "status": "partial",
+      "checks": [
+        {
+          "key": "implements",
+          "kind": "implements (outgoing)",
+          "expected": 1,
+          "found": 1,
+          "matched": 1,
+          "missing": []
+        },
+        {
+          "key": "field_kinds_present",
+          "kind": "contains fields",
+          "expected": 4,
+          "found": 3,
+          "matched": 0,
+          "missing": [
+            "paths",
+            "files",
+            "links",
+            "tags"
+          ]
+        },
+        {
+          "key": "references_type_in",
+          "kind": "references_type (in)",
+          "expected": 3,
+          "found": 0,
+          "matched": 0,
+          "missing": [
+            "module:src/backend/handlers.rs",
+            "module:src/vault/preview.rs",
+            "module:src/references.rs"
+          ]
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 8,
+      "totalMatched": 1
+    }
+  ]
+}

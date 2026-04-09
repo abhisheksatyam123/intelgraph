@@ -315,7 +315,7 @@ export const TOOLS: ToolDef[] = [
       "from that event to the target (Layer B), and the registration gate that wired it in (Layer A). " +
       "Uses a cache+LLM pipeline: cache hit returns instantly; cache miss triggers LLM reasoning " +
       "with tool-calling (read_file, search_code, lsp_incoming_calls) guided by reasoning rules. " +
-      "Requires llmReasoning to be enabled in .clangd-mcp.json.",
+      "Requires llmReasoning to be enabled in the workspace config (.intelgraph.json).",
     inputSchema: positionSchema.extend({
       targetSymbol: z.string().optional().describe("Optional override target symbol name"),
       suspectedPatterns: z.array(z.string()).optional().describe("Optional pattern hints for difficult indirect flows"),

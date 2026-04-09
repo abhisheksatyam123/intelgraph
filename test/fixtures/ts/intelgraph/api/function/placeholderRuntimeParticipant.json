@@ -1,0 +1,73 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/db/graph-rows.ts#placeholderRuntimeParticipant",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/graph-rows.ts",
+    "line": 113,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 19,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#RuntimeCallerRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 114
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#RuntimeGraphNodeKind",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 117
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#SourceLocation",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 118
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#RuntimeGraphParticipantRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 119
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts",
+        "confidence": 1,
+        "source_line": 113
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#participantsForRuntimeRow",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 170
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#runtimeChainEdges",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 192
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.968Z"
+  }
+}

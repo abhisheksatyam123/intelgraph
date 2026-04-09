@@ -1,0 +1,87 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl.parseJsonOutput",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/ripgrep-service.ts",
+    "line": 256,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 38,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepMatch",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 256
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/ripgrep-service.ts#raw.split",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 258
+      },
+      {
+        "dst": "row.trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 259
+      },
+      {
+        "dst": "JSON.parse",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 271
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepMatch.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 280
+      },
+      {
+        "dst": "lineText.replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 283
+      },
+      {
+        "dst": "parsed.data.submatches.map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 285
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl.search",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 191
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/ripgrep-service.ts#RipgrepServiceImpl",
+        "confidence": 1,
+        "source_line": 256
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.496Z"
+  }
+}

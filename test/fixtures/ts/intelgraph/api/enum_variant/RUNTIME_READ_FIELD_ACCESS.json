@@ -1,0 +1,32 @@
+{
+  "kind": "enum_variant",
+  "canonical_name": "module:src/intelligence/contracts/orchestrator.ts#RuntimeStructureOperationType.RUNTIME_READ_FIELD_ACCESS",
+  "category": "enum_variant",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/orchestrator.ts",
+    "line": 10
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/orchestrator.ts#RuntimeStructureOperationType",
+        "confidence": 1,
+        "source_line": 10
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "enum_variant"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.151Z"
+  }
+}

@@ -77,7 +77,7 @@ Examples:
  * Load existing fixture from disk.
  */
 async function loadFixture(apiName: string): Promise<ApiFixture> {
-  const fixturePath = path.join(process.cwd(), "test/fixtures/wlan/api", `${apiName}.json`)
+  const fixturePath = path.join(process.cwd(), "test/fixtures/c/wlan/api", `${apiName}.json`)
   const content = await fs.readFile(fixturePath, "utf-8")
   return JSON.parse(content)
 }
@@ -86,7 +86,7 @@ async function loadFixture(apiName: string): Promise<ApiFixture> {
  * Save fixture to disk (unless --dry-run).
  */
 async function saveFixture(apiName: string, fixture: ApiFixture, dryRun: boolean): Promise<void> {
-  const fixturePath = path.join(process.cwd(), "test/fixtures/wlan/api", `${apiName}.json`)
+  const fixturePath = path.join(process.cwd(), "test/fixtures/c/wlan/api", `${apiName}.json`)
 
   if (dryRun) {
     console.log(`  [DRY-RUN] Would write ${fixturePath}`)
@@ -135,7 +135,7 @@ async function enrichSingleApi(apiName: string, snapshotId: number, dryRun: bool
     if (!dryRun) {
       const backupPath = path.join(
         process.cwd(),
-        "test/fixtures/wlan/api",
+        "test/fixtures/c/wlan/api",
         `${apiName}.json.pre-enrich`,
       )
       await fs.writeFile(backupPath, JSON.stringify(existingFixture, null, 2), "utf-8")
@@ -154,7 +154,7 @@ async function enrichSingleApi(apiName: string, snapshotId: number, dryRun: bool
 async function enrichAllApisBatch(snapshotId: number, dryRun: boolean): Promise<void> {
   console.log(`\nEnriching all API fixtures (snapshot ${snapshotId})...`)
 
-  const fixturesDir = path.join(process.cwd(), "test/fixtures/wlan/api")
+  const fixturesDir = path.join(process.cwd(), "test/fixtures/c/wlan/api")
   const files = await fs.readdir(fixturesDir)
   const apiNames = files
     .filter((f) => f.endsWith(".json") && !f.endsWith(".pre-enrich"))
@@ -204,7 +204,7 @@ async function enrichAllApisBatch(snapshotId: number, dryRun: boolean): Promise<
       if (!dryRun) {
         const backupPath = path.join(
           process.cwd(),
-          "test/fixtures/wlan/api",
+          "test/fixtures/c/wlan/api",
           `${apiName}.json.pre-enrich`,
         )
         try {

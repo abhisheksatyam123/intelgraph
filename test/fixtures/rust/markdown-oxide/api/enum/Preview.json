@@ -1,0 +1,65 @@
+{
+  "kind": "enum",
+  "canonical_name": "module:src/vault/preview.rs#Preview",
+  "category": "enum",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/preview.rs",
+    "line": 7,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 4,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/vault/preview.rs#Preview.Text",
+        "confidence": 1,
+        "source_line": 8
+      },
+      {
+        "dst": "module:src/vault/preview.rs#Preview.Empty",
+        "confidence": 1,
+        "source_line": 9
+      },
+      {
+        "dst": "module:src/vault/preview.rs#Preview.from",
+        "confidence": 1,
+        "source_line": 13
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "From",
+        "confidence": 1,
+        "source_line": 12
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/preview.rs",
+        "confidence": 1,
+        "source_line": 7
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/vault/preview.rs#Vault.select_referenceable_preview",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 43
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "enum"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:13.170Z"
+  }
+}

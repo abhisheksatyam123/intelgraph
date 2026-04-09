@@ -1,0 +1,142 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/extraction/context.ts#ExtractionContextOptions",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/context.ts",
+    "line": 309,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 14,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#LspService",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 313
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#TreeSitterService",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 314
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#RipgrepService",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 315
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#WorkspaceService",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 316
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextOptions.snapshotId",
+        "confidence": 1,
+        "source_line": 310
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextOptions.workspaceRoot",
+        "confidence": 1,
+        "source_line": 311
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextOptions.extractorName",
+        "confidence": 1,
+        "source_line": 312
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextOptions.lsp",
+        "confidence": 1,
+        "source_line": 313
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextOptions.treesitter",
+        "confidence": 1,
+        "source_line": 314
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextOptions.ripgrep",
+        "confidence": 1,
+        "source_line": 315
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextOptions.workspace",
+        "confidence": 1,
+        "source_line": 316
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextOptions.signal",
+        "confidence": 1,
+        "source_line": 317
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextOptions.logSink",
+        "confidence": 1,
+        "source_line": 318
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#LspService",
+        "confidence": 0.95,
+        "source_line": 309
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#TreeSitterService",
+        "confidence": 0.95,
+        "source_line": 309
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#RipgrepService",
+        "confidence": 0.95,
+        "source_line": 309
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#WorkspaceService",
+        "confidence": 0.95,
+        "source_line": 309
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts",
+        "confidence": 1,
+        "source_line": 309
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.constructor",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 348
+      },
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#contextOpts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 256
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 17,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.182Z"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "kind": "function",
+  "canonical_name": "crc_t10dif_transform_show",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/crc-t10dif.c",
+    "line": 110,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "____wrong_branch_error",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_9",
+        "confidence": 1
+      },
+      {
+        "dst": "arch_static_branch",
+        "confidence": 1
+      },
+      {
+        "dst": "arch_static_branch_jump",
+        "confidence": 1
+      },
+      {
+        "dst": "crypto_shash_driver_name",
+        "confidence": 1
+      },
+      {
+        "dst": "rcu_read_lock",
+        "confidence": 1
+      },
+      {
+        "dst": "rcu_read_lock_held",
+        "confidence": 1
+      },
+      {
+        "dst": "rcu_read_unlock",
+        "confidence": 1
+      },
+      {
+        "dst": "snprintf",
+        "confidence": 1
+      },
+      {
+        "dst": "sprintf",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:43:21.051Z"
+  }
+}

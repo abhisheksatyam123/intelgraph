@@ -1,0 +1,77 @@
+{
+  "kind": "function",
+  "kind_verbose": "vfs_callback_via_file_operations",
+  "canonical_name": "read_mem",
+  "category": "vfs_callback",
+  "aliases": [],
+  "source": {
+    "file": "drivers/char/mem.c",
+    "line": 100,
+    "character": 16
+  },
+  "description": "VFS .read callback for /dev/mem. Never called directly — invoked at runtime through the VFS layer when userspace does read() on /dev/mem. Container variable is mem_fops (drivers/char/mem.c:636). The mem_fops table is then placed in devlist[] (line 697) which feeds the memory_open dispatch.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "vfs_read",
+        "callee": "read_mem",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "vfs_dispatches_to_file_operations_callback",
+        "derivation": "runtime",
+        "confidence": 0.95,
+        "dispatch_chain": [
+          "userspace_read_syscall",
+          "ksys_read",
+          "vfs_read",
+          "fp->f_op->read",
+          "read_mem"
+        ],
+        "runtime_trigger": "userspace read() on /dev/mem (DEVMEM_MINOR via devlist[])",
+        "evidence": {
+          "kind": "struct_field_assignment",
+          "loc": { "file": "drivers/char/mem.c", "line": 638 }
+        }
+      }
+    ],
+    "calls_out": [
+      { "caller": "read_mem", "callee": "size_inside_page",         "file": "drivers/char/mem.c", "line": 110 },
+      { "caller": "read_mem", "callee": "valid_phys_addr_range",    "file": "drivers/char/mem.c", "line": 110 },
+      { "caller": "read_mem", "callee": "page_is_allowed",          "file": "drivers/char/mem.c", "line": 110 },
+      { "caller": "read_mem", "callee": "kmalloc",                  "file": "drivers/char/mem.c", "line": 110 },
+      { "caller": "read_mem", "callee": "xlate_dev_mem_ptr",        "file": "drivers/char/mem.c", "line": 110 },
+      { "caller": "read_mem", "callee": "unxlate_dev_mem_ptr",      "file": "drivers/char/mem.c", "line": 110 },
+      { "caller": "read_mem", "callee": "copy_from_kernel_nofault", "file": "drivers/char/mem.c", "line": 110 },
+      { "caller": "read_mem", "callee": "clear_user",               "file": "drivers/char/mem.c", "line": 110 }
+    ],
+    "registrations_in": [
+      {
+        "registrar": "mem_fops",
+        "callback": "read_mem",
+        "edge_kind": "register_via_struct_field",
+        "registration_kind": "file_operations.read",
+        "container_type": "struct file_operations",
+        "container_variable": "mem_fops",
+        "field": "read",
+        "evidence": { "kind": "struct_field_assignment", "loc": { "file": "drivers/char/mem.c", "line": 638 } }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [],
+    "logs": []
+  },
+  "contract": {
+    "required_relation_kinds": ["calls_in_runtime", "calls_out", "registrations_in"],
+    "required_directions":     ["incoming", "outgoing"],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "calls_out":        3,
+      "registrations_in": 1
+    },
+    "notes": "calls_in_runtime is the hardest case — backend currently does NOT chain-resolve from mem_fops to vfs_read. registrations_in PASSES with the new generic struct-field classifier (mem_fops detected as the registrar)."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_linux_kernel_6.12",
+    "method": "manual_grep_against_/home/abhi/qprojects/linux"
+  }
+}

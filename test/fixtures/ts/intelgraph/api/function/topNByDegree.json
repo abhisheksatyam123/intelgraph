@@ -1,0 +1,117 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/db/sqlite/graph-export.ts#topNByDegree",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/graph-export.ts",
+    "line": 427,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 32,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJson",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 427
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 440
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#degree.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 444
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#degree.get",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 444
+      },
+      {
+        "dst": "sort",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 446
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#degree.entries",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 446
+      },
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 447
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 447
+      },
+      {
+        "dst": "ranked.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 447
+      },
+      {
+        "dst": "graph.nodes.filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 451
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#keep.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 453
+      },
+      {
+        "dst": "graph.edges.filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 452
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-export.ts#loadGraphJsonFromDb",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 317
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-export.ts",
+        "confidence": 1,
+        "source_line": 427
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 12,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.973Z"
+  }
+}

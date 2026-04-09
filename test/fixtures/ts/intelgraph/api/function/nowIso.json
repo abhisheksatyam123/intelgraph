@@ -1,0 +1,67 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/db/sqlite/foundation.ts#nowIso",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/foundation.ts",
+    "line": 24,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "toISOString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 25
+      },
+      {
+        "dst": "Date",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 25
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/foundation.ts",
+        "confidence": 1,
+        "source_line": 24
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.beginSnapshot",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 49
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.commitSnapshot",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 73
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.failSnapshot",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 82
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.971Z"
+  }
+}

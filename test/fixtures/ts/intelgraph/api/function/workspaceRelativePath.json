@@ -1,0 +1,67 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/ts-core/extractor.ts#workspaceRelativePath",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/ts-core/extractor.ts",
+    "line": 2639,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 5,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:node:path#relative",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 2640
+      },
+      {
+        "dst": "replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 2642
+      },
+      {
+        "dst": "rel.replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 2642
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extract",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 130
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#resolveImportTarget",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2568
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 2639
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.996Z"
+  }
+}

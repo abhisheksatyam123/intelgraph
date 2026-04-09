@@ -1,0 +1,64 @@
+{
+  "kind": "function",
+  "canonical_name": "gf_poly_mod",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/bch.c",
+    "line": 742,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "a_log",
+        "confidence": 1
+      },
+      {
+        "dst": "gf_poly_logrep",
+        "confidence": 1
+      },
+      {
+        "dst": "mod_s",
+        "confidence": 1
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "g.deg",
+        "confidence": 0.85
+      },
+      {
+        "dst": "g.c",
+        "confidence": 0.85
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "gf_poly_div",
+        "confidence": 1
+      },
+      {
+        "src": "gf_poly_gcd",
+        "confidence": 1
+      },
+      {
+        "src": "compute_trace_bk_mod",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.802Z"
+  }
+}

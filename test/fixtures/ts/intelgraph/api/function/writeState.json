@@ -1,0 +1,99 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/daemon/index.ts#writeState",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/daemon/index.ts",
+    "line": 147,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 12,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/daemon/index.ts#DaemonState",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 147
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/daemon/index.ts#stateFilePath",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 148
+      },
+      {
+        "dst": "module:fs#writeFileSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 149
+      },
+      {
+        "dst": "JSON.stringify",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 149
+      },
+      {
+        "dst": "module:src/logging/logger.ts#log",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 150
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/core/lifecycle.ts#getOrStartDaemon",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 130
+      },
+      {
+        "src": "module:src/core/lifecycle.ts#startAsHttpDaemon",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 319
+      },
+      {
+        "src": "module:src/core/lifecycle.ts#startAsStdioProxy",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 417
+      },
+      {
+        "src": "module:src/daemon/index.ts#spawnDaemon",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 498
+      },
+      {
+        "src": "module:src/daemon/index.ts#spawnHttpDaemon",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 640
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/daemon/index.ts",
+        "confidence": 1,
+        "source_line": 147
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 6
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.898Z"
+  }
+}

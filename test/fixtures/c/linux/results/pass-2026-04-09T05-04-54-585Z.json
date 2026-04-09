@@ -1,0 +1,490 @@
+{
+  "workspace": "/home/abhi/qprojects/linux",
+  "timestamp": "2026-04-09T05:04:54.585Z",
+  "summary": {
+    "pass": 2,
+    "fail": 7,
+    "err": 0,
+    "total": 11
+  },
+  "results": [
+    {
+      "canonical_name": "do_no_restart_syscall",
+      "category": "function_pointer_callback",
+      "overall": "fail",
+      "checks": [
+        {
+          "kind": "calls_in_runtime",
+          "status": "fail",
+          "want": 1,
+          "minN": 1,
+          "got": 0,
+          "matches": 0,
+          "missing": [
+            {
+              "caller": "__do_sys_restart_syscall",
+              "dispatch_chain": [
+                "__do_sys_restart_syscall",
+                "current->restart_block.fn",
+                "do_no_restart_syscall"
+              ]
+            }
+          ],
+          "raw_first_line": "No callers found — symbol not resolved by clangd."
+        },
+        {
+          "kind": "registrations_in",
+          "status": "fail",
+          "want": 1,
+          "minN": 1,
+          "got": 0,
+          "found": [],
+          "missing": [
+            {
+              "registrar": "assign_to_restart_block_fn",
+              "registration_kind": "restart_block.fn"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical_name": "kstrtoint",
+      "category": "heavily_called_helper",
+      "overall": "pass",
+      "checks": [
+        {
+          "kind": "calls_in_direct",
+          "status": "pass",
+          "want": 1,
+          "minN": 10,
+          "got": 98,
+          "missing": [],
+          "indexProgress": null
+        },
+        {
+          "kind": "calls_out",
+          "status": "pass",
+          "want": 1,
+          "minN": 1,
+          "got": 2,
+          "missing": []
+        }
+      ]
+    },
+    {
+      "canonical_name": "i8042_interrupt",
+      "category": "irq_handler_request_irq",
+      "overall": "fail",
+      "checks": [
+        {
+          "kind": "calls_in_direct",
+          "status": "warn-content-drift",
+          "want": 4,
+          "minN": 3,
+          "got": 6,
+          "missing": [
+            {
+              "name": "i8042_panic_blink",
+              "file": "drivers/input/serio/i8042.c",
+              "line": 437
+            },
+            {
+              "name": "i8042_aux_test_irq",
+              "file": "drivers/input/serio/i8042.c",
+              "line": 1225
+            },
+            {
+              "name": "i8042_controller_check",
+              "file": "drivers/input/serio/i8042.c",
+              "line": 1256
+            },
+            {
+              "name": "i8042_resume",
+              "file": "drivers/input/serio/i8042.c",
+              "line": 1293
+            }
+          ],
+          "indexProgress": null
+        },
+        {
+          "kind": "calls_in_runtime",
+          "status": "fail",
+          "want": 1,
+          "minN": 1,
+          "got": 6,
+          "matches": 0,
+          "missing": [
+            {
+              "caller": "do_IRQ",
+              "dispatch_chain": [
+                "hardware_irq",
+                "do_IRQ",
+                "handle_irq_event",
+                "i8042_interrupt"
+              ]
+            }
+          ],
+          "raw_first_line": "Callers of i8042_interrupt  (6 reference sites found):"
+        },
+        {
+          "kind": "registrations_in",
+          "status": "pass",
+          "want": 2,
+          "minN": 2,
+          "got": 2,
+          "found": [
+            "request_irq",
+            "request_irq"
+          ],
+          "missing": []
+        }
+      ]
+    },
+    {
+      "canonical_name": "argv_free",
+      "category": "leaf_helper_exported",
+      "overall": "pass-with-warnings",
+      "checks": [
+        {
+          "kind": "calls_in_direct",
+          "status": "warn-content-drift",
+          "want": 5,
+          "minN": 4,
+          "got": 5,
+          "missing": [
+            {
+              "name": "machine_shutdown",
+              "file": "kernel/reboot.c",
+              "line": 842
+            },
+            {
+              "name": "create_filter_finish",
+              "file": "kernel/trace/trace_events_filter.c",
+              "line": 2521
+            },
+            {
+              "name": "trace_dynevent_create",
+              "file": "kernel/trace/trace_dynevent.c",
+              "line": 124
+            },
+            {
+              "name": "parse_synth_field",
+              "file": "kernel/trace/trace_events_synth.c",
+              "line": 1355
+            }
+          ],
+          "indexProgress": null
+        },
+        {
+          "kind": "calls_out",
+          "status": "pass",
+          "want": 2,
+          "minN": 1,
+          "got": 2,
+          "missing": []
+        }
+      ]
+    },
+    {
+      "canonical_name": "argv_split",
+      "category": "leaf_helper_exported",
+      "overall": "pass-with-warnings",
+      "checks": [
+        {
+          "kind": "calls_in_direct",
+          "status": "warn-content-drift",
+          "want": 7,
+          "minN": 5,
+          "got": 5,
+          "missing": [
+            {
+              "name": "machine_shutdown",
+              "file": "kernel/reboot.c",
+              "line": 839
+            },
+            {
+              "name": "create_filter_start",
+              "file": "kernel/trace/trace_events_filter.c",
+              "line": 2475
+            },
+            {
+              "name": "trace_dynevent_create",
+              "file": "kernel/trace/trace_dynevent.c",
+              "line": 79
+            },
+            {
+              "name": "parse_synth_field",
+              "file": "kernel/trace/trace_events_synth.c",
+              "line": 1348
+            },
+            {
+              "name": "parse_event_command",
+              "file": "kernel/trace/trace_events_synth.c",
+              "line": 1573
+            },
+            {
+              "name": "user_event_get_field_arg",
+              "file": "kernel/trace/trace_events_user.c",
+              "line": 2049
+            }
+          ],
+          "indexProgress": null
+        },
+        {
+          "kind": "calls_out",
+          "status": "warn-content-drift",
+          "want": 5,
+          "minN": 3,
+          "got": 5,
+          "missing": [
+            {
+              "callee": "kmalloc_array"
+            },
+            {
+              "callee": "isspace"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical_name": "count_argc",
+      "category": "static_helper",
+      "overall": "pass",
+      "checks": [
+        {
+          "kind": "calls_in_direct",
+          "status": "pass",
+          "want": 1,
+          "minN": 1,
+          "got": 1,
+          "missing": [],
+          "indexProgress": null
+        }
+      ]
+    },
+    {
+      "canonical_name": "__do_sys_restart_syscall",
+      "category": "syscall_handler",
+      "overall": "fail",
+      "checks": [
+        {
+          "kind": "calls_in_runtime",
+          "status": "fail",
+          "want": 1,
+          "minN": 1,
+          "got": 0,
+          "matches": 0,
+          "missing": [
+            {
+              "caller": "syscall_dispatch",
+              "dispatch_chain": [
+                "userspace_syscall(__NR_restart_syscall)",
+                "syscall_dispatch",
+                "__do_sys_restart_syscall"
+              ]
+            }
+          ],
+          "raw_first_line": "No callers found — symbol not resolved by clangd."
+        },
+        {
+          "kind": "registrations_in",
+          "status": "fail",
+          "want": 1,
+          "minN": 1,
+          "got": 0,
+          "found": [],
+          "missing": [
+            {
+              "registrar": "SYSCALL_DEFINE0",
+              "registration_kind": "syscall_table"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical_name": "__do_sys_sched_yield",
+      "category": "syscall_handler",
+      "overall": "fail",
+      "checks": [
+        {
+          "kind": "calls_in_runtime",
+          "status": "fail",
+          "want": 1,
+          "minN": 1,
+          "got": 0,
+          "matches": 0,
+          "missing": [
+            {
+              "caller": "syscall_dispatch",
+              "dispatch_chain": [
+                "userspace_syscall(__NR_sched_yield)",
+                "syscall_dispatch",
+                "__do_sys_sched_yield"
+              ]
+            }
+          ],
+          "raw_first_line": "No callers found — symbol not resolved by clangd."
+        },
+        {
+          "kind": "calls_out",
+          "status": "fail",
+          "want": 1,
+          "minN": 1,
+          "got": 0,
+          "missing": [
+            {
+              "callee": "do_sched_yield"
+            }
+          ]
+        },
+        {
+          "kind": "registrations_in",
+          "status": "fail",
+          "want": 1,
+          "minN": 1,
+          "got": 0,
+          "found": [],
+          "missing": [
+            {
+              "registrar": "SYSCALL_DEFINE0",
+              "registration_kind": "syscall_table"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "canonical_name": "null_lseek",
+      "category": "vfs_callback",
+      "overall": "fail",
+      "checks": [
+        {
+          "kind": "calls_in_runtime",
+          "status": "fail",
+          "want": 1,
+          "minN": 1,
+          "got": 3,
+          "matches": 0,
+          "missing": [
+            {
+              "caller": "vfs_llseek",
+              "dispatch_chain": [
+                "userspace_lseek_syscall",
+                "ksys_lseek",
+                "vfs_llseek",
+                "fp->f_op->llseek",
+                "null_lseek"
+              ]
+            }
+          ],
+          "raw_first_line": "Callers of null_lseek  (3 reference sites found):"
+        },
+        {
+          "kind": "registrations_in",
+          "status": "pass",
+          "want": 2,
+          "minN": 1,
+          "got": 2,
+          "found": [
+            "null_fops",
+            "full_fops"
+          ],
+          "missing": []
+        }
+      ]
+    },
+    {
+      "canonical_name": "read_mem",
+      "category": "vfs_callback",
+      "overall": "fail",
+      "checks": [
+        {
+          "kind": "calls_in_runtime",
+          "status": "fail",
+          "want": 1,
+          "minN": 1,
+          "got": 1,
+          "matches": 0,
+          "missing": [
+            {
+              "caller": "vfs_read",
+              "dispatch_chain": [
+                "userspace_read_syscall",
+                "ksys_read",
+                "vfs_read",
+                "fp->f_op->read",
+                "read_mem"
+              ]
+            }
+          ],
+          "raw_first_line": "Callers of read_mem  (1 reference sites found):"
+        },
+        {
+          "kind": "calls_out",
+          "status": "warn-content-drift",
+          "want": 8,
+          "minN": 3,
+          "got": 11,
+          "missing": [
+            {
+              "callee": "kmalloc"
+            }
+          ]
+        },
+        {
+          "kind": "registrations_in",
+          "status": "pass",
+          "want": 1,
+          "minN": 1,
+          "got": 1,
+          "found": [
+            "mem_fops"
+          ],
+          "missing": []
+        }
+      ]
+    },
+    {
+      "canonical_name": "write_mem",
+      "category": "vfs_callback",
+      "overall": "fail",
+      "checks": [
+        {
+          "kind": "calls_in_runtime",
+          "status": "fail",
+          "want": 1,
+          "minN": 1,
+          "got": 1,
+          "matches": 0,
+          "missing": [
+            {
+              "caller": "vfs_write",
+              "dispatch_chain": [
+                "userspace_write_syscall",
+                "ksys_write",
+                "vfs_write",
+                "fp->f_op->write",
+                "write_mem"
+              ]
+            }
+          ],
+          "raw_first_line": "Callers of write_mem  (1 reference sites found):"
+        },
+        {
+          "kind": "registrations_in",
+          "status": "pass",
+          "want": 1,
+          "minN": 1,
+          "got": 1,
+          "found": [
+            "mem_fops"
+          ],
+          "missing": []
+        }
+      ]
+    }
+  ]
+}

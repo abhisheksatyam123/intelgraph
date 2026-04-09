@@ -1,0 +1,55 @@
+{
+  "kind": "function",
+  "canonical_name": "module:scripts/retrofit-frontmatter.mjs#hasFrontmatter",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/scripts/retrofit-frontmatter.mjs",
+    "line": 44,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "content.startsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 45
+      },
+      {
+        "dst": "content.indexOf",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 45
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:scripts/retrofit-frontmatter.mjs",
+        "confidence": 1,
+        "source_line": 44
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:scripts/retrofit-frontmatter.mjs",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 133
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.792Z"
+  }
+}

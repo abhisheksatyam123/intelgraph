@@ -1,0 +1,52 @@
+{
+  "kind": "function",
+  "canonical_name": "bitmap_parse_region",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/bitmap-str.c",
+    "line": 295,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "ERR_PTR",
+        "confidence": 1
+      },
+      {
+        "dst": "IS_ERR",
+        "confidence": 1
+      },
+      {
+        "dst": "bitmap_getnum",
+        "confidence": 1
+      },
+      {
+        "dst": "end_of_region",
+        "confidence": 1
+      },
+      {
+        "dst": "end_of_str",
+        "confidence": 1
+      },
+      {
+        "dst": "strncasecmp",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.791Z"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/unit/plugins/clangd-core.test.ts#FakeOutgoing",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/unit/plugins/clangd-core.test.ts",
+    "line": 48,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:test/unit/plugins/clangd-core.test.ts#FakeOutgoing.to",
+        "confidence": 1,
+        "source_line": 49
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/unit/plugins/clangd-core.test.ts",
+        "confidence": 1,
+        "source_line": 48
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/unit/plugins/clangd-core.test.ts#makeFakeLsp",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 52
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.135Z"
+  }
+}

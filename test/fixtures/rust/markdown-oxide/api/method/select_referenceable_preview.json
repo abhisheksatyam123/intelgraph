@@ -1,0 +1,115 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/vault/preview.rs#Vault.select_referenceable_preview",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/preview.rs",
+    "line": 43,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 50,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/vault/preview.rs#Preview",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 43
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "is_some_and",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 46
+      },
+      {
+        "dst": "get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 46
+      },
+      {
+        "dst": "get_path",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 82
+      },
+      {
+        "dst": "len_lines",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 49
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 80
+      },
+      {
+        "dst": "get_range",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 75
+      },
+      {
+        "dst": "into",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 81
+      },
+      {
+        "dst": "String::from_iter",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 58
+      },
+      {
+        "dst": "select_line",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 82
+      },
+      {
+        "dst": "join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 81
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 81
+      },
+      {
+        "dst": "filter_map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 81
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/preview.rs#Vault",
+        "confidence": 1,
+        "source_line": 43
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 13,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.788Z"
+  }
+}

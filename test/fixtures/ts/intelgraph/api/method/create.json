@@ -1,0 +1,259 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/lsp/index.ts#LspClient.create",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/lsp/index.ts",
+    "line": 206,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 101,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/lsp/index.ts#LspClientOptions",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 206
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 206
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/logging/logger.js#log",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 301
+      },
+      {
+        "dst": "clangdArgs.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 216
+      },
+      {
+        "dst": "module:child_process#spawn",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 219
+      },
+      {
+        "dst": "Error",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 227
+      },
+      {
+        "dst": "proc.stderr.on",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 230
+      },
+      {
+        "dst": "trimEnd",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 231
+      },
+      {
+        "dst": "chunk.toString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 231
+      },
+      {
+        "dst": "require",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 235
+      },
+      {
+        "dst": "import",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 235
+      },
+      {
+        "dst": "appendFileSync",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 236
+      },
+      {
+        "dst": "getLogFile",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 236
+      },
+      {
+        "dst": "toISOString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 236
+      },
+      {
+        "dst": "Date",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 236
+      },
+      {
+        "dst": "process.stderr.write",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 238
+      },
+      {
+        "dst": "proc.on",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 300
+      },
+      {
+        "dst": "module:src/logging/logger.js#logError",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 267
+      },
+      {
+        "dst": "proc.stdout.on",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 245
+      },
+      {
+        "dst": "proc.stdin.on",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 249
+      },
+      {
+        "dst": "module:vscode-jsonrpc/node.js#createMessageConnection",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 254
+      },
+      {
+        "dst": "module:vscode-jsonrpc/node.js#StreamMessageReader",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 255
+      },
+      {
+        "dst": "module:vscode-jsonrpc/node.js#StreamMessageWriter",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 256
+      },
+      {
+        "dst": "conn.onClose",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 260
+      },
+      {
+        "dst": "conn.onError",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 264
+      },
+      {
+        "dst": "module:src/tracking/index.js#IndexTracker",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 270
+      },
+      {
+        "dst": "module:src/lsp/index.ts#wireServerHandlers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 273
+      },
+      {
+        "dst": "conn.listen",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 275
+      },
+      {
+        "dst": "conn.sendRequest",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 280
+      },
+      {
+        "dst": "module:src/lsp/index.ts#buildInitializeParams",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 280
+      },
+      {
+        "dst": "conn.sendNotification",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 282
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 285
+      },
+      {
+        "dst": "conn.onNotification",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 287
+      },
+      {
+        "dst": "module:url#fileURLToPath",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 289
+      },
+      {
+        "dst": "client._diagnostics.set",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 291
+      },
+      {
+        "dst": "path.basename",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 293
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClientOptions.onExit",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 302
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/lsp/index.ts#LspClient",
+        "confidence": 1,
+        "source_line": 206
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 37,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.502Z"
+  }
+}

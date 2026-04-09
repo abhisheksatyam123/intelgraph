@@ -1,0 +1,78 @@
+{
+  "kind": "function",
+  "canonical_name": "assert_setup_correct",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/checksum_kunit.c",
+    "line": 469,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "__compiletime_assert_0",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_1",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_2",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_3",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_4",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_5",
+        "confidence": 1
+      },
+      {
+        "dst": "__kunit_abort",
+        "confidence": 1
+      },
+      {
+        "dst": "__kunit_do_failed_assertion",
+        "confidence": 1
+      },
+      {
+        "dst": "kunit_binary_assert_format",
+        "confidence": 1
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "test_csum_fixed_random_inputs",
+        "confidence": 1
+      },
+      {
+        "src": "test_csum_all_carry_inputs",
+        "confidence": 1
+      },
+      {
+        "src": "test_csum_no_carry_inputs",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.626Z"
+  }
+}

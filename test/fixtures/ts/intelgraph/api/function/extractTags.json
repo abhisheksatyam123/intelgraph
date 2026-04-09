@@ -1,0 +1,127 @@
+{
+  "kind": "function",
+  "canonical_name": "module:scripts/dump-tags.mjs#extractTags",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/scripts/dump-tags.mjs",
+    "line": 38,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 29,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "content.startsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 40
+      },
+      {
+        "dst": "content.indexOf",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 41
+      },
+      {
+        "dst": "content.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 43
+      },
+      {
+        "dst": "fm.split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 44
+      },
+      {
+        "dst": "match",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 47
+      },
+      {
+        "dst": "rest.startsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 50
+      },
+      {
+        "dst": "rest.endsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 50
+      },
+      {
+        "dst": "trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 59
+      },
+      {
+        "dst": "rest.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 51
+      },
+      {
+        "dst": "inner.split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 53
+      },
+      {
+        "dst": "tags.push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 59
+      },
+      {
+        "dst": "replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 59
+      },
+      {
+        "dst": "t.trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 54
+      },
+      {
+        "dst": "test",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 58
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:scripts/dump-tags.mjs",
+        "confidence": 1,
+        "source_line": 38
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:scripts/dump-tags.mjs",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 72
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 14,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.784Z"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.findDescendant",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/treesitter-service.ts",
+    "line": 204,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.js#TsNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 204
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.js#findDescendant",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 205
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl",
+        "confidence": 1,
+        "source_line": 204
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.497Z"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "kind": "function",
+  "canonical_name": "gf_poly_copy",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/bch.c",
+    "line": 404,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "memcpy",
+        "confidence": 1
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "tk.deg",
+        "confidence": 0.85
+      },
+      {
+        "dst": "gcd.deg",
+        "confidence": 0.85
+      },
+      {
+        "dst": "f.deg",
+        "confidence": 0.85
+      },
+      {
+        "dst": "((struct gf_poly_deg1 *)f)[gcd->deg].poly",
+        "confidence": 0.85
+      },
+      {
+        "dst": "poly.deg",
+        "confidence": 0.85
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "compute_error_locator_polynomial",
+        "confidence": 1
+      },
+      {
+        "src": "factor_polynomial",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.802Z"
+  }
+}

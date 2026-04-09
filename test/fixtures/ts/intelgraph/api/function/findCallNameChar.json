@@ -1,0 +1,87 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/pattern-detector/auto-classifier.ts#findCallNameChar",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-detector/auto-classifier.ts",
+    "line": 340,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 15,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/auto-classifier.ts#AutoClassifierDeps",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 344
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/auto-classifier.ts#AutoClassifierDeps.readFile",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 346
+      },
+      {
+        "dst": "source.split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 348
+      },
+      {
+        "dst": "callName.replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 350
+      },
+      {
+        "dst": "RegExp",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 351
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/auto-classifier.ts#wordBoundaryRegex.exec",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 352
+      },
+      {
+        "dst": "lineText.indexOf",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 353
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/pattern-detector/auto-classifier.ts#autoClassifyCall",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 70
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-detector/auto-classifier.ts",
+        "confidence": 1,
+        "source_line": 340
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.005Z"
+  }
+}

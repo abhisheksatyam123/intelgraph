@@ -1,0 +1,53 @@
+{
+  "kind": "function",
+  "canonical_name": "module:tests/normalization_loss_tests.rs#assert_lines_present",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/tests/normalization_loss_tests.rs",
+    "line": 39,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 11,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:tests/normalization_loss_tests.rs",
+        "confidence": 1,
+        "source_line": 39
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:tests/normalization_loss_tests.rs#fm09_multiple_unknown_fields_preserved_in_order",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 218
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#eg08_deeply_nested_headings_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1136
+      },
+      {
+        "src": "module:tests/normalization_loss_tests.rs#eg09_multiple_thematic_breaks_no_h2_preserved",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1156
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.084Z"
+  }
+}

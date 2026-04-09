@@ -1,0 +1,62 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/vault/metadata.rs#TagsVisitor",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/metadata.rs",
+    "line": 23,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 1,
+  "relations": {
+    "implements_out": [
+      {
+        "dst": "de::Visitor",
+        "confidence": 1,
+        "source_line": 25
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/vault/metadata.rs#TagsVisitor.expecting",
+        "confidence": 1,
+        "source_line": 28
+      },
+      {
+        "dst": "module:src/vault/metadata.rs#TagsVisitor.visit_unit",
+        "confidence": 1,
+        "source_line": 32
+      },
+      {
+        "dst": "module:src/vault/metadata.rs#TagsVisitor.visit_str",
+        "confidence": 1,
+        "source_line": 39
+      },
+      {
+        "dst": "module:src/vault/metadata.rs#TagsVisitor.visit_seq",
+        "confidence": 1,
+        "source_line": 49
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/metadata.rs",
+        "confidence": 1,
+        "source_line": 23
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.859Z"
+  }
+}

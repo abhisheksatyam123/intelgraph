@@ -1,0 +1,103 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/vault/query.rs#Vault.select_referenceable_at_position",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/query.rs",
+    "line": 38,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 27,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:tower_lsp::lsp_types#Position",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 38
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "select_referenceable_nodes",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 43
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 47
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 57
+      },
+      {
+        "dst": "find",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 57
+      },
+      {
+        "dst": "flat_map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 45
+      },
+      {
+        "dst": "into_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 45
+      },
+      {
+        "dst": "clone",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 47
+      },
+      {
+        "dst": "get_range",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 47
+      },
+      {
+        "dst": "iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 57
+      },
+      {
+        "dst": "Referenceable::File",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 61
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/query.rs#Vault",
+        "confidence": 1,
+        "source_line": 38
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.789Z"
+  }
+}

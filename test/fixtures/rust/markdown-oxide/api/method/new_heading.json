@@ -1,0 +1,61 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/vault/reference.rs#WikiReferenceConstructor.new_heading",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/reference.rs",
+    "line": 373,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/vault/reference.rs#ReferenceData",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 373
+      },
+      {
+        "dst": "module:src/vault/reference.rs#Reference",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 373
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/vault/reference.rs#Reference.WikiHeadingLink",
+        "confidence": 0.95,
+        "resolution": "scoped-local",
+        "source_line": 374
+      },
+      {
+        "dst": "into",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 374
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/reference.rs#WikiReferenceConstructor",
+        "confidence": 1,
+        "source_line": 373
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.791Z"
+  }
+}

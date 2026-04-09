@@ -1,0 +1,117 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/clangd-core/phases/containment.ts#extractContainment",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/clangd-core/phases/containment.ts",
+    "line": 16,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 83,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#PhaseCtx",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 17
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#FileSymbolMap",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 19
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "ctx.workspace.readFile",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 23
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#FileSymbolMap.get",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 27
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#PhaseCtx.edge",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 81
+      },
+      {
+        "dst": "ctx.metrics.count",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 94
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#parseSource",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 46
+      },
+      {
+        "dst": "text.split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 49
+      },
+      {
+        "dst": "match",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 51
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#findAllNodes",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 68
+      },
+      {
+        "dst": "inc.child",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 73
+      },
+      {
+        "dst": "child.text.replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 75
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/clangd-core/extractor.ts#extract",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 116
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/clangd-core/phases/containment.ts",
+        "confidence": 1,
+        "source_line": 16
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 12,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.985Z"
+  }
+}

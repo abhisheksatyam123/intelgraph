@@ -1,0 +1,131 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/extraction/contract.ts#IExtractor",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/contract.ts",
+    "line": 116,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 4,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/contract.ts#ExtractorMetadata",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 117
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.ts#Fact",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 118
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContext",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 118
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/contract.ts#IExtractor.metadata",
+        "confidence": 1,
+        "source_line": 117
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/extraction/contract.ts#ExtractorMetadata",
+        "confidence": 0.95,
+        "source_line": 116
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/contract.ts",
+        "confidence": 1,
+        "source_line": 116
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/contract.ts#defineExtractor",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 148
+      },
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#ExtractorRunnerOptions",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 67
+      },
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#PluginEntry",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 156
+      },
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#ExtractorRunner.runPlugin",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 244
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 63
+      },
+      {
+        "src": "module:src/plugins/index.ts#BUILT_IN_EXTRACTORS",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 22
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#ExtractorRunnerOptions.plugins",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 67
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.plugins",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 63
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#ExtractorRunnerOptions",
+        "confidence": 0.95,
+        "source_line": 54
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps",
+        "confidence": 0.95,
+        "source_line": 56
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 11
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.186Z"
+  }
+}

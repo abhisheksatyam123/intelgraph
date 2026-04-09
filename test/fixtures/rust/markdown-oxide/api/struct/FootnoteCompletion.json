@@ -1,0 +1,80 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/completion/footnote_completer.rs#FootnoteCompletion",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/footnote_completer.rs",
+    "line": 67,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:std::path#Path",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 67
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/completion/footnote_completer.rs#FootnoteCompletion.footnote",
+        "confidence": 1,
+        "source_line": 68
+      },
+      {
+        "dst": "module:src/completion/footnote_completer.rs#FootnoteCompletion.from_referenceable",
+        "confidence": 1,
+        "source_line": 72
+      },
+      {
+        "dst": "module:src/completion/footnote_completer.rs#FootnoteCompletion.completions",
+        "confidence": 1,
+        "source_line": 83
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:std::path#Path",
+        "confidence": 0.95,
+        "source_line": 67
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "module:super#Completable",
+        "confidence": 1,
+        "source_line": 82
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/footnote_completer.rs",
+        "confidence": 1,
+        "source_line": 67
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/completion/footnote_completer.rs#FootnoteCompletion.from_referenceable",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 72
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.853Z"
+  }
+}

@@ -148,7 +148,7 @@ function calculateCompletenessScore(fixture: ApiFixture): ApiCompletenessScore {
  * Load all API fixtures and generate completeness audit report.
  */
 export async function generateCompletenessAudit(
-  fixturesDir: string = "test/fixtures/wlan/api",
+  fixturesDir: string = "test/fixtures/c/wlan/api",
 ): Promise<AuditReport> {
   const files = await fs.readdir(fixturesDir)
   const jsonFiles = files.filter((f) => f.endsWith(".json"))

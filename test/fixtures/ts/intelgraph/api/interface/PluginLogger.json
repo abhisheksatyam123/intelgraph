@@ -1,0 +1,81 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/extraction/context.ts#PluginLogger",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/context.ts",
+    "line": 79,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 6,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts",
+        "confidence": 1,
+        "source_line": 79
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts#ExtractionContext",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 166
+      },
+      {
+        "src": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 341
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts#ExtractionContext.log",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 166
+      },
+      {
+        "src": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.log",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 341
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts#ExtractionContext",
+        "confidence": 0.95,
+        "source_line": 112
+      },
+      {
+        "src": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl",
+        "confidence": 0.95,
+        "source_line": 330
+      }
+    ],
+    "implements_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger",
+        "confidence": 1,
+        "resolution": "local",
+        "source_line": 216
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 8
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.184Z"
+  }
+}

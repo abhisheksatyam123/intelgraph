@@ -1,0 +1,97 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/notes/index.rs#heading_to_anchor",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/notes/index.rs",
+    "line": 27,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 9,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 28
+      },
+      {
+        "dst": "text.chars()\n        .filter(|c| c.is_alphanumeric() || c.is_whitespace() || *c == '-')\n        .collect::<String>()\n        .to_lowercase()\n        .split_whitespace()\n        .collect::<Vec<_>>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 28
+      },
+      {
+        "dst": "split_whitespace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 28
+      },
+      {
+        "dst": "to_lowercase",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 28
+      },
+      {
+        "dst": "text.chars()\n        .filter(|c| c.is_alphanumeric() || c.is_whitespace() || *c == '-')\n        .collect::<String>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 28
+      },
+      {
+        "dst": "filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 28
+      },
+      {
+        "dst": "chars",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 28
+      },
+      {
+        "dst": "is_alphanumeric",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 29
+      },
+      {
+        "dst": "is_whitespace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 29
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/notes/index.rs",
+        "confidence": 1,
+        "source_line": 27
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/notes/index.rs#render_index",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 146
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.077Z"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/diagnostics.rs#path_unresolved_references",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/diagnostics.rs",
+    "line": 11,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 27,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:std::path#Path",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 11
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "select_referenceable_nodes",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 15
+      },
+      {
+        "dst": "select_references",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 16
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 36
+      },
+      {
+        "dst": "filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 18
+      },
+      {
+        "dst": "into_par_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 18
+      },
+      {
+        "dst": "find",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 21
+      },
+      {
+        "dst": "iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 21
+      },
+      {
+        "dst": "references",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 23
+      },
+      {
+        "dst": "root_dir",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 23
+      },
+      {
+        "dst": "is_some_and",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 25
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/diagnostics.rs",
+        "confidence": 1,
+        "source_line": 11
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/diagnostics.rs#diagnostics",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 48
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.075Z"
+  }
+}

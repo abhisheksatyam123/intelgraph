@@ -1,0 +1,127 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/contracts/common.ts#AggregateFieldRow",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/common.ts",
+    "line": 104,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 9,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#AggregateFieldRow.aggregateSymbolName",
+        "confidence": 1,
+        "source_line": 105
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#AggregateFieldRow.name",
+        "confidence": 1,
+        "source_line": 106
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#AggregateFieldRow.ordinal",
+        "confidence": 1,
+        "source_line": 107
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#AggregateFieldRow.typeSpelling",
+        "confidence": 1,
+        "source_line": 108
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#AggregateFieldRow.bitOffset",
+        "confidence": 1,
+        "source_line": 109
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#AggregateFieldRow.bitWidth",
+        "confidence": 1,
+        "source_line": 110
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#AggregateFieldRow.isBitfield",
+        "confidence": 1,
+        "source_line": 111
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/common.ts",
+        "confidence": 1,
+        "source_line": 104
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/extraction-adapter.ts#TypeBatch",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 22
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#AggregateFieldFact",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 66
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#AggregateFieldFactInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 139
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/extraction-adapter.ts#TypeBatch.fields",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 22
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#AggregateFieldFact.payload",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 66
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#AggregateFieldFactInput.payload",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 139
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/contracts/extraction-adapter.ts#TypeBatch",
+        "confidence": 0.95,
+        "source_line": 20
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#AggregateFieldFact",
+        "confidence": 0.95,
+        "source_line": 64
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#AggregateFieldFactInput",
+        "confidence": 0.95,
+        "source_line": 138
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 10
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.128Z"
+  }
+}

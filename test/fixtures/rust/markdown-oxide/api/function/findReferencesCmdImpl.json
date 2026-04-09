@@ -1,0 +1,67 @@
+{
+  "kind": "function",
+  "canonical_name": "module:vscode-extension/client/src/extension.ts#findReferencesCmdImpl",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/vscode-extension/client/src/extension.ts",
+    "line": 222,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 10,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:vscode-extension/client/src/extension.ts#FindReferencesData",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 222
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "vscode.commands.executeCommand",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 224
+      },
+      {
+        "dst": "vscode.Uri.parse",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 226
+      },
+      {
+        "dst": "client.protocol2CodeConverter.asPosition",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 227
+      },
+      {
+        "dst": "data.locations.map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 228
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:vscode-extension/client/src/extension.ts",
+        "confidence": 1,
+        "source_line": 222
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.102Z"
+  }
+}

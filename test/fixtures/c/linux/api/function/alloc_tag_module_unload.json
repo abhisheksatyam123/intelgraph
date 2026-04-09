@@ -1,0 +1,46 @@
+{
+  "kind": "function",
+  "canonical_name": "alloc_tag_module_unload",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/alloc_tag.c",
+    "line": 155,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "codetag_get_ct_iter",
+        "confidence": 1
+      },
+      {
+        "dst": "codetag_next_ct",
+        "confidence": 1
+      },
+      {
+        "dst": "warn_slowpath_fmt",
+        "confidence": 1
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "alloc_tag_init",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.624Z"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/commands.rs#parse_relative_directive",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/commands.rs",
+    "line": 41,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 17,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 42
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 46
+      },
+      {
+        "dst": "strip_prefix",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 50
+      },
+      {
+        "dst": "ok",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 53
+      },
+      {
+        "dst": "stripped.parse::<i64>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 51
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 51
+      },
+      {
+        "dst": "trimmed.parse::<i64>",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 53
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/commands.rs",
+        "confidence": 1,
+        "source_line": 41
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/commands.rs#jump",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 70
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.072Z"
+  }
+}

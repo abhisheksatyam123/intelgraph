@@ -1,0 +1,99 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/clangd-core/phases/calls.ts#extractCalls",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/clangd-core/phases/calls.ts",
+    "line": 15,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 43,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#PhaseCtx",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 16
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#FileSymbolMap",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 17
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#FileSymbolMap.entries",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 19
+      },
+      {
+        "dst": "ctx.workspace.readFile",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 21
+      },
+      {
+        "dst": "ctx.lsp.outgoingCalls",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 27
+      },
+      {
+        "dst": "ctx.metrics.timing",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 33
+      },
+      {
+        "dst": "ctx.metrics.count",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 53
+      },
+      {
+        "dst": "String",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 41
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#PhaseCtx.edge",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 43
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/clangd-core/extractor.ts#extract",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 100
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/clangd-core/phases/calls.ts",
+        "confidence": 1,
+        "source_line": 15
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.985Z"
+  }
+}

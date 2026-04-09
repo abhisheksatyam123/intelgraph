@@ -1,0 +1,157 @@
+{
+  "kind": "function",
+  "canonical_name": "module:scripts/upgrade-frontmatter.mjs#buildCanonical",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/scripts/upgrade-frontmatter.mjs",
+    "line": 300,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 123,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 301
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#fields.get",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 393
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#out.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 405
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#extractH1",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 310
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#titleFromFilename",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 310
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#VALID_TYPES.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 316
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#inferType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 319
+      },
+      {
+        "dst": "notes.push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 417
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#VALID_STATUSES.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 330
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#inferStatusFromTags",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 333
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#fields.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 365
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#inferScope",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 351
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#extractClaimOrSubsystem",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 380
+      },
+      {
+        "dst": "Array.isArray",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 394
+      },
+      {
+        "dst": "rawTags.filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 395
+      },
+      {
+        "dst": "t.startsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 397
+      },
+      {
+        "dst": "test",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 398
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#fields.keys",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 410
+      },
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#DROP_FIELDS.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 412
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:scripts/upgrade-frontmatter.mjs",
+        "confidence": 1,
+        "source_line": 300
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:scripts/upgrade-frontmatter.mjs#processFile",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 511
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 19,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.792Z"
+  }
+}

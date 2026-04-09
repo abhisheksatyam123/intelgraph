@@ -1,0 +1,69 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/pattern-detector/detector.ts#classifyFunctionCallFromRegistry",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-detector/detector.ts",
+    "line": 177,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 39,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.js#FunctionCall",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 178
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.js#ClassifiedSite",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 183
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/registry.js#CALL_PATTERNS.find",
+        "confidence": 0.95,
+        "resolution": "named-member",
+        "source_line": 184
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/detector.ts#extractKeyFromCall",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 187
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/pattern-detector/detector.ts#classifyReferenceSite",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 132
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-detector/detector.ts",
+        "confidence": 1,
+        "source_line": 177
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.800Z"
+  }
+}

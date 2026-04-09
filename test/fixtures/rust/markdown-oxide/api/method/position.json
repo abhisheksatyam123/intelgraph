@@ -1,0 +1,53 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/completion/link_completer.rs#WikiLinkCompleter.position",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/link_completer.rs",
+    "line": 450,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 6,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:tower_lsp::lsp_types#Position",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 450
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.line",
+        "confidence": 0.95,
+        "source_line": 452
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#WikiLinkCompleter.character",
+        "confidence": 0.95,
+        "source_line": 453
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#WikiLinkCompleter",
+        "confidence": 1,
+        "source_line": 450
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.780Z"
+  }
+}

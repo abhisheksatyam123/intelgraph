@@ -1,0 +1,61 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/pattern-detector/c-parser.ts#findInitializerAtPosition",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-detector/c-parser.ts",
+    "line": 251,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 14,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#findInitializerAtPosition",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 258
+      },
+      {
+        "dst": "node.child",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 258
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#tsEnclosingConstruct",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 211
+      },
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#findInitializerAtPosition",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 258
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts",
+        "confidence": 1,
+        "source_line": 251
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.007Z"
+  }
+}

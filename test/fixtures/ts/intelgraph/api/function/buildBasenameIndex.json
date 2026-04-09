@@ -1,0 +1,103 @@
+{
+  "kind": "function",
+  "canonical_name": "module:scripts/wlan-fixture-gap-audit.mjs#buildBasenameIndex",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/scripts/wlan-fixture-gap-audit.mjs",
+    "line": 125,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 22,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:node:child_process#spawnSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 126
+      },
+      {
+        "dst": "Error",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 133
+      },
+      {
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 136
+      },
+      {
+        "dst": "result.stdout.split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 137
+      },
+      {
+        "dst": "line.trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 138
+      },
+      {
+        "dst": "path.basename",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 140
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-gap-audit.mjs#index.get",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 141
+      },
+      {
+        "dst": "list.push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 142
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-gap-audit.mjs#normalizePath",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 142
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-gap-audit.mjs#index.set",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 143
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:scripts/wlan-fixture-gap-audit.mjs",
+        "confidence": 1,
+        "source_line": 125
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:scripts/wlan-fixture-gap-audit.mjs#main",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 155
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.795Z"
+  }
+}

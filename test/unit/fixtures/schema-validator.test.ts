@@ -20,7 +20,7 @@ import { join, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const FIXTURE_ROOT = join(__dirname, "../../fixtures/wlan")
+const FIXTURE_ROOT = join(__dirname, "../../fixtures/c/wlan")
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

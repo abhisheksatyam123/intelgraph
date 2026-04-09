@@ -1,0 +1,53 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/pattern-detector/c-parser.ts#skipBlockCommentForward",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-detector/c-parser.ts",
+    "line": 704,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "calls_in": [
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#splitArguments",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 550
+      },
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#findMatchingCloseParen",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 656
+      },
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts#findMatchingCloseBrace",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 669
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts",
+        "confidence": 1,
+        "source_line": 704
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:58.799Z"
+  }
+}

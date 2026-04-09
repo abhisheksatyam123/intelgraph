@@ -1,0 +1,91 @@
+{
+  "kind": "function",
+  "canonical_name": "module:scripts/retrofit-frontmatter.mjs#makeFrontmatter",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/scripts/retrofit-frontmatter.mjs",
+    "line": 102,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 18,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:node:fs#readFileSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 103
+      },
+      {
+        "dst": "module:scripts/retrofit-frontmatter.mjs#inferType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 104
+      },
+      {
+        "dst": "module:scripts/retrofit-frontmatter.mjs#inferScope",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 105
+      },
+      {
+        "dst": "module:scripts/retrofit-frontmatter.mjs#extractH1",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 106
+      },
+      {
+        "dst": "module:scripts/retrofit-frontmatter.mjs#titleFromFilename",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 106
+      },
+      {
+        "dst": "join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 108
+      },
+      {
+        "dst": "replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 110
+      },
+      {
+        "dst": "JSON.stringify",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 110
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:scripts/retrofit-frontmatter.mjs",
+        "confidence": 1,
+        "source_line": 102
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:scripts/retrofit-frontmatter.mjs",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 137
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.792Z"
+  }
+}

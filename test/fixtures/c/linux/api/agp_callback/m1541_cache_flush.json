@@ -1,0 +1,28 @@
+{
+  "kind": "function",
+  "canonical_name": "m1541_cache_flush",
+  "category": "agp_callback",
+  "registration_kind": "struct_field:struct agp_bridge_driver.cache_flush",
+  "relations": {},
+  "verification": {
+    "has_registration": true,
+    "has_runtime_chain": true,
+    "dispatch_chain": [
+      "agp_backend_initialize",
+      "bridge->driver->cache_flush",
+      "m1541_cache_flush"
+    ],
+    "trigger_kind": "event",
+    "direct_callers_in": 0,
+    "calls_out": 3,
+    "reads_field": 0,
+    "writes_field": 0,
+    "logs_event": 0,
+    "total_edges": 6
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "100api-verification",
+    "method": "5-phase extraction + edge walk",
+    "generated_at": "2026-04-09T11:53:02.142Z"
+  }
+}

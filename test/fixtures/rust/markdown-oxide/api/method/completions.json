@@ -1,0 +1,67 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/completion/unindexed_block_completer.rs#UnindexedBlockCompleter.completions",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/unindexed_block_completer.rs",
+    "line": 79,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 18,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/completion/unindexed_block_completer.rs#UnindexedBlockCompleter",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 79
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "completables",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 118
+      },
+      {
+        "dst": "grep_match_text",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 119
+      },
+      {
+        "dst": "fuzzy_match_completions",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 120
+      },
+      {
+        "dst": "settings",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 123
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/unindexed_block_completer.rs#UnindexedBlockCompleter",
+        "confidence": 1,
+        "source_line": 79
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.783Z"
+  }
+}

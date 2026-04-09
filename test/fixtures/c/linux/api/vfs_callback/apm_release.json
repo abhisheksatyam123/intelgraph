@@ -1,0 +1,28 @@
+{
+  "kind": "function",
+  "canonical_name": "apm_release",
+  "category": "vfs_callback",
+  "registration_kind": "struct_field:struct file_operations.release",
+  "relations": {},
+  "verification": {
+    "has_registration": true,
+    "has_runtime_chain": true,
+    "dispatch_chain": [
+      "__fput",
+      "f_op->release",
+      "apm_release"
+    ],
+    "trigger_kind": "event",
+    "direct_callers_in": 0,
+    "calls_out": 8,
+    "reads_field": 0,
+    "writes_field": 0,
+    "logs_event": 0,
+    "total_edges": 11
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "100api-verification",
+    "method": "5-phase extraction + edge walk",
+    "generated_at": "2026-04-09T11:53:02.313Z"
+  }
+}

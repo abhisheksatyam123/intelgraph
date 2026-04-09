@@ -1,0 +1,178 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/tools/pattern-detector/types.ts#ClassifiedSite",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-detector/types.ts",
+    "line": 57,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 33,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#CallPattern",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 69
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#InitPattern",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 69
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#PatternConnectionKind",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 73
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.js#FunctionCall",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 77
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#ClassifiedSite.callbackName",
+        "confidence": 1,
+        "source_line": 59
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#ClassifiedSite.filePath",
+        "confidence": 1,
+        "source_line": 61
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#ClassifiedSite.line",
+        "confidence": 1,
+        "source_line": 63
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#ClassifiedSite.character",
+        "confidence": 1,
+        "source_line": 65
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#ClassifiedSite.sourceText",
+        "confidence": 1,
+        "source_line": 67
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#ClassifiedSite.matchedPattern",
+        "confidence": 1,
+        "source_line": 69
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#ClassifiedSite.dispatchKey",
+        "confidence": 1,
+        "source_line": 71
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#ClassifiedSite.connectionKind",
+        "confidence": 1,
+        "source_line": 73
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#ClassifiedSite.viaRegistrationApi",
+        "confidence": 1,
+        "source_line": 75
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#ClassifiedSite.enclosingCall",
+        "confidence": 1,
+        "source_line": 77
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#ClassifiedSite.callbackParamName",
+        "confidence": 1,
+        "source_line": 83
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#ClassifiedSite.callbackArgIndex",
+        "confidence": 1,
+        "source_line": 88
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#CallPattern",
+        "confidence": 0.95,
+        "source_line": 57
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#InitPattern",
+        "confidence": 0.95,
+        "source_line": 57
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/types.ts#PatternConnectionKind",
+        "confidence": 0.95,
+        "source_line": 57
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.js#FunctionCall",
+        "confidence": 0.95,
+        "source_line": 57
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-detector/types.ts",
+        "confidence": 1,
+        "source_line": 57
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/tools/pattern-detector/types.ts#PatternDetectionResult",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 96
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/tools/pattern-detector/types.ts#PatternDetectionResult.sites",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 96
+      },
+      {
+        "src": "module:src/tools/pattern-detector/types.ts#PatternDetectionResult.matchedSites",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 98
+      },
+      {
+        "src": "module:src/tools/pattern-detector/types.ts#PatternDetectionResult.unclassifiedSites",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 100
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/tools/pattern-detector/types.ts#PatternDetectionResult",
+        "confidence": 0.95,
+        "source_line": 92
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 20,
+    "total_incoming_edges": 6
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.126Z"
+  }
+}

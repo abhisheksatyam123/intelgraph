@@ -1,0 +1,117 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/config/config.ts#readConfig",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/config/config.ts",
+    "line": 207,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 49,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/config/config.ts#IntelgraphConfig",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 207
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/config/config.ts#resolveConfigPath",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 208
+      },
+      {
+        "dst": "module:fs#existsSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 211
+      },
+      {
+        "dst": "module:src/logging/logger.ts#log",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 244
+      },
+      {
+        "dst": "module:fs#readFileSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 219
+      },
+      {
+        "dst": "JSON.parse",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 220
+      },
+      {
+        "dst": "module:src/logging/logger.ts#logError",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 252
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/config/config.ts",
+        "confidence": 1,
+        "source_line": 207
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/config/config.ts#updateConfig",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 288
+      },
+      {
+        "src": "module:src/config/config.ts#addRecentFile",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 364
+      },
+      {
+        "src": "module:src/config/config.ts#dismissWarning",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 385
+      },
+      {
+        "src": "module:src/config/config.ts#isWarningDismissed",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 402
+      },
+      {
+        "src": "module:src/tools/reason-engine/reason-config.ts#readReasoningConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 4
+      },
+      {
+        "src": "module:test/unit/config/rename-fallback.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 124
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 7
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.802Z"
+  }
+}

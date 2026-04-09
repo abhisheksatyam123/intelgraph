@@ -1,0 +1,1048 @@
+{
+  "kind": "function",
+  "canonical_name": "test_bitfields_constants",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/bitfield_kunit.c",
+    "line": 60,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "__compiletime_assert_0",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_1",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_10",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_100",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_101",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_102",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_103",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_104",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_105",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_106",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_107",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_108",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_109",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_11",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_110",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_111",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_112",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_113",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_114",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_115",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_116",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_117",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_118",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_119",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_12",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_120",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_121",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_122",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_123",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_124",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_125",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_126",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_127",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_128",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_129",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_13",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_130",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_131",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_132",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_133",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_134",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_135",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_136",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_137",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_138",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_139",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_14",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_140",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_141",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_142",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_143",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_144",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_145",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_146",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_147",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_148",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_149",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_15",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_150",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_151",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_152",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_153",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_154",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_155",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_156",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_157",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_158",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_159",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_16",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_160",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_161",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_162",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_163",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_164",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_165",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_166",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_167",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_168",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_169",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_17",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_170",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_171",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_172",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_173",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_174",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_175",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_176",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_177",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_178",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_179",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_18",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_180",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_181",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_182",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_183",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_184",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_185",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_186",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_187",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_188",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_189",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_19",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_190",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_191",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_192",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_193",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_194",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_195",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_196",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_197",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_198",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_199",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_2",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_20",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_200",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_201",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_202",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_203",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_204",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_205",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_206",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_207",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_208",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_209",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_21",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_210",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_211",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_212",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_213",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_214",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_215",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_216",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_217",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_218",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_219",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_22",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_220",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_221",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_222",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_223",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_224",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_225",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_226",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_227",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_228",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_229",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_23",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_230",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_231",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_24",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_25",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_26",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_27",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_28",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_29",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_3",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_30",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_31",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_32",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_33",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_34",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_35",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_36",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_37",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_38",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_39",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_4",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_40",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_41",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_42",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_43",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_44",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_45",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_46",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_47",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_48",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_49",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_5",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_50",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_51",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_52",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_53",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_54",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_55",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_56",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_57",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_58",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_59",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_6",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_60",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_61",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_62",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_63",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_64",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_65",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_66",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_67",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_68",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_69",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_7",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_70",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_71",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_72",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_73",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_74",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_75",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_76",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_77",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_78",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_79",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_8",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_80",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_81",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_82",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_83",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_84",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_85",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_86",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_87",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_88",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_89",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_9",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_90",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_91",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_92",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_93",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_94",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_95",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_96",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_97",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_98",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_99",
+        "confidence": 1
+      },
+      {
+        "dst": "__kunit_abort",
+        "confidence": 1
+      },
+      {
+        "dst": "__kunit_do_failed_assertion",
+        "confidence": 1
+      },
+      {
+        "dst": "be16_encode_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "be16_get_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "be32_encode_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "be32_get_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "be64_encode_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "be64_get_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "kunit_unary_assert_format",
+        "confidence": 1
+      },
+      {
+        "dst": "le16_encode_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "le16_get_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "le32_encode_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "le32_get_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "le64_encode_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "le64_get_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "u16_encode_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "u16_get_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "u32_encode_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "u32_get_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "u64_encode_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "u64_get_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "u8_encode_bits",
+        "confidence": 1
+      },
+      {
+        "dst": "u8_get_bits",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 255,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.808Z"
+  }
+}

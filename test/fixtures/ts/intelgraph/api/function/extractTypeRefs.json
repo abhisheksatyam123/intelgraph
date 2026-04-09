@@ -1,0 +1,195 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/clangd-core/phases/type-refs.ts#extractTypeRefs",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/clangd-core/phases/type-refs.ts",
+    "line": 16,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 151,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#PhaseCtx",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 17
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#FileSymbolMap",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 18
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 86
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#FileSymbolMap.values",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 22
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/type-refs.ts#knownTypes.add",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 25
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#FileSymbolMap.entries",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 31
+      },
+      {
+        "dst": "ctx.workspace.readFile",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 33
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#parseSource",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 36
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#findAllNodes",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 101
+      },
+      {
+        "dst": "funcDef.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 56
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#walkAst",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 118
+      },
+      {
+        "dst": "join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 58
+      },
+      {
+        "dst": "slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 58
+      },
+      {
+        "dst": "text.split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 58
+      },
+      {
+        "dst": "sigText.includes",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 62
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/type-refs.ts#emittedTypes.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 62
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/type-refs.ts#emittedTypes.add",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 63
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/types.ts#PhaseCtx.edge",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 147
+      },
+      {
+        "dst": "ctx.metrics.count",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 160
+      },
+      {
+        "dst": "spec.child",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 92
+      },
+      {
+        "dst": "spec.children.find",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 98
+      },
+      {
+        "dst": "fd.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 115
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/type-refs.ts#knownTypes.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 119
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/type-refs.ts#emittedAggregates.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 145
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/phases/type-refs.ts#emittedAggregates.add",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 146
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/clangd-core/extractor.ts#extract",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 119
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/clangd-core/phases/type-refs.ts",
+        "confidence": 1,
+        "source_line": 16
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 25,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.986Z"
+  }
+}

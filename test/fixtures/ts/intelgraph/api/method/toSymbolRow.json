@@ -1,0 +1,55 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink.toSymbolRow",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/tools/ingest-tool.ts",
+    "line": 129,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 14,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphNodeRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 129
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.js#SymbolRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 129
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink.write",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 119
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink",
+        "confidence": 1,
+        "source_line": 129
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.498Z"
+  }
+}

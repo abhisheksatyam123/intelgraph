@@ -1,0 +1,41 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/vault/metadata.rs#deserialize_tags",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/metadata.rs",
+    "line": 19,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 47,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "deserialize_any",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 64
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/metadata.rs",
+        "confidence": 1,
+        "source_line": 19
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.079Z"
+  }
+}

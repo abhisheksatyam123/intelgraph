@@ -1,0 +1,81 @@
+{
+  "kind": "class",
+  "canonical_name": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger",
+  "category": "class",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/context.ts",
+    "line": 216,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 31,
+  "relations": {
+    "implements_out": [
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#PluginLogger",
+        "confidence": 1,
+        "resolution": "local",
+        "source_line": 216
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger.constructor",
+        "confidence": 1,
+        "source_line": 217
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger.debug",
+        "confidence": 1,
+        "source_line": 225
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger.info",
+        "confidence": 1,
+        "source_line": 228
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger.warn",
+        "confidence": 1,
+        "source_line": 231
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger.error",
+        "confidence": 1,
+        "source_line": 234
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#PrefixedPluginLogger.emit",
+        "confidence": 1,
+        "source_line": 238
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts",
+        "confidence": 1,
+        "source_line": 216
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.constructor",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 357
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "class"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.184Z"
+  }
+}

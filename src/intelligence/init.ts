@@ -2,7 +2,8 @@
  * intelligence/init.ts
  * Initialises the intelligence backend at startup using the embedded
  * SQLite store. Reads INTELLIGENCE_DB_PATH from env (default
- * .clangd-mcp/intelligence.db). No external service required.
+ * .intelgraph/intelligence.db, with legacy .clangd-mcp/intelligence.db
+ * still honoured if it already exists). No external service required.
  *
  * Call initIntelligenceBackend() once during server startup. Returns
  * true after the backend is wired into the dep singletons.

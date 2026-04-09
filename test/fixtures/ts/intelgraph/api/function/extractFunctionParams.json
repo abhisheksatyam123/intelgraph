@@ -1,0 +1,109 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/pattern-detector/c-parser.ts#extractFunctionParams",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-detector/c-parser.ts",
+    "line": 437,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 60,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 445
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#findAllNodes",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 466
+      },
+      {
+        "dst": "Math.abs",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 461
+      },
+      {
+        "dst": "fn.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 463
+      },
+      {
+        "dst": "param.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 469
+      },
+      {
+        "dst": "FN_PTR_SIGNALS.some",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 480
+      },
+      {
+        "dst": "includes",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 480
+      },
+      {
+        "dst": "typeText.toLowerCase",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 480
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#KNOWN_NON_FNPTR_TYPES.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 481
+      },
+      {
+        "dst": "typeText.endsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 483
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#results.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 490
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/pattern-detector/auto-classifier.ts#autoClassifyCall",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 97
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts",
+        "confidence": 1,
+        "source_line": 437
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.006Z"
+  }
+}

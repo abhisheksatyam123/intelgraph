@@ -1,0 +1,111 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/query-node-adapter.ts#rowToNode",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/query-node-adapter.ts",
+    "line": 353,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 77,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryRequest",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 354
+      },
+      {
+        "dst": "module:src/intelligence/query-node-adapter.ts#NodeItem",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 357
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/query-node-adapter.ts#rowName",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 358
+      },
+      {
+        "dst": "module:src/intelligence/query-node-adapter.ts#str",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 423
+      },
+      {
+        "dst": "module:src/intelligence/query-node-adapter.ts#mapKind",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 360
+      },
+      {
+        "dst": "module:src/intelligence/query-node-adapter.ts#resolveEdgePlacement",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 385
+      },
+      {
+        "dst": "push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 388
+      },
+      {
+        "dst": "module:src/intelligence/query-node-adapter.ts#mapKindVerbose",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 394
+      },
+      {
+        "dst": "Math.max",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 407
+      },
+      {
+        "dst": "module:src/intelligence/query-node-adapter.ts#num",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 414
+      },
+      {
+        "dst": "module:src/intelligence/query-node-adapter.ts#nonEmpty",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 424
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts",
+        "confidence": 1,
+        "source_line": 353
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#toNodeResponse",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 432
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 11,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.980Z"
+  }
+}

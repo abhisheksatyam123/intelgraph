@@ -1,0 +1,29 @@
+{
+  "kind": "function",
+  "canonical_name": "alpha_core_agp_vm_fault",
+  "category": "indirect_callback",
+  "registration_kind": "struct_field:struct vm_operations_struct.fault",
+  "relations": {},
+  "verification": {
+    "has_registration": true,
+    "has_runtime_chain": true,
+    "dispatch_chain": [
+      "handle_pte_fault",
+      "do_fault",
+      "vma->vm_ops->fault",
+      "alpha_core_agp_vm_fault"
+    ],
+    "trigger_kind": "event",
+    "direct_callers_in": 0,
+    "calls_out": 3,
+    "reads_field": 30,
+    "writes_field": 16,
+    "logs_event": 0,
+    "total_edges": 52
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "100api-verification",
+    "method": "5-phase extraction + edge walk",
+    "generated_at": "2026-04-09T11:53:02.315Z"
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/backend/state.rs#Backend.bind_vault_mut",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/backend/state.rs",
+    "line": 58,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 26,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:tower_lsp::jsonrpc#Result",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 58
+      },
+      {
+        "dst": "module:src/vault/mod.rs#Vault",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 58
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "try_write",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 62
+      },
+      {
+        "dst": "log_message",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 70
+      },
+      {
+        "dst": "write",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 78
+      },
+      {
+        "dst": "Err",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 80
+      },
+      {
+        "dst": "module:tower_lsp::jsonrpc#Error.new",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 80
+      },
+      {
+        "dst": "module:tower_lsp::jsonrpc#ErrorCode.ServerError",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 80
+      },
+      {
+        "dst": "callback",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 82
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/backend/state.rs#Backend",
+        "confidence": 1,
+        "source_line": 58
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.771Z"
+  }
+}

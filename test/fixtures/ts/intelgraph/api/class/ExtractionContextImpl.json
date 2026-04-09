@@ -1,0 +1,275 @@
+{
+  "kind": "class",
+  "canonical_name": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl",
+  "category": "class",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/context.ts",
+    "line": 330,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 101,
+  "relations": {
+    "implements_out": [
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContext",
+        "confidence": 1,
+        "resolution": "local",
+        "source_line": 330
+      }
+    ],
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#LspService",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 335
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#TreeSitterService",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 336
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#RipgrepService",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 337
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#WorkspaceService",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 338
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#KeyedCache",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 340
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#PluginLogger",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 341
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#PluginMetrics",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 342
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#InMemoryPluginMetrics",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 346
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.snapshotId",
+        "confidence": 1,
+        "source_line": 331
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.workspaceRoot",
+        "confidence": 1,
+        "source_line": 332
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.extractorName",
+        "confidence": 1,
+        "source_line": 333
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.lsp",
+        "confidence": 1,
+        "source_line": 335
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.treesitter",
+        "confidence": 1,
+        "source_line": 336
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.ripgrep",
+        "confidence": 1,
+        "source_line": 337
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.workspace",
+        "confidence": 1,
+        "source_line": 338
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.cache",
+        "confidence": 1,
+        "source_line": 340
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.log",
+        "confidence": 1,
+        "source_line": 341
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.metrics",
+        "confidence": 1,
+        "source_line": 342
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.signal",
+        "confidence": 1,
+        "source_line": 343
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl._metricsImpl",
+        "confidence": 1,
+        "source_line": 346
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.constructor",
+        "confidence": 1,
+        "source_line": 348
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.symbol",
+        "confidence": 1,
+        "source_line": 372
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.type",
+        "confidence": 1,
+        "source_line": 381
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.aggregateField",
+        "confidence": 1,
+        "source_line": 390
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.edge",
+        "confidence": 1,
+        "source_line": 399
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.evidence",
+        "confidence": 1,
+        "source_line": 408
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.observation",
+        "confidence": 1,
+        "source_line": 418
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#ExtractionContextImpl.location",
+        "confidence": 1,
+        "source_line": 427
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#LspService",
+        "confidence": 0.95,
+        "source_line": 330
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#TreeSitterService",
+        "confidence": 0.95,
+        "source_line": 330
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#RipgrepService",
+        "confidence": 0.95,
+        "source_line": 330
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/index.ts#WorkspaceService",
+        "confidence": 0.95,
+        "source_line": 330
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#KeyedCache",
+        "confidence": 0.95,
+        "source_line": 330
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#PluginLogger",
+        "confidence": 0.95,
+        "source_line": 330
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#PluginMetrics",
+        "confidence": 0.95,
+        "source_line": 330
+      },
+      {
+        "dst": "module:src/intelligence/extraction/context.ts#InMemoryPluginMetrics",
+        "confidence": 0.95,
+        "source_line": 330
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/context.ts",
+        "confidence": 1,
+        "source_line": 330
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#ctx",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 267
+      },
+      {
+        "src": "module:test/unit/extraction/context.test.ts#makeCtx",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 30
+      },
+      {
+        "src": "module:test/unit/extraction/context.test.ts#ctx",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 48
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#ExtractorRunner.runPlugin",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 267
+      },
+      {
+        "src": "module:test/unit/extraction/context.test.ts#makeCtx",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 31
+      },
+      {
+        "src": "module:test/unit/extraction/context.test.ts",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 48
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "class"
+    ],
+    "total_outgoing_edges": 37,
+    "total_incoming_edges": 7
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.180Z"
+  }
+}

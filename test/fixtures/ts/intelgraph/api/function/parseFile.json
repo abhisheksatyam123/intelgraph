@@ -1,0 +1,75 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/extraction/services/treesitter-registry.ts#parseFile",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/treesitter-registry.ts",
+    "line": 234,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 14,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.ts#SupportedLanguage",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 236
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.ts#TsTree",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 237
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:node:fs#readFileSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 240
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.ts#inferLanguageFromExtension",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 244
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.ts#parseSource",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 246
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-registry.ts",
+        "confidence": 1,
+        "source_line": 234
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.parseFile",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 193
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.974Z"
+  }
+}

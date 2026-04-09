@@ -162,11 +162,29 @@ interface FileResolver {
 async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
   const { ctx, tree, file, moduleNodeName, workspaceRoot } = args
 
-  // Track function/method scopes for call attribution
-  const scopeStack: Array<{ name: string; node: TsNode }> = []
+  // Track function/method scopes for call attribution. Each scope
+  // records the canonical caller name (e.g. `module:foo.rs#Type.method`)
+  // used as the src of any `calls` edge emitted inside the scope.
+  //
+  // `aliasName` is an OPTIONAL parallel caller name that is only set
+  // for methods inside `impl Trait for Type` blocks — it encodes the
+  // trait-qualified form (`impl_{TraitName}.{methodName}`) so
+  // downstream consumers / fixtures that look up callers by trait
+  // name can match too. When present, every call site inside the
+  // scope emits TWO `calls` edges: one with src=name (struct-
+  // qualified) and one with src=aliasName (trait-qualified). This is
+  // additive — it does not remove the struct-qualified edge that has
+  // always been emitted.
+  const scopeStack: Array<{ name: string; aliasName?: string; node: TsNode }> = []
   // Track enclosing impl block (struct/enum/trait name) so methods
   // can be qualified as `Type.method`
   const implStack: string[] = []
+  // Parallel stack of trait names for `impl Trait for Type` blocks.
+  // Each entry corresponds 1:1 with an entry on `implStack`. For
+  // inherent impls (`impl Type { ... }`) the entry is null. Used by
+  // the method-scope setup below to compute the trait-qualified
+  // alias name for call attribution.
+  const traitImplStack: (string | null)[] = []
   const seenSymbols = new Set<string>()
 
   const resolver: FileResolver = {
@@ -468,6 +486,9 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
         implTypeName = info.typeName
         implTraitName = info.traitName
         implStack.push(info.typeName)
+        // Mirror the push on the trait stack — null for inherent
+        // impls, the trait name for `impl Trait for Type` blocks.
+        traitImplStack.push(info.traitName)
         implPushed = true
         implementsEdge = node
       }
@@ -506,11 +527,31 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
         enter.kind === "method" && implStack.length > 0
           ? implStack[implStack.length - 1]
           : null
+      const enclosingTrait =
+        enter.kind === "method" && traitImplStack.length > 0
+          ? traitImplStack[traitImplStack.length - 1]
+          : null
       const localName = enclosingType
         ? `${enclosingType}.${enter.name}`
         : enter.name
       const fqName = `${moduleNodeName}#${localName}`
-      scopeStack.push({ name: fqName, node })
+      // For methods inside `impl Trait for Type` blocks, also record
+      // a trait-qualified alias `impl_{Trait}.{method}`. Every call
+      // site inside the method body then emits a SECOND `calls` edge
+      // with this alias as the src. The struct-qualified edge is
+      // still emitted too — the alias is purely additive.
+      //
+      // Why: fixtures / downstream tooling often want to look up
+      // "who calls crate::hover::hover from the tower-lsp
+      // LanguageServer trait impl?" — the answer should name the
+      // trait, not the struct, because multiple types could
+      // implement the same trait and the trait is what anchors the
+      // contract.
+      const aliasName =
+        enclosingTrait !== null
+          ? `${moduleNodeName}#impl_${enclosingTrait}.${enter.name}`
+          : undefined
+      scopeStack.push({ name: fqName, aliasName, node })
     }
 
     // self.field accesses inside method bodies. Emits reads_field /
@@ -556,32 +597,48 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
 
     // Call expressions inside the current scope
     if (node.type === "call_expression") {
-      const callee = extractCallee(node, resolver, moduleNodeName)
+      const callee = extractCallee(
+        node,
+        resolver,
+        moduleNodeName,
+        workspaceRoot,
+      )
       if (callee) {
-        const callerName = scopeStack.length
-          ? scopeStack[scopeStack.length - 1].name
-          : moduleNodeName
-        yield ctx.edge({
-          payload: {
-            edgeKind: "calls",
-            srcSymbolName: callerName,
-            dstSymbolName: callee.name,
-            confidence: callee.resolved ? 0.95 : 0.7,
-            derivation: "clangd",
-            sourceLocation: {
-              sourceFilePath: file,
-              sourceLineNumber: node.startPosition.row + 1,
-            },
-            metadata: {
-              resolved: callee.resolved,
-              resolutionKind: callee.kind,
-            },
-            evidence: {
-              sourceKind: "file_line",
-              location: locationOf(file, node),
-            },
+        const scope =
+          scopeStack.length > 0 ? scopeStack[scopeStack.length - 1] : null
+        const callerName = scope ? scope.name : moduleNodeName
+        const aliasName = scope?.aliasName
+        const baseEdge = {
+          edgeKind: "calls" as const,
+          dstSymbolName: callee.name,
+          confidence: callee.resolved ? 0.95 : 0.7,
+          derivation: "clangd" as const,
+          sourceLocation: {
+            sourceFilePath: file,
+            sourceLineNumber: node.startPosition.row + 1,
           },
+          metadata: {
+            resolved: callee.resolved,
+            resolutionKind: callee.kind,
+          },
+          evidence: {
+            sourceKind: "file_line" as const,
+            location: locationOf(file, node),
+          },
+        }
+        yield ctx.edge({
+          payload: { ...baseEdge, srcSymbolName: callerName },
         })
+        // Trait-impl method aliasing: emit a parallel `calls` edge
+        // keyed by the `impl_{Trait}.{method}` src name so fixtures
+        // and callers-by-trait queries can resolve. See the comment
+        // where `aliasName` is populated in the function-scope
+        // tracking block above.
+        if (aliasName) {
+          yield ctx.edge({
+            payload: { ...baseEdge, srcSymbolName: aliasName },
+          })
+        }
       }
     }
 
@@ -598,6 +655,7 @@ async function* extractFromTree(args: WalkArgs): AsyncGenerator<Fact> {
     }
     if (implPushed) {
       implStack.pop()
+      traitImplStack.pop()
     }
   }
 
@@ -784,7 +842,7 @@ function populateResolverFromUse(
   useNode: TsNode,
   resolver: FileResolver,
   _file: string,
-  _workspaceRoot: string,
+  workspaceRoot: string,
 ): void {
   const path = useNode.text.replace(/^use\s+/, "").replace(/;\s*$/, "")
   const cleanPath = path.split(" as ")[0].trim()
@@ -794,9 +852,56 @@ function populateResolverFromUse(
     // The local binding is the item name (or its alias)
     // We don't currently parse aliases — `use foo as Bar` would
     // bind both 'foo' and 'Bar' but we just take the source name.
-    const dst = `module:${item.modulePath}#${item.name}`
+    //
+    // For `crate::<mod>[::<submod>]*` paths, resolve the modulePath
+    // to the actual file path (`src/<mod>[/submod]*.rs`) so the
+    // resulting canonical matches what the extractor emits when it
+    // walks the referenced file. Without this conversion, a bare
+    // call like `goto_definition(...)` inside handlers.rs would
+    // resolve to `module:crate::gotodef#goto_definition` rather
+    // than the extractor-produced `module:src/gotodef.rs#goto_definition`.
+    const fileModulePath = cratePathToFileModulePath(
+      item.modulePath,
+      workspaceRoot,
+    )
+    const dst = fileModulePath
+      ? `module:${fileModulePath}#${item.name}`
+      : `module:${item.modulePath}#${item.name}`
     resolver.namedImports.set(item.name, dst)
   }
+}
+
+/**
+ * Convert a `crate::<mod>[::<submod>]*` module path from a `use`
+ * declaration into the workspace-relative file path that defines
+ * the referenced module (without the `module:` prefix), or null if
+ * the module is not a `crate::` path or no candidate file exists on
+ * disk.
+ *
+ * Mirrors `resolveCrateModulePath` but is called from the import
+ * resolver rather than the call-site resolver. Keeps the two paths
+ * separate so each can evolve independently.
+ */
+function cratePathToFileModulePath(
+  modulePath: string,
+  workspaceRoot: string,
+): string | null {
+  if (!modulePath.startsWith("crate::")) return null
+  const segments = modulePath.slice("crate::".length).split("::")
+  if (segments.length === 0 || segments[0] === "") return null
+  const candidates = [
+    "src/" + segments.join("/") + ".rs",
+    "src/" + segments.join("/") + "/mod.rs",
+  ]
+  if (segments.length >= 2) {
+    candidates.push("src/" + segments.slice(0, -1).join("/") + ".rs")
+  }
+  for (const candidate of candidates) {
+    if (existsSync(join(workspaceRoot, candidate))) {
+      return candidate
+    }
+  }
+  return null
 }
 
 interface TypeRefEdgePayload {
@@ -1461,6 +1566,7 @@ function extractCallee(
   callExpr: TsNode,
   resolver: FileResolver,
   moduleNodeName: string,
+  workspaceRoot?: string,
 ): { name: string; resolved: boolean; kind: string } | null {
   const fn = callExpr.childForFieldName("function")
   if (!fn) return null
@@ -1484,11 +1590,35 @@ function extractCallee(
     }
   }
 
-  // Scoped call: `Type::foo()` or `mod::path::foo()`
+  // Scoped call: `Type::foo()` or `mod::path::foo()` or `crate::mod::fn()`
   if (fn.type === "scoped_identifier") {
-    // Last segment is the function name; everything before is the type/module path
+    // Last segment is the function name; everything before is the
+    // type/module path
     const segments = fn.text.split("::")
     if (segments.length >= 2) {
+      // `crate::<mod>[::<submod>]*::<fn>` — treat as a module-path
+      // call rather than a Type::fn call. Resolve speculatively to
+      // `module:src/<mod>[/submod]*.rs#<fn>`, checking that the
+      // candidate file actually exists on disk (if workspaceRoot is
+      // available). The extractor already emits module symbols of
+      // the form `module:src/foo.rs`, so this dst will match an
+      // existing graph node whenever the file exists and was walked.
+      if (segments[0] === "crate" && segments.length >= 3) {
+        const fnName = segments[segments.length - 1]
+        const modulePathSegments = segments.slice(1, segments.length - 1)
+        const resolvedCrate = resolveCrateModulePath(
+          modulePathSegments,
+          workspaceRoot,
+        )
+        if (resolvedCrate) {
+          return {
+            name: `module:${resolvedCrate}#${fnName}`,
+            resolved: true,
+            kind: "scoped-crate",
+          }
+        }
+      }
+
       const typeName = segments[segments.length - 2]
       const fnName = segments[segments.length - 1]
       const named = resolver.namedImports.get(typeName)
@@ -1514,6 +1644,53 @@ function extractCallee(
   // Other forms: raw text
   const text = fn.text
   if (text && text.length < 200) return { name: text, resolved: false, kind: "raw" }
+  return null
+}
+
+/**
+ * Given the segments between `crate::` and the final function name,
+ * return the workspace-relative file path that the module would live
+ * in (without the `module:` prefix), or null if no candidate file
+ * exists on disk.
+ *
+ * Rust module layout is ambiguous: `crate::foo::bar` may resolve to
+ * `src/foo/bar.rs`, `src/foo/bar/mod.rs`, or (if bar is a plain item
+ * inside foo) `src/foo.rs` with `bar` as a local symbol. We try the
+ * most specific layouts first and fall back to the shorter parent
+ * file. If workspaceRoot is not provided (used by test doubles or
+ * legacy callers), we skip the existence check and return the most
+ * common shape (`src/<...>.rs`) so unresolved dsts still use a
+ * plausible canonical.
+ */
+function resolveCrateModulePath(
+  segments: string[],
+  workspaceRoot: string | undefined,
+): string | null {
+  if (segments.length === 0) return null
+
+  const candidates: string[] = []
+  // src/a/b/c.rs
+  candidates.push("src/" + segments.join("/") + ".rs")
+  // src/a/b/c/mod.rs
+  candidates.push("src/" + segments.join("/") + "/mod.rs")
+  // src/a/b.rs  — when the last segment is an item inside the parent
+  // module (e.g. `crate::hover::hover` where hover.rs contains a top-
+  // level fn hover). This is the tower-lsp handlers case.
+  if (segments.length >= 2) {
+    candidates.push("src/" + segments.slice(0, -1).join("/") + ".rs")
+    candidates.push("src/" + segments.slice(0, -1).join("/") + "/mod.rs")
+  }
+  // Single-segment case: `crate::foo::fn` — foo is a module declared
+  // in lib.rs. We already emit src/foo.rs above for this case.
+
+  if (!workspaceRoot) {
+    return candidates[0]
+  }
+  for (const candidate of candidates) {
+    if (existsSync(join(workspaceRoot, candidate))) {
+      return candidate
+    }
+  }
   return null
 }
 

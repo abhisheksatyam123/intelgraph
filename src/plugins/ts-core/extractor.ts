@@ -1068,13 +1068,41 @@ function extractDeclaration(
   }
 }
 
+/**
+ * Build a dotted receiver chain for a member_expression node. Walks
+ * left-associatively so `a.b.c` → `"a.b.c"`, `JSON.parse` → `"JSON.parse"`,
+ * `this.foo.bar` → `"this.foo.bar"`. If any link in the chain is a form
+ * we don't recognize (e.g. subscript_expression, call_expression as the
+ * receiver), returns null so the caller can fall back to the raw text.
+ */
+function memberExpressionDottedName(node: TsNode): string | null {
+  if (node.type === "identifier" || node.type === "property_identifier") {
+    return node.text
+  }
+  if (node.type === "this") return "this"
+  if (node.type === "super") return "super"
+  if (node.type === "member_expression") {
+    const obj = node.childForFieldName("object")
+    const prop = node.childForFieldName("property")
+    if (!obj || !prop) return null
+    const lhs = memberExpressionDottedName(obj)
+    if (lhs === null) return null
+    return `${lhs}.${prop.text}`
+  }
+  return null
+}
+
 function extractCallee(callExpr: TsNode): string | null {
   const fn = callExpr.childForFieldName("function")
   if (!fn) return null
   // Identifier — straightforward `foo()`
   if (fn.type === "identifier") return fn.text
-  // member_expression — `obj.method()` → `method` (lossy but useful)
+  // member_expression — `obj.method()` → full dotted chain when possible,
+  // e.g. `JSON.parse`, `path.resolve`, `this.foo.bar`. Falls back to the
+  // bare property name when the chain contains an unrecognized form.
   if (fn.type === "member_expression") {
+    const dotted = memberExpressionDottedName(fn)
+    if (dotted) return dotted
     const property = fn.childForFieldName("property")
     if (property) return property.text
   }
@@ -1206,7 +1234,16 @@ function extractCalleeWithResolution(
         }
       }
     }
-    // other member expressions: lossy fallback to property name
+    // Other member expressions: fall back to the full dotted receiver
+    // chain so built-ins and unresolved references keep their prefix.
+    // e.g. `JSON.parse(x)` → dst "JSON.parse", `path.resolve(a,b)` →
+    // "path.resolve", `this.foo.bar()` → "this.foo.bar". If the chain
+    // contains an unrecognized form (subscript, call-as-receiver, etc.)
+    // we drop back to the bare property name so we never emit garbage.
+    const dotted = memberExpressionDottedName(fn)
+    if (dotted) {
+      return { name: dotted, resolved: false, kind: "member" }
+    }
     return { name: propName, resolved: false, kind: "member" }
   }
 
@@ -2614,14 +2651,37 @@ function workspaceRelativePath(workspaceRoot: string, file: string): string {
  * unresolved relative import to a missing file).
  */
 function resolveImportPath(basePath: string): string {
+  // If the path already has a JS-family extension (common in NodeNext
+  // resolution: `import { x } from "./foo.js"`), strip it and try the
+  // TS equivalent first. This is the .js→.ts normalization that prevents
+  // cross-file edges from using mismatched extensions.
+  const jsExts = [".js", ".mjs", ".cjs", ".jsx"]
+  const stripped = jsExts.reduce((p, ext) => p.endsWith(ext) ? p.slice(0, -ext.length) : p, basePath)
+
   const exts = [".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"]
+
+  // Try stripped path first (handles .js→.ts normalization)
+  if (stripped !== basePath) {
+    for (const ext of exts) {
+      const p = stripped + ext
+      if (existsSync(p)) return p
+    }
+  }
+  // Try original path with extensions appended
   for (const ext of exts) {
     const p = basePath + ext
     if (existsSync(p)) return p
   }
+  // Try index files
   for (const ext of exts) {
     const p = join(basePath, "index" + ext)
     if (existsSync(p)) return p
+  }
+  if (stripped !== basePath) {
+    for (const ext of exts) {
+      const p = join(stripped, "index" + ext)
+      if (existsSync(p)) return p
+    }
   }
   return basePath
 }

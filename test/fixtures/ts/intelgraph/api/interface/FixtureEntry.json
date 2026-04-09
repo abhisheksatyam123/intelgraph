@@ -1,0 +1,93 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/integration/sqlite-backend.test.ts#FixtureEntry",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/integration/sqlite-backend.test.ts",
+    "line": 49,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 16,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 53
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureEntry.api_name",
+        "confidence": 1,
+        "source_line": 50
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureEntry.category",
+        "confidence": 1,
+        "source_line": 51
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureEntry.source",
+        "confidence": 1,
+        "source_line": 52
+      },
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureEntry.relations",
+        "confidence": 1,
+        "source_line": 53
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:test/integration/sqlite-backend.test.ts#FixtureRelationRow",
+        "confidence": 0.95,
+        "source_line": 49
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts",
+        "confidence": 1,
+        "source_line": 49
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts#GroundTruth",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 68
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts#GroundTruth.apiGroundTruth",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 68
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:test/integration/sqlite-backend.test.ts#GroundTruth",
+        "confidence": 0.95,
+        "source_line": 66
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.131Z"
+  }
+}

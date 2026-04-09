@@ -1,0 +1,63 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/ts-core/extractor.ts#classifyThisFieldAccess",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/ts-core/extractor.ts",
+    "line": 1801,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 68,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 1802
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode.childForFieldName",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 1815
+      },
+      {
+        "dst": "parent.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1862
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#visit",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 855
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 1801
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.990Z"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "workspace": "/home/abhi/qprojects/linux",
+  "timestamp": "2026-04-09T04:48:13.944Z",
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "err": 0,
+    "total": 1
+  },
+  "results": [
+    {
+      "canonical_name": "read_mem",
+      "category": "vfs_callback",
+      "overall": "fail",
+      "checks": [
+        {
+          "kind": "calls_in_runtime",
+          "status": "fail",
+          "want": 1,
+          "minN": 1,
+          "got": 1,
+          "matches": 0,
+          "missing": [
+            {
+              "caller": "vfs_read",
+              "dispatch_chain": [
+                "userspace_read_syscall",
+                "ksys_read",
+                "vfs_read",
+                "fp->f_op->read",
+                "read_mem"
+              ]
+            }
+          ],
+          "raw_first_line": "Callers of read_mem  (1 reference sites found):"
+        },
+        {
+          "kind": "calls_out",
+          "status": "warn-content-drift",
+          "want": 8,
+          "minN": 3,
+          "got": 3,
+          "missing": [
+            {
+              "callee": "valid_phys_addr_range"
+            },
+            {
+              "callee": "kmalloc"
+            },
+            {
+              "callee": "xlate_dev_mem_ptr"
+            },
+            {
+              "callee": "unxlate_dev_mem_ptr"
+            },
+            {
+              "callee": "copy_from_kernel_nofault"
+            },
+            {
+              "callee": "clear_user"
+            }
+          ]
+        },
+        {
+          "kind": "registrations_in",
+          "status": "fail",
+          "want": 2,
+          "minN": 2,
+          "got": 0,
+          "found": [],
+          "missing": [
+            {
+              "registrar": "memory_fops",
+              "registration_kind": "file_operations.read"
+            },
+            {
+              "registrar": "register_chrdev",
+              "registration_kind": "char_device"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

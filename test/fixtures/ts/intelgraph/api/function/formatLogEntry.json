@@ -1,0 +1,81 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/logging/log-formatter.ts#formatLogEntry",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/logging/log-formatter.ts",
+    "line": 19,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 24,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/logging/log-formatter.ts#LogEntry",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 19
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "entry.timestamp.toISOString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 21
+      },
+      {
+        "dst": "module:src/logging/log-levels.ts#logLevelToString",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 22
+      },
+      {
+        "dst": "Object.keys",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 28
+      },
+      {
+        "dst": "entry.error.stack.split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 37
+      },
+      {
+        "dst": "JSON.stringify",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 41
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/logging/file-logger.ts#FileLogger.write",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 38
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/logging/log-formatter.ts",
+        "confidence": 1,
+        "source_line": 19
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.982Z"
+  }
+}

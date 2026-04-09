@@ -1,0 +1,184 @@
+{
+  "kind": "function",
+  "canonical_name": "assoc_array_destroy",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/assoc_array.c",
+    "line": 441,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "logs_event_out": [
+      {
+        "dst": "log:pr_devel:847",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:869",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:872",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:887",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:897",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:920",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:940",
+        "confidence": 0.9
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "edit.new_meta",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.set",
+        "confidence": 0.85
+      },
+      {
+        "dst": "shortcut.back_pointer",
+        "confidence": 0.85
+      },
+      {
+        "dst": "shortcut.parent_slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_s0.index_key",
+        "confidence": 0.85
+      },
+      {
+        "dst": "shortcut.index_key",
+        "confidence": 0.85
+      },
+      {
+        "dst": "shortcut.next_node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "side.nr_leaves_on_branch",
+        "confidence": 0.85
+      },
+      {
+        "dst": "shortcut.skip_to_level",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n0.slots",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_s1.index_key",
+        "confidence": 0.85
+      },
+      {
+        "dst": "side.back_pointer",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.set_parent_slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "side.parent_slot",
+        "confidence": 0.85
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "edit->set[0].to",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_s0.back_pointer",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_s0.parent_slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_s0.next_node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_s0.skip_to_level",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n0.back_pointer",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n0.parent_slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n0.nr_leaves_on_branch",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_s1.back_pointer",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_s1.parent_slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_s1.next_node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_s1.skip_to_level",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit->set[1].ptr",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit->set[1].to",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit->set_parent_slot[0].p",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit->set_parent_slot[0].to",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.leaf_p",
+        "confidence": 0.85
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 38,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.627Z"
+  }
+}

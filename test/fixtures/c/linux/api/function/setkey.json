@@ -1,0 +1,58 @@
+{
+  "kind": "function",
+  "canonical_name": "setkey",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/btree.c",
+    "line": 157,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "bkey",
+        "confidence": 1
+      },
+      {
+        "dst": "longcpy",
+        "confidence": 1
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "find_level",
+        "confidence": 1
+      },
+      {
+        "src": "btree_grow",
+        "confidence": 1
+      },
+      {
+        "src": "btree_insert_level",
+        "confidence": 1
+      },
+      {
+        "src": "btree_remove_level",
+        "confidence": 1
+      },
+      {
+        "src": "merge",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.805Z"
+  }
+}

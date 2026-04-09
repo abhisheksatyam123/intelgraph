@@ -1,0 +1,36 @@
+{
+  "workspace": "/home/abhi/qprojects/linux",
+  "timestamp": "2026-04-09T05:08:11.271Z",
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "err": 0,
+    "total": 1
+  },
+  "results": [
+    {
+      "canonical_name": "kstrtoint",
+      "category": "heavily_called_helper",
+      "overall": "pass",
+      "checks": [
+        {
+          "kind": "calls_in_direct",
+          "status": "pass",
+          "want": 1,
+          "minN": 10,
+          "got": 98,
+          "missing": [],
+          "indexProgress": null
+        },
+        {
+          "kind": "calls_out",
+          "status": "pass",
+          "want": 1,
+          "minN": 1,
+          "got": 2,
+          "missing": []
+        }
+      ]
+    }
+  ]
+}

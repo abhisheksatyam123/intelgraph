@@ -1,0 +1,57 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/dispatch.ts#unifiedBackendOrThrow",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/dispatch.ts",
+    "line": 44,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 6,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/backend/unified-backend.ts#UnifiedBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 44
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Error",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 46
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/dispatch.ts",
+        "confidence": 1,
+        "source_line": 44
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/index.ts#execute",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 635
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.997Z"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "kind": "function",
+  "kind_verbose": "irq_handler",
+  "canonical_name": "i8042_interrupt",
+  "category": "irq_handler_request_irq",
+  "aliases": [],
+  "source": {
+    "file": "drivers/input/serio/i8042.c",
+    "line": 526,
+    "character": 24
+  },
+  "description": "PS/2 keyboard/mouse interrupt handler. Registered with the IRQ subsystem via request_irq() for I8042_AUX_IRQ and I8042_KBD_IRQ. Also called directly from a few sites (synthetic IRQ triggers).",
+  "relations": {
+    "calls_in_direct": [
+      { "caller": "i8042_panic_blink",   "callee": "i8042_interrupt", "file": "drivers/input/serio/i8042.c", "line": 437  },
+      { "caller": "i8042_aux_test_irq",  "callee": "i8042_interrupt", "file": "drivers/input/serio/i8042.c", "line": 1225 },
+      { "caller": "i8042_controller_check", "callee": "i8042_interrupt", "file": "drivers/input/serio/i8042.c", "line": 1256 },
+      { "caller": "i8042_resume",        "callee": "i8042_interrupt", "file": "drivers/input/serio/i8042.c", "line": 1293 }
+    ],
+    "calls_in_runtime": [
+      {
+        "caller": "do_IRQ",
+        "callee": "i8042_interrupt",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "irq_subsystem_dispatches_to_handler",
+        "derivation": "runtime",
+        "confidence": 0.95,
+        "dispatch_chain": [
+          "hardware_irq",
+          "do_IRQ",
+          "handle_irq_event",
+          "i8042_interrupt"
+        ],
+        "runtime_trigger": "PS/2 keyboard or mouse hardware interrupt (I8042_KBD_IRQ or I8042_AUX_IRQ)"
+      }
+    ],
+    "calls_out": [],
+    "registrations_in": [
+      {
+        "registrar": "request_irq",
+        "callback": "i8042_interrupt",
+        "edge_kind": "register_call",
+        "registration_kind": "irq",
+        "key": "I8042_AUX_IRQ",
+        "evidence": { "kind": "register_call", "loc": { "file": "drivers/input/serio/i8042.c", "line": 1477 } }
+      },
+      {
+        "registrar": "request_irq",
+        "callback": "i8042_interrupt",
+        "edge_kind": "register_call",
+        "registration_kind": "irq",
+        "key": "I8042_KBD_IRQ",
+        "evidence": { "kind": "register_call", "loc": { "file": "drivers/input/serio/i8042.c", "line": 1504 } }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [],
+    "logs": []
+  },
+  "contract": {
+    "required_relation_kinds": ["calls_in_direct", "calls_in_runtime", "registrations_in"],
+    "required_directions":     ["incoming"],
+    "minimum_counts": {
+      "calls_in_direct":  3,
+      "calls_in_runtime": 1,
+      "registrations_in": 2
+    },
+    "notes": "request_irq is a function-call-style registration — should be picked up by the auto-classifier in pattern-detector. This is the kind of indirect caller pattern the existing backend SHOULD handle."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_linux_kernel_6.12",
+    "method": "manual_grep_against_/home/abhi/qprojects/linux"
+  }
+}

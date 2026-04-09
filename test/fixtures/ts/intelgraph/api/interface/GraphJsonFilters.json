@@ -1,0 +1,100 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJsonFilters",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/graph-export.ts",
+    "line": 63,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 63,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJsonFilters.edgeKinds",
+        "confidence": 1,
+        "source_line": 65
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJsonFilters.symbolKinds",
+        "confidence": 1,
+        "source_line": 70
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJsonFilters.centerOf",
+        "confidence": 1,
+        "source_line": 79
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJsonFilters.centerHops",
+        "confidence": 1,
+        "source_line": 83
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJsonFilters.centerDirection",
+        "confidence": 1,
+        "source_line": 93
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJsonFilters.maxNodes",
+        "confidence": 1,
+        "source_line": 102
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJsonFilters.dataPathFrom",
+        "confidence": 1,
+        "source_line": 121
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJsonFilters.dataPathTo",
+        "confidence": 1,
+        "source_line": 122
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-export.ts#GraphJsonFilters.dataPathDepth",
+        "confidence": 1,
+        "source_line": 124
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts#buildGraphJson",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 521
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.loadGraphJson",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 138
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-export.ts#loadGraphJsonFromDb",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 170
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-export.ts",
+        "confidence": 1,
+        "source_line": 63
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.173Z"
+  }
+}

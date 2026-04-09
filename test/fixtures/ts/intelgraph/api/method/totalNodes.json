@@ -1,0 +1,56 @@
+{
+  "kind": "method",
+  "canonical_name": "module:test/unit/extraction/runner.test.ts#CaptureSink.totalNodes",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/unit/extraction/runner.test.ts",
+    "line": 30,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "this.batches.reduce",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 31
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "module:test/unit/extraction/runner.test.ts#CaptureSink.batches",
+        "confidence": 0.95,
+        "source_line": 31
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/unit/extraction/runner.test.ts#CaptureSink",
+        "confidence": 1,
+        "source_line": 30
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/unit/extraction/runner.test.ts",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 256
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.508Z"
+  }
+}

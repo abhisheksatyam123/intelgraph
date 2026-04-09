@@ -1,0 +1,22 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/config.rs#Settings",
+  "category": "derive",
+  "source": {
+    "file": "src/config.rs",
+    "line": 11
+  },
+  "description": "pub struct Settings with #[derive(Deserialize, Debug, Clone)]. Exercises the rust-core extractor's derive-attribute path where serde Deserialize generates implicit trait impls that don't appear in source.",
+  "relations": {
+    "derives": ["Deserialize", "Debug", "Clone"],
+    "field_kinds_present": ["dailynote", "heading_completions", "title_headings"]
+  },
+  "contract": {
+    "required_node_kinds": ["struct"],
+    "notes": "Generic rust-core does NOT yet emit synthetic implements edges for derived traits — that would require a markdown-oxide pack entry. This fixture documents the gap; passing it requires the pack to add Serialize/Deserialize derive expansion."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "markdown-oxide",
+    "method": "manual_grep"
+  }
+}

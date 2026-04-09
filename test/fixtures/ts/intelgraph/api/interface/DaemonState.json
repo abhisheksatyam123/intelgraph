@@ -1,0 +1,139 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/daemon/index.ts#DaemonState",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/daemon/index.ts",
+    "line": 58,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 36,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/daemon/index.ts#DaemonState.version",
+        "confidence": 1,
+        "source_line": 59
+      },
+      {
+        "dst": "module:src/daemon/index.ts#DaemonState.bridgePid",
+        "confidence": 1,
+        "source_line": 61
+      },
+      {
+        "dst": "module:src/daemon/index.ts#DaemonState.serverPid",
+        "confidence": 1,
+        "source_line": 63
+      },
+      {
+        "dst": "module:src/daemon/index.ts#DaemonState.port",
+        "confidence": 1,
+        "source_line": 65
+      },
+      {
+        "dst": "module:src/daemon/index.ts#DaemonState.root",
+        "confidence": 1,
+        "source_line": 67
+      },
+      {
+        "dst": "module:src/daemon/index.ts#DaemonState.serverBin",
+        "confidence": 1,
+        "source_line": 69
+      },
+      {
+        "dst": "module:src/daemon/index.ts#DaemonState.serverArgs",
+        "confidence": 1,
+        "source_line": 71
+      },
+      {
+        "dst": "module:src/daemon/index.ts#DaemonState.startedAt",
+        "confidence": 1,
+        "source_line": 73
+      },
+      {
+        "dst": "module:src/daemon/index.ts#DaemonState.httpPort",
+        "confidence": 1,
+        "source_line": 75
+      },
+      {
+        "dst": "module:src/daemon/index.ts#DaemonState.httpPid",
+        "confidence": 1,
+        "source_line": 77
+      },
+      {
+        "dst": "module:src/daemon/index.ts#DaemonState.workspaceId",
+        "confidence": 1,
+        "source_line": 79
+      },
+      {
+        "dst": "module:src/daemon/index.ts#DaemonState.compileCommandsPreflight",
+        "confidence": 1,
+        "source_line": 81
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/core/lifecycle.ts#newState",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 179
+      },
+      {
+        "src": "module:src/daemon/index.ts#readState",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 124
+      },
+      {
+        "src": "module:src/daemon/index.ts#state",
+        "confidence": 0.9,
+        "resolution": "local",
+        "source_line": 128
+      },
+      {
+        "src": "module:src/daemon/index.ts#writeState",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 147
+      },
+      {
+        "src": "module:src/daemon/index.ts#checkDaemonAlive",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 335
+      },
+      {
+        "src": "module:src/daemon/index.ts#spawnDaemon",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 394
+      },
+      {
+        "src": "module:src/daemon/state.ts#getPreflightResult",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 34
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/daemon/index.ts",
+        "confidence": 1,
+        "source_line": 58
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 12,
+    "total_incoming_edges": 8
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.104Z"
+  }
+}

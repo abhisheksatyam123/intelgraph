@@ -1,0 +1,61 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/db/graph-rows.ts#normalizeGraphKind",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/graph-rows.ts",
+    "line": 83,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 4,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#RuntimeGraphNodeKind",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 83
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts",
+        "confidence": 1,
+        "source_line": 83
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#runtimeParticipantNode",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 99
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#runtimeChainEdges",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 204
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#runtimeRows",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 280
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.968Z"
+  }
+}

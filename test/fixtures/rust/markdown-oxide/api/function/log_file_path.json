@@ -1,0 +1,75 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/logging.rs#log_file_path",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/logging.rs",
+    "line": 7,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 9,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:std::path#PathBuf",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 7
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "std::env::var_os",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 8
+      },
+      {
+        "dst": "module:std::path#PathBuf.from",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 9
+      },
+      {
+        "dst": "push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 13
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 14
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/logging.rs",
+        "confidence": 1,
+        "source_line": 7
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/logging.rs#append_log",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 18
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.076Z"
+  }
+}

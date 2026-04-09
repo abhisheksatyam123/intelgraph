@@ -1,0 +1,52 @@
+{
+  "kind": "function",
+  "canonical_name": "__report_bug",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/bug.c",
+    "line": 157,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "__warn",
+        "confidence": 1
+      },
+      {
+        "dst": "_printk",
+        "confidence": 1
+      },
+      {
+        "dst": "bug_get_file_line",
+        "confidence": 1
+      },
+      {
+        "dst": "disable_trace_on_warning",
+        "confidence": 1
+      },
+      {
+        "dst": "find_bug",
+        "confidence": 1
+      },
+      {
+        "dst": "is_valid_bugaddr",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.621Z"
+  }
+}

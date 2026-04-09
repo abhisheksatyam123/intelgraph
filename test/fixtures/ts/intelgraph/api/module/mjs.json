@@ -1,0 +1,111 @@
+{
+  "kind": "module",
+  "canonical_name": "module:scripts/wlan-fixture-normalize-relations.mjs",
+  "category": "module",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/scripts/wlan-fixture-normalize-relations.mjs",
+    "line": 1,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 239,
+  "relations": {
+    "imports_out": [
+      {
+        "dst": "module:node:fs",
+        "confidence": 1,
+        "source_line": 3
+      },
+      {
+        "dst": "module:node:fs/promises",
+        "confidence": 1,
+        "source_line": 4
+      },
+      {
+        "dst": "module:node:path",
+        "confidence": 1,
+        "source_line": 5
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#parseBool",
+        "confidence": 1,
+        "source_line": 7
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#parseArgs",
+        "confidence": 1,
+        "source_line": 15
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#listJsonFiles",
+        "confidence": 1,
+        "source_line": 51
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#applyMapToFixture",
+        "confidence": 1,
+        "source_line": 59
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#normalizeMissingList",
+        "confidence": 1,
+        "source_line": 92
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#buildPredictedAudit",
+        "confidence": 1,
+        "source_line": 97
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#main",
+        "confidence": 1,
+        "source_line": 164
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#replacementsByPair",
+        "confidence": 1,
+        "source_line": 176
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "catch",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 235
+      },
+      {
+        "dst": "module:scripts/wlan-fixture-normalize-relations.mjs#main",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 235
+      },
+      {
+        "dst": "console.error",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 236
+      },
+      {
+        "dst": "process.exit",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 237
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "module"
+    ],
+    "total_outgoing_edges": 15,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.082Z"
+  }
+}

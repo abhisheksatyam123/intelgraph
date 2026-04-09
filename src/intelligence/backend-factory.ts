@@ -4,12 +4,13 @@
  *
  * After Phase 7 of the Neo4j → SQLite migration, this is the only
  * backend factory. The Neo4j-based factory was deleted along with
- * src/intelligence/db/neo4j/ — clangd-mcp now has zero external
+ * src/intelligence/db/neo4j/ — intelgraph now has zero external
  * service dependencies for its intelligence layer.
  *
- * The backend talks to a local .clangd-mcp/intelligence.db file (or
- * :memory: in tests). The path is configured via the SqliteBackendConfig
- * passed in by init.ts, which reads INTELLIGENCE_DB_PATH from env.
+ * The backend talks to a local .intelgraph/intelligence.db file (legacy:
+ * .clangd-mcp/intelligence.db) or :memory: in tests. The path is configured
+ * via the SqliteBackendConfig passed in by init.ts, which reads
+ * INTELLIGENCE_DB_PATH from env.
  */
 
 import type { IntelligenceBackend, LspClientForExtraction } from "./backend-types.js"
@@ -38,7 +39,7 @@ export type { IntelligenceBackend, LspClientForExtraction }
 export interface SqliteBackendConfig {
   /**
    * Path to the sqlite database file, or ":memory:" for tests.
-   * Defaults to ".clangd-mcp/intelligence.db" relative to cwd when
+   * Defaults to ".intelgraph/intelligence.db" (or legacy ".clangd-mcp/intelligence.db") relative to cwd when
    * constructed via init.ts; callers may pass an absolute path.
    */
   dbPath: string

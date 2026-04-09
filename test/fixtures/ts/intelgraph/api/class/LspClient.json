@@ -1,0 +1,339 @@
+{
+  "kind": "class",
+  "canonical_name": "module:src/lsp/index.ts#LspClient",
+  "category": "class",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/lsp/index.ts",
+    "line": 181,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 648,
+  "relations": {
+    "implements_out": [
+      {
+        "dst": "module:src/lsp/types.js#ILanguageClient",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 181
+      }
+    ],
+    "references_type_out": [
+      {
+        "dst": "module:child_process#ChildProcess",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 182
+      },
+      {
+        "dst": "module:vscode-jsonrpc/node.js#MessageConnection",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 183
+      },
+      {
+        "dst": "module:src/tracking/index.js#IndexTracker",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 189
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/lsp/index.ts#LspClient._proc",
+        "confidence": 1,
+        "source_line": 182
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient._conn",
+        "confidence": 1,
+        "source_line": 183
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient._openFiles",
+        "confidence": 1,
+        "source_line": 184
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient._diagnostics",
+        "confidence": 1,
+        "source_line": 185
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient._shuttingDown",
+        "confidence": 1,
+        "source_line": 186
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient._socketTraceId",
+        "confidence": 1,
+        "source_line": 187
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient._inflightRequests",
+        "confidence": 1,
+        "source_line": 188
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.indexTracker",
+        "confidence": 1,
+        "source_line": 189
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.root",
+        "confidence": 1,
+        "source_line": 190
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.constructor",
+        "confidence": 1,
+        "source_line": 192
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.create",
+        "confidence": 1,
+        "source_line": 206
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.createFromSocket",
+        "confidence": 1,
+        "source_line": 321
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient._traceCtx",
+        "confidence": 1,
+        "source_line": 422
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient._trackedRequest",
+        "confidence": 1,
+        "source_line": 430
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.openFile",
+        "confidence": 1,
+        "source_line": 446
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.getDiagnostics",
+        "confidence": 1,
+        "source_line": 471
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient._uri",
+        "confidence": 1,
+        "source_line": 478
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient._pos",
+        "confidence": 1,
+        "source_line": 479
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.hover",
+        "confidence": 1,
+        "source_line": 481
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.definition",
+        "confidence": 1,
+        "source_line": 490
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.declaration",
+        "confidence": 1,
+        "source_line": 500
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.typeDefinition",
+        "confidence": 1,
+        "source_line": 510
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.references",
+        "confidence": 1,
+        "source_line": 520
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.implementation",
+        "confidence": 1,
+        "source_line": 531
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.documentHighlight",
+        "confidence": 1,
+        "source_line": 541
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.documentSymbol",
+        "confidence": 1,
+        "source_line": 551
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.workspaceSymbol",
+        "confidence": 1,
+        "source_line": 560
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.foldingRange",
+        "confidence": 1,
+        "source_line": 567
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.signatureHelp",
+        "confidence": 1,
+        "source_line": 576
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.prepareRename",
+        "confidence": 1,
+        "source_line": 586
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.rename",
+        "confidence": 1,
+        "source_line": 595
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.formatting",
+        "confidence": 1,
+        "source_line": 605
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.rangeFormatting",
+        "confidence": 1,
+        "source_line": 615
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.inlayHints",
+        "confidence": 1,
+        "source_line": 633
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.prepareCallHierarchy",
+        "confidence": 1,
+        "source_line": 646
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.incomingCalls",
+        "confidence": 1,
+        "source_line": 673
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.outgoingCalls",
+        "confidence": 1,
+        "source_line": 707
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.prepareTypeHierarchy",
+        "confidence": 1,
+        "source_line": 741
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.supertypes",
+        "confidence": 1,
+        "source_line": 751
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.subtypes",
+        "confidence": 1,
+        "source_line": 760
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.codeAction",
+        "confidence": 1,
+        "source_line": 769
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.semanticTokensFull",
+        "confidence": 1,
+        "source_line": 785
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.serverInfo",
+        "confidence": 1,
+        "source_line": 798
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.clangdInfo",
+        "confidence": 1,
+        "source_line": 803
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.shutdown",
+        "confidence": 1,
+        "source_line": 809
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:child_process#ChildProcess",
+        "confidence": 0.95,
+        "source_line": 181
+      },
+      {
+        "dst": "module:vscode-jsonrpc/node.js#MessageConnection",
+        "confidence": 0.95,
+        "source_line": 181
+      },
+      {
+        "dst": "module:src/tracking/index.js#IndexTracker",
+        "confidence": 0.95,
+        "source_line": 181
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/lsp/index.ts",
+        "confidence": 1,
+        "source_line": 181
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/lsp/index.ts#LspClient.create",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 206
+      },
+      {
+        "src": "module:src/lsp/index.ts#client",
+        "confidence": 0.9,
+        "resolution": "local",
+        "source_line": 285
+      },
+      {
+        "src": "module:src/lsp/index.ts#LspClient.createFromSocket",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 326
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/lsp/index.ts#LspClient.create",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 285
+      },
+      {
+        "src": "module:src/lsp/index.ts#LspClient.createFromSocket",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 401
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "class"
+    ],
+    "total_outgoing_edges": 52,
+    "total_incoming_edges": 6
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:57.977Z"
+  }
+}

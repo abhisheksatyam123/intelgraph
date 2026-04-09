@@ -1,0 +1,179 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/backend/unified-backend.ts#UnifiedBackend",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/backend/unified-backend.ts",
+    "line": 17,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 20,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/lsp/types.ts#ILanguageClient",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 18
+      },
+      {
+        "dst": "module:src/tracking/index.ts#IndexTracker",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 19
+      },
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#LlmReasoningConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 29
+      },
+      {
+        "dst": "module:src/tools/reason-engine/index.ts#ReasonEngineInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 29
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/backend/unified-backend.ts#UnifiedBackend.tracker",
+        "confidence": 1,
+        "source_line": 19
+      },
+      {
+        "dst": "module:src/backend/unified-backend.ts#UnifiedBackend.indirectCallerCache",
+        "confidence": 1,
+        "source_line": 20
+      },
+      {
+        "dst": "module:src/backend/unified-backend.ts#UnifiedBackend.patterns",
+        "confidence": 1,
+        "source_line": 25
+      },
+      {
+        "dst": "module:src/backend/unified-backend.ts#UnifiedBackend.reasonEngine",
+        "confidence": 1,
+        "source_line": 29
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/tracking/index.ts#IndexTracker",
+        "confidence": 0.95,
+        "source_line": 17
+      },
+      {
+        "dst": "module:src/lsp/types.ts#ILanguageClient",
+        "confidence": 0.95,
+        "source_line": 17
+      },
+      {
+        "dst": "module:src/tools/reason-engine/index.ts#ReasonEngineInput",
+        "confidence": 0.95,
+        "source_line": 17
+      },
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#LlmReasoningConfig",
+        "confidence": 0.95,
+        "source_line": 17
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/backend/unified-backend.ts",
+        "confidence": 1,
+        "source_line": 17
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/backend/unified-backend.ts#createUnifiedBackend",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 41
+      },
+      {
+        "src": "module:src/core/types.ts#BackendDeps",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 10
+      },
+      {
+        "src": "module:src/tools/dispatch.ts#UNIFIED_BACKEND",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 20
+      },
+      {
+        "src": "module:src/tools/dispatch.ts#setUnifiedBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 32
+      },
+      {
+        "src": "module:src/tools/dispatch.ts#unifiedBackendOrThrow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 44
+      },
+      {
+        "src": "module:src/tools/get-callers.ts#resolveCallers",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 184
+      },
+      {
+        "src": "module:src/tools/reason-engine/reason-query.ts#ReasonPreparedQuery",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 16
+      },
+      {
+        "src": "module:src/tools/reason-engine/reason-query.ts#prepareReasonQuery",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 27
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/core/types.ts#BackendDeps.backend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 10
+      },
+      {
+        "src": "module:src/tools/reason-engine/reason-query.ts#ReasonPreparedQuery.graph",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 16
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/core/types.ts#BackendDeps",
+        "confidence": 0.95,
+        "source_line": 7
+      },
+      {
+        "src": "module:src/tools/reason-engine/reason-query.ts#ReasonPreparedQuery",
+        "confidence": 0.95,
+        "source_line": 13
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 12,
+    "total_incoming_edges": 13
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.083Z"
+  }
+}

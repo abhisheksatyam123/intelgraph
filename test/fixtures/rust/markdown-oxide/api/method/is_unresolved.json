@@ -1,0 +1,33 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/vault/referenceable.rs#Referenceable.is_unresolved",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/referenceable.rs",
+    "line": 297,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 8,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/vault/referenceable.rs#Referenceable",
+        "confidence": 1,
+        "source_line": 297
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.792Z"
+  }
+}

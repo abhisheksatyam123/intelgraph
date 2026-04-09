@@ -1,0 +1,85 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/get-callers.ts#preferSrcPath",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/get-callers.ts",
+    "line": 152,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 9,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "path.trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 153
+      },
+      {
+        "dst": "p.replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 155
+      },
+      {
+        "dst": "out.replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 158
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/get-callers.ts",
+        "confidence": 1,
+        "source_line": 152
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/get-callers.ts#runtimeFlowToCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 526
+      },
+      {
+        "src": "module:src/tools/get-callers.ts#dbRuntimeNodesToCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 563
+      },
+      {
+        "src": "module:src/tools/get-callers.ts#dbStaticNodesToCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 613
+      },
+      {
+        "src": "module:src/tools/get-callers.ts#indirectGraphToCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 664
+      },
+      {
+        "src": "module:src/tools/get-callers.ts#incomingCallsToCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 697
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 6
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.000Z"
+  }
+}

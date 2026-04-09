@@ -1,0 +1,64 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#Fixture",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/integration/intelligence-query-mcp-roundtrip.test.ts",
+    "line": 61,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 5,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#Fixture.tempRoot",
+        "confidence": 1,
+        "source_line": 62
+      },
+      {
+        "dst": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#Fixture.cleanup",
+        "confidence": 1,
+        "source_line": 63
+      },
+      {
+        "dst": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#Fixture.snapshotId",
+        "confidence": 1,
+        "source_line": 64
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts",
+        "confidence": 1,
+        "source_line": 61
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#buildFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 67
+      },
+      {
+        "src": "module:test/integration/intelligence-query-mcp-roundtrip.test.ts#fixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 189
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.130Z"
+  }
+}

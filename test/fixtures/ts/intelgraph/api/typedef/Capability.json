@@ -1,0 +1,74 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:src/intelligence/extraction/contract.ts#Capability",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/contract.ts",
+    "line": 36,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 12,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/contract.ts",
+        "confidence": 1,
+        "source_line": 36
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/contract.ts#ExtractorMetadata",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 89
+      },
+      {
+        "src": "module:src/plugins/clangd-core/extractor.ts#CAPABILITIES",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 48
+      },
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts#CAPABILITIES",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 46
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#CAPABILITIES",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 49
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/contract.ts#ExtractorMetadata.capabilities",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 89
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/extraction/contract.ts#ExtractorMetadata",
+        "confidence": 0.95,
+        "source_line": 85
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 7
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.185Z"
+  }
+}

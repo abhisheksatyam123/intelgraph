@@ -1,0 +1,41 @@
+{
+  "kind": "global_var",
+  "canonical_name": "module:src/bin/snapshot-stats.ts#runner",
+  "category": "global_var",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/bin/snapshot-stats.ts",
+    "line": 266,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 7,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/runner.ts#ExtractorRunner",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 266
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/bin/snapshot-stats.ts",
+        "confidence": 1,
+        "source_line": 266
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "global_var"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.095Z"
+  }
+}

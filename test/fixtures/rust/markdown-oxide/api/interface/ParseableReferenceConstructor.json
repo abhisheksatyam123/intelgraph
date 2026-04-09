@@ -1,0 +1,59 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/vault/reference.rs#ParseableReferenceConstructor",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/reference.rs",
+    "line": 363,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 5,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/vault/reference.rs#Reference",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 363
+      },
+      {
+        "dst": "module:src/vault/reference.rs#ReferenceData",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 363
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/reference.rs",
+        "confidence": 1,
+        "source_line": 363
+      }
+    ],
+    "implements_in": [
+      {
+        "src": "module:src/vault/reference.rs#WikiReferenceConstructor",
+        "confidence": 1,
+        "source_line": 372
+      },
+      {
+        "src": "module:src/vault/reference.rs#MDReferenceConstructor",
+        "confidence": 1,
+        "source_line": 384
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:19.975Z"
+  }
+}

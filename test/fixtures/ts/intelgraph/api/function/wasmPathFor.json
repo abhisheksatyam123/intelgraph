@@ -1,0 +1,63 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/extraction/services/treesitter-registry.ts#wasmPathFor",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/treesitter-registry.ts",
+    "line": 91,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 4,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.ts#SupportedLanguage",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 91
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.ts#resolveProjectRoot",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 92
+      },
+      {
+        "dst": "module:node:path#join",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 93
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-registry.ts",
+        "confidence": 1,
+        "source_line": 91
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-registry.ts#getParser",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 188
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.975Z"
+  }
+}

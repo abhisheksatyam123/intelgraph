@@ -1,0 +1,111 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.extractSymbols",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/extraction/clangd-extraction-adapter.ts",
+    "line": 118,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 30,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/extraction-adapter.ts#ExtractionInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 118
+      },
+      {
+        "dst": "module:src/intelligence/contracts/extraction-adapter.ts#SymbolBatch",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 118
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#collectFiles",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 119
+      },
+      {
+        "dst": "this.lsp.documentSymbol",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 124
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#SymbolRow.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 130
+      },
+      {
+        "dst": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#mapKind",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 131
+      },
+      {
+        "dst": "String",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 132
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter",
+        "confidence": 1,
+        "source_line": 118
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.extractTypes",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 151
+      },
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.extractEdges",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 163
+      },
+      {
+        "src": "module:test/unit/intelligence/ingest-extraction-wlan.test.ts",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 45
+      }
+    ],
+    "reads_field_in": [
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.extractTypes",
+        "confidence": 0.95,
+        "source_line": 151
+      },
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.extractEdges",
+        "confidence": 0.95,
+        "source_line": 163
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 6
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.153Z"
+  }
+}

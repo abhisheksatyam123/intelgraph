@@ -1,0 +1,75 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/completion/unindexed_block_completer.rs#UnindexedBlock",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/unindexed_block_completer.rs",
+    "line": 135,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 1,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/completion/unindexed_block_completer.rs#UnindexedBlock.0",
+        "confidence": 1,
+        "source_line": 135
+      },
+      {
+        "dst": "module:src/completion/unindexed_block_completer.rs#UnindexedBlock.partial_completion",
+        "confidence": 1,
+        "source_line": 139
+      },
+      {
+        "dst": "module:src/completion/unindexed_block_completer.rs#UnindexedBlock.completions",
+        "confidence": 1,
+        "source_line": 259
+      },
+      {
+        "dst": "module:src/completion/unindexed_block_completer.rs#UnindexedBlock.match_string",
+        "confidence": 1,
+        "source_line": 311
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "Completable",
+        "confidence": 1,
+        "source_line": 283
+      },
+      {
+        "dst": "Matchable",
+        "confidence": 1,
+        "source_line": 310
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/completion/unindexed_block_completer.rs#UnindexedBlockCompleter.completables",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 48
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/unindexed_block_completer.rs",
+        "confidence": 1,
+        "source_line": 135
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.856Z"
+  }
+}

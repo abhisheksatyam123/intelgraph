@@ -1,0 +1,36 @@
+{
+  "kind": "function",
+  "canonical_name": "btree_lookup",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/btree.c",
+    "line": 262,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "reads_field_out": [
+      {
+        "dst": "head.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "head.height",
+        "confidence": 0.85
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.794Z"
+  }
+}

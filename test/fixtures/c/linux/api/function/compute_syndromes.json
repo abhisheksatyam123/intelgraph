@@ -1,0 +1,50 @@
+{
+  "kind": "function",
+  "canonical_name": "compute_syndromes",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/bch.c",
+    "line": 370,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "a_pow",
+        "confidence": 1
+      },
+      {
+        "dst": "deg",
+        "confidence": 1
+      },
+      {
+        "dst": "gf_sqr",
+        "confidence": 1
+      },
+      {
+        "dst": "memset",
+        "confidence": 1
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "bch.poly_2t",
+        "confidence": 0.85
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.796Z"
+  }
+}

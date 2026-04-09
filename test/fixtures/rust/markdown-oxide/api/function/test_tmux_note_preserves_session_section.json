@@ -1,0 +1,47 @@
+{
+  "kind": "function",
+  "canonical_name": "module:tests/notes_tests.rs#test_tmux_note_preserves_session_section",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/tests/notes_tests.rs",
+    "line": 558,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 14,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:std::path#PathBuf.from",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 559
+      },
+      {
+        "dst": "module:markdown_oxide::notes::normalize#normalize_note",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 560
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:tests/notes_tests.rs",
+        "confidence": 1,
+        "source_line": 558
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.096Z"
+  }
+}

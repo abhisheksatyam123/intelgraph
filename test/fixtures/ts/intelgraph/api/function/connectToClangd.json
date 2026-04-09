@@ -1,0 +1,153 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/core/lifecycle.ts#connectToClangd",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/core/lifecycle.ts",
+    "line": 208,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 49,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/core/lifecycle.ts#LifecycleConfig",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 209
+      },
+      {
+        "dst": "module:src/tracking/index.ts#IndexTracker",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 210
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 211
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/core/lifecycle.ts#getOrStartDaemon",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 215
+      },
+      {
+        "dst": "module:src/logging/logger.ts#log",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 241
+      },
+      {
+        "dst": "module:src/lsp/index.ts#LspClient.createFromSocket",
+        "confidence": 0.95,
+        "resolution": "named-member",
+        "source_line": 219
+      },
+      {
+        "dst": "module:src/tracking/index.ts#IndexTracker.markReady",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 221
+      },
+      {
+        "dst": "onClose",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 234
+      },
+      {
+        "dst": "catch",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 238
+      },
+      {
+        "dst": "then",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 238
+      },
+      {
+        "dst": "Promise",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 238
+      },
+      {
+        "dst": "setTimeout",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 238
+      },
+      {
+        "dst": "retryFn",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 239
+      },
+      {
+        "dst": "module:src/core/lifecycle.ts#connectToClangd",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 239
+      },
+      {
+        "dst": "onReconnect",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 242
+      },
+      {
+        "dst": "module:src/logging/logger.ts#logError",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 247
+      },
+      {
+        "dst": "reconnectP.catch",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 252
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/core/lifecycle.ts",
+        "confidence": 1,
+        "source_line": 208
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/core/lifecycle.ts#connectToClangd",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 239
+      },
+      {
+        "src": "module:src/index.ts#main",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 242
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 17,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.803Z"
+  }
+}

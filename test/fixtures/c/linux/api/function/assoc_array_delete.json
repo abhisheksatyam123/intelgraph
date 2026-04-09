@@ -1,0 +1,56 @@
+{
+  "kind": "function",
+  "canonical_name": "assoc_array_delete",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/assoc_array.c",
+    "line": 1078,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "logs_event_out": [
+      {
+        "dst": "log:pr_devel:1555",
+        "confidence": 0.9
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "new_n.nr_leaves_on_branch",
+        "confidence": 0.85
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "new_n.slots",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n.nr_leaves_on_branch",
+        "confidence": 0.85
+      },
+      {
+        "dst": "s.next_node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "child.nr_leaves_on_branch",
+        "confidence": 0.85
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.626Z"
+  }
+}

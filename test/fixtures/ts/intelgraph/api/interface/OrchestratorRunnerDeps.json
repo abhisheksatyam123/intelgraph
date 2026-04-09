@@ -1,0 +1,127 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/orchestrator-runner.ts",
+    "line": 208,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 7,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#PersistenceContracts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 209
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#ClangdEnricher",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 210
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#CParserEnricher",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 211
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#LlmEnricher",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 212
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#FallbackPolicy",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 213
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps.persistence",
+        "confidence": 1,
+        "source_line": 209
+      },
+      {
+        "dst": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps.clangdEnricher",
+        "confidence": 1,
+        "source_line": 210
+      },
+      {
+        "dst": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps.cParserEnricher",
+        "confidence": 1,
+        "source_line": 211
+      },
+      {
+        "dst": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps.llmEnricher",
+        "confidence": 1,
+        "source_line": 212
+      },
+      {
+        "dst": "module:src/intelligence/orchestrator-runner.ts#OrchestratorRunnerDeps.policy",
+        "confidence": 1,
+        "source_line": 213
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#PersistenceContracts",
+        "confidence": 0.95,
+        "source_line": 208
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#ClangdEnricher",
+        "confidence": 0.95,
+        "source_line": 208
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#CParserEnricher",
+        "confidence": 0.95,
+        "source_line": 208
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#LlmEnricher",
+        "confidence": 0.95,
+        "source_line": 208
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.js#FallbackPolicy",
+        "confidence": 0.95,
+        "source_line": 208
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts",
+        "confidence": 1,
+        "source_line": 208
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/orchestrator-runner.ts#executeOrchestratedQuery",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 294
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 15,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.122Z"
+  }
+}

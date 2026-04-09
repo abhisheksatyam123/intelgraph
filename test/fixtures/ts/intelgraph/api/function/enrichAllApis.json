@@ -1,0 +1,135 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/fixtures/exhaustive-relation-scanner.ts#enrichAllApis",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/exhaustive-relation-scanner.ts",
+    "line": 183,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 44,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#FixtureEnrichmentReport",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 185
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "path.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 186
+      },
+      {
+        "dst": "process.cwd",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 186
+      },
+      {
+        "dst": "fs.readdir",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 187
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 188
+      },
+      {
+        "dst": "files.filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 188
+      },
+      {
+        "dst": "f.endsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 189
+      },
+      {
+        "dst": "f.replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 190
+      },
+      {
+        "dst": "toISOString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 194
+      },
+      {
+        "dst": "Date",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 194
+      },
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#enrichApiFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 207
+      },
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#saveFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 209
+      },
+      {
+        "dst": "report.successful_apis.push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 210
+      },
+      {
+        "dst": "report.failed_apis.push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 218
+      },
+      {
+        "dst": "String",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 220
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/exhaustive-relation-scanner.ts",
+        "confidence": 1,
+        "source_line": 183
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/unit/fixtures/exhaustive-relation-scanner.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 288
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 15,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.960Z"
+  }
+}

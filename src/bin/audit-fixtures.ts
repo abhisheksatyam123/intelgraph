@@ -46,7 +46,7 @@ async function main() {
   try {
     console.log("Generating WLAN fixture completeness audit...")
 
-    let report = await generateCompletenessAudit("test/fixtures/wlan/api")
+    let report = await generateCompletenessAudit("test/fixtures/c/wlan/api")
 
     // Filter by min-score if specified
     if (options.minScore !== undefined) {

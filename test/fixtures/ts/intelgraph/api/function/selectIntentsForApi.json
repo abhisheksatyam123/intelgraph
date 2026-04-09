@@ -1,0 +1,61 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/fixtures/intent-mapper.ts#selectIntentsForApi",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/intent-mapper.ts",
+    "line": 204,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 18,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#ApiFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 206
+      },
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryIntent",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 207
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/fixtures/exhaustive-relation-scanner.ts#enrichApiFixture",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 89
+      },
+      {
+        "src": "module:test/unit/fixtures/intent-mapper.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 69
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/intent-mapper.ts",
+        "confidence": 1,
+        "source_line": 204
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.963Z"
+  }
+}

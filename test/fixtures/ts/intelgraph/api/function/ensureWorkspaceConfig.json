@@ -1,0 +1,81 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/local-runtime.ts#ensureWorkspaceConfig",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/local-runtime.ts",
+    "line": 77,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 31,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/config/bootstrap.ts#WorkspaceConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 77
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/config/config.ts#resolveConfigPath",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 82
+      },
+      {
+        "dst": "module:node:fs#existsSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 83
+      },
+      {
+        "dst": "module:node:fs#writeFileSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 105
+      },
+      {
+        "dst": "JSON.stringify",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 105
+      },
+      {
+        "dst": "module:src/logging/logger.ts#log",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 106
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/local-runtime.ts",
+        "confidence": 1,
+        "source_line": 77
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/local-runtime.ts#ensureLocalIntelligenceRuntime",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 169
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.976Z"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/indirect-caller-cache.ts#writeCache",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/indirect-caller-cache.ts",
+    "line": 99,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 26,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:src/tools/indirect-caller-cache.ts#cacheDir",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 105
+      },
+      {
+        "dst": "module:node:fs#existsSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 106
+      },
+      {
+        "dst": "module:node:fs#mkdirSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 106
+      },
+      {
+        "dst": "module:src/tools/indirect-caller-cache.ts#computeFileHash",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 110
+      },
+      {
+        "dst": "toISOString",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 117
+      },
+      {
+        "dst": "Date",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 117
+      },
+      {
+        "dst": "module:src/tools/indirect-caller-cache.ts#cacheFile",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 122
+      },
+      {
+        "dst": "module:node:fs#writeFileSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 123
+      },
+      {
+        "dst": "JSON.stringify",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 123
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/indirect-caller-cache.ts",
+        "confidence": 1,
+        "source_line": 99
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.003Z"
+  }
+}

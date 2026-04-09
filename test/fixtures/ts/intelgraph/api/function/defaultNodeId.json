@@ -1,0 +1,41 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/query-node-adapter.ts#defaultNodeId",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/query-node-adapter.ts",
+    "line": 178,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts",
+        "confidence": 1,
+        "source_line": 178
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#resolveEdgePlacement",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 340
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.978Z"
+  }
+}

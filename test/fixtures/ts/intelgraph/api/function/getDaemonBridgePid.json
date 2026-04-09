@@ -1,0 +1,49 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/daemon/state.ts#getDaemonBridgePid",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/daemon/state.ts",
+    "line": 19,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 3,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:src/daemon/index.ts#readState",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 20
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/daemon/state.ts",
+        "confidence": 1,
+        "source_line": 19
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/index.ts#execute",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 74
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.898Z"
+  }
+}

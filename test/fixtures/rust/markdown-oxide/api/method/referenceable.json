@@ -1,0 +1,91 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/completion/link_completer.rs#MDDailyNote.referenceable",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/link_completer.rs",
+    "line": 1085,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 12,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompleter",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1085
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#MDDailyNote.real_referenceaable",
+        "confidence": 0.95,
+        "source_line": 1086
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MDDailyNote.ref_name",
+        "confidence": 0.95,
+        "source_line": 1093
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "clone",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1087
+      },
+      {
+        "dst": "to_path_buf",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1093
+      },
+      {
+        "dst": "root_dir",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1090
+      },
+      {
+        "dst": "vault",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1090
+      },
+      {
+        "dst": "push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1091
+      },
+      {
+        "dst": "Referenceable::UnresovledFile",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 1093
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#MDDailyNote",
+        "confidence": 1,
+        "source_line": 1085
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.779Z"
+  }
+}

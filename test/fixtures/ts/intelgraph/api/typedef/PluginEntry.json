@@ -1,0 +1,49 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:src/intelligence/extraction/runner.ts#PluginEntry",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/runner.ts",
+    "line": 155,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/contract.js#IExtractor",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 156
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/runner.ts",
+        "confidence": 1,
+        "source_line": 155
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#entries",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 159
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:07.065Z"
+  }
+}

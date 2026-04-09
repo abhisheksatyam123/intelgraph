@@ -1,0 +1,140 @@
+{
+  "kind": "function",
+  "canonical_name": "assoc_array_destroy_subtree",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/assoc_array.c",
+    "line": 343,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "_printk",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_is_meta",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_is_node",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_is_shortcut",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_to_leaf",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_to_node",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_to_shortcut",
+        "confidence": 1
+      },
+      {
+        "dst": "kfree",
+        "confidence": 1
+      }
+    ],
+    "logs_event_out": [
+      {
+        "dst": "log:pr_devel:809",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:821",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG:829",
+        "confidence": 0.9
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "result->wrong_shortcut.sc_level",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result.wrong_shortcut",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result->wrong_shortcut.sc_segments",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result->wrong_shortcut.dissimilarity",
+        "confidence": 0.85
+      },
+      {
+        "dst": "shortcut.back_pointer",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.set",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit->array.root",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.array",
+        "confidence": 0.85
+      },
+      {
+        "dst": "node.slots",
+        "confidence": 0.85
+      },
+      {
+        "dst": "shortcut.parent_slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.excised_meta",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.new_meta",
+        "confidence": 0.85
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "edit->set[0].ptr",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.adjust_count_on",
+        "confidence": 0.85
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "assoc_array_rcu_cleanup",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 25,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.627Z"
+  }
+}

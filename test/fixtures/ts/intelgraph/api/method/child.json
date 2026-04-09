@@ -1,0 +1,71 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/logging/logger.ts#Logger.child",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/logging/logger.ts",
+    "line": 174,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 8,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/logging/logger.ts#Logger",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 174
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/logging/logger.ts#Logger",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 175
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "module:src/logging/logger.ts#Logger.component",
+        "confidence": 0.95,
+        "source_line": 176
+      },
+      {
+        "dst": "module:src/logging/logger.ts#Logger.logLevel",
+        "confidence": 0.95,
+        "source_line": 177
+      },
+      {
+        "dst": "module:src/logging/logger.ts#Logger.consoleLogger",
+        "confidence": 0.95,
+        "source_line": 178
+      },
+      {
+        "dst": "module:src/logging/logger.ts#Logger.fileLogger",
+        "confidence": 0.95,
+        "source_line": 179
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/logging/logger.ts#Logger",
+        "confidence": 1,
+        "source_line": 174
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.499Z"
+  }
+}

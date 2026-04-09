@@ -4,7 +4,7 @@ import { generateCompletenessAudit, formatAuditReport, formatAuditReportJson, fo
 describe("completeness-audit", () => {
   describe("generateCompletenessAudit", () => {
     it("loads all 60 API fixtures and generates audit report", async () => {
-      const report = await generateCompletenessAudit("test/fixtures/wlan/api")
+      const report = await generateCompletenessAudit("test/fixtures/c/wlan/api")
 
       expect(report).toBeDefined()
       expect(report.total_apis).toBe(60)
@@ -12,14 +12,14 @@ describe("completeness-audit", () => {
     })
 
     it("calculates average completeness score across all APIs", async () => {
-      const report = await generateCompletenessAudit("test/fixtures/wlan/api")
+      const report = await generateCompletenessAudit("test/fixtures/c/wlan/api")
 
       expect(report.average_completeness_score).toBeGreaterThanOrEqual(0)
       expect(report.average_completeness_score).toBeLessThanOrEqual(100)
     })
 
     it("identifies per-API tier completeness", async () => {
-      const report = await generateCompletenessAudit("test/fixtures/wlan/api")
+      const report = await generateCompletenessAudit("test/fixtures/c/wlan/api")
 
       const totalApis =
         report.tier_distribution.tier1_only.count +
@@ -30,7 +30,7 @@ describe("completeness-audit", () => {
     })
 
     it("calculates total relation count", async () => {
-      const report = await generateCompletenessAudit("test/fixtures/wlan/api")
+      const report = await generateCompletenessAudit("test/fixtures/c/wlan/api")
 
       const totalRelations = Object.values(report.relation_distribution).reduce(
         (a, b) => a + b,
@@ -41,7 +41,7 @@ describe("completeness-audit", () => {
     })
 
     it("identifies APIs needing follow-up (< 70% completeness)", async () => {
-      const report = await generateCompletenessAudit("test/fixtures/wlan/api")
+      const report = await generateCompletenessAudit("test/fixtures/c/wlan/api")
 
       // All APIs in needing_followup should be < 70%
       report.apis_needing_followup.forEach((api) => {
@@ -55,7 +55,7 @@ describe("completeness-audit", () => {
     })
 
     it("returns per-API scores sorted by completeness descending", async () => {
-      const report = await generateCompletenessAudit("test/fixtures/wlan/api")
+      const report = await generateCompletenessAudit("test/fixtures/c/wlan/api")
 
       for (let i = 0; i < report.per_api_scores.length - 1; i++) {
         expect(report.per_api_scores[i].completeness_score).toBeGreaterThanOrEqual(
@@ -67,7 +67,7 @@ describe("completeness-audit", () => {
 
   describe("formatAuditReport", () => {
     it("formats audit report with box-drawn characters", async () => {
-      const report = await generateCompletenessAudit("test/fixtures/wlan/api")
+      const report = await generateCompletenessAudit("test/fixtures/c/wlan/api")
       const formatted = formatAuditReport(report)
 
       expect(formatted).toContain("╔════════════════════════════════════════════════════════════════════════════╗")
@@ -76,7 +76,7 @@ describe("completeness-audit", () => {
     })
 
     it("includes all key metrics in formatted output", async () => {
-      const report = await generateCompletenessAudit("test/fixtures/wlan/api")
+      const report = await generateCompletenessAudit("test/fixtures/c/wlan/api")
       const formatted = formatAuditReport(report)
 
       expect(formatted).toContain(`Total APIs: ${report.total_apis}`)
@@ -86,7 +86,7 @@ describe("completeness-audit", () => {
     })
 
     it("includes APIs needing follow-up in formatted output", async () => {
-      const report = await generateCompletenessAudit("test/fixtures/wlan/api")
+      const report = await generateCompletenessAudit("test/fixtures/c/wlan/api")
       const formatted = formatAuditReport(report)
 
       if (report.apis_needing_followup.length > 0) {
@@ -100,7 +100,7 @@ describe("completeness-audit", () => {
 
   describe("formatAuditReportJson", () => {
     it("formats audit report as valid JSON", async () => {
-      const report = await generateCompletenessAudit("test/fixtures/wlan/api")
+      const report = await generateCompletenessAudit("test/fixtures/c/wlan/api")
       const formatted = formatAuditReportJson(report)
 
       expect(() => JSON.parse(formatted)).not.toThrow()
@@ -111,7 +111,7 @@ describe("completeness-audit", () => {
 
   describe("formatAuditReportMarkdown", () => {
     it("formats audit report as markdown", async () => {
-      const report = await generateCompletenessAudit("test/fixtures/wlan/api")
+      const report = await generateCompletenessAudit("test/fixtures/c/wlan/api")
       const formatted = formatAuditReportMarkdown(report)
 
       expect(formatted).toContain("# WLAN Fixture Completeness Audit Report")
@@ -122,7 +122,7 @@ describe("completeness-audit", () => {
 
   describe("audit report structure", () => {
     it("provides complete per-API scoring information", async () => {
-      const report = await generateCompletenessAudit("test/fixtures/wlan/api")
+      const report = await generateCompletenessAudit("test/fixtures/c/wlan/api")
 
       report.per_api_scores.forEach((score) => {
         expect(score.name).toBeDefined()
@@ -137,7 +137,7 @@ describe("completeness-audit", () => {
     })
 
     it("correctly identifies relation type counts", async () => {
-      const report = await generateCompletenessAudit("test/fixtures/wlan/api")
+      const report = await generateCompletenessAudit("test/fixtures/c/wlan/api")
 
       const dist = report.relation_distribution
       expect(dist.calls_in_direct).toBeGreaterThanOrEqual(0)

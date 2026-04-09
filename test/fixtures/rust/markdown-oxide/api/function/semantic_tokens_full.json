@@ -1,0 +1,165 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tokens.rs#semantic_tokens_full",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/tokens.rs",
+    "line": 9,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 76,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:tower_lsp::lsp_types#SemanticTokensParams",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 9
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#SemanticTokensResult",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 9
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "select_references",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 19
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 78
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 29
+      },
+      {
+        "dst": "path_unresolved_references",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 22
+      },
+      {
+        "dst": "collect",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 23
+      },
+      {
+        "dst": "into_par_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 29
+      },
+      {
+        "dst": "fold",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 29
+      },
+      {
+        "dst": "sorted_by_key",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 29
+      },
+      {
+        "dst": "into_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 55
+      },
+      {
+        "dst": "data",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 62
+      },
+      {
+        "dst": "is_some_and",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 40
+      },
+      {
+        "dst": "as_ref",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 40
+      },
+      {
+        "dst": "contains",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 42
+      },
+      {
+        "dst": "collect_vec",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 55
+      },
+      {
+        "dst": "chain",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 55
+      },
+      {
+        "dst": "module:std#iter.once",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 57
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#SemanticTokensResult.Tokens",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 78
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/backend/handlers.rs#Backend.semantic_tokens_full",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 427
+      },
+      {
+        "src": "module:src/backend/handlers.rs#impl_LanguageServer.semantic_tokens_full",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 427
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tokens.rs",
+        "confidence": 1,
+        "source_line": 9
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 19,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.079Z"
+  }
+}

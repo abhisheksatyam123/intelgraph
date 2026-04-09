@@ -1,0 +1,115 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/rust-core/extractor.ts#hasRustFilesShallow",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/rust-core/extractor.ts",
+    "line": 1790,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 36,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:node:fs#existsSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 1791
+      },
+      {
+        "dst": "module:node:fs#statSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 1794
+      },
+      {
+        "dst": "st.isDirectory",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1798
+      },
+      {
+        "dst": "module:node:fs#readdirSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 1813
+      },
+      {
+        "dst": "entry.isFile",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1806
+      },
+      {
+        "dst": "entry.name.endsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1806
+      },
+      {
+        "dst": "entry.isDirectory",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1808
+      },
+      {
+        "dst": "entry.name.startsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1809
+      },
+      {
+        "dst": "module:src/plugins/rust-core/extractor.ts#SKIP_DIRS.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 1810
+      },
+      {
+        "dst": "module:node:path#join",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 1813
+      },
+      {
+        "dst": "sub.isFile",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1817
+      },
+      {
+        "dst": "sub.name.endsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1817
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts#appliesTo",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 77
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 1790
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 12,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.988Z"
+  }
+}

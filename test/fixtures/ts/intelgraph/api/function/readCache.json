@@ -1,0 +1,73 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/indirect-caller-cache.ts#readCache",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/indirect-caller-cache.ts",
+    "line": 69,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 26,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/indirect-caller-cache.ts#CachedIndirectCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 73
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/tools/indirect-caller-cache.ts#cacheFile",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 74
+      },
+      {
+        "dst": "module:node:fs#existsSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 75
+      },
+      {
+        "dst": "JSON.parse",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 78
+      },
+      {
+        "dst": "module:node:fs#readFileSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 78
+      },
+      {
+        "dst": "module:src/tools/indirect-caller-cache.ts#computeFileHash",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 83
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/indirect-caller-cache.ts",
+        "confidence": 1,
+        "source_line": 69
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.002Z"
+  }
+}

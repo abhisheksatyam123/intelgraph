@@ -1,0 +1,93 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/db/graph-rows.ts#participantsForRuntimeRow",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/graph-rows.ts",
+    "line": 133,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 42,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#RuntimeCallerRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 133
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#RuntimeGraphParticipantRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 133
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Map",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 134
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.ts#push",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 170
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.ts#participantsByName.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 157
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.ts#placeholderRuntimeParticipant",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 170
+      },
+      {
+        "dst": "chain.forEach",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 156
+      },
+      {
+        "dst": "module:src/intelligence/db/graph-rows.ts#participantsByName.values",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 173
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts",
+        "confidence": 1,
+        "source_line": 133
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#runtimeRows",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 273
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.968Z"
+  }
+}

@@ -1,101 +1,70 @@
 /**
- * clangd-core/extractor.ts — the clangd-core plugin.
+ * clangd-core/extractor.ts — the C/C++ extraction plugin.
  *
- * This is the refactored equivalent of `ClangdExtractionAdapter` from
- * src/intelligence/db/extraction/clangd-extraction-adapter.ts. It produces
- * the same facts (symbols + outgoing-call edges) using the new IExtractor
- * contract, by calling clangd through ctx.lsp and walking the workspace
- * through ctx.workspace.
+ * Slim orchestrator that runs 5 extraction phases in sequence. Each phase
+ * is a separate reusable module under ./phases/ that any C/C++ project
+ * can share. Project-specific knowledge (registration APIs, dispatch chain
+ * templates, log macros, HW entity definitions) comes from the pack
+ * system under ./packs/<project>/.
  *
- * Capabilities declared:
- *   - symbols
- *   - types        (struct/enum/typedef as type rows; no field extraction)
- *   - direct-calls (edges produced via clangd's outgoingCalls)
+ * Architecture:
  *
- * What this plugin does NOT do:
- *   - Type field extraction (the legacy adapter also returns fields=[])
- *   - Indirect caller resolution (that's the runtime caller phase, still
- *     in ingest-tool.ts and unchanged for now)
- *   - WLAN-specific file ranking (lives in the legacy adapter file as a
- *     temporary helper; will move to a WLAN rule pack in Problem 2)
+ *   extractor.ts (this file)  ← orchestrator, ~80 LOC
+ *   phases/symbols.ts         ← Phase 1: symbols + types via clangd LSP
+ *   phases/calls.ts           ← Phase 2: direct call edges via clangd
+ *   phases/logs.ts            ← Phase 3: log-event edges via tree-sitter
+ *   phases/field-access.ts    ← Phase 4: reads_field / writes_field via tree-sitter
+ *   phases/callbacks.ts       ← Phase 5: registration + runtime_calls + HW entities
+ *   packs/<project>/          ← project-specific data (Linux, WLAN, etc.)
  *
- * Behavior parity with the legacy adapter:
- *   - Same symbol extraction logic (LSP documentSymbol, mapKind)
- *   - Same edge extraction logic (LSP outgoingCalls per function symbol)
- *   - Evidence inlined into edges (sourceKind: clangd_response)
- *   - Same per-file failure tolerance (skip files that fail to parse)
- *
- * The fact ordering may differ from the legacy adapter (we no longer
- * apply WLAN ranking by default), but the set of facts produced is the
- * same. The parity test in test/unit/plugins/clangd-core.test.ts asserts
- * on content, not order.
+ * Each phase is an async generator that yields facts via ctx.symbol(),
+ * ctx.type(), ctx.edge(). The orchestrator yields from each in sequence.
  */
 
 import { existsSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 import { defineExtractor } from "../../intelligence/extraction/contract.js"
-import type {
-  Capability,
-  WorkspaceProbe,
-} from "../../intelligence/extraction/contract.js"
+import type { Capability, WorkspaceProbe } from "../../intelligence/extraction/contract.js"
 import type { SymbolRow } from "../../intelligence/contracts/common.js"
+import { initParser } from "../../tools/pattern-detector/c-parser.js"
+import {
+  collectAllLogMacros,
+  collectAllDispatchChains,
+  collectAllCallPatterns,
+  collectAllHWEntities,
+} from "./packs/index.js"
+
+// Phase modules
+import { extractSymbols } from "./phases/symbols.js"
+import { extractCalls } from "./phases/calls.js"
+import { extractLogs } from "./phases/logs.js"
+import { extractFieldAccess } from "./phases/field-access.js"
+import { extractCallbacks } from "./phases/callbacks.js"
+import { extractContainment } from "./phases/containment.js"
+import { extractTypeRefs } from "./phases/type-refs.js"
+import { extractSyscallMacros } from "./phases/syscall-macros.js"
+import type { FileSymbolMap } from "./phases/types.js"
 
 const CAPABILITIES: Capability[] = [
   "symbols",
   "types",
   "direct-calls",
+  "log-events",
 ]
 
 const C_FAMILY_EXTENSIONS = [".c", ".h", ".cpp", ".cc", ".cxx", ".hpp"] as const
 
-// LSP SymbolKind enum value → our internal symbol kind. Mirrors
-// `mapKind()` in the legacy adapter so existing tests keep passing.
-function mapLspSymbolKind(k: number): SymbolRow["kind"] {
-  switch (k) {
-    case 12:
-      return "function"
-    case 23:
-      return "struct"
-    case 10:
-      return "enum"
-    case 26:
-      return "typedef"
-    case 13:
-      return "field"
-    case 14:
-      return "param"
-    default:
-      return "function"
-  }
-}
-
-interface RawLspSymbol {
-  name?: unknown
-  kind?: unknown
-  containerName?: unknown
-  location?: { range?: { start?: { line?: unknown; character?: unknown } } }
-  range?: { start?: { line?: unknown; character?: unknown } }
-}
-
-interface RawCallHierarchyOutgoing {
-  to?: { name?: unknown }
-  name?: unknown
-}
-
 const clangdCoreExtractor = defineExtractor({
   metadata: {
     name: "clangd-core",
-    version: "0.1.0",
+    version: "0.2.0",
     description:
-      "Direct clangd extraction: workspace symbols and outgoing-call edges. The default extractor for any C/C++ workspace.",
+      "C/C++ extraction via clangd LSP + tree-sitter AST walk. " +
+      "Produces symbols, direct calls, log events, struct field access, " +
+      "callback registrations, runtime dispatch chains, and HW entity nodes. " +
+      "Project-specific knowledge comes from packs/<project>/.",
     capabilities: CAPABILITIES,
     appliesTo: (probe: WorkspaceProbe) => {
-      // Active when the workspace looks like a C/C++ project. The
-      // strongest signal is compile_commands.json (which the workspace
-      // probe already detects). Fall back to a shallow filesystem
-      // scan: if the root or its src/ subdirectory contains a .c/.h/
-      // .cpp/.hpp file, run. This means a TS-only workspace like
-      // opencode is correctly skipped.
       if (probe.hasCompileCommands) return true
       const root = probe.workspaceRoot
       return hasCFamilyShallow(root) || hasCFamilyShallow(join(root, "src"))
@@ -103,127 +72,54 @@ const clangdCoreExtractor = defineExtractor({
   },
 
   async *extract(ctx) {
-    // Step 1: discover source files. Default lexicographic walk; no
-    // project-specific ranking. Project-specific ordering moves into
-    // a workspace-specific plugin in Problem 2.
+    // ── File discovery ─────────────────────────────────────────────────
+    const envLimit = Number.parseInt(process.env.INTELGRAPH_C_FILE_LIMIT ?? "", 10)
+    const fileLimit = Number.isFinite(envLimit) && envLimit > 0 ? envLimit : 5000
     const files = await ctx.workspace.walkFiles({
       extensions: C_FAMILY_EXTENSIONS,
-      // Default limit is 500 in walkFiles; intentionally use the same
-      // ceiling as the legacy adapter's `fileLimit ?? 200` would have
-      // produced for typical ingests. Plugins can later be made
-      // configurable via plugin-specific options (Problem 6).
-      limit: 200,
+      limit: fileLimit,
     })
-
     ctx.metrics.count("files-discovered", files.length)
 
-    // Per-file symbol cache so the edge phase doesn't re-call documentSymbol.
-    // The legacy adapter calls extractSymbols() inside extractEdges() for the
-    // same reason; we replicate the optimization here using ctx.cache.
-    const fileSymbols: Map<string, SymbolRow[]> = new Map()
+    // ── Initialize tree-sitter for Phases 3-5 ──────────────────────────
+    await initParser()
 
-    // ---- Phase 1: symbols and types ----
-    for (const file of files) {
-      if (ctx.signal.aborted) return
+    // ── Collect pack data ──────────────────────────────────────────────
+    const logMacroMap = collectAllLogMacros()
+    const dispatchTemplateMap = collectAllDispatchChains()
+    const callPatterns = collectAllCallPatterns()
+    const hwEntities = collectAllHWEntities()
 
-      const text = ctx.workspace.readFile(file)
-      if (!text) continue
+    // ── Shared state: per-file symbol cache ────────────────────────────
+    const fileSymbols: FileSymbolMap = new Map()
 
-      const result = await ctx.lsp.documentSymbol(file, text)
-      ctx.metrics.timing("lsp.documentSymbol", result.durationMs)
-      if (result.error) {
-        ctx.metrics.count(`lsp.documentSymbol.error.${result.error.class}`)
-        // Skip files that fail to parse — same as legacy adapter.
-        continue
-      }
-      const raw = (result.value ?? []) as RawLspSymbol[]
-      const symbolsForFile: SymbolRow[] = []
+    // ── Phase 1: symbols + types (clangd LSP) ─────────────────────────
+    yield* extractSymbols(ctx as any, files, fileSymbols)
 
-      for (const s of raw) {
-        const range = s.range ?? s.location?.range
-        const start = range?.start
-        const symbolRow: SymbolRow = {
-          kind: mapLspSymbolKind((s.kind as number) ?? 12),
-          name: String(s.name ?? ""),
-          qualifiedName: s.containerName
-            ? `${String(s.containerName)}::${String(s.name)}`
-            : undefined,
-          location: {
-            filePath: file,
-            line: ((start?.line as number | undefined) ?? 0) + 1,
-            column: ((start?.character as number | undefined) ?? 0) + 1,
-          },
-        }
+    // ── Phase 2: direct call edges (clangd outgoingCalls) ─────────────
+    yield* extractCalls(ctx as any, fileSymbols)
 
-        if (!symbolRow.name) continue
-        symbolsForFile.push(symbolRow)
+    // ── Phase 3: log-event edges (tree-sitter AST walk) ───────────────
+    yield* extractLogs(ctx as any, fileSymbols, logMacroMap)
 
-        // Yield the symbol fact.
-        yield ctx.symbol({ payload: symbolRow })
-        ctx.metrics.count(`symbols.${symbolRow.kind}`)
+    // ── Phase 4: struct field read/write edges (tree-sitter) ──────────
+    yield* extractFieldAccess(ctx as any, fileSymbols)
 
-        // Type fact for struct/enum/typedef (matches legacy
-        // extractTypes() behavior).
-        if (
-          symbolRow.kind === "struct" ||
-          symbolRow.kind === "enum" ||
-          symbolRow.kind === "typedef"
-        ) {
-          yield ctx.type({
-            payload: {
-              kind: symbolRow.kind,
-              spelling: symbolRow.name,
-              symbolName: symbolRow.name,
-            },
-          })
-        }
-      }
+    // ── Phase 5: callback registration + runtime_calls + HW entities ──
+    yield* extractCallbacks(ctx as any, fileSymbols, {
+      callPatterns,
+      dispatchTemplateMap,
+      hwEntities,
+    })
 
-      fileSymbols.set(file, symbolsForFile)
-    }
+    // ── Phase 6: containment + import edges (tree-sitter) ─────────────
+    yield* extractContainment(ctx as any, files, fileSymbols)
 
-    // ---- Phase 2: direct-call edges ----
-    for (const [file, symbols] of fileSymbols.entries()) {
-      if (ctx.signal.aborted) return
-      const text = ctx.workspace.readFile(file)
-      if (!text) continue
+    // ── Phase 7: type references + field_of_type + aggregates ─────────
+    yield* extractTypeRefs(ctx as any, fileSymbols)
 
-      for (const sym of symbols) {
-        if (sym.kind !== "function" || !sym.location) continue
-
-        const result = await ctx.lsp.outgoingCalls(
-          sym.location.filePath,
-          text,
-          sym.location.line - 1,
-          (sym.location.column ?? 1) - 1,
-        )
-        ctx.metrics.timing("lsp.outgoingCalls", result.durationMs)
-        if (result.error) {
-          ctx.metrics.count(`lsp.outgoingCalls.error.${result.error.class}`)
-          continue
-        }
-        const calls = (result.value ?? []) as RawCallHierarchyOutgoing[]
-        for (const call of calls) {
-          const item = call.to ?? call
-          const name = String((item as { name?: unknown }).name ?? "")
-          if (!name) continue
-          yield ctx.edge({
-            payload: {
-              edgeKind: "calls",
-              srcSymbolName: sym.name,
-              dstSymbolName: name,
-              confidence: 1.0,
-              derivation: "clangd",
-              evidence: {
-                sourceKind: "clangd_response",
-                location: sym.location,
-              },
-            },
-          })
-          ctx.metrics.count("edges.calls")
-        }
-      }
-    }
+    // ── Phase 8: SYSCALL_DEFINE macro detection ───────────────────────
+    yield* extractSyscallMacros(ctx as any, files, dispatchTemplateMap)
   },
 })
 
@@ -235,39 +131,21 @@ export default clangdCoreExtractor
 
 const C_FAMILY_FILE_EXTS = [".c", ".h", ".cpp", ".cc", ".cxx", ".hpp"]
 
-/**
- * Shallow check: does this directory contain any C/C++ source file at
- * depth 0 or 1? Used by appliesTo() so the clangd-core plugin doesn't
- * fire on TS-only workspaces.
- */
 function hasCFamilyShallow(dir: string): boolean {
   if (!existsSync(dir)) return false
   let entries
-  try {
-    entries = readdirSync(dir, { withFileTypes: true })
-  } catch {
-    return false
-  }
+  try { entries = readdirSync(dir, { withFileTypes: true }) } catch { return false }
   for (const entry of entries) {
     const name = entry.name
     if (entry.isFile()) {
-      if (C_FAMILY_FILE_EXTS.some((ext) => name.endsWith(ext))) {
-        return true
-      }
+      if (C_FAMILY_FILE_EXTS.some((ext) => name.endsWith(ext))) return true
     } else if (entry.isDirectory() && !name.startsWith(".") && name !== "node_modules") {
       try {
         const subEntries = readdirSync(join(dir, name), { withFileTypes: true })
         for (const sub of subEntries) {
-          if (
-            sub.isFile() &&
-            C_FAMILY_FILE_EXTS.some((ext) => sub.name.endsWith(ext))
-          ) {
-            return true
-          }
+          if (sub.isFile() && C_FAMILY_FILE_EXTS.some((ext) => sub.name.endsWith(ext))) return true
         }
-      } catch {
-        // unreadable
-      }
+      } catch { /* unreadable */ }
     }
   }
   return false

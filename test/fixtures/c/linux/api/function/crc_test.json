@@ -1,0 +1,68 @@
+{
+  "kind": "function",
+  "canonical_name": "crc_test",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/crc32test.c",
+    "line": 551,
+    "character": 8
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "logs_event_out": [
+      {
+        "dst": "log:pr_info:697",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_warn:700",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_info:702",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_warn:737",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_info:739",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_info:784",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_warn:788",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_info:790",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_warn:825",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_info:827",
+        "confidence": 0.9
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:43:21.051Z"
+  }
+}

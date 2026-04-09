@@ -1,0 +1,86 @@
+{
+  "kind": "function",
+  "canonical_name": "btree_insert_level",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/btree.c",
+    "line": 443,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "bkey",
+        "confidence": 1
+      },
+      {
+        "dst": "btree_grow",
+        "confidence": 1
+      },
+      {
+        "dst": "btree_insert_level",
+        "confidence": 1
+      },
+      {
+        "dst": "btree_node_alloc",
+        "confidence": 1
+      },
+      {
+        "dst": "bval",
+        "confidence": 1
+      },
+      {
+        "dst": "clearpair",
+        "confidence": 1
+      },
+      {
+        "dst": "find_level",
+        "confidence": 1
+      },
+      {
+        "dst": "getfill",
+        "confidence": 1
+      },
+      {
+        "dst": "getpos",
+        "confidence": 1
+      },
+      {
+        "dst": "keycmp",
+        "confidence": 1
+      },
+      {
+        "dst": "mempool_free",
+        "confidence": 1
+      },
+      {
+        "dst": "setkey",
+        "confidence": 1
+      },
+      {
+        "dst": "setval",
+        "confidence": 1
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "btree_insert_level",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 13,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.794Z"
+  }
+}

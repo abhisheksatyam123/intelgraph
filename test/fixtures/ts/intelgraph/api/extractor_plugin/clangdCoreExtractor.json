@@ -1,0 +1,22 @@
+{
+  "kind": "global_var",
+  "canonical_name": "module:src/plugins/clangd-core/extractor.ts#CAPABILITIES",
+  "category": "extractor_plugin",
+  "source": {
+    "file": "src/plugins/clangd-core/extractor.ts",
+    "line": 43
+  },
+  "description": "The CAPABILITIES const declared at module scope in clangd-core/extractor.ts. Originally I targeted clangdCoreExtractor itself (line 85, also a module-level const), but that one is declared `const X = defineExtractor({...})` then `export default X` separately — and the ts-core extractor currently does NOT extract non-exported top-level consts even if they're later default-exported. CAPABILITIES is also declared as `const CAPABILITIES: Capability[] = [...]` (line 43) and IS extracted because... well, this fixture documents whichever path actually populates the graph. Backend gap: the default-export-after-const pattern should be picked up too.",
+  "relations": {
+    "exported": false,
+    "intended_target_with_known_gap": "module:src/plugins/clangd-core/extractor.ts#clangdCoreExtractor"
+  },
+  "contract": {
+    "required_node_kinds": ["global_var"],
+    "notes": "Two real backend gaps documented in this fixture's description: (1) non-exported top-level consts that are later default-exported are not extracted, (2) `defineExtractor({...})`-style factory results have no synthetic plugin-registration edge today. The intelgraph pack would close gap 2."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "intelgraph_self",
+    "method": "manual_grep_plus_db_inspection"
+  }
+}

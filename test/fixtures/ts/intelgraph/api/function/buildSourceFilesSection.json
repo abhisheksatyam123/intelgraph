@@ -1,0 +1,73 @@
+{
+  "kind": "function",
+  "canonical_name": "module:scripts/upgrade-frontmatter.mjs#buildSourceFilesSection",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/scripts/upgrade-frontmatter.mjs",
+    "line": 426,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 20,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:scripts/upgrade-frontmatter.mjs#fields.get",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 434
+      },
+      {
+        "dst": "items.push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 438
+      },
+      {
+        "dst": "Array.isArray",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 435
+      },
+      {
+        "dst": "lines.push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 443
+      },
+      {
+        "dst": "lines.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 444
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:scripts/upgrade-frontmatter.mjs",
+        "confidence": 1,
+        "source_line": 426
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:scripts/upgrade-frontmatter.mjs#processFile",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 512
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.793Z"
+  }
+}

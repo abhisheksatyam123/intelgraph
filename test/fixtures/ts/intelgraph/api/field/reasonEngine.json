@@ -1,0 +1,52 @@
+{
+  "kind": "field",
+  "canonical_name": "module:src/backend/unified-backend.ts#UnifiedBackend.reasonEngine",
+  "category": "field",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/backend/unified-backend.ts",
+    "line": 29
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "field_of_type_out": [
+      {
+        "dst": "module:src/lsp/types.ts#ILanguageClient",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 29
+      },
+      {
+        "dst": "module:src/tools/reason-engine/index.ts#ReasonEngineInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 29
+      },
+      {
+        "dst": "module:src/tools/reason-engine/llm-advisor.ts#LlmReasoningConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 29
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/backend/unified-backend.ts#UnifiedBackend",
+        "confidence": 1,
+        "source_line": 29
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "field"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.083Z"
+  }
+}

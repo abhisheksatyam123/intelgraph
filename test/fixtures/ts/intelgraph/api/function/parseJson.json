@@ -1,0 +1,115 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/db/sqlite/db-lookup.ts#parseJson",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/db-lookup.ts",
+    "line": 87,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 9,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "JSON.parse",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 91
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts",
+        "confidence": 1,
+        "source_line": 87
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#extractFilePath",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 98
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#extractLine",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 103
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.runtimeCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 453
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.apiLogs",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 572
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.timerTriggers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 626
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.registrationChain",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 676
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.dispatchSites",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 725
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.structAccess",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 789
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.fieldAccessPath",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 897
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.observations",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1045
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.logPattern",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1105
+      },
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.moduleInteractions",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1895
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 13
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.971Z"
+  }
+}

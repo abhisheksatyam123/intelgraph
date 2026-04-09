@@ -1,0 +1,81 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/extraction/services/treesitter-registry.ts#walkTree",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/treesitter-registry.ts",
+    "line": 275,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 9,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.ts#TsNode",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 275
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.ts#TsNode.namedChild",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 278
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-registry.ts#walkTree",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 280
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-registry.ts",
+        "confidence": 1,
+        "source_line": 275
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-registry.ts#walkTree",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 280
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-registry.ts#findDescendant",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 293
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.walk",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 201
+      },
+      {
+        "src": "module:test/unit/extraction/services/treesitter-registry.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 201
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.975Z"
+  }
+}

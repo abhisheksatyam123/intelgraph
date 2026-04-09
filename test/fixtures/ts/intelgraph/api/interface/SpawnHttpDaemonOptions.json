@@ -1,0 +1,63 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/daemon/index.ts#SpawnHttpDaemonOptions",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/daemon/index.ts",
+    "line": 534,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 7,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/daemon/index.ts#SpawnHttpDaemonOptions.root",
+        "confidence": 1,
+        "source_line": 535
+      },
+      {
+        "dst": "module:src/daemon/index.ts#SpawnHttpDaemonOptions.serverBin",
+        "confidence": 1,
+        "source_line": 536
+      },
+      {
+        "dst": "module:src/daemon/index.ts#SpawnHttpDaemonOptions.serverArgs",
+        "confidence": 1,
+        "source_line": 537
+      },
+      {
+        "dst": "module:src/daemon/index.ts#SpawnHttpDaemonOptions.bridgeScript",
+        "confidence": 1,
+        "source_line": 539
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/daemon/index.ts",
+        "confidence": 1,
+        "source_line": 534
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/daemon/index.ts#spawnHttpDaemon",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 553
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.106Z"
+  }
+}

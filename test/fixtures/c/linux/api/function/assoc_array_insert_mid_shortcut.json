@@ -1,0 +1,310 @@
+{
+  "kind": "function",
+  "canonical_name": "assoc_array_insert_mid_shortcut",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/assoc_array.c",
+    "line": 792,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "__ffs",
+        "confidence": 1
+      },
+      {
+        "dst": "__ilog2_u32",
+        "confidence": 1
+      },
+      {
+        "dst": "__ilog2_u64",
+        "confidence": 1
+      },
+      {
+        "dst": "_printk",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_node_to_ptr",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_is_node",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_to_node",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_shortcut_to_ptr",
+        "confidence": 1
+      },
+      {
+        "dst": "kzalloc_noprof",
+        "confidence": 1
+      },
+      {
+        "dst": "memcpy",
+        "confidence": 1
+      },
+      {
+        "dst": "size_add",
+        "confidence": 1
+      },
+      {
+        "dst": "size_mul",
+        "confidence": 1
+      }
+    ],
+    "logs_event_out": [
+      {
+        "dst": "log:BUG_ON:978",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1016",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:1032",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:1053",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1090",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1104",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1120",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:1125",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1143",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1174",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1182",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1226",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:1227",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG:1232",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1251",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1279",
+        "confidence": 0.9
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "edit.array",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.ops",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.leaf",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.adjust_count_by",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.dead_leaf",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit->set[0].ptr",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit->set[0].to",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.adjust_count_on",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit->set[1].ptr",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit->set[1].to",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.excised_subtree",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n0.back_pointer",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n0.parent_slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n0.nr_leaves_on_branch",
+        "confidence": 0.85
+      },
+      {
+        "dst": "collapse.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "collapse.skip_leaf",
+        "confidence": 0.85
+      },
+      {
+        "dst": "collapse.slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.ops_for_excised_subtree",
+        "confidence": 0.85
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "collapse.skip_leaf",
+        "confidence": 0.85
+      },
+      {
+        "dst": "collapse.slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "collapse->node.slots",
+        "confidence": 0.85
+      },
+      {
+        "dst": "collapse.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result.terminal_node.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result.terminal_node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "node.slots",
+        "confidence": 0.85
+      },
+      {
+        "dst": "ops.compare_object",
+        "confidence": 0.85
+      },
+      {
+        "dst": "array.nr_leaves_on_tree",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.set",
+        "confidence": 0.85
+      },
+      {
+        "dst": "array.root",
+        "confidence": 0.85
+      },
+      {
+        "dst": "node.nr_leaves_on_branch",
+        "confidence": 0.85
+      },
+      {
+        "dst": "parent.nr_leaves_on_branch",
+        "confidence": 0.85
+      },
+      {
+        "dst": "parent.back_pointer",
+        "confidence": 0.85
+      },
+      {
+        "dst": "s.back_pointer",
+        "confidence": 0.85
+      },
+      {
+        "dst": "grandparent.nr_leaves_on_branch",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.new_meta",
+        "confidence": 0.85
+      },
+      {
+        "dst": "node.back_pointer",
+        "confidence": 0.85
+      },
+      {
+        "dst": "node.parent_slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.dead_leaf",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n0.nr_leaves_on_branch",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.slots",
+        "confidence": 0.85
+      },
+      {
+        "dst": "s.next_node",
+        "confidence": 0.85
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 69,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.722Z"
+  }
+}

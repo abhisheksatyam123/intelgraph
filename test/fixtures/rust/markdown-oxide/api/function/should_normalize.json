@@ -1,0 +1,99 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/notes/mod.rs#should_normalize",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/notes/mod.rs",
+    "line": 29,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 10,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:std::path#Path",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 29
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "and_then",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 30
+      },
+      {
+        "dst": "extension",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 30
+      },
+      {
+        "dst": "to_str",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 30
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 30
+      },
+      {
+        "dst": "module:src/notes/mod.rs#is_doc_note",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 36
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/backend/handlers.rs#Backend.did_save",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 187
+      },
+      {
+        "src": "module:src/backend/handlers.rs#impl_LanguageServer.did_save",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 187
+      },
+      {
+        "src": "module:src/backend/handlers.rs#Backend.will_save_wait_until",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 240
+      },
+      {
+        "src": "module:src/backend/handlers.rs#impl_LanguageServer.will_save_wait_until",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 240
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/notes/mod.rs",
+        "confidence": 1,
+        "source_line": 29
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.077Z"
+  }
+}

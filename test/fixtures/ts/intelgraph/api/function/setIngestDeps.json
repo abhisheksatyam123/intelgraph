@@ -1,0 +1,49 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/tools/ingest-tool.ts#setIngestDeps",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/tools/ingest-tool.ts",
+    "line": 77,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 3,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 77
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts",
+        "confidence": 1,
+        "source_line": 77
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/unit/intelligence/ingest-extraction-wlan.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 101
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.981Z"
+  }
+}

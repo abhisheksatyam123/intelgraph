@@ -1,0 +1,46 @@
+{
+  "kind": "function",
+  "canonical_name": "btree_node_alloc",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/btree.c",
+    "line": 92,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "mempool_alloc_noprof",
+        "confidence": 1
+      },
+      {
+        "dst": "memset",
+        "confidence": 1
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "btree_grow",
+        "confidence": 1
+      },
+      {
+        "src": "btree_insert_level",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.794Z"
+  }
+}

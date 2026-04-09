@@ -1,0 +1,69 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/daemon/index.ts#checkDaemonAlive",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/daemon/index.ts",
+    "line": 335,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 23,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/daemon/index.ts#DaemonState",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 335
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/logging/logger.ts#log",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 355
+      },
+      {
+        "dst": "module:src/daemon/index.ts#isProcessAlive",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 346
+      },
+      {
+        "dst": "module:src/daemon/index.ts#isTcpPortOpen",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 350
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/core/lifecycle.ts#getOrStartDaemon",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 71
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/daemon/index.ts",
+        "confidence": 1,
+        "source_line": 335
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.806Z"
+  }
+}

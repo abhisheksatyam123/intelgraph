@@ -1,0 +1,73 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/daemon/index.ts#waitForPort",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/daemon/index.ts",
+    "line": 504,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 9,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "Date.now",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 506
+      },
+      {
+        "dst": "module:src/daemon/index.ts#isTcpPortOpen",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 507
+      },
+      {
+        "dst": "Promise",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 509
+      },
+      {
+        "dst": "setTimeout",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 509
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/daemon/index.ts#spawnDaemon",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 464
+      },
+      {
+        "src": "module:src/daemon/index.ts#spawnHttpDaemon",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 649
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/daemon/index.ts",
+        "confidence": 1,
+        "source_line": 504
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.897Z"
+  }
+}

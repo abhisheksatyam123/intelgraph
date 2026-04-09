@@ -1,0 +1,121 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/bin/enrich-fixtures.ts#enrichSingleApi",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/bin/enrich-fixtures.ts",
+    "line": 103,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 47,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "console.log",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 131
+      },
+      {
+        "dst": "module:src/bin/enrich-fixtures.ts#loadFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 107
+      },
+      {
+        "dst": "reduce",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 114
+      },
+      {
+        "dst": "Object.values",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 114
+      },
+      {
+        "dst": "Array.isArray",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 115
+      },
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#enrichApiFixture",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 113
+      },
+      {
+        "dst": "metadata.intents_hit.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 128
+      },
+      {
+        "dst": "path.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 136
+      },
+      {
+        "dst": "process.cwd",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 137
+      },
+      {
+        "dst": "fs.writeFile",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 141
+      },
+      {
+        "dst": "JSON.stringify",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 141
+      },
+      {
+        "dst": "module:src/bin/enrich-fixtures.ts#saveFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 144
+      },
+      {
+        "dst": "console.error",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 146
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/bin/enrich-fixtures.ts",
+        "confidence": 1,
+        "source_line": 103
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/bin/enrich-fixtures.ts#main",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 264
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 13,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.798Z"
+  }
+}

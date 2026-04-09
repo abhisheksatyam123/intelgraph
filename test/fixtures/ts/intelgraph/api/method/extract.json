@@ -1,0 +1,53 @@
+{
+  "kind": "method",
+  "canonical_name": "module:test/unit/extraction/runner.test.ts#extract",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/unit/extraction/runner.test.ts",
+    "line": 60,
+    "character": 7
+  },
+  "exported": null,
+  "line_count": 4,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "ctx.symbol",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 322
+      },
+      {
+        "dst": "ctx.edge",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 95
+      },
+      {
+        "dst": "Error",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 199
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/unit/extraction/runner.test.ts",
+        "confidence": 1,
+        "source_line": 60
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.508Z"
+  }
+}

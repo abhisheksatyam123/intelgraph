@@ -1,0 +1,57 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation.withTransaction",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/foundation.ts",
+    "line": 115,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 10,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/db-foundation.ts#DbTxContext",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 115
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "fn",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 123
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/foundation.ts#SqliteDbFoundation",
+        "confidence": 1,
+        "source_line": 115
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/unit/intelligence/sqlite-foundation.test.ts",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 246
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.171Z"
+  }
+}

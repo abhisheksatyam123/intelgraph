@@ -1,0 +1,91 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:src/fixtures/fixture-comparator.ts#ComparatorReport",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/fixture-comparator.ts",
+    "line": 33,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 12,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/comparator-classifier.ts#CiOutcome",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 33
+      },
+      {
+        "dst": "module:src/fixtures/fixture-comparator.ts#ComparisonResult",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 33
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/fixture-comparator.ts",
+        "confidence": 1,
+        "source_line": 33
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/fixtures/fixture-comparator.ts#buildComparatorReport",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 244
+      },
+      {
+        "src": "module:src/fixtures/report-emitter.ts#emitJsonReport",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 21
+      },
+      {
+        "src": "module:src/fixtures/report-emitter.ts#emitMarkdownReport",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 28
+      },
+      {
+        "src": "module:src/fixtures/report-emitter.ts#formatMarkdownSummary",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 41
+      },
+      {
+        "src": "module:test/unit/fixtures/report-emitter.test.ts#makePassReport",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 23
+      },
+      {
+        "src": "module:test/unit/fixtures/report-emitter.test.ts#makeFailReport",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 55
+      },
+      {
+        "src": "module:test/unit/fixtures/report-emitter.test.ts#makeWarnReport",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 88
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 8
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.114Z"
+  }
+}

@@ -1,0 +1,279 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/fixtures/intent-mapper.ts#Relation",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/intent-mapper.ts",
+    "line": 157,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 24,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryIntent",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 177
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#RelationArrayName",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 178
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.caller",
+        "confidence": 1,
+        "source_line": 158
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.callee",
+        "confidence": 1,
+        "source_line": 159
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.api",
+        "confidence": 1,
+        "source_line": 160
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.struct",
+        "confidence": 1,
+        "source_line": 161
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.field",
+        "confidence": 1,
+        "source_line": 162
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.registrar",
+        "confidence": 1,
+        "source_line": 163
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.callback",
+        "confidence": 1,
+        "source_line": 164
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.api_name",
+        "confidence": 1,
+        "source_line": 165
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.level",
+        "confidence": 1,
+        "source_line": 166
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.template",
+        "confidence": 1,
+        "source_line": 167
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.subsystem",
+        "confidence": 1,
+        "source_line": 168
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.edge_kind",
+        "confidence": 1,
+        "source_line": 169
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.edge_kind_verbose",
+        "confidence": 1,
+        "source_line": 170
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.derivation",
+        "confidence": 1,
+        "source_line": 171
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.confidence",
+        "confidence": 1,
+        "source_line": 172
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.evidence",
+        "confidence": 1,
+        "source_line": 173
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.dispatch_chain",
+        "confidence": 1,
+        "source_line": 174
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.runtime_trigger",
+        "confidence": 1,
+        "source_line": 175
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.registration_kind",
+        "confidence": 1,
+        "source_line": 176
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.source_intent",
+        "confidence": 1,
+        "source_line": 177
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#Relation.bucket",
+        "confidence": 1,
+        "source_line": 178
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryIntent",
+        "confidence": 0.95,
+        "source_line": 157
+      },
+      {
+        "dst": "module:src/fixtures/intent-mapper.ts#RelationArrayName",
+        "confidence": 0.95,
+        "source_line": 157
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/fixtures/fixture-comparator.ts#fixtureRelations",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 168
+      },
+      {
+        "src": "module:src/fixtures/fixture-comparator.ts#relationKey",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 234
+      },
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#Relations",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 146
+      },
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#normalizeEdge",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 285
+      },
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#normalized",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 286
+      },
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#deduplicateRelations",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 303
+      },
+      {
+        "src": "module:test/integration/fixture-enrichment.test.ts#relations",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 116
+      },
+      {
+        "src": "module:test/unit/fixtures/intent-mapper.test.ts#relations",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 115
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#Relations.calls_in_direct",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 146
+      },
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#Relations.calls_in_runtime",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 147
+      },
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#Relations.calls_out",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 148
+      },
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#Relations.registrations_in",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 149
+      },
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#Relations.registrations_out",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 150
+      },
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#Relations.structures",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 151
+      },
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#Relations.logs",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 152
+      },
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#Relations.owns",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 153
+      },
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#Relations.uses",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 154
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/fixtures/intent-mapper.ts#Relations",
+        "confidence": 0.95,
+        "source_line": 145
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/intent-mapper.ts",
+        "confidence": 1,
+        "source_line": 157
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 25,
+    "total_incoming_edges": 19
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.118Z"
+  }
+}

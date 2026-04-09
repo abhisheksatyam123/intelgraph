@@ -1,0 +1,33 @@
+{
+  "kind": "global_var",
+  "canonical_name": "module:src/config/bootstrap.ts#serverPath",
+  "category": "global_var",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/config/bootstrap.ts",
+    "line": 80,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 1,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/config/bootstrap.ts",
+        "confidence": 1,
+        "source_line": 80
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "global_var"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.099Z"
+  }
+}

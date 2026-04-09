@@ -1,0 +1,100 @@
+{
+  "kind": "function",
+  "canonical_name": "gf_poly",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/bch.c",
+    "line": 104,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "logs_event_out": [
+      {
+        "dst": "log:WARN_ON:221",
+        "confidence": 0.9
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "bch.swap_bits",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.mod8_tab",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.ecc_buf",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.a_pow_tab",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.a_log_tab",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.ecc_bits",
+        "confidence": 0.85
+      },
+      {
+        "dst": "src.deg",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.elp",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.poly_2t",
+        "confidence": 0.85
+      },
+      {
+        "dst": "pelp.c",
+        "confidence": 0.85
+      },
+      {
+        "dst": "elp.c",
+        "confidence": 0.85
+      },
+      {
+        "dst": "elp.deg",
+        "confidence": 0.85
+      },
+      {
+        "dst": "pelp.deg",
+        "confidence": 0.85
+      },
+      {
+        "dst": "poly.c",
+        "confidence": 0.85
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "pelp.deg",
+        "confidence": 0.85
+      },
+      {
+        "dst": "elp.deg",
+        "confidence": 0.85
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 17,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.802Z"
+  }
+}

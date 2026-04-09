@@ -55,7 +55,7 @@ export function openSqlite(opts: OpenSqliteOptions): SqliteClient {
 
   if (!isMemory) {
     // Create parent directory on first use so the caller doesn't have
-    // to remember (.clangd-mcp/intelligence.db requires the .clangd-mcp/
+    // to remember (.intelgraph/intelligence.db requires the .intelgraph/
     // dir to exist first).
     try {
       mkdirSync(dirname(resolvedPath), { recursive: true })

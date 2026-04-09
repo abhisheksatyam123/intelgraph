@@ -1,0 +1,133 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/backend/handlers.rs#Backend.will_save_wait_until",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/backend/handlers.rs",
+    "line": 227,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 47,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:tower_lsp::jsonrpc#Result",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 227
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "to_file_path",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 231
+      },
+      {
+        "dst": "Ok",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 266
+      },
+      {
+        "dst": "unwrap_or",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 235
+      },
+      {
+        "dst": "bind_settings",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 235
+      },
+      {
+        "dst": "module:src/notes/mod.rs#should_normalize",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 240
+      },
+      {
+        "dst": "flatten",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 245
+      },
+      {
+        "dst": "ok",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 245
+      },
+      {
+        "dst": "bind_vault",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 245
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 247
+      },
+      {
+        "dst": "get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 247
+      },
+      {
+        "dst": "to_string",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 250
+      },
+      {
+        "dst": "module:src/notes/normalize.rs#normalize_note",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 260
+      },
+      {
+        "dst": "count",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 265
+      },
+      {
+        "dst": "lines",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 265
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 266
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/backend/handlers.rs#Backend",
+        "confidence": 1,
+        "source_line": 227
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 16,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.769Z"
+  }
+}

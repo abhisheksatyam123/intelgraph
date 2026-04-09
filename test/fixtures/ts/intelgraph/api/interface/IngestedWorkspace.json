@@ -1,0 +1,122 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/integration/ts-core-real-workspaces.test.ts#IngestedWorkspace",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/integration/ts-core-real-workspaces.test.ts",
+    "line": 48,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 7,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/client.js#SqliteClient",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 49
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/foundation.js#SqliteDbFoundation",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 50
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-store.js#SqliteGraphStore",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 51
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.js#SqliteDbLookup",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 52
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:test/integration/ts-core-real-workspaces.test.ts#IngestedWorkspace.client",
+        "confidence": 1,
+        "source_line": 49
+      },
+      {
+        "dst": "module:test/integration/ts-core-real-workspaces.test.ts#IngestedWorkspace.foundation",
+        "confidence": 1,
+        "source_line": 50
+      },
+      {
+        "dst": "module:test/integration/ts-core-real-workspaces.test.ts#IngestedWorkspace.store",
+        "confidence": 1,
+        "source_line": 51
+      },
+      {
+        "dst": "module:test/integration/ts-core-real-workspaces.test.ts#IngestedWorkspace.lookup",
+        "confidence": 1,
+        "source_line": 52
+      },
+      {
+        "dst": "module:test/integration/ts-core-real-workspaces.test.ts#IngestedWorkspace.snapshotId",
+        "confidence": 1,
+        "source_line": 53
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/client.js#SqliteClient",
+        "confidence": 0.95,
+        "source_line": 48
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/foundation.js#SqliteDbFoundation",
+        "confidence": 0.95,
+        "source_line": 48
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/graph-store.js#SqliteGraphStore",
+        "confidence": 0.95,
+        "source_line": 48
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.js#SqliteDbLookup",
+        "confidence": 0.95,
+        "source_line": 48
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/integration/ts-core-real-workspaces.test.ts",
+        "confidence": 1,
+        "source_line": 48
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/integration/ts-core-real-workspaces.test.ts#ingestWorkspace",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 56
+      },
+      {
+        "src": "module:test/integration/ts-core-real-workspaces.test.ts#ingest",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 94
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 13,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.131Z"
+  }
+}

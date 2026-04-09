@@ -1,0 +1,24 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/lsp/index.ts#LspClient.documentSymbol",
+  "category": "method",
+  "source": {
+    "file": "src/lsp/index.ts",
+    "line": 551
+  },
+  "description": "LspClient.documentSymbol — returns the LSP documentSymbol response for a file path. Wrapped by the extraction runner's LspServiceImpl which adds open-on-demand logic.",
+  "relations": {
+    "owning_class": "LspClient",
+    "calls_in_direct": [
+      { "caller": "module:src/intelligence/extraction/services/lsp-service.ts", "callee": "documentSymbol" }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": ["method"],
+    "notes": "Backend must classify this as method (not function) and emit a `contains` edge from LspClient → LspClient.documentSymbol."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "intelgraph_self",
+    "method": "manual_grep"
+  }
+}

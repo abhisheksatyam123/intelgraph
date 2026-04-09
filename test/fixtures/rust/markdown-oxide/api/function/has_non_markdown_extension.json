@@ -1,0 +1,67 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/vault/reference.rs#has_non_markdown_extension",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/reference.rs",
+    "line": 396,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 6,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:once_cell::sync#Lazy.new",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 397
+      },
+      {
+        "dst": "unwrap",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 398
+      },
+      {
+        "dst": "module:regex#Regex.new",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 398
+      },
+      {
+        "dst": "is_match",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 400
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/reference.rs",
+        "confidence": 1,
+        "source_line": 396
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/vault/reference.rs#generic_link_constructor",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 422
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.080Z"
+  }
+}

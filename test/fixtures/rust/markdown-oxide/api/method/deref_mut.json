@@ -1,0 +1,41 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/vault/core.rs#MyHashMap.deref_mut",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/core.rs",
+    "line": 60,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/vault/core.rs#Target",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 60
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/core.rs#MyHashMap",
+        "confidence": 1,
+        "source_line": 60
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.785Z"
+  }
+}

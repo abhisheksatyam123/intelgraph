@@ -1,0 +1,81 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/extraction/facts.ts#EvidenceFact",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/facts.ts",
+    "line": 82,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 6,
+  "relations": {
+    "extends_out": [
+      {
+        "dst": "module:src/intelligence/extraction/facts.ts#FactEnvelope",
+        "confidence": 1,
+        "resolution": "local",
+        "source_line": 82
+      }
+    ],
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.js#EvidenceRef",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 84
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/facts.ts#EvidenceFact.kind",
+        "confidence": 1,
+        "source_line": 83
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.ts#EvidenceFact.payload",
+        "confidence": 1,
+        "source_line": 84
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.ts#EvidenceFact.attachedTo",
+        "confidence": 1,
+        "source_line": 86
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.js#EvidenceRef",
+        "confidence": 0.95,
+        "source_line": 82
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/facts.ts",
+        "confidence": 1,
+        "source_line": 82
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#Fact",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 111
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.116Z"
+  }
+}

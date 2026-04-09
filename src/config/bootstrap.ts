@@ -8,7 +8,7 @@ import path from "path"
 import { log } from "../logging/logger.js"
 import { resolveConfigPath } from "./config.js"
 
-// ── Workspace config (.clangd-mcp.json) ──────────────────────────────────────
+// ── Workspace config (.intelgraph.json / legacy .clangd-mcp.json) ───────────
 
 export interface WorkspaceConfig {
   root?: string
@@ -133,16 +133,16 @@ export function parseArgs(argv: string[]): {
 
 export function printHelp(): void {
   process.stderr.write(`
-clangd-mcp — MCP bridge server for clangd
+intelgraph — plugin-based code intelligence graph (clangd + tree-sitter) over MCP
 
-Configuration is read from .clangd-mcp.json at the working directory.
-All CLI flags are optional and override the config file.
+Configuration is read from .intelgraph.json (or legacy .clangd-mcp.json) at the
+working directory. All CLI flags are optional and override the config file.
 
 Usage:
-  clangd-mcp [options]
+  intelgraph [options]
 
 Options:
-  --root <path>         Workspace root (default: value in .clangd-mcp.json, then process.cwd()).
+  --root <path>         Workspace root (default: value in workspace config, then process.cwd()).
   --stdio               Use direct stdio transport (single-client debug mode).
   --port <number>       Use HTTP/StreamableHTTP transport on this port.
   --server <path>       Path to language server binary (default: "clangd" from PATH).
@@ -157,11 +157,11 @@ Default (no flags):
 
 Persistent daemon:
   On first start, clangd is spawned as a detached background daemon.
-  State is saved to <root>/.clangd-mcp-state.json.
+  State is saved to <root>/.intelgraph-state.json (legacy: .clangd-mcp-state.json).
   On subsequent starts, the MCP server reconnects to the existing daemon
   without re-indexing — giving instant startup on large codebases.
 
-.clangd-mcp.json (place at project root, all fields optional):
+.intelgraph.json (place at project root, all fields optional):
   {
     "root":     "/path/to/project",
     "server":   "/usr/local/bin/clangd-20",
@@ -171,17 +171,17 @@ Persistent daemon:
   }
 
 Examples:
-  # Zero-config: reads .clangd-mcp.json, defaults to multi-client daemon mode
-  clangd-mcp
+  # Zero-config: reads workspace config, defaults to multi-client daemon mode
+  intelgraph
 
   # Single-client debug mode (direct stdio, no daemon)
-  clangd-mcp --stdio
+  intelgraph --stdio
 
   # Explicit root override
-  clangd-mcp --root /workspace/myproject --stdio
+  intelgraph --root /workspace/myproject --stdio
 
   # Legacy explicit HTTP transport
-  clangd-mcp --port 7777
+  intelgraph --port 7777
 `)
 }
 

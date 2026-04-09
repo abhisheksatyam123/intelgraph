@@ -175,7 +175,7 @@ export async function startHttp(
           sessionIdGenerator: () => sessionId,
           onsessioninitialized: (id) => {
             log("INFO", "HTTP session initialized", { sessionId: id, port })
-            process.stderr.write(`[clangd-mcp] Session initialized: ${id}\n`)
+            process.stderr.write(`[intelgraph] Session initialized: ${id}\n`)
           },
         })
         sessions.set(sessionId, transport)
@@ -188,7 +188,7 @@ export async function startHttp(
         transport.onclose = () => {
           sessions.delete(sessionId)
           log("INFO", "HTTP session closed", { sessionId, port, remainingSessions: sessions.size })
-          process.stderr.write(`[clangd-mcp] Session closed: ${sessionId}\n`)
+          process.stderr.write(`[intelgraph] Session closed: ${sessionId}\n`)
           // Restart idle timer if this was the last session
           resetIdleTimer()
         }
@@ -231,7 +231,7 @@ export async function startHttp(
 
   await new Promise<void>((resolve) => httpServer.listen(port, resolve))
   log("INFO", "HTTP MCP server listening", { url: `http://localhost:${port}/mcp`, port, pid: process.pid })
-  process.stderr.write(`[clangd-mcp] HTTP MCP server listening on http://localhost:${port}/mcp\n`)
+  process.stderr.write(`[intelgraph] HTTP MCP server listening on http://localhost:${port}/mcp\n`)
 }
 
 // ── Stdio → HTTP proxy (for --http-daemon-mode) ───────────────────────────────
@@ -248,7 +248,7 @@ export async function startHttp(
 export async function startStdioProxy(httpUrl: string): Promise<void> {
   log("INFO", "Creating stdio proxy MCP client", { httpUrl, pid: process.pid })
   // Connect to the HTTP daemon as an MCP client
-  const client = new Client({ name: "clangd-mcp-proxy", version: "0.1.0" })
+  const client = new Client({ name: "intelgraph-proxy", version: "0.1.0" })
   const transport = new StreamableHTTPClientTransport(new URL(httpUrl))
 
   await client.connect(transport)
@@ -262,7 +262,7 @@ export async function startStdioProxy(httpUrl: string): Promise<void> {
   // We register each tool with _meta containing the JSON schema so OpenCode
   // can see the schema, but we don't use inputSchema (which requires Zod)
   // to avoid validation that would strip parameters.
-  const server = new McpServer({ name: "clangd-mcp", version: "0.1.0" })
+  const server = new McpServer({ name: "intelgraph", version: "0.1.0" })
 
   for (const tool of remoteTools) {
     // Convert JSON Schema to Zod shape for MCP SDK compatibility.
@@ -334,5 +334,5 @@ export async function startStdioProxy(httpUrl: string): Promise<void> {
 
   await server.connect(stdioTransport)
   log("INFO", "Stdio proxy MCP server listening", { httpUrl, pid: process.pid })
-  process.stderr.write("[clangd-mcp] Stdio proxy ready\n")
+  process.stderr.write("[intelgraph] Stdio proxy ready\n")
 }

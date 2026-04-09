@@ -1,0 +1,73 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/backend/handlers.rs#Backend.code_action",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/backend/handlers.rs",
+    "line": 402,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 8,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:tower_lsp::jsonrpc#Result",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 402
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "bind_settings",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 403
+      },
+      {
+        "dst": "Ok",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 406
+      },
+      {
+        "dst": "clone",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 403
+      },
+      {
+        "dst": "bind_vault",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 404
+      },
+      {
+        "dst": "module:src/codeactions.rs#code_actions",
+        "confidence": 0.95,
+        "resolution": "scoped-crate",
+        "source_line": 406
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/backend/handlers.rs#Backend",
+        "confidence": 1,
+        "source_line": 402
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.766Z"
+  }
+}

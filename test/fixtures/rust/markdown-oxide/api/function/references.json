@@ -1,0 +1,153 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/references.rs#references",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/references.rs",
+    "line": 8,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 37,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:std::path#Path",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 8
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Position",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 8
+      },
+      {
+        "dst": "module:src/vault/mod.rs#Vault",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 8
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Location",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 8
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "select_referenceable_at_position",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 10
+      },
+      {
+        "dst": "select_reference_at_position",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 11
+      },
+      {
+        "dst": "select_references_for_referenceable",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 21
+      },
+      {
+        "dst": "select_referenceables_for_reference",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 17
+      },
+      {
+        "dst": "collect_vec",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 18
+      },
+      {
+        "dst": "flatten",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 18
+      },
+      {
+        "dst": "filter_map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 32
+      },
+      {
+        "dst": "into_iter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 32
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 31
+      },
+      {
+        "dst": "ok",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 35
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 35
+      },
+      {
+        "dst": "module:tower_lsp::lsp_types#Url.from_file_path",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 35
+      },
+      {
+        "dst": "data",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 38
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/backend/handlers.rs#Backend.references",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 296
+      },
+      {
+        "src": "module:src/backend/handlers.rs#impl_LanguageServer.references",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 296
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/references.rs",
+        "confidence": 1,
+        "source_line": 8
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 17,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.078Z"
+  }
+}

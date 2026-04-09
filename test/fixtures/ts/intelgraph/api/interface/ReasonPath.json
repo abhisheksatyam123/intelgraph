@@ -1,0 +1,149 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/tools/reason-engine/contracts.ts#ReasonPath",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/reason-engine/contracts.ts",
+    "line": 104,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 37,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#InvocationReason",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 112
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#RuntimeFlowRecord",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 114
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#ReasonPath.targetSymbol",
+        "confidence": 1,
+        "source_line": 105
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#ReasonPath.invocationReason",
+        "confidence": 1,
+        "source_line": 112
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#ReasonPath.runtimeFlow",
+        "confidence": 1,
+        "source_line": 114
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#ReasonPath.registrarFn",
+        "confidence": 1,
+        "source_line": 117
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#ReasonPath.registrationApi",
+        "confidence": 1,
+        "source_line": 118
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#ReasonPath.storageFieldPath",
+        "confidence": 1,
+        "source_line": 119
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#ReasonPath.dispatchSite",
+        "confidence": 1,
+        "source_line": 120
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#ReasonPath.gates",
+        "confidence": 1,
+        "source_line": 122
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#ReasonPath.evidence",
+        "confidence": 1,
+        "source_line": 123
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#ReasonPath.provenance",
+        "confidence": 1,
+        "source_line": 124
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#ReasonPath.confidence",
+        "confidence": 1,
+        "source_line": 125
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#ReasonPath.callbackParamName",
+        "confidence": 1,
+        "source_line": 132
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#ReasonPath.callbackArgIndex",
+        "confidence": 1,
+        "source_line": 139
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#InvocationReason",
+        "confidence": 0.95,
+        "source_line": 104
+      },
+      {
+        "dst": "module:src/tools/reason-engine/contracts.ts#RuntimeFlowRecord",
+        "confidence": 0.95,
+        "source_line": 104
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/reason-engine/contracts.ts",
+        "confidence": 1,
+        "source_line": 104
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/tools/reason-engine/contracts.ts#LlmDbEntry",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 149
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/tools/reason-engine/contracts.ts#LlmDbEntry.reasonPaths",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 149
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/tools/reason-engine/contracts.ts#LlmDbEntry",
+        "confidence": 0.95,
+        "source_line": 146
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 17,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.127Z"
+  }
+}

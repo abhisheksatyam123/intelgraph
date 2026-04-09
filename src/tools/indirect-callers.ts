@@ -12,10 +12,13 @@ import { fileURLToPath } from "url"
 import path from "path"
 import type { ILanguageClient } from "../lsp/types.js"
 import { findEnclosingCall, findEnclosingConstruct } from "./pattern-detector/index.js"
-import { CALL_PATTERNS, INIT_PATTERNS } from "./pattern-detector/index.js"
+import { CALL_PATTERNS, INIT_PATTERNS, classifyGenericStructFieldCallback } from "./pattern-detector/index.js"
+import { initParser } from "./pattern-detector/c-parser.js"
 import type { FunctionCall } from "./pattern-detector/index.js"
 import { resolveChain } from "./pattern-resolver/index.js"
 import type { ResolvedChain } from "./pattern-resolver/types.js"
+import { collectAllDispatchChains } from "../plugins/clangd-core/packs/index.js"
+import type { DispatchChainTemplate } from "../plugins/clangd-core/packs/types.js"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -67,6 +70,12 @@ export async function collectIndirectCallers(
   client: ILanguageClient,
   args: { file: string; line: number; character: number; maxNodes?: number; resolve?: boolean },
 ): Promise<IndirectCallerGraph> {
+  // Ensure tree-sitter is initialized so the generic struct-field-callback
+  // classifier can walk AST parents from initializer_list nodes. Without
+  // this, findEnclosingConstruct falls back to the char-based parser which
+  // does not set tsNode, and the generic classifier short-circuits.
+  await initParser()
+
   const maxNodes = args.maxNodes ?? 50
   const shouldResolve = args.resolve ?? false
   const filePath = args.file
@@ -161,6 +170,22 @@ export async function collectIndirectCallers(
           },
         )
       }
+
+      // ── Dispatch chain template fallback ───────────────────────────
+      // When classification matched but chain resolution failed (no
+      // store → dispatch → trigger), check if the registration API has
+      // a pre-built dispatch chain template from the sub-plugin pack.
+      // Templates encode architecturally-fixed dispatch paths (e.g.
+      // request_irq → do_IRQ → handle_irq_event → handler).
+      if (classified.match && !chain) {
+        chain = tryDispatchChainTemplate(
+          classified.match.registrationApi,
+          classified.match.dispatchKey,
+          seedName,
+          classified.match.connectionKind,
+        )
+      }
+
       nodes.push({
         name:       from.name ?? "(unknown)",
         file:       fromFile,
@@ -222,6 +247,15 @@ export async function collectIndirectCallers(
           },
         )
       }
+      // Dispatch chain template fallback (same as above)
+      if (classified.match && !chain) {
+        chain = tryDispatchChainTemplate(
+          classified.match.registrationApi,
+          classified.match.dispatchKey,
+          seedName,
+          classified.match.connectionKind,
+        )
+      }
       nodes.push({
         name:       enc.name ?? "(unknown)",
         file:       encFile,
@@ -258,6 +292,14 @@ interface ClassificationResult {
 /**
  * Classify a reference site by reading the full source file and using the
  * C parser to find the enclosing call/construct.
+ *
+ * Two passes for struct initializers:
+ *   1. Project-specific INIT_PATTERNS (WLAN dispatch table etc.)
+ *   2. Generic struct-field-callback fallback that handles ANY
+ *      `.field = callbackName` assignment in ANY struct
+ *      (Linux file_operations, net_device_ops, irq_chip, …) — uses
+ *      tree-sitter to recover the container type and variable name with
+ *      zero per-struct hardcoding.
  */
 function classifyReference(
   filePath: string,
@@ -276,15 +318,77 @@ function classifyReference(
     return classifyFunctionCall(call)
   }
 
-  // Try struct initializer (WMI dispatch table, etc.)
+  // Try struct initializer (WMI dispatch table, file_operations, etc.)
   const construct = findEnclosingConstruct(source, refLine0, refChar0)
   if (construct && construct.nodeType === "initializer_list") {
-    return classifyInitializer(construct)
+    return classifyInitializer(construct, callbackName, filePath, refLine0, refChar0)
   }
 
-  // No enclosing call or initializer
+  // ── Pass 3: function-body fn-ptr assignment ─────────────────────────
+  // Handles patterns like `current->restart_block.fn = do_no_restart_syscall`
+  // where a callback is assigned to a struct field inside a function body
+  // (not a file-scope initializer). Uses tree-sitter to find the nearest
+  // assignment_expression containing the callback identifier.
+  const assignResult = classifyFnBodyAssignment(source, refLine0, refChar0, callbackName)
+  if (assignResult.match) return assignResult
+
+  // No enclosing call, initializer, or assignment
   const fallbackText = source.split(/\r?\n/)[refLine0]?.trim().slice(0, 200) ?? ""
   return { sourceText: fallbackText, match: null }
+}
+
+/**
+ * Classify a function-body fn-ptr assignment like:
+ *   current->restart_block.fn = do_no_restart_syscall
+ *   timer->function = my_timer_fn
+ *   ops->read = my_read
+ *
+ * Uses tree-sitter to find the assignment_expression containing the
+ * callback identifier and extract the LHS field path.
+ */
+function classifyFnBodyAssignment(
+  source: string,
+  refLine0: number,
+  _refChar0: number,
+  callbackName: string,
+): ClassificationResult {
+  // Get the source line containing the reference
+  const lines = source.split(/\r?\n/)
+  const line = lines[refLine0] ?? ""
+
+  // Quick regex check: does the line contain `= callbackName` (or `, callbackName`)?
+  // This avoids expensive tree-sitter parsing for lines that clearly aren't assignments.
+  if (!line.includes(callbackName)) {
+    return { sourceText: line.trim().slice(0, 200), match: null }
+  }
+
+  // Check if the line looks like an assignment: `<lhs> = callbackName`
+  // The LHS is the field path (e.g. "current->restart_block.fn",
+  // "ops->read", "timer->function").
+  const assignRegex = new RegExp(
+    `([a-zA-Z_][a-zA-Z0-9_]*(?:->|\\.)(?:[a-zA-Z_][a-zA-Z0-9_]*(?:->|\\.))*[a-zA-Z_][a-zA-Z0-9_]*)\\s*=\\s*${callbackName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`,
+  )
+  const m = line.match(assignRegex)
+  if (!m) {
+    return { sourceText: line.trim().slice(0, 200), match: null }
+  }
+
+  const fieldPath = m[1]  // e.g. "current->restart_block.fn"
+  // Extract the last field name as the dispatch key
+  const parts = fieldPath.split(/->|\./)
+  const fieldName = parts[parts.length - 1] ?? fieldPath
+  // Extract the container expression (everything before the last field)
+  const containerExpr = parts.slice(0, -1).join("->") || fieldPath
+
+  return {
+    sourceText: line.trim().slice(0, 200),
+    match: {
+      patternName: `auto-fn-body-assign:${fieldPath}`,
+      registrationApi: containerExpr,
+      dispatchKey: fieldName,
+      connectionKind: "api_call",
+    },
+  }
 }
 
 /**
@@ -312,9 +416,22 @@ function classifyFunctionCall(call: FunctionCall): ClassificationResult {
 }
 
 /**
- * Classify a struct initializer against the init-pattern registry.
+ * Classify a struct initializer.
+ *
+ * Pass 1: project-specific INIT_PATTERNS (WLAN's WMI dispatch table, etc.).
+ * Pass 2: generic struct-field-callback fallback — handles any
+ *         `.field = callbackName` assignment in ANY struct shape, by
+ *         walking the tree-sitter AST upward to recover the container
+ *         variable + struct type. Zero per-struct hardcoding.
  */
-function classifyInitializer(init: FunctionCall): ClassificationResult {
+function classifyInitializer(
+  init: FunctionCall,
+  callbackName: string,
+  filePath: string,
+  refLine0: number,
+  refChar0: number,
+): ClassificationResult {
+  // ── Pass 1: registered INIT_PATTERNS ──────────────────────────────────
   for (const pattern of INIT_PATTERNS) {
     if (init.args.length > pattern.markerArgIndex) {
       const markerArg = init.args[pattern.markerArgIndex].trim()
@@ -332,6 +449,26 @@ function classifyInitializer(init: FunctionCall): ClassificationResult {
           },
         }
       }
+    }
+  }
+
+  // ── Pass 2: generic struct-field-callback fallback ────────────────────
+  const generic = classifyGenericStructFieldCallback(
+    init,
+    callbackName,
+    filePath,
+    refLine0,
+    refChar0,
+  )
+  if (generic && generic.matchedPattern) {
+    return {
+      sourceText: generic.sourceText,
+      match: {
+        patternName: generic.matchedPattern.name,
+        registrationApi: generic.viaRegistrationApi ?? "",
+        dispatchKey: generic.dispatchKey ?? "",
+        connectionKind: generic.connectionKind,
+      },
     }
   }
 
@@ -461,6 +598,118 @@ export function formatIndirectCallerTree(
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Dispatch chain template fallback
+// ---------------------------------------------------------------------------
+
+/** Lazily loaded dispatch chain template map (populated on first use). */
+let _dispatchTemplateMap: Map<string, DispatchChainTemplate> | null = null
+
+function getDispatchTemplateMap(): Map<string, DispatchChainTemplate> {
+  if (!_dispatchTemplateMap) {
+    _dispatchTemplateMap = collectAllDispatchChains()
+  }
+  return _dispatchTemplateMap
+}
+
+/**
+ * Try to build a ResolvedChain from a pre-built dispatch chain template.
+ *
+ * When the LSP-based resolver (resolveChain) fails to find the
+ * store/dispatch/trigger stages — common for kernel macros/inlines —
+ * this function checks if the registration API has a known dispatch
+ * chain template contributed by a sub-plugin pack.
+ *
+ * Two lookup strategies:
+ *   1. Exact match on registrationApi (e.g. "request_irq")
+ *   2. Struct-field match: if the registrationApi came from the generic
+ *      struct-field classifier (e.g. "mem_fops"), try
+ *      `__struct_field:<connectionKind>.<dispatchKey>` to find
+ *      VFS/net_device_ops dispatch templates
+ */
+function tryDispatchChainTemplate(
+  registrationApi: string,
+  dispatchKey: string,
+  callbackName: string,
+  connectionKind: string,
+): ResolvedChain | null {
+  const map = getDispatchTemplateMap()
+
+  // Strategy 1: exact match on registration API name
+  let tmpl = map.get(registrationApi)
+
+  // Strategy 2: struct-field match using the synthetic key format
+  // The generic classifier produces registrationApi = container variable
+  // (e.g. "mem_fops") and dispatchKey = field name (e.g. "read").
+  // The template uses `__struct_field:file_operations.read`.
+  // We try common struct types when connectionKind = "interface_registration".
+  if (!tmpl && connectionKind === "interface_registration" && dispatchKey) {
+    const structFieldCandidates = [
+      `__struct_field:file_operations.${dispatchKey}`,
+      `__struct_field:net_device_ops.${dispatchKey}`,
+      `__struct_field:block_device_operations.${dispatchKey}`,
+      `__struct_field:seq_operations.${dispatchKey}`,
+      `__struct_field:inode_operations.${dispatchKey}`,
+    ]
+    for (const key of structFieldCandidates) {
+      tmpl = map.get(key)
+      if (tmpl) break
+    }
+  }
+
+  if (!tmpl) return null
+
+  // Build the chain by replacing %CALLBACK% and %KEY% placeholders
+  const chain = tmpl.chain.map((s) =>
+    s.replace(/%CALLBACK%/g, callbackName).replace(/%KEY%/g, dispatchKey),
+  )
+
+  // Construct a ResolvedChain compatible with the existing formatter.
+  // The chain has at least 2 entries: [... dispatch stages ..., callback].
+  // The second-to-last entry is the immediate dispatch function.
+  const dispatchFn = chain.length >= 3 ? chain[chain.length - 2] : chain[0]
+  const triggerDesc = tmpl.triggerDescription
+    .replace(/%KEY%/g, dispatchKey)
+    .replace(/%CALLBACK%/g, callbackName)
+
+  return {
+    confidenceScore: 4,
+    confidenceLevel: "dispatch_site_found" as const,
+    registration: {
+      apiName: registrationApi,
+      callbackArgIndex: 0,
+      dispatchKey,
+      file: "",
+      line: 0,
+      sourceText: triggerDesc,
+    },
+    store: {
+      containerType: registrationApi,
+      containerFile: null,
+      containerLine: null,
+      confidence: "medium" as const,
+      evidence: `dispatch-chain-template:${tmpl.registrationApi}`,
+      storeFieldName: dispatchKey,
+    },
+    dispatch: {
+      dispatchFunction: dispatchFn,
+      dispatchFile: null,
+      dispatchLine: null,
+      invocationPattern: null,
+      confidence: "medium" as const,
+      evidence: `template-chain:[${chain.join(" → ")}]`,
+    },
+    trigger: {
+      triggerKind: tmpl.triggerKind,
+      triggerKey: dispatchKey,
+      triggerFile: null,
+      triggerLine: null,
+      confidence: "medium" as const,
+      evidence: triggerDesc,
+    },
+  }
+}
 
 function readFileSafe(filePath: string): string {
   try {

@@ -1,0 +1,75 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/symbol.rs#compute_match_score",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/symbol.rs",
+    "line": 15,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 17,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:tower_lsp::lsp_types#SymbolInformation",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 15
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Vec::new",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 20
+      },
+      {
+        "dst": "score",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 22
+      },
+      {
+        "dst": "nucleo_matcher::Utf32Str::new",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 23
+      },
+      {
+        "dst": "as_str",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 23
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/symbol.rs",
+        "confidence": 1,
+        "source_line": 15
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/symbol.rs#workspace_symbol",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 62
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.078Z"
+  }
+}

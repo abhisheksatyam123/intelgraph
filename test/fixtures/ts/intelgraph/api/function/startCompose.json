@@ -1,0 +1,67 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/local-runtime.ts#startCompose",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/local-runtime.ts",
+    "line": 144,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 14,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "path.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 146
+      },
+      {
+        "dst": "module:node:child_process#spawnSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 147
+      },
+      {
+        "dst": "module:src/logging/logger.ts#log",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 156
+      },
+      {
+        "dst": "run.stderr.trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 153
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/local-runtime.ts",
+        "confidence": 1,
+        "source_line": 144
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/local-runtime.ts#ensureLocalIntelligenceRuntime",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 174
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.977Z"
+  }
+}

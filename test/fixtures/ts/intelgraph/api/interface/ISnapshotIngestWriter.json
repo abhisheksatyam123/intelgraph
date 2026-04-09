@@ -1,0 +1,72 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/contracts/db-foundation.ts#ISnapshotIngestWriter",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/db-foundation.ts",
+    "line": 18,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 9,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#IngestReport",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 19
+      }
+    ],
+    "implements_in": [
+      {
+        "src": "module:src/intelligence/backend-factory.ts#SnapshotIngestWriter",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 55
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 33
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend.ingestWriter",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 33
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend",
+        "confidence": 0.95,
+        "source_line": 30
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/db-foundation.ts",
+        "confidence": 1,
+        "source_line": 18
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.139Z"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "kind": "function",
+  "kind_verbose": "exported_helper",
+  "canonical_name": "argv_free",
+  "category": "leaf_helper_exported",
+  "aliases": [],
+  "source": {
+    "file": "lib/argv_split.c",
+    "line": 35,
+    "character": 6
+  },
+  "description": "Frees an argv array previously returned by argv_split. EXPORT_SYMBOL.",
+  "relations": {
+    "calls_in_direct": [
+      { "caller": "machine_shutdown",       "callee": "argv_free", "file": "kernel/reboot.c",                    "line": 842 },
+      { "caller": "trace_probe_create",     "callee": "argv_free", "file": "kernel/trace/trace_probe.c",         "line": 2237 },
+      { "caller": "create_filter_finish",   "callee": "argv_free", "file": "kernel/trace/trace_events_filter.c", "line": 2521 },
+      { "caller": "trace_dynevent_create",  "callee": "argv_free", "file": "kernel/trace/trace_dynevent.c",      "line": 124 },
+      { "caller": "parse_synth_field",      "callee": "argv_free", "file": "kernel/trace/trace_events_synth.c",  "line": 1355 }
+    ],
+    "calls_in_runtime": [],
+    "calls_out": [
+      { "caller": "argv_free", "callee": "kfree", "file": "lib/argv_split.c", "line": 38 },
+      { "caller": "argv_free", "callee": "kfree", "file": "lib/argv_split.c", "line": 39 }
+    ],
+    "registrations_in": [],
+    "registrations_out": [],
+    "structures": [],
+    "logs": []
+  },
+  "contract": {
+    "required_relation_kinds": ["calls_in_direct", "calls_out"],
+    "required_directions":     ["incoming", "outgoing"],
+    "minimum_counts": {
+      "calls_in_direct": 4,
+      "calls_out":       1
+    }
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_linux_kernel_6.12",
+    "method": "manual_grep_against_/home/abhi/qprojects/linux"
+  }
+}

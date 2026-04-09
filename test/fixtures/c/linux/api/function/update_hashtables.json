@@ -1,0 +1,52 @@
+{
+  "kind": "function",
+  "canonical_name": "update_hashtables",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/842/842_compress.c",
+    "line": 423,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "__ilog2_u32",
+        "confidence": 1
+      },
+      {
+        "dst": "__ilog2_u64",
+        "confidence": 1
+      },
+      {
+        "dst": "_printk",
+        "confidence": 1
+      },
+      {
+        "dst": "hash_32",
+        "confidence": 1
+      },
+      {
+        "dst": "hash_del",
+        "confidence": 1
+      },
+      {
+        "dst": "hlist_add_head",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.809Z"
+  }
+}

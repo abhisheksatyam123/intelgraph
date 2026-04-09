@@ -1,0 +1,41 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:src/fixtures/fixture-comparator.ts#BackendItem",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/fixture-comparator.ts",
+    "line": 49,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 8,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/fixture-comparator.ts",
+        "confidence": 1,
+        "source_line": 49
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/fixtures/fixture-comparator.ts#BackendResponse",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 58
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.114Z"
+  }
+}

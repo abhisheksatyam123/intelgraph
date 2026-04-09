@@ -32,7 +32,7 @@ export function formatReasonChainText(
     lines.push("")
     lines.push("  No invocation reason found.")
     if (!result.usedLlm && !result.cacheHit) {
-      lines.push("  Enable llmReasoning in .clangd-mcp.json to run LLM-assisted analysis.")
+      lines.push("  Enable llmReasoning in .intelgraph.json to run LLM-assisted analysis.")
     }
     return lines.join("\n")
   }

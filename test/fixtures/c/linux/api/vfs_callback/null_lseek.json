@@ -1,0 +1,72 @@
+{
+  "kind": "function",
+  "kind_verbose": "vfs_callback_via_file_operations",
+  "canonical_name": "null_lseek",
+  "category": "vfs_callback",
+  "aliases": [],
+  "source": {
+    "file": "drivers/char/mem.c",
+    "line": 566,
+    "character": 15
+  },
+  "description": "Trivial /dev/null lseek callback (returns file->f_pos = 0). Assigned to null_fops.llseek. Same struct-field-assignment registration pattern as read_mem but in a different file_operations instance.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "vfs_llseek",
+        "callee": "null_lseek",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "vfs_dispatches_to_file_operations_callback",
+        "derivation": "runtime",
+        "confidence": 0.95,
+        "dispatch_chain": [
+          "userspace_lseek_syscall",
+          "ksys_lseek",
+          "vfs_llseek",
+          "fp->f_op->llseek",
+          "null_lseek"
+        ],
+        "runtime_trigger": "userspace lseek() on /dev/null"
+      }
+    ],
+    "calls_out": [],
+    "registrations_in": [
+      {
+        "registrar": "null_fops",
+        "callback": "null_lseek",
+        "edge_kind": "register_via_struct_field",
+        "registration_kind": "file_operations.llseek",
+        "container_type": "struct file_operations",
+        "container_variable": "null_fops",
+        "field": "llseek",
+        "evidence": { "kind": "struct_field_assignment", "loc": { "file": "drivers/char/mem.c", "line": 650 } }
+      },
+      {
+        "registrar": "full_fops",
+        "callback": "full_lseek",
+        "edge_kind": "register_via_struct_field",
+        "registration_kind": "file_operations.llseek",
+        "container_type": "struct file_operations",
+        "container_variable": "full_fops",
+        "field": "llseek",
+        "notes": "full_lseek is a #define alias for null_lseek (drivers/char/mem.c:631), so the callback is reachable through full_fops as well — the backend may or may not surface this depending on how clangd resolves the macro alias"
+      }
+    ],
+    "registrations_out": [],
+    "structures": [],
+    "logs": []
+  },
+  "contract": {
+    "required_relation_kinds": ["calls_in_runtime", "registrations_in"],
+    "required_directions":     ["incoming"],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "registrations_in": 1
+    }
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_linux_kernel_6.12",
+    "method": "manual_grep_against_/home/abhi/qprojects/linux"
+  }
+}

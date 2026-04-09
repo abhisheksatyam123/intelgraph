@@ -1,0 +1,103 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/daemon/index.ts#waitForSpawnLockRelease",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/daemon/index.ts",
+    "line": 254,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 39,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:src/daemon/index.ts#spawnLockPath",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 255
+      },
+      {
+        "dst": "Date.now",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 285
+      },
+      {
+        "dst": "module:fs#readFileSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 263
+      },
+      {
+        "dst": "module:src/daemon/index.ts#readSpawnLockOwnerPid",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 266
+      },
+      {
+        "dst": "module:src/daemon/index.ts#isProcessAlive",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 267
+      },
+      {
+        "dst": "module:src/logging/logger.ts#log",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 290
+      },
+      {
+        "dst": "module:fs#unlinkSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 273
+      },
+      {
+        "dst": "Promise",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 281
+      },
+      {
+        "dst": "setTimeout",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 281
+      },
+      {
+        "dst": "Math.min",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 282
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/daemon/index.ts",
+        "confidence": 1,
+        "source_line": 254
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/daemon/index.ts#spawnHttpDaemon",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 566
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.897Z"
+  }
+}

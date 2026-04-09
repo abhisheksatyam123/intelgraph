@@ -1,0 +1,123 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/ts-core/extractor.ts#extractGenericConstraintReferences",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/ts-core/extractor.ts",
+    "line": 1647,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 55,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 1648
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#FileResolver",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1650
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#TypeRefEdgePayload",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1653
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#firstNamedChildOfType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1673
+      },
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 1668
+      },
+      {
+        "dst": "params.namedChild",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1671
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#paramNames.add",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 1664
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#namedDescendantTexts",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1675
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#paramNames.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 1676
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#seen.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 1677
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#resolveTypeName",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1678
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#seen.add",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 1680
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#out.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 1681
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#visit",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 422
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 1647
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 13,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.992Z"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "kind": "field",
+  "canonical_name": "module:src/vault/metadata.rs#MDMetadata.aliases",
+  "category": "field",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/metadata.rs",
+    "line": 9
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "reads_field_out": [
+      {
+        "dst": "module:src/vault/metadata.rs#MDMetadata.aliases",
+        "confidence": 0.95,
+        "source_line": 84
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/metadata.rs#MDMetadata",
+        "confidence": 1,
+        "source_line": 9
+      }
+    ],
+    "reads_field_in": [
+      {
+        "src": "module:src/vault/metadata.rs#MDMetadata.aliases",
+        "confidence": 0.95,
+        "source_line": 84
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "field"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:16.140Z"
+  }
+}

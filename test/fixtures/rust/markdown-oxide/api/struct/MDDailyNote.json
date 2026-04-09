@@ -1,0 +1,115 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/completion/link_completer.rs#MDDailyNote",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/link_completer.rs",
+    "line": 1003,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 5,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#MDDailyNote.match_string",
+        "confidence": 1,
+        "source_line": 1004
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MDDailyNote.ref_name",
+        "confidence": 1,
+        "source_line": 1005
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MDDailyNote.real_referenceaable",
+        "confidence": 1,
+        "source_line": 1006
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MDDailyNote.relative_name",
+        "confidence": 1,
+        "source_line": 1010
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MDDailyNote.get_self_date",
+        "confidence": 1,
+        "source_line": 1016
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MDDailyNote.relative_date_string",
+        "confidence": 1,
+        "source_line": 1022
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MDDailyNote.from_referenceable",
+        "confidence": 1,
+        "source_line": 1039
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MDDailyNote.from_date",
+        "confidence": 1,
+        "source_line": 1069
+      },
+      {
+        "dst": "module:src/completion/link_completer.rs#MDDailyNote.referenceable",
+        "confidence": 1,
+        "source_line": 1085
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#LinkCompletion",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 652
+      },
+      {
+        "src": "module:src/completion/link_completer.rs#MDDailyNote.from_referenceable",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1039
+      },
+      {
+        "src": "module:src/completion/link_completer.rs#MDDailyNote.from_date",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1069
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#LinkCompletion.DailyNote",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 678
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#LinkCompletion",
+        "confidence": 0.95,
+        "source_line": 652
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/link_completer.rs",
+        "confidence": 1,
+        "source_line": 1003
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 6
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.854Z"
+  }
+}

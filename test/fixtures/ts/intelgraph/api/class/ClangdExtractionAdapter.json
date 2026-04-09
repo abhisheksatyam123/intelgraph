@@ -1,0 +1,90 @@
+{
+  "kind": "class",
+  "canonical_name": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter",
+  "category": "class",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/extraction/clangd-extraction-adapter.ts",
+    "line": 112,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 117,
+  "relations": {
+    "implements_out": [
+      {
+        "dst": "module:src/intelligence/contracts/extraction-adapter.ts#IExtractionAdapter",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 112
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.constructor",
+        "confidence": 1,
+        "source_line": 113
+      },
+      {
+        "dst": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.extractSymbols",
+        "confidence": 1,
+        "source_line": 118
+      },
+      {
+        "dst": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.extractTypes",
+        "confidence": 1,
+        "source_line": 149
+      },
+      {
+        "dst": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.extractEdges",
+        "confidence": 1,
+        "source_line": 162
+      },
+      {
+        "dst": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.materializeSnapshot",
+        "confidence": 1,
+        "source_line": 198
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/backend-factory.ts#createIntelligenceBackend",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 121
+      },
+      {
+        "src": "module:test/unit/intelligence/ingest-extraction-wlan.test.ts",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 44
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts",
+        "confidence": 1,
+        "source_line": 112
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/unit/intelligence/ingest-extraction-wlan.test.ts#adapter",
+        "confidence": 0.9,
+        "resolution": "named-import",
+        "source_line": 44
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "class"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.152Z"
+  }
+}

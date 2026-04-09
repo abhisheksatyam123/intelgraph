@@ -29,7 +29,12 @@ function resolveEffectiveRoot(root: string): string {
   if (isWritable(root)) return root
 
   const hash = hashPortSeed(root).toString(36)
-  const fallback = path.join(homedir(), ".local", "share", "clangd-mcp", "workspaces", hash)
+  // Prefer the new ~/.local/share/intelgraph/workspaces path. Fall back to the
+  // legacy clangd-mcp directory if it already exists on disk so upgraded users
+  // keep writing to their existing storage location.
+  const newFallback = path.join(homedir(), ".local", "share", "intelgraph", "workspaces", hash)
+  const legacyFallback = path.join(homedir(), ".local", "share", "clangd-mcp", "workspaces", hash)
+  const fallback = existsSync(legacyFallback) && !existsSync(newFallback) ? legacyFallback : newFallback
 
   if (!existsSync(fallback)) {
     try {
@@ -37,7 +42,7 @@ function resolveEffectiveRoot(root: string): string {
       log("INFO", "intelligence local: using fallback storage for read-only workspace", { root, fallback })
     } catch (err) {
       log("WARN", "intelligence local: failed to create fallback storage", { fallback, error: String(err) })
-      return "/tmp/clangd-mcp-" + hash
+      return "/tmp/intelgraph-" + hash
     }
   }
 
@@ -53,7 +58,7 @@ const DEFAULT_COMPOSE = [
   "services:",
   "  neo4j:",
   "    image: neo4j:5",
-  "    container_name: ${INTEL_STACK_NAME:-clangd-mcp-local}-neo4j",
+  "    container_name: ${INTEL_STACK_NAME:-intelgraph-local}-neo4j",
   "    restart: unless-stopped",
   "    environment:",
   "      NEO4J_AUTH: ${INTEL_NEO4J_USER:-neo4j}/${INTEL_NEO4J_PASSWORD:-neo4j1234}",
@@ -109,7 +114,7 @@ function ensureComposeAndEnv(effectiveRoot: string, projectRoot: string, ports: 
   const envContent = [
     `WLAN_WORKSPACE_ROOT=${projectRoot}`,
     `INTELLIGENCE_NEO4J_DATA_DIR=${path.join(effectiveRoot, ".intelligence-data", "neo4j", "data")}`,
-    `INTEL_STACK_NAME=clangd-mcp-${hashPortSeed(projectRoot).toString(36)}`,
+    `INTEL_STACK_NAME=intelgraph-${hashPortSeed(projectRoot).toString(36)}`,
     `INTEL_NEO4J_USER=neo4j`,
     `INTEL_NEO4J_PASSWORD=neo4j1234`,
     `INTEL_NEO4J_HTTP_PORT=${ports.http}`,

@@ -1,0 +1,40 @@
+{
+  "kind": "field",
+  "canonical_name": "module:src/codelens.rs#FindReferencesData.uri",
+  "category": "field",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/codelens.rs",
+    "line": 12
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "field_of_type_out": [
+      {
+        "dst": "module:tower_lsp::lsp_types#Url",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 12
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/codelens.rs#FindReferencesData",
+        "confidence": 1,
+        "source_line": 12
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "field"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:16.125Z"
+  }
+}

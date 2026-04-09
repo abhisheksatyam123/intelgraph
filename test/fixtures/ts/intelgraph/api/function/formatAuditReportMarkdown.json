@@ -1,0 +1,87 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/fixtures/completeness-audit.ts#formatAuditReportMarkdown",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/completeness-audit.ts",
+    "line": 331,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 62,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#AuditReport",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 331
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#lines.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 387
+      },
+      {
+        "dst": "report.apis_needing_followup.forEach",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 385
+      },
+      {
+        "dst": "Math.round",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 386
+      },
+      {
+        "dst": "api.missing_relations.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 387
+      },
+      {
+        "dst": "module:src/fixtures/completeness-audit.ts#lines.join",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 391
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/bin/audit-fixtures.ts#main",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 63
+      },
+      {
+        "src": "module:test/unit/fixtures/completeness-audit.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 115
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/completeness-audit.ts",
+        "confidence": 1,
+        "source_line": 331
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.899Z"
+  }
+}

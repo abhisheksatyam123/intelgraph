@@ -1,0 +1,46 @@
+{
+  "kind": "function",
+  "canonical_name": "__xbc_close_brace",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/bootconfig.c",
+    "line": 542,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "xbc_node_index",
+        "confidence": 1
+      },
+      {
+        "dst": "xbc_parse_error",
+        "confidence": 1
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "xbc_parse_kv",
+        "confidence": 1
+      },
+      {
+        "src": "xbc_close_brace",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.622Z"
+  }
+}

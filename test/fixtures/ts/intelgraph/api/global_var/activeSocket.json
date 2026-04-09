@@ -1,0 +1,41 @@
+{
+  "kind": "global_var",
+  "canonical_name": "module:src/bridge/index.ts#activeSocket",
+  "category": "global_var",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/bridge/index.ts",
+    "line": 191,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 1,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:net#Socket",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 191
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/bridge/index.ts",
+        "confidence": 1,
+        "source_line": 191
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "global_var"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.096Z"
+  }
+}

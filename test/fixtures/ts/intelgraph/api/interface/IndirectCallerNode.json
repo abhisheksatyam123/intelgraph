@@ -1,0 +1,109 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/tools/indirect-callers.ts#IndirectCallerNode",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/indirect-callers.ts",
+    "line": 25,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 19,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-resolver/types.js#ResolvedChain",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 42
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/tools/indirect-callers.ts#IndirectCallerNode.name",
+        "confidence": 1,
+        "source_line": 27
+      },
+      {
+        "dst": "module:src/tools/indirect-callers.ts#IndirectCallerNode.file",
+        "confidence": 1,
+        "source_line": 29
+      },
+      {
+        "dst": "module:src/tools/indirect-callers.ts#IndirectCallerNode.line",
+        "confidence": 1,
+        "source_line": 31
+      },
+      {
+        "dst": "module:src/tools/indirect-callers.ts#IndirectCallerNode.sourceText",
+        "confidence": 1,
+        "source_line": 33
+      },
+      {
+        "dst": "module:src/tools/indirect-callers.ts#IndirectCallerNode.classification",
+        "confidence": 1,
+        "source_line": 35
+      },
+      {
+        "dst": "module:src/tools/indirect-callers.ts#IndirectCallerNode.resolvedChain",
+        "confidence": 1,
+        "source_line": 42
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/tools/pattern-resolver/types.js#ResolvedChain",
+        "confidence": 0.95,
+        "source_line": 25
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/indirect-callers.ts",
+        "confidence": 1,
+        "source_line": 25
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/tools/indirect-callers.ts#IndirectCallerGraph",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 49
+      },
+      {
+        "src": "module:src/tools/indirect-callers.ts#nodes",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 121
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/tools/indirect-callers.ts#IndirectCallerGraph.nodes",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 49
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/tools/indirect-callers.ts#IndirectCallerGraph",
+        "confidence": 0.95,
+        "source_line": 45
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.126Z"
+  }
+}

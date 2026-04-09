@@ -1,0 +1,85 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/vault/referenceable.rs#Refname",
+  "category": "struct",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/referenceable.rs",
+    "line": 82,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 5,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/vault/referenceable.rs#Refname.full_refname",
+        "confidence": 1,
+        "source_line": 83
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Refname.path",
+        "confidence": 1,
+        "source_line": 84
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Refname.infile_ref",
+        "confidence": 1,
+        "source_line": 85
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Refname.link_file_key",
+        "confidence": 1,
+        "source_line": 89
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Refname.deref",
+        "confidence": 1,
+        "source_line": 98
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#Refname.from",
+        "confidence": 1,
+        "source_line": 104
+      }
+    ],
+    "implements_out": [
+      {
+        "dst": "Deref",
+        "confidence": 1,
+        "source_line": 96
+      },
+      {
+        "dst": "From",
+        "confidence": 1,
+        "source_line": 112
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/referenceable.rs",
+        "confidence": 1,
+        "source_line": 82
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/vault/referenceable.rs#Referenceable.get_refname",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 147
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "struct"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:09.859Z"
+  }
+}

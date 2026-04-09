@@ -1,0 +1,62 @@
+{
+  "kind": "function",
+  "canonical_name": "__ashldi3",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/ashldi3.c",
+    "line": 9,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "writes_field_out": [
+      {
+        "dst": "uu.ll",
+        "confidence": 0.85
+      },
+      {
+        "dst": "w.s.low",
+        "confidence": 0.85
+      },
+      {
+        "dst": "w.s.high",
+        "confidence": 0.85
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "w.s",
+        "confidence": 0.85
+      },
+      {
+        "dst": "uu.s.low",
+        "confidence": 0.85
+      },
+      {
+        "dst": "uu.s",
+        "confidence": 0.85
+      },
+      {
+        "dst": "uu.s.high",
+        "confidence": 0.85
+      },
+      {
+        "dst": "w.ll",
+        "confidence": 0.85
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.618Z"
+  }
+}

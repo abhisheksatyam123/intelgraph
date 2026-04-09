@@ -1,0 +1,55 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/logging/logger.ts#getLogFile",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/logging/logger.ts",
+    "line": 235,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 3,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "getLogFile",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 236
+      },
+      {
+        "dst": "module:src/logging/logger.ts#getLogger",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 236
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/index.ts#main",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 195
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/logging/logger.ts",
+        "confidence": 1,
+        "source_line": 235
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.982Z"
+  }
+}

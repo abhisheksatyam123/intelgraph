@@ -1,0 +1,134 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeKindSpec",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/unit/intelligence/wlan-ground-truth.test.ts",
+    "line": 23,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 5,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/node-protocol.js#NodeProtocolResponse",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 24
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeKindSpec.kind",
+        "confidence": 1,
+        "source_line": 24
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeKindSpec.kind_verbose",
+        "confidence": 1,
+        "source_line": 25
+      },
+      {
+        "dst": "module:test/unit/intelligence/wlan-ground-truth.test.ts#NodeKindSpec.description",
+        "confidence": 1,
+        "source_line": 26
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/node-protocol.js#NodeProtocolResponse",
+        "confidence": 0.95,
+        "source_line": 23
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts",
+        "confidence": 1,
+        "source_line": 23
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#CoverageExpectations",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 114
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 123
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#GroundTruthFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 149
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#KIND_VERBOSE_BY_KIND",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 163
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#CoverageExpectations.requiredVerificationGraphNodeKinds",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 114
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget.requiredNodeKinds",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 123
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget.graphNodes",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 124
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#GroundTruthFixture.requiredNodeKinds",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 149
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#CoverageExpectations",
+        "confidence": 0.95,
+        "source_line": 107
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#VerificationTarget",
+        "confidence": 0.95,
+        "source_line": 117
+      },
+      {
+        "src": "module:test/unit/intelligence/wlan-ground-truth.test.ts#GroundTruthFixture",
+        "confidence": 0.95,
+        "source_line": 140
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 12
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.134Z"
+  }
+}

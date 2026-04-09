@@ -1,0 +1,387 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/ts-core/extractor.ts#visit",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/ts-core/extractor.ts",
+    "line": 302,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 661,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 302
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.ts#Fact",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 302
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#extractDeclaration",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 304
+      },
+      {
+        "dst": "resolver.localSymbols.add",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 325
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#seenSymbols.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 861
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#seenSymbols.add",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 557
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#isExportedDeclaration",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 340
+      },
+      {
+        "dst": "topLevelDocs.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 349
+      },
+      {
+        "dst": "ctx.symbol",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 558
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#locationOf",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 933
+      },
+      {
+        "dst": "ctx.edge",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 913
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#extractInheritanceEdges",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 385
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#extractTypeReferences",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 401
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#extractGenericConstraintReferences",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 422
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#extractFieldTypeReferences",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 438
+      },
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 459
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#extractFieldDeclarations",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 461
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#extractFieldTypeEdges",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 505
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#aggregatedTargets.add",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 516
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#extractTsEnumVariants",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 551
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#extractTypeAliasBodyReferences",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 593
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#firstNamedChildOfType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2135
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#findFirstDescendantOfType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 621
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#resolveTypeName",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2097
+      },
+      {
+        "dst": "resolver.varTypes.set",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 653
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#extractTypeReferencesFromAnnotations",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 632
+      },
+      {
+        "dst": "declarator.childForFieldName",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 646
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#inferVarTypeFromValue",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 647
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#classStack.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 683
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#extractImportEdge",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 689
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#populateResolverFromImport",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 695
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#extractReExportEdge",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 707
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#maybeEnterScope",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 714
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#scopeStack.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 727
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#collectParamTypes",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 749
+      },
+      {
+        "dst": "resolver.paramTypeStack.push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 756
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#extractJsxComponentRef",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 769
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#collectJsxProps",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 776
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode.namedChild",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 2281
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#classifyThisFieldAccess",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 855
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#extractCalleeWithResolution",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 889
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#isTaggedTemplateCall",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 904
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#detectYieldWrapping",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 912
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#visit",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2282
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#scopeStack.pop",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 949
+      },
+      {
+        "dst": "resolver.paramTypeStack.pop",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 957
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#classStack.pop",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 960
+      },
+      {
+        "dst": "accumulated.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 2099
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#seenDsts.has",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 2101
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#seenDsts.add",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 2102
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#out.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 2103
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode.childForFieldName",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 2134
+      },
+      {
+        "dst": "argsNode.namedChild",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 2209
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#isNullish",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2238
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 2242
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 302
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#visit",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2282
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractFromTree",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 964
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractFieldTypeEdges",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2287
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 55,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.996Z"
+  }
+}

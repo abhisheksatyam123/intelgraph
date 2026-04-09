@@ -1,0 +1,93 @@
+{
+  "kind": "function",
+  "canonical_name": "module:tests/notes_tests.rs#module_path",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/tests/notes_tests.rs",
+    "line": 294,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:std::path#PathBuf",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 294
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:std::path#PathBuf.from",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 295
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:tests/notes_tests.rs",
+        "confidence": 1,
+        "source_line": 294
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:tests/notes_tests.rs#test_normalize_adds_frontmatter",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 302
+      },
+      {
+        "src": "module:tests/notes_tests.rs#test_normalize_adds_index",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 312
+      },
+      {
+        "src": "module:tests/notes_tests.rs#test_normalize_index_has_line_numbers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 323
+      },
+      {
+        "src": "module:tests/notes_tests.rs#test_normalize_h3_nested",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 332
+      },
+      {
+        "src": "module:tests/notes_tests.rs#test_normalize_idempotent",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 344
+      },
+      {
+        "src": "module:tests/notes_tests.rs#test_normalize_preserves_existing_tags",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 354
+      },
+      {
+        "src": "module:tests/notes_tests.rs#test_normalize_replaces_stale_index",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 365
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 8
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.092Z"
+  }
+}

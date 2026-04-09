@@ -1,0 +1,97 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/rust-core/extractor.ts#cratePathToFileModulePath",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/rust-core/extractor.ts",
+    "line": 885,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 21,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "modulePath.startsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 889
+      },
+      {
+        "dst": "split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 890
+      },
+      {
+        "dst": "modulePath.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 890
+      },
+      {
+        "dst": "segments.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 894
+      },
+      {
+        "dst": "candidates.push",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 897
+      },
+      {
+        "dst": "join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 897
+      },
+      {
+        "dst": "segments.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 897
+      },
+      {
+        "dst": "module:node:fs#existsSync",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 900
+      },
+      {
+        "dst": "module:node:path#join",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 900
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts#populateResolverFromUse",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 863
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 885
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 9,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.987Z"
+  }
+}

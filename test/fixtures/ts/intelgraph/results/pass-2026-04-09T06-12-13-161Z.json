@@ -1,0 +1,111 @@
+{
+  "language": "ts",
+  "project": "intelgraph",
+  "workspace": "/home/abhi/qprojects/intelgraph",
+  "timestamp": "2026-04-09T06:12:13.161Z",
+  "totals": {
+    "pass": 10,
+    "wknd": 0,
+    "miss": 1,
+    "total": 11,
+    "pct": 91
+  },
+  "results": [
+    {
+      "fixture": "class/ExtractorRunner.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/intelligence/extraction/runner.ts#ExtractorRunner",
+        "kind": "class",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/intelgraph/src/intelligence/extraction/runner.ts\",\"line\":126,\"column\":8}"
+      }
+    },
+    {
+      "fixture": "class/LspClient.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/lsp/index.ts#LspClient",
+        "kind": "class",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/intelgraph/src/lsp/index.ts\",\"line\":181,\"column\":8}"
+      }
+    },
+    {
+      "fixture": "extractor_plugin/clangdCoreExtractor.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/plugins/clangd-core/extractor.ts#CAPABILITIES",
+        "kind": "global_var",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/intelgraph/src/plugins/clangd-core/extractor.ts\",\"line\":43,\"column\":1}"
+      }
+    },
+    {
+      "fixture": "function/computeWorkspaceId.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/daemon/index.ts#computeWorkspaceId",
+        "kind": "function",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/intelgraph/src/daemon/index.ts\",\"line\":119,\"column\":8}"
+      }
+    },
+    {
+      "fixture": "function/normaliseRoot.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/daemon/index.ts#normaliseRoot",
+        "kind": "function",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/intelgraph/src/daemon/index.ts\",\"line\":38,\"column\":8}"
+      }
+    },
+    {
+      "fixture": "function/readConfig.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/config/config.ts#readConfig",
+        "kind": "function",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/intelgraph/src/config/config.ts\",\"line\":207,\"column\":8}"
+      }
+    },
+    {
+      "fixture": "interface/DaemonState.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/daemon/index.ts#DaemonState",
+        "kind": "interface",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/intelgraph/src/daemon/index.ts\",\"line\":58,\"column\":8}"
+      }
+    },
+    {
+      "fixture": "interface/IntelgraphConfig.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/config/config.ts#IntelgraphConfig",
+        "kind": "interface",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/intelgraph/src/config/config.ts\",\"line\":18,\"column\":8}"
+      }
+    },
+    {
+      "fixture": "method/LspClient_documentSymbol.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/lsp/index.ts#LspClient.documentSymbol",
+        "kind": "method",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/intelgraph/src/lsp/index.ts\",\"line\":551,\"column\":3}"
+      }
+    },
+    {
+      "fixture": "module/daemon_index.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/daemon/index.ts",
+        "kind": "module",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/intelgraph/src/daemon/index.ts\",\"line\":1,\"column\":1}"
+      }
+    },
+    {
+      "fixture": "oracle/readConfig.json",
+      "status": "missing",
+      "expectedName": "(oracle-derived from src/config/config.ts:207)",
+      "fuzzyHits": []
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/extraction/services/workspace-service.ts#WorkspaceServiceImpl.walkFiles",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/workspace-service.ts",
+    "line": 118,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 48,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/workspace-service.ts#WalkFilesOptions",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 118
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "Set",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 119
+      },
+      {
+        "dst": "name.startsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 122
+      },
+      {
+        "dst": "Math.max",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 128
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/workspace-service.ts#walk",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 150
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/workspace-service.ts#out.sort",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 161
+      },
+      {
+        "dst": "ranker",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 156
+      },
+      {
+        "dst": "a.localeCompare",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 161
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/workspace-service.ts#out.slice",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 164
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/workspace-service.ts#WorkspaceServiceImpl.absoluteRoot",
+        "confidence": 0.95,
+        "source_line": 121
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/workspace-service.ts#WorkspaceServiceImpl",
+        "confidence": 1,
+        "source_line": 118
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.498Z"
+  }
+}

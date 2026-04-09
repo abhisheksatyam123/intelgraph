@@ -1,0 +1,90 @@
+{
+  "kind": "function",
+  "canonical_name": "bkey",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/btree.c",
+    "line": 147,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "logs_event_out": [
+      {
+        "dst": "log:BUG_ON:642",
+        "confidence": 0.9
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "target.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "victim.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "victim.height",
+        "confidence": 0.85
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "target.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "target.height",
+        "confidence": 0.85
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "setkey",
+        "confidence": 1
+      },
+      {
+        "src": "clearpair",
+        "confidence": 1
+      },
+      {
+        "src": "keycmp",
+        "confidence": 1
+      },
+      {
+        "src": "btree_grow",
+        "confidence": 1
+      },
+      {
+        "src": "btree_insert_level",
+        "confidence": 1
+      },
+      {
+        "src": "btree_remove_level",
+        "confidence": 1
+      },
+      {
+        "src": "merge",
+        "confidence": 1
+      },
+      {
+        "src": "__btree_for_each",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 8
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.792Z"
+  }
+}

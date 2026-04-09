@@ -1,0 +1,52 @@
+{
+  "kind": "function",
+  "canonical_name": "swap_bits",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/bch.c",
+    "line": 118,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "__arch_bitrev8",
+        "confidence": 1
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "bch.xi_tab",
+        "confidence": 0.85
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "bch_encode_unaligned",
+        "confidence": 1
+      },
+      {
+        "src": "load_ecc8",
+        "confidence": 1
+      },
+      {
+        "src": "store_ecc8",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 2,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.806Z"
+  }
+}

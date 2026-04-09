@@ -1,0 +1,181 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/contracts/common.ts#EdgeRow",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/common.ts",
+    "line": 114,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 13,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EdgeKind",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 115
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EvidenceRef",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 120
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EdgeRow.edgeKind",
+        "confidence": 1,
+        "source_line": 115
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EdgeRow.srcSymbolName",
+        "confidence": 1,
+        "source_line": 116
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EdgeRow.dstSymbolName",
+        "confidence": 1,
+        "source_line": 117
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EdgeRow.confidence",
+        "confidence": 1,
+        "source_line": 118
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EdgeRow.derivation",
+        "confidence": 1,
+        "source_line": 119
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EdgeRow.evidence",
+        "confidence": 1,
+        "source_line": 120
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EdgeRow.metadata",
+        "confidence": 1,
+        "source_line": 121
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EdgeRow.accessPath",
+        "confidence": 1,
+        "source_line": 123
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EdgeRow.sourceLocation",
+        "confidence": 1,
+        "source_line": 125
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EdgeKind",
+        "confidence": 0.95,
+        "source_line": 114
+      },
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#EvidenceRef",
+        "confidence": 0.95,
+        "source_line": 114
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/common.ts",
+        "confidence": 1,
+        "source_line": 114
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/extraction-adapter.ts#EdgeBatch",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 26
+      },
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#edges",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 164
+      },
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts#edgeRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 236
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#EdgeFact",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 71
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#EdgeFactInput",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 144
+      },
+      {
+        "src": "module:test/unit/intelligence/test-kit.ts#edges",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 40
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/extraction-adapter.ts#EdgeBatch.edges",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 26
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#EdgeFact.payload",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 71
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#EdgeFactInput.payload",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 144
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/contracts/extraction-adapter.ts#EdgeBatch",
+        "confidence": 0.95,
+        "source_line": 25
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#EdgeFact",
+        "confidence": 0.95,
+        "source_line": 69
+      },
+      {
+        "src": "module:src/intelligence/extraction/facts.ts#EdgeFactInput",
+        "confidence": 0.95,
+        "source_line": 143
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 13,
+    "total_incoming_edges": 13
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.130Z"
+  }
+}

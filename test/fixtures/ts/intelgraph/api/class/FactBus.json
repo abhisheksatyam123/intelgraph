@@ -1,0 +1,207 @@
+{
+  "kind": "class",
+  "canonical_name": "module:src/intelligence/extraction/fact-bus.ts#FactBus",
+  "category": "class",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/fact-bus.ts",
+    "line": 104,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 311,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphWriteSink",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 106
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBusLogger",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 108
+      },
+      {
+        "dst": "module:src/intelligence/extraction/facts.js#FactKind",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 123
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.snapshotId",
+        "confidence": 1,
+        "source_line": 105
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.sink",
+        "confidence": 1,
+        "source_line": 106
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.flushThreshold",
+        "confidence": 1,
+        "source_line": 107
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.logger",
+        "confidence": 1,
+        "source_line": 108
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.symbols",
+        "confidence": 1,
+        "source_line": 113
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.types",
+        "confidence": 1,
+        "source_line": 114
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.aggregateFields",
+        "confidence": 1,
+        "source_line": 115
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.edges",
+        "confidence": 1,
+        "source_line": 116
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.evidence",
+        "confidence": 1,
+        "source_line": 117
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.observations",
+        "confidence": 1,
+        "source_line": 118
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.totalEmits",
+        "confidence": 1,
+        "source_line": 121
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.totalAccepted",
+        "confidence": 1,
+        "source_line": 122
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.byKind",
+        "confidence": 1,
+        "source_line": 123
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.byExtractor",
+        "confidence": 1,
+        "source_line": 131
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.flushCount",
+        "confidence": 1,
+        "source_line": 132
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.closedFlag",
+        "confidence": 1,
+        "source_line": 133
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.constructor",
+        "confidence": 1,
+        "source_line": 135
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.emit",
+        "confidence": 1,
+        "source_line": 151
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.flush",
+        "confidence": 1,
+        "source_line": 195
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.close",
+        "confidence": 1,
+        "source_line": 219
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.report",
+        "confidence": 1,
+        "source_line": 228
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.bufferSize",
+        "confidence": 1,
+        "source_line": 240
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.lookupExisting",
+        "confidence": 1,
+        "source_line": 255
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.storeNew",
+        "confidence": 1,
+        "source_line": 272
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.replaceExisting",
+        "confidence": 1,
+        "source_line": 295
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.merge",
+        "confidence": 1,
+        "source_line": 308
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.buildBatch",
+        "confidence": 1,
+        "source_line": 324
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBus.injectProvenance",
+        "confidence": 1,
+        "source_line": 399
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/db/graph-rows.js#GraphWriteSink",
+        "confidence": 0.95,
+        "source_line": 104
+      },
+      {
+        "dst": "module:src/intelligence/extraction/fact-bus.ts#FactBusLogger",
+        "confidence": 0.95,
+        "source_line": 104
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts",
+        "confidence": 1,
+        "source_line": 104
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "class"
+    ],
+    "total_outgoing_edges": 33,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:57.974Z"
+  }
+}

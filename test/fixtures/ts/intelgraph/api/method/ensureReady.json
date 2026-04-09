@@ -1,0 +1,107 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.ensureReady",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/treesitter-service.ts",
+    "line": 134,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 13,
+  "relations": {
+    "reads_field_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.initialized",
+        "confidence": 0.95,
+        "source_line": 135
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.initFailed",
+        "confidence": 0.95,
+        "source_line": 135
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.initPromise",
+        "confidence": 0.95,
+        "source_line": 145
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.initPromise",
+        "confidence": 0.95,
+        "source_line": 137
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.initialized",
+        "confidence": 0.95,
+        "source_line": 140
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.initFailed",
+        "confidence": 0.95,
+        "source_line": 142
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "(async () => {\n      try {\n        await cInitParser()\n        this.initialized = true\n      } catch {\n        this.initFailed = true\n      }\n    })",
+        "confidence": 0.7,
+        "resolution": "raw",
+        "source_line": 137
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.js#initParser",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 139
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl",
+        "confidence": 1,
+        "source_line": 134
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.findEnclosingCall",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 153
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.findEnclosingConstruct",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 162
+      }
+    ],
+    "reads_field_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.findEnclosingCall",
+        "confidence": 0.95,
+        "source_line": 153
+      },
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.findEnclosingConstruct",
+        "confidence": 0.95,
+        "source_line": 162
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:00.497Z"
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/config/bootstrap.ts#WorkspaceConfig",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/config/bootstrap.ts",
+    "line": 13,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 28,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/config/bootstrap.ts#WorkspaceConfig.root",
+        "confidence": 1,
+        "source_line": 14
+      },
+      {
+        "dst": "module:src/config/bootstrap.ts#WorkspaceConfig.server",
+        "confidence": 1,
+        "source_line": 16
+      },
+      {
+        "dst": "module:src/config/bootstrap.ts#WorkspaceConfig.clangd",
+        "confidence": 1,
+        "source_line": 18
+      },
+      {
+        "dst": "module:src/config/bootstrap.ts#WorkspaceConfig.args",
+        "confidence": 1,
+        "source_line": 20
+      },
+      {
+        "dst": "module:src/config/bootstrap.ts#WorkspaceConfig.enabled",
+        "confidence": 1,
+        "source_line": 21
+      },
+      {
+        "dst": "module:src/config/bootstrap.ts#WorkspaceConfig.language",
+        "confidence": 1,
+        "source_line": 23
+      },
+      {
+        "dst": "module:src/config/bootstrap.ts#WorkspaceConfig.compileCommandsCleaning",
+        "confidence": 1,
+        "source_line": 24
+      },
+      {
+        "dst": "module:src/config/bootstrap.ts#WorkspaceConfig.intelligenceLocal",
+        "confidence": 1,
+        "source_line": 27
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/config/bootstrap.ts",
+        "confidence": 1,
+        "source_line": 13
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/config/bootstrap.ts#readWorkspaceConfig",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 42
+      },
+      {
+        "src": "module:src/config/bootstrap.ts#cfg",
+        "confidence": 0.9,
+        "resolution": "local",
+        "source_line": 48
+      },
+      {
+        "src": "module:src/intelligence/local-runtime.ts#ensureWorkspaceConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 77
+      },
+      {
+        "src": "module:src/intelligence/local-runtime.ts#cfg",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 85
+      },
+      {
+        "src": "module:src/intelligence/local-runtime.ts#ensureLocalIntelligenceRuntime",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 159
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 6
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.097Z"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "kind": "class",
+  "canonical_name": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl",
+  "category": "class",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/extraction/services/lsp-service.ts",
+    "line": 134,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 163,
+  "relations": {
+    "implements_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/lsp-service.ts#LspService",
+        "confidence": 1,
+        "resolution": "local",
+        "source_line": 134
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl.constructor",
+        "confidence": 1,
+        "source_line": 135
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl.openFileIfNeeded",
+        "confidence": 1,
+        "source_line": 140
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl.prepareCallHierarchy",
+        "confidence": 1,
+        "source_line": 162
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl.incomingCalls",
+        "confidence": 1,
+        "source_line": 199
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl.outgoingCalls",
+        "confidence": 1,
+        "source_line": 233
+      },
+      {
+        "dst": "module:src/intelligence/extraction/services/lsp-service.ts#LspServiceImpl.documentSymbol",
+        "confidence": 1,
+        "source_line": 267
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/lsp-service.ts",
+        "confidence": 1,
+        "source_line": 134
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "class"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:57.975Z"
+  }
+}

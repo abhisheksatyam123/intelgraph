@@ -1,0 +1,411 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.dispatch",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/sqlite/db-lookup.ts",
+    "line": 147,
+    "character": 3
+  },
+  "exported": null,
+  "line_count": 228,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/orchestrator.ts#QueryRequest",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 147
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#buildApiNames",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 150
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.callers",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 154
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.runtimeCallers",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 156
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.callees",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 158
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.apiLogs",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 162
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.timerTriggers",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 164
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.registrationChain",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 167
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.dispatchSites",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 169
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.structAccess",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 239
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.apiStructAccess",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 235
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.fieldAccessPath",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 189
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.crossModulePath",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 191
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.hotCallPaths",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 193
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.observations",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 197
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.logPattern",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 199
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.outgoingByEdgeKind",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 224
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.incomingByEdgeKind",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 226
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.containedFields",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 222
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.dataPath",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 241
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.structCycles",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 249
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.apiDataFootprint",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 251
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.topTouchedTypes",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 258
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.callCycles",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 260
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.topFieldAccessors",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 264
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.unusedFields",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 266
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.topHotFields",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 268
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.classesByFieldCount",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 270
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.fieldCoAccess",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 272
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.uniqueCallers",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 274
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.recursiveMethods",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 276
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.godMethods",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 278
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.importCycles",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 280
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.topByIncoming",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 364
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.moduleEntryPoints",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 286
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.deadExports",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 288
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.callChain",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 290
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.symbolsByName",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 298
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.symbolsByKind",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 300
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.transitiveDependencies",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 302
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.symbolAtLocation",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 309
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.longFunctions",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 316
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.externalImports",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 318
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.moduleSummary",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 320
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.symbolsInFile",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 322
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.siblingSymbols",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 324
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.moduleTopExports",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 326
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.importCyclesDeep",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 328
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.symbolDegree",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 335
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.moduleInteractions",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 337
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.modulesOverview",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 344
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.typeCycles",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 346
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.deepestCallChain",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 348
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.symbolsByDoc",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 354
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.tightlyCoupledModules",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 356
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.classesByMethodCount",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 358
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.widelyReferencedTypes",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 360
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.undocumentedExports",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 362
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.orphanModules",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 366
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.largestModules",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 368
+      },
+      {
+        "dst": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.modulesByDirectory",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 370
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup.lookup",
+        "confidence": 0.95,
+        "resolution": "this-method",
+        "source_line": 120
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/db-lookup.ts#SqliteDbLookup",
+        "confidence": 1,
+        "source_line": 147
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 61,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.164Z"
+  }
+}

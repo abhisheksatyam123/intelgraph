@@ -1,0 +1,67 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/commands.rs#extract_date_from_filename",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/commands.rs",
+    "line": 36,
+    "character": 1
+  },
+  "exported": true,
+  "line_count": 4,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:chrono#NaiveDate",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 36
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "unwrap_or",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 37
+      },
+      {
+        "dst": "strip_suffix",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 37
+      },
+      {
+        "dst": "ok",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 38
+      },
+      {
+        "dst": "module:chrono#NaiveDate.parse_from_str",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 38
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/commands.rs",
+        "confidence": 1,
+        "source_line": 36
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.070Z"
+  }
+}

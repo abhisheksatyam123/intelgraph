@@ -218,9 +218,12 @@ describe("clangd-core plugin — edge extraction", () => {
 
     await runner.run()
     const edges = sink.allEdges()
-    expect(edges.length).toBe(2)
-    expect(edges.map((e) => e.edge_kind)).toEqual(["calls", "calls"])
-    const dsts = edges
+    // Filter to calls edges only — Phases 6-7 also emit contains/imports/
+    // references_type edges which are tested separately.
+    const callEdges = edges.filter((e) => e.edge_kind === "calls")
+    expect(callEdges.length).toBe(2)
+    expect(callEdges.map((e) => e.edge_kind)).toEqual(["calls", "calls"])
+    const dsts = callEdges
       .map((e) => e.metadata?._provenance ?? null)
       .map(() => null) // smoke check; actual dst comes via dst_node_id which embeds the dst symbol
     expect(dsts.length).toBe(2)
@@ -280,8 +283,13 @@ describe("clangd-core plugin — edge extraction", () => {
     })
 
     await runner.run()
-    expect(sink.batches[0].evidence.length).toBe(1)
-    expect(sink.batches[0].evidence[0].source_kind).toBe("clangd_response")
+    // Filter evidence to clangd_response only — new phases emit
+    // file_line evidence which is tested separately.
+    const clangdEvidence = sink.batches[0].evidence.filter(
+      (e) => e.source_kind === "clangd_response"
+    )
+    expect(clangdEvidence.length).toBe(1)
+    expect(clangdEvidence[0].source_kind).toBe("clangd_response")
   })
 })
 

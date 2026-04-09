@@ -1,0 +1,89 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/query-node-adapter.ts#str",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/query-node-adapter.ts",
+    "line": 13,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts",
+        "confidence": 1,
+        "source_line": 13
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#nonEmpty",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 18
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#mapKind",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 49
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#mapRowEdgeKindToProtocolEdgeKind",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 132
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#rowName",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 154
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#edgeLoc",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 172
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#maybeDispatch",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 212
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#resolveEdgePlacement",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 340
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#rowToNode",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 423
+      },
+      {
+        "src": "module:src/intelligence/query-node-adapter.ts#toNodeResponse",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 442
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 10
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.981Z"
+  }
+}

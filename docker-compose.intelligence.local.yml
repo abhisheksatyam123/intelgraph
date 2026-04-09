@@ -1,7 +1,7 @@
 services:
   neo4j:
     image: neo4j:5
-    container_name: ${INTEL_STACK_NAME:-clangd-mcp-local}-neo4j
+    container_name: ${INTEL_STACK_NAME:-intelgraph-local}-neo4j
     restart: unless-stopped
     environment:
       NEO4J_AUTH: ${INTEL_NEO4J_USER:-neo4j}/${INTEL_NEO4J_PASSWORD:-neo4j1234}

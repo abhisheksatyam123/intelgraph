@@ -1,0 +1,126 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:test/unit/fixtures/completeness-validator.test.ts#CompletenessResult",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/unit/fixtures/completeness-validator.test.ts",
+    "line": 94,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 15,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#CompletenessResult.canonicalName",
+        "confidence": 1,
+        "source_line": 95
+      },
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#CompletenessResult.role",
+        "confidence": 1,
+        "source_line": 96
+      },
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#CompletenessResult.tier1Pass",
+        "confidence": 1,
+        "source_line": 97
+      },
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#CompletenessResult.tier1FoundIn",
+        "confidence": 1,
+        "source_line": 98
+      },
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#CompletenessResult.tier2Count",
+        "confidence": 1,
+        "source_line": 99
+      },
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#CompletenessResult.tier2Expected",
+        "confidence": 1,
+        "source_line": 100
+      },
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#CompletenessResult.tier3Count",
+        "confidence": 1,
+        "source_line": 101
+      },
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#CompletenessResult.tier3Expected",
+        "confidence": 1,
+        "source_line": 102
+      },
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#CompletenessResult.totalTiers",
+        "confidence": 1,
+        "source_line": 103
+      },
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#CompletenessResult.presentTiers",
+        "confidence": 1,
+        "source_line": 104
+      },
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#CompletenessResult.completenessPercent",
+        "confidence": 1,
+        "source_line": 105
+      },
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#CompletenessResult.flaggedForReview",
+        "confidence": 1,
+        "source_line": 106
+      },
+      {
+        "dst": "module:test/unit/fixtures/completeness-validator.test.ts#CompletenessResult.issues",
+        "confidence": 1,
+        "source_line": 107
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:test/unit/fixtures/completeness-validator.test.ts",
+        "confidence": 1,
+        "source_line": 94
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/unit/fixtures/completeness-validator.test.ts#calculateCompleteness",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 112
+      },
+      {
+        "src": "module:test/unit/fixtures/completeness-validator.test.ts#scores",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 483
+      },
+      {
+        "src": "module:test/unit/fixtures/completeness-validator.test.ts#flagged",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 496
+      },
+      {
+        "src": "module:test/unit/fixtures/completeness-validator.test.ts#allScores",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 519
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 13,
+    "total_incoming_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.132Z"
+  }
+}

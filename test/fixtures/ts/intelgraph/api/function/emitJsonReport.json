@@ -1,0 +1,63 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/fixtures/report-emitter.ts#emitJsonReport",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/fixtures/report-emitter.ts",
+    "line": 21,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 3,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/fixtures/fixture-comparator.ts#ComparatorReport",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 21
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:node:fs/promises#writeFile",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 22
+      },
+      {
+        "dst": "JSON.stringify",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 22
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/fixtures/report-emitter.ts",
+        "confidence": 1,
+        "source_line": 21
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:test/unit/fixtures/report-emitter.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 275
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.963Z"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "kind": "function",
+  "canonical_name": "module:vscode-extension/client/src/extension.ts#generateDateOptions",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/vscode-extension/client/src/extension.ts",
+    "line": 64,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 54,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:vscode-extension/client/src/extension.ts#DateQuickPickItem",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 64
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:vscode-extension/client/src/extension.ts#DateQuickPickItem.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 109
+      },
+      {
+        "dst": "module:vscode-extension/client/src/extension.ts#formatDate",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 110
+      },
+      {
+        "dst": "Date",
+        "confidence": 0.7,
+        "resolution": "constructor",
+        "source_line": 71
+      },
+      {
+        "dst": "module:vscode-extension/client/src/extension.ts#getDateWithOffset",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 81
+      },
+      {
+        "dst": "module:vscode-extension/client/src/extension.ts#getWeekday",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 108
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:vscode-extension/client/src/extension.ts",
+        "confidence": 1,
+        "source_line": 64
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:vscode-extension/client/src/extension.ts#activate",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 135
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:08.102Z"
+  }
+}

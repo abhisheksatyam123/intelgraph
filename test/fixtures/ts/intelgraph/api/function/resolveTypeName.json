@@ -1,0 +1,117 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/ts-core/extractor.ts#resolveTypeName",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/ts-core/extractor.ts",
+    "line": 2379,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 14,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#FileResolver",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2381
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "resolver.namedImports.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 2384
+      },
+      {
+        "dst": "resolver.defaultImports.get",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 2386
+      },
+      {
+        "dst": "resolver.localSymbols.has",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 2388
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#visit",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2097
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#inferVarTypeFromValue",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1358
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#collectParamTypes",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1400
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractTypeReferencesFromAnnotations",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1604
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractGenericConstraintReferences",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1678
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractTypeAliasBodyReferences",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1752
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractFieldTypeReferences",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2349
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#pushEdge",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2430
+      },
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractJsxComponentRef",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2798
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 2379
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 10
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.995Z"
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/plugins/rust-core/extractor.ts#parseImplHeader",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/rust-core/extractor.ts",
+    "line": 1711,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 25,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 1712
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/extraction/services/treesitter-service.ts#TsNode.namedChild",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 1716
+      },
+      {
+        "dst": "module:src/plugins/rust-core/extractor.ts#firstNamedChildOfType",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1725
+      },
+      {
+        "dst": "module:src/plugins/rust-core/extractor.ts#types.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 1726
+      },
+      {
+        "dst": "id.text.split",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1726
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts#visit",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 484
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/rust-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 1711
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.989Z"
+  }
+}

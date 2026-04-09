@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 /**
- * index.ts — Entry point for intelgraph (legacy package name: clangd-mcp).
+ * index.ts — Entry point for intelgraph.
  *
- * Configuration is read from a workspace-level `.clangd-mcp.json` file located
- * at the working directory (i.e. the project root when launched by OpenCode).
- * CLI flags override the file config; all fields are optional.
+ * Configuration is read from a workspace-level `.intelgraph.json` file (or the
+ * legacy `.clangd-mcp.json`) located at the working directory (i.e. the project
+ * root when launched by OpenCode). CLI flags override the file config; all
+ * fields are optional.
  *
- * .clangd-mcp.json schema:
+ * .intelgraph.json schema:
  *   {
  *     "root":    "/path/to/project",   // workspace root (default: process.cwd())
  *     "clangd":  "/usr/bin/clangd-20", // clangd binary  (default: "clangd" from PATH)
@@ -14,7 +15,7 @@
  *     "enabled": true                  // set false to disable this server (default: true)
  *   }
  *
- * CLI flags (override .clangd-mcp.json):
+ * CLI flags (override the workspace config):
  *   --root <path>         Workspace root (where compile_commands.json lives).
  *   --stdio               Use stdio transport (single-client debug mode).
  *   --port <number>       Use HTTP/StreamableHTTP transport on this port.
@@ -30,25 +31,26 @@
  * Persistent daemon mode:
  *   On first start, clangd is spawned as a detached background daemon via a
  *   TCP bridge process. The bridge PID and port are saved to
- *   <root>/.clangd-mcp-state.json. On subsequent starts the MCP server checks
- *   if the daemon is still alive and reconnects directly — preserving the
- *   clangd background index across OpenCode restarts.
+ *   <root>/.intelgraph-state.json (legacy: .clangd-mcp-state.json). On
+ *   subsequent starts the MCP server checks if the daemon is still alive and
+ *   reconnects directly — preserving the clangd background index across
+ *   OpenCode restarts.
  *
  * Typical opencode.json setup (no CLI flags needed for standard projects):
  *
  *   {
  *     "mcp": {
- *       "clangd": {
+ *       "intelgraph": {
  *         "type": "local",
- *         "command": ["node", "/path/to/clangd-mcp/dist/index.js"]
+ *         "command": ["node", "/path/to/intelgraph/dist/index.js"]
  *       }
  *     }
  *   }
  *
  * OpenCode launches the subprocess with cwd = project root, so the server
- * automatically finds .clangd-mcp.json and uses process.cwd() as the root.
+ * automatically finds the workspace config and uses process.cwd() as the root.
  *
- * For cross-compile / embedded projects, place a .clangd-mcp.json at the
+ * For cross-compile / embedded projects, place a .intelgraph.json at the
  * project root (commit it to the repo):
  *
  *   {
@@ -91,11 +93,11 @@ async function main(): Promise<void> {
 
   // Respect the enabled flag in the workspace config
   if (ws.enabled === false) {
-    process.stderr.write("[intelgraph] Disabled by workspace config (.clangd-mcp.json)\n")
+    process.stderr.write("[intelgraph] Disabled by workspace config (.intelgraph.json / .clangd-mcp.json)\n")
     process.exit(0)
   }
 
-  // Merge precedence: CLI flag > .clangd-mcp.json > default (cwd / system clangd)
+  // Merge precedence: CLI flag > .intelgraph.json (or legacy .clangd-mcp.json) > default (cwd / system clangd)
   // normaliseRoot strips VCS marker dirs (.git etc.) so state files always land
   // in the real project root, not inside .git/.
   const root = normaliseRoot(cli.root || ws.root || cwd)
@@ -121,7 +123,7 @@ async function main(): Promise<void> {
 
   // ── Intelligence backend auto-init (no-op when env vars not set) ────────────
   // Inject env vars from workspace config intelligenceLocal.env before init.
-  // Precedence: existing process.env > .clangd-mcp.json intelligenceLocal.env
+  // Precedence: existing process.env > workspace config intelligenceLocal.env
   // (so explicit env overrides always win, config fills in the gaps).
   const wsIntelEnv = ws.intelligenceLocal?.env
   if (wsIntelEnv && ws.intelligenceLocal?.enabled !== false) {
@@ -133,7 +135,7 @@ async function main(): Promise<void> {
     for (const key of keys) {
       if (!process.env[key] && wsIntelEnv[key]) {
         process.env[key] = wsIntelEnv[key]
-        log("INFO", `intelligence: injected ${key} from workspace config`, { source: ".clangd-mcp.json" })
+        log("INFO", `intelligence: injected ${key} from workspace config`, { source: "workspace config" })
       }
     }
   }

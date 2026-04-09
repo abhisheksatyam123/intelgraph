@@ -1,0 +1,74 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/completion/link_completer.rs#MDDailyNote.get_self_date",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/completion/link_completer.rs",
+    "line": 1016,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 5,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#LinkCompleter",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 1016
+      },
+      {
+        "dst": "module:chrono#NaiveDate",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 1016
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "settings",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1017
+      },
+      {
+        "dst": "ok",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 1019
+      },
+      {
+        "dst": "module:chrono#NaiveDate.parse_from_str",
+        "confidence": 0.95,
+        "resolution": "scoped-named",
+        "source_line": 1019
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "module:src/completion/link_completer.rs#MDDailyNote.ref_name",
+        "confidence": 0.95,
+        "source_line": 1019
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/completion/link_completer.rs#MDDailyNote",
+        "confidence": 1,
+        "source_line": 1016
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.778Z"
+  }
+}

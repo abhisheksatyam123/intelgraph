@@ -1,0 +1,50 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/tools/pattern-resolver/types.ts#ResolverDeps",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-resolver/types.ts",
+    "line": 73,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 18,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/tools/pattern-resolver/types.ts#ResolverDeps.lspClient",
+        "confidence": 1,
+        "source_line": 75
+      },
+      {
+        "dst": "module:src/tools/pattern-resolver/types.ts#ResolverDeps.readFile",
+        "confidence": 1,
+        "source_line": 87
+      },
+      {
+        "dst": "module:src/tools/pattern-resolver/types.ts#ResolverDeps.logDebug",
+        "confidence": 1,
+        "source_line": 89
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-resolver/types.ts",
+        "confidence": 1,
+        "source_line": 73
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.127Z"
+  }
+}

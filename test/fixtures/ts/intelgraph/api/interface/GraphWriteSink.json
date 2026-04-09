@@ -1,0 +1,206 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/db/graph-rows.ts#GraphWriteSink",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/graph-rows.ts",
+    "line": 58,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 3,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/db/graph-rows.ts#GraphWriteBatch",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 59
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 37
+      },
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.constructor",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 115
+      },
+      {
+        "src": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#IndirectCallerIngestionService.constructor",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 17
+      },
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBusOptions",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 67
+      },
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBus",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 106
+      },
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#ExtractorRunnerOptions",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 65
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 61
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink.constructor",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 112
+      },
+      {
+        "src": "module:test/unit/intelligence/ingest-extraction-wlan.test.ts#sink",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 60
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend.sink",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 37
+      },
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBusOptions.sink",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 67
+      },
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBus.sink",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 106
+      },
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#ExtractorRunnerOptions.sink",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 65
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.sink",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 61
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.runnerFactory",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 65
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/intelligence/backend-types.ts#IntelligenceBackend",
+        "confidence": 0.95,
+        "source_line": 30
+      },
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBusOptions",
+        "confidence": 0.95,
+        "source_line": 63
+      },
+      {
+        "src": "module:src/intelligence/extraction/fact-bus.ts#FactBus",
+        "confidence": 0.95,
+        "source_line": 104
+      },
+      {
+        "src": "module:src/intelligence/extraction/runner.ts#ExtractorRunnerOptions",
+        "confidence": 0.95,
+        "source_line": 54
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps",
+        "confidence": 0.95,
+        "source_line": 56
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/graph-rows.ts",
+        "confidence": 1,
+        "source_line": 58
+      }
+    ],
+    "implements_in": [
+      {
+        "src": "module:src/intelligence/db/sqlite/graph-store.ts#SqliteGraphStore",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 46
+      },
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 111
+      },
+      {
+        "src": "module:test/unit/extraction/fact-bus.test.ts#CaptureSink",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 29
+      },
+      {
+        "src": "module:test/unit/extraction/runner.test.ts#CaptureSink",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 25
+      },
+      {
+        "src": "module:test/unit/plugins/clangd-core.test.ts#CaptureSink",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 27
+      },
+      {
+        "src": "module:test/unit/plugins/rust-core.test.ts#CaptureSink",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 23
+      },
+      {
+        "src": "module:test/unit/plugins/ts-core.test.ts#CaptureSink",
+        "confidence": 1,
+        "resolution": "named-import",
+        "source_line": 28
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 1,
+    "total_incoming_edges": 28
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.157Z"
+  }
+}

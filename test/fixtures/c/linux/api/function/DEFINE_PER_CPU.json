@@ -1,0 +1,116 @@
+{
+  "kind": "function",
+  "canonical_name": "DEFINE_PER_CPU",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/alloc_tag.c",
+    "line": 13,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "logs_event_out": [
+      {
+        "dst": "log:WARN:171",
+        "confidence": 0.9
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "m.private",
+        "confidence": 0.85
+      },
+      {
+        "dst": "priv.print_header",
+        "confidence": 0.85
+      },
+      {
+        "dst": "priv.iter",
+        "confidence": 0.85
+      },
+      {
+        "dst": "n.ct",
+        "confidence": 0.85
+      },
+      {
+        "dst": "n.bytes",
+        "confidence": 0.85
+      },
+      {
+        "dst": "CONFIG_MEM_ALLOC_PROFILING_DEBUG.mode",
+        "confidence": 0.85
+      },
+      {
+        "dst": "memory_allocation_profiling_sysctls[0].mode",
+        "confidence": 0.85
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "priv.iter",
+        "confidence": 0.85
+      },
+      {
+        "dst": "m.private",
+        "confidence": 0.85
+      },
+      {
+        "dst": "counter.bytes",
+        "confidence": 0.85
+      },
+      {
+        "dst": "counter.calls",
+        "confidence": 0.85
+      },
+      {
+        "dst": "priv.print_header",
+        "confidence": 0.85
+      },
+      {
+        "dst": "priv->iter.ct",
+        "confidence": 0.85
+      },
+      {
+        "dst": "n.bytes",
+        "confidence": 0.85
+      },
+      {
+        "dst": "tags[i].bytes",
+        "confidence": 0.85
+      },
+      {
+        "dst": "iter.cmod",
+        "confidence": 0.85
+      },
+      {
+        "dst": "ct.filename",
+        "confidence": 0.85
+      },
+      {
+        "dst": "ct.lineno",
+        "confidence": 0.85
+      },
+      {
+        "dst": "ct.modname",
+        "confidence": 0.85
+      },
+      {
+        "dst": "ct.function",
+        "confidence": 0.85
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 21,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.613Z"
+  }
+}

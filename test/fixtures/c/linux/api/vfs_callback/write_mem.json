@@ -1,0 +1,62 @@
+{
+  "kind": "function",
+  "kind_verbose": "vfs_callback_via_file_operations",
+  "canonical_name": "write_mem",
+  "category": "vfs_callback",
+  "aliases": [],
+  "source": {
+    "file": "drivers/char/mem.c",
+    "line": 187,
+    "character": 16
+  },
+  "description": "VFS .write callback for /dev/mem. Symmetric counterpart to read_mem. Same indirect-callback pattern.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "vfs_write",
+        "callee": "write_mem",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "vfs_dispatches_to_file_operations_callback",
+        "derivation": "runtime",
+        "confidence": 0.95,
+        "dispatch_chain": [
+          "userspace_write_syscall",
+          "ksys_write",
+          "vfs_write",
+          "fp->f_op->write",
+          "write_mem"
+        ],
+        "runtime_trigger": "userspace write() on /dev/mem"
+      }
+    ],
+    "calls_out": [],
+    "registrations_in": [
+      {
+        "registrar": "mem_fops",
+        "callback": "write_mem",
+        "edge_kind": "register_via_struct_field",
+        "registration_kind": "file_operations.write",
+        "container_type": "struct file_operations",
+        "container_variable": "mem_fops",
+        "field": "write",
+        "evidence": { "kind": "struct_field_assignment", "loc": { "file": "drivers/char/mem.c", "line": 639 } }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [],
+    "logs": []
+  },
+  "contract": {
+    "required_relation_kinds": ["calls_in_runtime", "registrations_in"],
+    "required_directions":     ["incoming"],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "registrations_in": 1
+    }
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_linux_kernel_6.12",
+    "method": "manual_grep_against_/home/abhi/qprojects/linux"
+  }
+}

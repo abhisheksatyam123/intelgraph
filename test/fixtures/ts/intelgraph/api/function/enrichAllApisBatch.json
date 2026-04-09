@@ -1,0 +1,193 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/bin/enrich-fixtures.ts#enrichAllApisBatch",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/bin/enrich-fixtures.ts",
+    "line": 154,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 100,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "console.log",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 252
+      },
+      {
+        "dst": "path.join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 205
+      },
+      {
+        "dst": "process.cwd",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 206
+      },
+      {
+        "dst": "fs.readdir",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 158
+      },
+      {
+        "dst": "sort",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 159
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 159
+      },
+      {
+        "dst": "files.filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 159
+      },
+      {
+        "dst": "f.endsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 160
+      },
+      {
+        "dst": "f.replace",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 161
+      },
+      {
+        "dst": "module:src/bin/enrich-fixtures.ts#loadFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 176
+      },
+      {
+        "dst": "reduce",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 183
+      },
+      {
+        "dst": "Object.values",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 183
+      },
+      {
+        "dst": "Array.isArray",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 184
+      },
+      {
+        "dst": "module:src/fixtures/exhaustive-relation-scanner.ts#enrichApiFixture",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 182
+      },
+      {
+        "dst": "apiName.padEnd",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 221
+      },
+      {
+        "dst": "fs.stat",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 211
+      },
+      {
+        "dst": "fs.writeFile",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 214
+      },
+      {
+        "dst": "JSON.stringify",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 214
+      },
+      {
+        "dst": "module:src/bin/enrich-fixtures.ts#saveFixture",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 218
+      },
+      {
+        "dst": "slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 221
+      },
+      {
+        "dst": "String",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 225
+      },
+      {
+        "dst": "module:src/bin/enrich-fixtures.ts#failedApis.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 223
+      },
+      {
+        "dst": "repeat",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 252
+      },
+      {
+        "dst": "toFixed",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 236
+      },
+      {
+        "dst": "failed.error.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 248
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/bin/enrich-fixtures.ts",
+        "confidence": 1,
+        "source_line": 154
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/bin/enrich-fixtures.ts#main",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 268
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 25,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.798Z"
+  }
+}

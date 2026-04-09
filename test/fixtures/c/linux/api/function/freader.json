@@ -1,0 +1,164 @@
+{
+  "kind": "function",
+  "canonical_name": "freader",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/buildid.c",
+    "line": 15,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "logs_event_out": [
+      {
+        "dst": "log:WARN_ON:90",
+        "confidence": 0.9
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "r.buf",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.buf_sz",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.file",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.may_fault",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.data",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.data_sz",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.folio",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.folio_off",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.addr",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.err",
+        "confidence": 0.85
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "r.folio",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.addr",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.folio_off",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r->file.f_mapping",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.file",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.buf",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.buf_sz",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.data_sz",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.data",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.may_fault",
+        "confidence": 0.85
+      },
+      {
+        "dst": "r.err",
+        "confidence": 0.85
+      },
+      {
+        "dst": "nhdr.n_namesz",
+        "confidence": 0.85
+      },
+      {
+        "dst": "nhdr.n_descsz",
+        "confidence": 0.85
+      },
+      {
+        "dst": "nhdr.n_type",
+        "confidence": 0.85
+      },
+      {
+        "dst": "ehdr.e_phnum",
+        "confidence": 0.85
+      },
+      {
+        "dst": "ehdr.e_phoff",
+        "confidence": 0.85
+      },
+      {
+        "dst": "phdr.p_type",
+        "confidence": 0.85
+      },
+      {
+        "dst": "phdr.p_offset",
+        "confidence": 0.85
+      },
+      {
+        "dst": "phdr.p_filesz",
+        "confidence": 0.85
+      },
+      {
+        "dst": "ehdr.e_ident",
+        "confidence": 0.85
+      },
+      {
+        "dst": "ehdr.e_type",
+        "confidence": 0.85
+      },
+      {
+        "dst": "vma.vm_file",
+        "confidence": 0.85
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 33,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.799Z"
+  }
+}

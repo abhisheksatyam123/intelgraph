@@ -1,0 +1,73 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#collectFiles",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/db/extraction/clangd-extraction-adapter.ts",
+    "line": 70,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 21,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#isWlanProcRoot",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 72
+      },
+      {
+        "dst": "Math.max",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 73
+      },
+      {
+        "dst": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#walk",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 87
+      },
+      {
+        "dst": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#prioritizeWlanProcFiles",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 88
+      },
+      {
+        "dst": "prioritized.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 89
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts",
+        "confidence": 1,
+        "source_line": 70
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/db/extraction/clangd-extraction-adapter.ts#ClangdExtractionAdapter.extractSymbols",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 119
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.966Z"
+  }
+}

@@ -1,0 +1,282 @@
+{
+  "kind": "function",
+  "canonical_name": "test_atomic64",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/atomic64_test.c",
+    "line": 147,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "atomic64_add",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_add_return",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_add_return_acquire",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_add_return_relaxed",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_add_return_release",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_add_unless",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_and",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_andnot",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_cmpxchg",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_cmpxchg_acquire",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_cmpxchg_relaxed",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_cmpxchg_release",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_dec",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_dec_if_positive",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_dec_return",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_dec_return_acquire",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_dec_return_relaxed",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_dec_return_release",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_add",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_add_acquire",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_add_relaxed",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_add_release",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_and",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_and_acquire",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_and_relaxed",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_and_release",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_andnot",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_andnot_acquire",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_andnot_relaxed",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_andnot_release",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_or",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_or_acquire",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_or_relaxed",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_or_release",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_sub",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_sub_acquire",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_sub_relaxed",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_sub_release",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_xor",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_xor_acquire",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_xor_relaxed",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_fetch_xor_release",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_inc",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_inc_not_zero",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_inc_return",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_inc_return_acquire",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_inc_return_relaxed",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_inc_return_release",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_or",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_read",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_set",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_sub",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_sub_return",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_sub_return_acquire",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_sub_return_relaxed",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_sub_return_release",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_xchg",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_xchg_acquire",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_xchg_relaxed",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_xchg_release",
+        "confidence": 1
+      },
+      {
+        "dst": "atomic64_xor",
+        "confidence": 1
+      },
+      {
+        "dst": "warn_slowpath_fmt",
+        "confidence": 1
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "test_atomics_init",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 62,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.807Z"
+  }
+}

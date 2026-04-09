@@ -1,0 +1,53 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:test/unit/get-callers.test.ts#CallerRole",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/test/unit/get-callers.test.ts",
+    "line": 194,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 1,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:test/unit/get-callers.test.ts",
+        "confidence": 1,
+        "source_line": 194
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:test/unit/get-callers.test.ts#allowedInCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 195
+      },
+      {
+        "src": "module:test/unit/get-callers.test.ts#notAllowedInCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 196
+      },
+      {
+        "src": "module:test/unit/get-callers.test.ts#allowedInRegistrars",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 208
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:07.069Z"
+  }
+}

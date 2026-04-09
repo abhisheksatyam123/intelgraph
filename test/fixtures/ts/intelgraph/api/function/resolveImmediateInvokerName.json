@@ -1,0 +1,105 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/get-callers.ts#resolveImmediateInvokerName",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/get-callers.ts",
+    "line": 456,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 50,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/lsp/types.ts#ILanguageClient",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 460
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "immediateInvoker.trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 462
+      },
+      {
+        "dst": "test",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 493
+      },
+      {
+        "dst": "dispatchChain.findIndex",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 471
+      },
+      {
+        "dst": "e.includes",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 472
+      },
+      {
+        "dst": "trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 476
+      },
+      {
+        "dst": "prevEntry.match",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 482
+      },
+      {
+        "dst": "module:src/lsp/types.ts#ILanguageClient.prepareCallHierarchy",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 490
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#canonicalizeSymbol",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 492
+      },
+      {
+        "dst": "trimmed.match",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 503
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/get-callers.ts",
+        "confidence": 1,
+        "source_line": 456
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/get-callers.ts#runtimeFlowToCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 518
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.001Z"
+  }
+}

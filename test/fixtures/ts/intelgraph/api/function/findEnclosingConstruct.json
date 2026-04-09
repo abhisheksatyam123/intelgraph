@@ -1,0 +1,69 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/pattern-detector/c-parser.ts#findEnclosingConstruct",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/pattern-detector/c-parser.ts",
+    "line": 168,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 10,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#FunctionCall",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 172
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#tsEnclosingConstruct",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 174
+      },
+      {
+        "dst": "module:src/tools/pattern-detector/c-parser.ts#charEnclosingConstruct",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 176
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/extraction/services/treesitter-service.ts#TreeSitterServiceImpl.findEnclosingConstruct",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 163
+      },
+      {
+        "src": "module:src/tools/pattern-detector/detector.ts#classifyReferenceSite",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 153
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/pattern-detector/c-parser.ts",
+        "confidence": 1,
+        "source_line": 168
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.006Z"
+  }
+}

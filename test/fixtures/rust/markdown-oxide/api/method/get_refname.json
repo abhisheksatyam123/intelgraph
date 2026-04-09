@@ -1,0 +1,97 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/vault/referenceable.rs#Referenceable.get_refname",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/referenceable.rs",
+    "line": 147,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 68,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/vault/referenceable.rs#Refname",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 147
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 201
+      },
+      {
+        "dst": "module:src/vault/referenceable.rs#get_obsidian_ref_path",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 170
+      },
+      {
+        "dst": "to_owned",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 152
+      },
+      {
+        "dst": "into",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 204
+      },
+      {
+        "dst": "Default::default",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 197
+      },
+      {
+        "dst": "clone",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 209
+      },
+      {
+        "dst": "<std::string::String as Clone>::clone",
+        "confidence": 0.7,
+        "resolution": "scoped-bare",
+        "source_line": 167
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 208
+      },
+      {
+        "dst": "to_string",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 203
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/referenceable.rs#Referenceable",
+        "confidence": 1,
+        "source_line": 147
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.792Z"
+  }
+}

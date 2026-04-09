@@ -1,0 +1,150 @@
+{
+  "kind": "function",
+  "canonical_name": "factor_polynomial",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/bch.c",
+    "line": 861,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "compute_trace_bk_mod",
+        "confidence": 1
+      },
+      {
+        "dst": "gf_poly_copy",
+        "confidence": 1
+      },
+      {
+        "dst": "gf_poly_div",
+        "confidence": 1
+      },
+      {
+        "dst": "gf_poly_gcd",
+        "confidence": 1
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "bch.m",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.t",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.n",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.ecc_bytes",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.a_pow_tab",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.a_log_tab",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.mod8_tab",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.ecc_buf",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.ecc_buf2",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.xi_tab",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.syn",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.cache",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.elp",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.swap_bits",
+        "confidence": 0.85
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "bch.n",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.a_pow_tab",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.a_log_tab",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.mod8_tab",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.ecc_buf",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.ecc_buf2",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.xi_tab",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.syn",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.cache",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.poly_2t",
+        "confidence": 0.85
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "find_poly_roots",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 28,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.798Z"
+  }
+}

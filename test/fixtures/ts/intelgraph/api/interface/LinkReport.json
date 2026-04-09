@@ -1,0 +1,85 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#LinkReport",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/contracts/indirect-caller-ingestion.ts",
+    "line": 13,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 5,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#RuntimeCallerRow",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 14
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#LinkReport.linked",
+        "confidence": 1,
+        "source_line": 14
+      },
+      {
+        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#LinkReport.unresolved",
+        "confidence": 1,
+        "source_line": 15
+      },
+      {
+        "dst": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#LinkReport.warnings",
+        "confidence": 1,
+        "source_line": 16
+      }
+    ],
+    "aggregates_out": [
+      {
+        "dst": "module:src/intelligence/contracts/common.ts#RuntimeCallerRow",
+        "confidence": 0.95,
+        "source_line": 13
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/contracts/indirect-caller-ingestion.ts",
+        "confidence": 1,
+        "source_line": 13
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/intelligence/contracts/indirect-caller-ingestion.ts#IIndirectCallerIngestion",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 21
+      },
+      {
+        "src": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#IndirectCallerIngestionService.linkToSymbols",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 30
+      },
+      {
+        "src": "module:src/intelligence/db/ingestion/indirect-caller-ingestion-service.ts#IndirectCallerIngestionService.persistRuntimeChains",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 53
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.141Z"
+  }
+}

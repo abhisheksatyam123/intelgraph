@@ -1,0 +1,95 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/vault/reference.rs#Reference.references",
+  "category": "method",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/reference.rs",
+    "line": 226,
+    "character": 5
+  },
+  "exported": null,
+  "line_count": 104,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "data",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 232
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 321
+      },
+      {
+        "dst": "get_refname",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 321
+      },
+      {
+        "dst": "to_string",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 239
+      },
+      {
+        "dst": "Some",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 320
+      },
+      {
+        "dst": "as_deref",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 321
+      },
+      {
+        "dst": "as_path",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 253
+      },
+      {
+        "dst": "matches_path_or_file",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 300
+      },
+      {
+        "dst": "heading_to_slug",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 302
+      },
+      {
+        "dst": "to_lowercase",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 324
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/vault/reference.rs#Reference",
+        "confidence": 1,
+        "source_line": 226
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "method"
+    ],
+    "total_outgoing_edges": 10,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:11.791Z"
+  }
+}

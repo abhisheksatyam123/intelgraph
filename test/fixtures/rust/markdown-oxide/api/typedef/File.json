@@ -1,0 +1,74 @@
+{
+  "kind": "typedef",
+  "canonical_name": "module:src/vault/reference.rs#File",
+  "category": "typedef",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/src/vault/reference.rs",
+    "line": 43,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 1,
+  "relations": {
+    "contains_in": [
+      {
+        "src": "module:src/vault/reference.rs",
+        "confidence": 1,
+        "source_line": 43
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/vault/reference.rs#Reference",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 47
+      }
+    ],
+    "field_of_type_in": [
+      {
+        "src": "module:src/vault/reference.rs#Reference.WikiHeadingLink",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 50
+      },
+      {
+        "src": "module:src/vault/reference.rs#Reference.WikiIndexedBlockLink",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 51
+      },
+      {
+        "src": "module:src/vault/reference.rs#Reference.MDHeadingLink",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 53
+      },
+      {
+        "src": "module:src/vault/reference.rs#Reference.MDIndexedBlockLink",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 54
+      }
+    ],
+    "aggregates_in": [
+      {
+        "src": "module:src/vault/reference.rs#Reference",
+        "confidence": 0.95,
+        "source_line": 47
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "typedef"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 7
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:19.975Z"
+  }
+}

@@ -1,0 +1,249 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/tools/get-callers.ts#resolveCallers",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/tools/get-callers.ts",
+    "line": 181,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 199,
+  "relations": {
+    "references_type_out": [
+      {
+        "dst": "module:src/lsp/types.ts#ILanguageClient",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 182
+      },
+      {
+        "dst": "module:src/tracking/index.ts#IndexTracker",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 183
+      },
+      {
+        "dst": "module:src/backend/unified-backend.ts#UnifiedBackend",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 184
+      },
+      {
+        "dst": "module:src/intelligence/index.ts#OrchestratorRunnerDeps",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 185
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#GetCallersResponse",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 194
+      }
+    ],
+    "calls_out": [
+      {
+        "dst": "module:src/logging/logger.ts#getLogger",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 195
+      },
+      {
+        "dst": "module:src/lsp/types.ts#ILanguageClient.prepareCallHierarchy",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 209
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#canonicalizeSymbol",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 304
+      },
+      {
+        "dst": "seed.uri.startsWith",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 213
+      },
+      {
+        "dst": "module:url#fileURLToPath",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 213
+      },
+      {
+        "dst": "module:src/lsp/types.ts#ILanguageClient.hover",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 223
+      },
+      {
+        "dst": "hoverText.match",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 227
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#WaterfallStep.push",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 353
+      },
+      {
+        "dst": "module:src/tools/reason-engine/reason-config.ts#readReasoningConfig",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 238
+      },
+      {
+        "dst": "module:src/tools/reason-engine/reason-query.ts#prepareReasonQuery",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 239
+      },
+      {
+        "dst": "backend.reasonEngine.run",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 245
+      },
+      {
+        "dst": "module:src/tools/reason-engine/runtime-flow-output.ts#buildRuntimeFlowPayload",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 256
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#runtimeFlowToCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 257
+      },
+      {
+        "dst": "log.info",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 358
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#buildResponse",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 378
+      },
+      {
+        "dst": "log.debug",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 362
+      },
+      {
+        "dst": "String",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 362
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#symbolAliasVariants",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 269
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#aliasVariantsTried.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 270
+      },
+      {
+        "dst": "module:src/intelligence/index.ts#executeOrchestratedQuery",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 300
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#dbRuntimeNodesToCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 287
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#dbStaticNodesToCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 312
+      },
+      {
+        "dst": "backend.patterns.collectIndirectCallers",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 328
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#indirectGraphToCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 336
+      },
+      {
+        "dst": "allEntries.filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 339
+      },
+      {
+        "dst": "module:src/lsp/types.ts#ILanguageClient.incomingCalls",
+        "confidence": 0.95,
+        "resolution": "param-member",
+        "source_line": 355
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#incomingCallsToCallers",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 357
+      },
+      {
+        "dst": "module:src/tools/get-callers.ts#detectEmptyReadySnapshotDiagnostic",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 367
+      },
+      {
+        "dst": "log.warn",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 377
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/tools/get-callers.ts",
+        "confidence": 1,
+        "source_line": 181
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/tools/index.ts#execute",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 641
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 34,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:49.001Z"
+  }
+}

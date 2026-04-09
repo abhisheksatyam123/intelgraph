@@ -1,0 +1,66 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:vscode-extension/client/src/extension.ts#DateQuickPickItem",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/markdown-oxide/vscode-extension/client/src/extension.ts",
+    "line": 31,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 3,
+  "relations": {
+    "extends_out": [
+      {
+        "dst": "QuickPickItem",
+        "confidence": 0.7,
+        "source_line": 31
+      },
+      {
+        "dst": "vscode",
+        "confidence": 0.7,
+        "source_line": 31
+      }
+    ],
+    "contains_out": [
+      {
+        "dst": "module:vscode-extension/client/src/extension.ts#DateQuickPickItem.dateString",
+        "confidence": 1,
+        "source_line": 32
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:vscode-extension/client/src/extension.ts",
+        "confidence": 1,
+        "source_line": 31
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:vscode-extension/client/src/extension.ts#generateDateOptions",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 64
+      },
+      {
+        "src": "module:vscode-extension/client/src/extension.ts#items",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 65
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 3,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:56:19.976Z"
+  }
+}

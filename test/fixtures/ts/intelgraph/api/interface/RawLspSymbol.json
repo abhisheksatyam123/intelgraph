@@ -1,0 +1,68 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/plugins/clangd-core/extractor.ts#RawLspSymbol",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/clangd-core/extractor.ts",
+    "line": 72,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 7,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/plugins/clangd-core/extractor.ts#RawLspSymbol.name",
+        "confidence": 1,
+        "source_line": 73
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/extractor.ts#RawLspSymbol.kind",
+        "confidence": 1,
+        "source_line": 74
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/extractor.ts#RawLspSymbol.containerName",
+        "confidence": 1,
+        "source_line": 75
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/extractor.ts#RawLspSymbol.location",
+        "confidence": 1,
+        "source_line": 76
+      },
+      {
+        "dst": "module:src/plugins/clangd-core/extractor.ts#RawLspSymbol.range",
+        "confidence": 1,
+        "source_line": 77
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/clangd-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 72
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/plugins/clangd-core/extractor.ts#raw",
+        "confidence": 0.9,
+        "resolution": "local",
+        "source_line": 142
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.123Z"
+  }
+}

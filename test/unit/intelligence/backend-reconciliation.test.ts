@@ -24,7 +24,7 @@ import { classifyDiffRow, TAXONOMY_RULES } from "../../../src/fixtures/comparato
 import type { DiffRow as ClassifierDiffRow } from "../../../src/fixtures/comparator-classifier.js"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const FIXTURE_ROOT = join(__dirname, "../../fixtures/wlan")
+const FIXTURE_ROOT = join(__dirname, "../../fixtures/c/wlan")
 const MANIFEST_PATH = join(FIXTURE_ROOT, "index.json")
 
 const t = tool("intelligence_query")

@@ -1,0 +1,132 @@
+{
+  "kind": "function",
+  "canonical_name": "assoc_array_iterate",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/assoc_array.c",
+    "line": 133,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "logs_event_out": [
+      {
+        "dst": "log:pr_devel:525",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:528",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:549",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:565",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:575",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:592",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:596",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:620",
+        "confidence": 0.9
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "edit.leaf_p",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.adjust_count_on",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit->set[0].to",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n0.back_pointer",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n0.parent_slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n1.back_pointer",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n1.parent_slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n0.nr_leaves_on_branch",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n1.nr_leaves_on_branch",
+        "confidence": 0.85
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "node.slots",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.new_meta",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.segment_cache",
+        "confidence": 0.85
+      },
+      {
+        "dst": "ops.get_object_key_chunk",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.set",
+        "confidence": 0.85
+      },
+      {
+        "dst": "node.back_pointer",
+        "confidence": 0.85
+      },
+      {
+        "dst": "node.parent_slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "node.nr_leaves_on_branch",
+        "confidence": 0.85
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 25,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.722Z"
+  }
+}

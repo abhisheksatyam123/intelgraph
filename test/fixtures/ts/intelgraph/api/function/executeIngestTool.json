@@ -1,0 +1,199 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/intelligence/tools/ingest-tool.ts#executeIngestTool",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/intelligence/tools/ingest-tool.ts",
+    "line": 207,
+    "character": 8
+  },
+  "exported": true,
+  "line_count": 114,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "performance.now",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 311
+      },
+      {
+        "dst": "args.workspaceRoot.trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 215
+      },
+      {
+        "dst": "process.env.WLAN_WORKSPACE_ROOT.trim",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 215
+      },
+      {
+        "dst": "DB_FOUNDATION.beginSnapshot",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 223
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#lines.push",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 311
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#FunctionSymbolCaptureSink",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 233
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.runnerFactory",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 238
+      },
+      {
+        "dst": "module:src/intelligence/extraction/runner.ts#ExtractorRunner",
+        "confidence": 0.95,
+        "resolution": "constructor",
+        "source_line": 243
+      },
+      {
+        "dst": "runner.run",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 251
+      },
+      {
+        "dst": "join",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 261
+      },
+      {
+        "dst": "map",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 261
+      },
+      {
+        "dst": "runReport.perPlugin.filter",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 261
+      },
+      {
+        "dst": "captureSink.functionSymbols.slice",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 275
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#IngestDeps.indirectCallerResolver",
+        "confidence": 0.95,
+        "resolution": "var-member",
+        "source_line": 283
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#graphNodesToRuntimeCallerRows",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 286
+      },
+      {
+        "dst": "INGEST_DEPS.ingestion.parseRuntimeCallers",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 289
+      },
+      {
+        "dst": "INGEST_DEPS.ingestion.linkToSymbols",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 290
+      },
+      {
+        "dst": "INGEST_DEPS.ingestion.persistRuntimeChains",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 291
+      },
+      {
+        "dst": "console.warn",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 294
+      },
+      {
+        "dst": "DB_FOUNDATION.commitSnapshot",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 303
+      },
+      {
+        "dst": "GRAPH_PROJECTION.syncFromAuthoritative",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 307
+      },
+      {
+        "dst": "toFixed",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 311
+      },
+      {
+        "dst": "module:src/intelligence/tools/ingest-tool.ts#lines.join",
+        "confidence": 0.95,
+        "resolution": "local-member",
+        "source_line": 312
+      },
+      {
+        "dst": "String",
+        "confidence": 0.7,
+        "resolution": "bare",
+        "source_line": 314
+      },
+      {
+        "dst": "DB_FOUNDATION.failSnapshot",
+        "confidence": 0.7,
+        "resolution": "member",
+        "source_line": 316
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "module:src/intelligence/tools/index.ts#execute",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 23
+      },
+      {
+        "src": "module:test/unit/intelligence/ingest-extraction-wlan.test.ts",
+        "confidence": 0.95,
+        "resolution": "named-import",
+        "source_line": 120
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/intelligence/tools/ingest-tool.ts",
+        "confidence": 1,
+        "source_line": 207
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 25,
+    "total_incoming_edges": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T12:15:48.981Z"
+  }
+}

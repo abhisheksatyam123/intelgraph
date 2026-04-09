@@ -1,0 +1,78 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/plugins/ts-core/extractor.ts#InheritanceEdgePayload",
+  "category": "interface",
+  "source": {
+    "file": "/home/abhi/qprojects/intelgraph/src/plugins/ts-core/extractor.ts",
+    "line": 2394,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": 9,
+  "relations": {
+    "contains_out": [
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#InheritanceEdgePayload.edgeKind",
+        "confidence": 1,
+        "source_line": 2395
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#InheritanceEdgePayload.srcSymbolName",
+        "confidence": 1,
+        "source_line": 2396
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#InheritanceEdgePayload.dstSymbolName",
+        "confidence": 1,
+        "source_line": 2397
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#InheritanceEdgePayload.confidence",
+        "confidence": 1,
+        "source_line": 2398
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#InheritanceEdgePayload.derivation",
+        "confidence": 1,
+        "source_line": 2399
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#InheritanceEdgePayload.sourceLocation",
+        "confidence": 1,
+        "source_line": 2400
+      },
+      {
+        "dst": "module:src/plugins/ts-core/extractor.ts#InheritanceEdgePayload.metadata",
+        "confidence": 1,
+        "source_line": 2401
+      }
+    ],
+    "contains_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts",
+        "confidence": 1,
+        "source_line": 2394
+      }
+    ],
+    "references_type_in": [
+      {
+        "src": "module:src/plugins/ts-core/extractor.ts#extractInheritanceEdges",
+        "confidence": 0.95,
+        "resolution": "local",
+        "source_line": 2410
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "interface"
+    ],
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 2
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T06:55:59.124Z"
+  }
+}
