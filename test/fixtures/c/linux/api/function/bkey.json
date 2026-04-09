@@ -16,6 +16,30 @@
         "confidence": 0.9
       }
     ],
+    "reads_field_out": [
+      {
+        "dst": "target.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "victim.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "victim.height",
+        "confidence": 0.85
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "target.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "target.height",
+        "confidence": 0.85
+      }
+    ],
     "calls_in": [
       {
         "src": "setkey",
@@ -55,12 +79,12 @@
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 1,
+    "total_outgoing_edges": 6,
     "total_incoming_edges": 8
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T09:15:38.086Z"
+    "generated_at": "2026-04-09T09:44:56.792Z"
   }
 }

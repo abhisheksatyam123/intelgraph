@@ -3,8 +3,8 @@
   "canonical_name": "EXPORT_SYMBOL_GPL",
   "category": "function",
   "source": {
-    "file": "/home/abhi/qprojects/linux/lib/cmpxchg-emu.c",
-    "line": 45,
+    "file": "/home/abhi/qprojects/linux/lib/btree.c",
+    "line": 776,
     "character": 1
   },
   "exported": null,
@@ -15,18 +15,74 @@
         "dst": "log:BUG_ON:553",
         "confidence": 0.9
       }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "a.deg",
+        "confidence": 0.85
+      },
+      {
+        "dst": "a.c",
+        "confidence": 0.85
+      },
+      {
+        "dst": "b.deg",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.cache",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bch.a_pow_tab",
+        "confidence": 0.85
+      },
+      {
+        "dst": "q.c",
+        "confidence": 0.85
+      },
+      {
+        "dst": "q.deg",
+        "confidence": 0.85
+      },
+      {
+        "dst": "geo.no_pairs",
+        "confidence": 0.85
+      },
+      {
+        "dst": "head.mempool",
+        "confidence": 0.85
+      },
+      {
+        "dst": "head.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "head.height",
+        "confidence": 0.85
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "a.deg",
+        "confidence": 0.85
+      },
+      {
+        "dst": "q.deg",
+        "confidence": 0.85
+      }
     ]
   },
   "contract": {
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 1,
+    "total_outgoing_edges": 14,
     "total_incoming_edges": 0
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T09:15:38.072Z"
+    "generated_at": "2026-04-09T09:44:56.614Z"
   }
 }

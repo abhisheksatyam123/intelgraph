@@ -1,0 +1,66 @@
+{
+  "kind": "function",
+  "canonical_name": "freader_get_folio",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/buildid.c",
+    "line": 60,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "IS_ERR",
+        "confidence": 1
+      },
+      {
+        "dst": "filemap_get_folio",
+        "confidence": 1
+      },
+      {
+        "dst": "folio_pos",
+        "confidence": 1
+      },
+      {
+        "dst": "folio_put",
+        "confidence": 1
+      },
+      {
+        "dst": "folio_size",
+        "confidence": 1
+      },
+      {
+        "dst": "folio_test_uptodate",
+        "confidence": 1
+      },
+      {
+        "dst": "freader_put_folio",
+        "confidence": 1
+      },
+      {
+        "dst": "kmap_local_folio",
+        "confidence": 1
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "freader_fetch",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 8,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.800Z"
+  }
+}

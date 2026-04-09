@@ -1,0 +1,94 @@
+{
+  "kind": "function",
+  "canonical_name": "cmdline_do_one_range_test",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/cmdline_kunit.c",
+    "line": 107,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "__compiletime_assert_10",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_11",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_4",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_5",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_6",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_7",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_8",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_9",
+        "confidence": 1
+      },
+      {
+        "dst": "__kunit_abort",
+        "confidence": 1
+      },
+      {
+        "dst": "__kunit_do_failed_assertion",
+        "confidence": 1
+      },
+      {
+        "dst": "get_options",
+        "confidence": 1
+      },
+      {
+        "dst": "kunit_binary_assert_format",
+        "confidence": 1
+      },
+      {
+        "dst": "kunit_binary_ptr_assert_format",
+        "confidence": 1
+      },
+      {
+        "dst": "memchr_inv",
+        "confidence": 1
+      },
+      {
+        "dst": "memset",
+        "confidence": 1
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "cmdline_test_range",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 15,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:43:21.047Z"
+  }
+}

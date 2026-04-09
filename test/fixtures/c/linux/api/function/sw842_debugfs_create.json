@@ -1,0 +1,50 @@
+{
+  "kind": "function",
+  "canonical_name": "sw842_debugfs_create",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/842/842_debugfs.h",
+    "line": 16,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "debugfs_create_atomic_t",
+        "confidence": 1
+      },
+      {
+        "dst": "debugfs_create_dir",
+        "confidence": 1
+      },
+      {
+        "dst": "debugfs_initialized",
+        "confidence": 1
+      },
+      {
+        "dst": "snprintf",
+        "confidence": 1
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "sw842_init",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 4,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.806Z"
+  }
+}

@@ -20,6 +20,34 @@
         "confidence": 1
       }
     ],
+    "reads_field_out": [
+      {
+        "dst": "p.bit",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.out",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.olen",
+        "confidence": 0.85
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "p.bit",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.out",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.olen",
+        "confidence": 0.85
+      }
+    ],
     "calls_in": [
       {
         "src": "__split_add_bits",
@@ -51,12 +79,12 @@
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 2,
+    "total_outgoing_edges": 8,
     "total_incoming_edges": 6
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T09:15:38.077Z"
+    "generated_at": "2026-04-09T09:44:56.624Z"
   }
 }

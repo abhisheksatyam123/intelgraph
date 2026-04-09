@@ -169,18 +169,174 @@
         "dst": "log:pr_devel:516",
         "confidence": 0.9
       }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "shortcut.next_node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "node.slots",
+        "confidence": 0.85
+      },
+      {
+        "dst": "node.back_pointer",
+        "confidence": 0.85
+      },
+      {
+        "dst": "node.parent_slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "shortcut.back_pointer",
+        "confidence": 0.85
+      },
+      {
+        "dst": "shortcut.parent_slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "array.root",
+        "confidence": 0.85
+      },
+      {
+        "dst": "ops.get_key_chunk",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result.terminal_node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "shortcut.skip_to_level",
+        "confidence": 0.85
+      },
+      {
+        "dst": "shortcut.index_key",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result.wrong_shortcut",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result.terminal_node.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "ops.compare_object",
+        "confidence": 0.85
+      },
+      {
+        "dst": "ops.free_object",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.new_meta",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n0.slots",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.set",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit->array.root",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.array",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result->terminal_node.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result->terminal_node.level",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.segment_cache",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result->terminal_node.slot",
+        "confidence": 0.85
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "result->terminal_node.node",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result->terminal_node.level",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result->terminal_node.slot",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result->wrong_shortcut.shortcut",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result->wrong_shortcut.level",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result->wrong_shortcut.sc_level",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result->wrong_shortcut.sc_segments",
+        "confidence": 0.85
+      },
+      {
+        "dst": "result->wrong_shortcut.dissimilarity",
+        "confidence": 0.85
+      },
+      {
+        "dst": "array.root",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.leaf_p",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.adjust_count_on",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit->set[0].ptr",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit->set[0].to",
+        "confidence": 0.85
+      },
+      {
+        "dst": "edit.dead_leaf",
+        "confidence": 0.85
+      }
     ]
   },
   "contract": {
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 39,
+    "total_outgoing_edges": 77,
     "total_incoming_edges": 0
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T09:15:38.083Z"
+    "generated_at": "2026-04-09T09:44:56.788Z"
   }
 }

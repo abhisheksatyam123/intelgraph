@@ -27,18 +27,38 @@
         "dst": "log:BUG_ON:642",
         "confidence": 0.9
       }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "edit.segment_cache",
+        "confidence": 0.85
+      },
+      {
+        "dst": "node.slots",
+        "confidence": 0.85
+      },
+      {
+        "dst": "new_n0.slots",
+        "confidence": 0.85
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "new_n1.parent_slot",
+        "confidence": 0.85
+      }
     ]
   },
   "contract": {
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 4,
+    "total_outgoing_edges": 8,
     "total_incoming_edges": 0
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T09:15:38.083Z"
+    "generated_at": "2026-04-09T09:44:56.789Z"
   }
 }

@@ -24,6 +24,82 @@
         "confidence": 0.9
       }
     ],
+    "reads_field_out": [
+      {
+        "dst": "bug.bug_addr_disp",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bug.bug_addr",
+        "confidence": 0.85
+      },
+      {
+        "dst": "mod.bug_table",
+        "confidence": 0.85
+      },
+      {
+        "dst": "mod.num_bugs",
+        "confidence": 0.85
+      },
+      {
+        "dst": "sechdrs[hdr->e_shstrndx].sh_offset",
+        "confidence": 0.85
+      },
+      {
+        "dst": "hdr.e_shstrndx",
+        "confidence": 0.85
+      },
+      {
+        "dst": "hdr.e_shnum",
+        "confidence": 0.85
+      },
+      {
+        "dst": "sechdrs[i].sh_name",
+        "confidence": 0.85
+      },
+      {
+        "dst": "sechdrs[i].sh_addr",
+        "confidence": 0.85
+      },
+      {
+        "dst": "sechdrs[i].sh_size",
+        "confidence": 0.85
+      },
+      {
+        "dst": "mod.bug_list",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bug.file_disp",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bug.file",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bug.line",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bug.flags",
+        "confidence": 0.85
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "mod.bug_table",
+        "confidence": 0.85
+      },
+      {
+        "dst": "mod.num_bugs",
+        "confidence": 0.85
+      },
+      {
+        "dst": "bug.flags",
+        "confidence": 0.85
+      }
+    ],
     "calls_in": [
       {
         "src": "module_find_bug",
@@ -35,12 +111,12 @@
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 3,
+    "total_outgoing_edges": 21,
     "total_incoming_edges": 1
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T09:15:38.088Z"
+    "generated_at": "2026-04-09T09:44:56.795Z"
   }
 }

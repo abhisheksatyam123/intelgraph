@@ -1,0 +1,70 @@
+{
+  "kind": "function",
+  "canonical_name": "freader_fetch",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/buildid.c",
+    "line": 85,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "__kernel_read",
+        "confidence": 1
+      },
+      {
+        "dst": "folio_size",
+        "confidence": 1
+      },
+      {
+        "dst": "freader_get_folio",
+        "confidence": 1
+      },
+      {
+        "dst": "memcpy",
+        "confidence": 1
+      },
+      {
+        "dst": "secretmem_mapping",
+        "confidence": 1
+      },
+      {
+        "dst": "warn_slowpath_fmt",
+        "confidence": 1
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "parse_build_id",
+        "confidence": 1
+      },
+      {
+        "src": "get_build_id_32",
+        "confidence": 1
+      },
+      {
+        "src": "get_build_id_64",
+        "confidence": 1
+      },
+      {
+        "src": "__build_id_parse",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 6,
+    "total_incoming_edges": 4
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.799Z"
+  }
+}

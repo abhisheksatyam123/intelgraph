@@ -1,0 +1,116 @@
+{
+  "kind": "function",
+  "canonical_name": "sw842_param",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/842/842_decompress.c",
+    "line": 50,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "logs_event_out": [
+      {
+        "dst": "log:pr_debug:73",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:92",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:191",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:WARN:197",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:199",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:236",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_err:248",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:301",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:386",
+        "confidence": 0.9
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "p.in",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.bit",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.ilen",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.olen",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.out",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.ostart",
+        "confidence": 0.85
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "p.bit",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.in",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.ilen",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.out",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.olen",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.ostart",
+        "confidence": 0.85
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 21,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.806Z"
+  }
+}

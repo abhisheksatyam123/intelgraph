@@ -1,0 +1,128 @@
+{
+  "kind": "function",
+  "canonical_name": "module_param_named",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/842/842_debugfs.h",
+    "line": 9,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "logs_event_out": [
+      {
+        "dst": "log:pr_debug:173",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:231",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:238",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_err:285",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_err:294",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_err:505",
+        "confidence": 0.9
+      }
+    ],
+    "reads_field_out": [
+      {
+        "dst": "p.bit",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.out",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.olen",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.index8",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.data8",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.index4",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.data4",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.index2",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.data2",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.in",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.instart",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.ilen",
+        "confidence": 0.85
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "p.bit",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.out",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.olen",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.in",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.instart",
+        "confidence": 0.85
+      },
+      {
+        "dst": "p.ilen",
+        "confidence": 0.85
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 24,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.804Z"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "kind": "function",
+  "canonical_name": "crc32_exit",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/crc32test.c",
+    "line": 843,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_in": [
+      {
+        "src": "module_exit",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:43:21.050Z"
+  }
+}

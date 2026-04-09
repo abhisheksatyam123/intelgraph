@@ -16,6 +16,20 @@
         "confidence": 1
       }
     ],
+    "reads_field_out": [
+      {
+        "dst": "bch.cache",
+        "confidence": 0.85
+      },
+      {
+        "dst": "out.c",
+        "confidence": 0.85
+      },
+      {
+        "dst": "out.deg",
+        "confidence": 0.85
+      }
+    ],
     "calls_in": [
       {
         "src": "compute_syndromes",
@@ -43,12 +57,12 @@
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 1,
+    "total_outgoing_edges": 4,
     "total_incoming_edges": 5
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T09:15:38.077Z"
+    "generated_at": "2026-04-09T09:44:56.623Z"
   }
 }

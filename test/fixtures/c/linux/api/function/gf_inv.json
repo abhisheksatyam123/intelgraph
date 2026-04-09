@@ -1,0 +1,56 @@
+{
+  "kind": "function",
+  "canonical_name": "gf_inv",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/bch.c",
+    "line": 347,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "reads_field_out": [
+      {
+        "dst": "z.c",
+        "confidence": 0.85
+      },
+      {
+        "dst": "z.deg",
+        "confidence": 0.85
+      },
+      {
+        "dst": "out.deg",
+        "confidence": 0.85
+      }
+    ],
+    "writes_field_out": [
+      {
+        "dst": "out.deg",
+        "confidence": 0.85
+      },
+      {
+        "dst": "z.deg",
+        "confidence": 0.85
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "find_poly_deg4_roots",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 1
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:44:56.801Z"
+  }
+}
