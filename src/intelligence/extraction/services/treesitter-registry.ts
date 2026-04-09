@@ -82,10 +82,21 @@ const LANGUAGE_WASM: Record<SupportedLanguage, string> = {
 }
 
 function resolveProjectRoot(): string {
-  // This file lives at src/intelligence/extraction/services/. Project
-  // root (where node_modules/ lives) is four levels up.
+  // This file lives at src/intelligence/extraction/services/ in source,
+  // but at dist/ in the bundled context. Try multiple candidate roots
+  // and pick the first one where node_modules/ exists — same approach
+  // as the fix in tools/pattern-detector/c-parser.ts for the WASM path.
   const moduleDir = dirname(fileURLToPath(import.meta.url))
-  return join(moduleDir, "..", "..", "..", "..")
+  const candidates = [
+    join(moduleDir, ".."),                 // dist/index.js → one level up
+    join(moduleDir, "..", "..", "..", ".."),// source: 4 levels up
+    join(moduleDir, "..", ".."),           // intermediate bundle depth
+    process.cwd(),                         // last resort: working directory
+  ]
+  for (const root of candidates) {
+    if (existsSync(join(root, "node_modules", "web-tree-sitter"))) return root
+  }
+  return candidates[candidates.length - 1]
 }
 
 function wasmPathFor(lang: SupportedLanguage): string {

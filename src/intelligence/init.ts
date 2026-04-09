@@ -166,5 +166,56 @@ export async function initIntelligenceBackend(
   })
 
   getLogger().info("intelligence backend: initialised", { dbPath: sqliteDbPath })
+
+  // ── Auto-extract if no ready snapshot exists ─────────────────────────
+  // For TS/Rust workspaces, clangd can't index the files, so the only
+  // way to populate the intelligence graph is to run the extractors
+  // (ts-core, rust-core) explicitly. We do this on first startup if the
+  // SQLite db has no "ready" snapshot for the current workspace root.
+  const workspaceRoot = process.cwd()
+  try {
+    const existingSnapshot = await backend.db.getLatestReadySnapshot(workspaceRoot)
+
+    if (!existingSnapshot) {
+      getLogger().info("intelligence backend: no ready snapshot — running auto-extraction", { workspaceRoot })
+      const { ExtractorRunner } = await import("./extraction/runner.js")
+      const ref = await backend.db.beginSnapshot({
+        workspaceRoot,
+        compileDbHash: "auto-extract",
+        parserVersion: "0.1.0",
+      })
+      const extractRunner = new ExtractorRunner({
+        snapshotId: ref.snapshotId,
+        workspaceRoot,
+        lsp: lspForRunner,
+        sink: backend.sink,
+        plugins: BUILT_IN_EXTRACTORS,
+      })
+      const report = await extractRunner.run()
+      await backend.db.commitSnapshot(ref.snapshotId)
+
+      let totalFacts = 0
+      for (const p of report.perPlugin) {
+        const counters = p.metrics?.counters ?? {}
+        for (const v of Object.values(counters)) {
+          if (typeof v === "number") totalFacts += v
+        }
+      }
+      getLogger().info("intelligence backend: auto-extraction complete", {
+        snapshotId: ref.snapshotId,
+        pluginsRun: report.pluginsRun,
+        totalFacts,
+      })
+    } else {
+      getLogger().info("intelligence backend: existing snapshot found, skipping auto-extraction", {
+        snapshotId: existingSnapshot.snapshotId,
+      })
+    }
+  } catch (err) {
+    getLogger().warn("intelligence backend: auto-extraction failed — continuing without it", {
+      error: String(err),
+    })
+  }
+
   return true
 }
