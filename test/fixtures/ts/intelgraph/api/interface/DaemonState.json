@@ -1,0 +1,25 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/daemon/index.ts#DaemonState",
+  "category": "interface",
+  "source": {
+    "file": "src/daemon/index.ts",
+    "line": 58
+  },
+  "description": "Persistent state for the detached HTTP daemon. Holds bridge/server pids, ports, and clangd config so the daemon can be reattached after a process restart. Read by readState(), written by writeState().",
+  "relations": {
+    "references_type_in": [
+      { "referrer": "module:src/daemon/index.ts#readState",        "type": "DaemonState" },
+      { "referrer": "module:src/daemon/index.ts#writeState",       "type": "DaemonState" },
+      { "referrer": "module:src/daemon/index.ts#checkDaemonAlive", "type": "DaemonState" }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": ["interface"],
+    "notes": "Should be classified as interface, not type alias. Field types include number, string, boolean, string[]."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "intelgraph_self",
+    "method": "manual_grep"
+  }
+}

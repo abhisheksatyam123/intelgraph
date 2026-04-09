@@ -1,0 +1,23 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/hover.rs#hover",
+  "category": "exported_function",
+  "source": {
+    "file": "src/hover.rs",
+    "line": 7
+  },
+  "description": "Top-level pub fn hover() — handles the textDocument/hover LSP request. Called from src/backend/handlers.rs in the LanguageServer impl block.",
+  "relations": {
+    "calls_in_direct": [
+      { "caller": "module:src/backend/handlers.rs#impl_LanguageServer.hover", "callee": "hover" }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": ["function"],
+    "notes": "Cross-file caller — verifies rust-core's call extraction works between hover.rs and backend/handlers.rs."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "markdown-oxide",
+    "method": "manual_grep"
+  }
+}

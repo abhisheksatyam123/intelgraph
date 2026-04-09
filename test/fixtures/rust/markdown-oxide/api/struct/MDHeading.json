@@ -1,0 +1,22 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/vault/types.rs#MDHeading",
+  "category": "struct",
+  "source": {
+    "file": "src/vault/types.rs",
+    "line": 117
+  },
+  "description": "Markdown heading representation. Annotated with #[derive(Debug, Default, PartialEq, Eq, Clone)] — exercises the rust-core extractor's derive-attribute parsing path.",
+  "relations": {
+    "derives": ["Debug", "Default", "PartialEq", "Eq", "Clone"],
+    "field_kinds_present": ["heading_text", "level", "range"]
+  },
+  "contract": {
+    "required_node_kinds": ["struct"],
+    "notes": "Backend should produce a struct node and at minimum one field-of-type edge per declared field."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "markdown-oxide",
+    "method": "manual_grep"
+  }
+}

@@ -5,7 +5,7 @@
  * restarts. A lightweight TCP bridge (bridge.ts) proxies clangd's stdio to a
  * TCP port so the MCP server can reconnect without re-spawning clangd.
  *
- * State file: <root>/.clangd-mcp-state.json
+ * State file: <root>/.intelgraph-state.json (legacy: .clangd-mcp-state.json)
  *   Stores the bridge PID, clangd PID, and TCP port so the next MCP server
  *   start can verify the daemon is still alive and reconnect directly.
  *
@@ -32,7 +32,7 @@ import { log, logError } from "../logging/logger.js"
  * of the actual project root.  When the path ends with a known marker directory
  * name AND that path is a directory on disk, return its parent.
  *
- * This is the single source of truth for root normalisation inside clangd-mcp.
+ * This is the single source of truth for root normalisation inside intelgraph.
  * All state file, lock file, and daemon spawn paths go through this function.
  */
 export function normaliseRoot(rawRoot: string): string {
@@ -540,7 +540,7 @@ export interface SpawnHttpDaemonOptions {
 }
 
 /**
- * Spawns the clangd-mcp HTTP MCP server as a detached daemon.
+ * Spawns the intelgraph HTTP MCP server as a detached daemon.
  * Picks a free port automatically via the OS, writes it to the state file,
  * and returns when the HTTP port is confirmed open (max 15s).
  *

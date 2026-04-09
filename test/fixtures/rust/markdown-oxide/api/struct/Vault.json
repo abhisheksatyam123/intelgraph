@@ -1,0 +1,31 @@
+{
+  "kind": "struct",
+  "canonical_name": "module:src/vault/core.rs#Vault",
+  "category": "struct",
+  "source": {
+    "file": "src/vault/core.rs",
+    "line": 21
+  },
+  "description": "The central Vault struct — owns the parsed state of every markdown file in the user's vault. Cross-file references everywhere (preview.rs, backend/handlers.rs, completion/, references.rs).",
+  "relations": {
+    "implements": [
+      { "type": "Hash", "file": "src/vault/core.rs", "line": 33 }
+    ],
+    "field_kinds_present": ["md_files", "ropes", "root_dir"],
+    "references_type_in": [
+      { "referrer": "Backend",           "type": "Vault" },
+      { "referrer": "goto_definition",   "type": "Vault" },
+      { "referrer": "references",        "type": "Vault" },
+      { "referrer": "workspace_symbol",  "type": "Vault" }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": ["struct"],
+    "minimum_field_count": 2,
+    "notes": "Must emit struct node + field nodes + implements edge to Hash trait + references_type edges from at least 2 other modules."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "markdown-oxide",
+    "method": "manual_grep"
+  }
+}

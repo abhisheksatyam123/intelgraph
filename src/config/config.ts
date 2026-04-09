@@ -1,8 +1,9 @@
 /**
  * config.ts
- * 
- * Unified configuration system for clangd-mcp.
- * All configuration is stored in .clangd-mcp.json at the workspace root.
+ *
+ * Unified configuration system for intelgraph.
+ * All configuration is stored in .intelgraph.json at the workspace root
+ * (the legacy .clangd-mcp.json is still read for backwards compat).
  * This file serves as persistent memory across sessions.
  */
 
@@ -11,10 +12,10 @@ import { join } from "path"
 import { log, logError } from "../logging/logger.js"
 
 /**
- * Unified clangd-mcp configuration.
- * Stored in .clangd-mcp.json at workspace root.
+ * Unified intelgraph configuration.
+ * Stored in .intelgraph.json at workspace root (legacy: .clangd-mcp.json).
  */
-export interface ClangdMcpConfig {
+export interface IntelgraphConfig {
   // ── Core settings ──────────────────────────────────────────────────────────
   
   /** Workspace root directory (where compile_commands.json lives) */
@@ -154,7 +155,7 @@ export interface ClangdMcpConfig {
 /**
  * Default configuration values
  */
-const DEFAULT_CONFIG: Partial<ClangdMcpConfig> = {
+const DEFAULT_CONFIG: Partial<IntelgraphConfig> = {
   enabled: true,
   version: "1.0.0",
   compileCommandsCleaning: {
@@ -203,7 +204,7 @@ export function resolveConfigPath(workspaceRoot: string): string {
  * Read configuration from the workspace config file
  * (.intelgraph.json preferred, .clangd-mcp.json legacy fallback).
  */
-export function readConfig(workspaceRoot: string): ClangdMcpConfig {
+export function readConfig(workspaceRoot: string): IntelgraphConfig {
   const configPath = resolveConfigPath(workspaceRoot)
 
   try {
@@ -216,7 +217,7 @@ export function readConfig(workspaceRoot: string): ClangdMcpConfig {
     }
 
     const content = readFileSync(configPath, "utf8")
-    const config = JSON.parse(content) as ClangdMcpConfig
+    const config = JSON.parse(content) as IntelgraphConfig
     
     // Merge with defaults
     const merged = {
@@ -260,7 +261,7 @@ export function readConfig(workspaceRoot: string): ClangdMcpConfig {
  * .clangd-mcp.json to the new path. Migration is opt-in via the
  * separate `migrate-config` script (TODO).
  */
-export function writeConfig(workspaceRoot: string, config: ClangdMcpConfig): void {
+export function writeConfig(workspaceRoot: string, config: IntelgraphConfig): void {
   const configPath = resolveConfigPath(workspaceRoot)
 
   try {
@@ -282,7 +283,7 @@ export function writeConfig(workspaceRoot: string, config: ClangdMcpConfig): voi
  */
 export function updateConfig(
   workspaceRoot: string,
-  updates: Partial<ClangdMcpConfig>
+  updates: Partial<IntelgraphConfig>
 ): void {
   const config = readConfig(workspaceRoot)
   const merged = deepMerge(config, updates)
@@ -334,7 +335,7 @@ export function clearDaemonState(workspaceRoot: string): void {
  */
 export function updateDaemonState(
   workspaceRoot: string,
-  state: NonNullable<ClangdMcpConfig["daemon"]>
+  state: NonNullable<IntelgraphConfig["daemon"]>
 ): void {
   updateConfig(workspaceRoot, {
     daemon: state,
@@ -346,7 +347,7 @@ export function updateDaemonState(
  */
 export function updateIndexState(
   workspaceRoot: string,
-  state: NonNullable<ClangdMcpConfig["index"]>
+  state: NonNullable<IntelgraphConfig["index"]>
 ): void {
   updateConfig(workspaceRoot, {
     index: {
@@ -406,7 +407,7 @@ export function isWarningDismissed(workspaceRoot: string, warningId: string): bo
  * Generate example config file content
  */
 export function generateExampleConfig(): string {
-  const example: ClangdMcpConfig = {
+  const example: IntelgraphConfig = {
     version: "1.0.0",
     enabled: true,
     clangd: "/usr/local/bin/clangd-20",

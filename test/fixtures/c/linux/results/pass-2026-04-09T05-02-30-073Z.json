@@ -1,0 +1,52 @@
+{
+  "workspace": "/home/abhi/qprojects/linux",
+  "timestamp": "2026-04-09T05:02:30.074Z",
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "err": 0,
+    "total": 1
+  },
+  "results": [
+    {
+      "canonical_name": "null_lseek",
+      "category": "vfs_callback",
+      "overall": "fail",
+      "checks": [
+        {
+          "kind": "calls_in_runtime",
+          "status": "fail",
+          "want": 1,
+          "minN": 1,
+          "got": 3,
+          "matches": 0,
+          "missing": [
+            {
+              "caller": "vfs_llseek",
+              "dispatch_chain": [
+                "userspace_lseek_syscall",
+                "ksys_lseek",
+                "vfs_llseek",
+                "fp->f_op->llseek",
+                "null_lseek"
+              ]
+            }
+          ],
+          "raw_first_line": "Callers of null_lseek  (3 reference sites found):"
+        },
+        {
+          "kind": "registrations_in",
+          "status": "pass",
+          "want": 2,
+          "minN": 1,
+          "got": 2,
+          "found": [
+            "null_fops",
+            "full_fops"
+          ],
+          "missing": []
+        }
+      ]
+    }
+  ]
+}

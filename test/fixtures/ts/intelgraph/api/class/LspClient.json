@@ -1,0 +1,30 @@
+{
+  "kind": "class",
+  "canonical_name": "module:src/lsp/index.ts#LspClient",
+  "category": "class",
+  "source": {
+    "file": "src/lsp/index.ts",
+    "line": 181
+  },
+  "description": "Wrapper around the clangd JSON-RPC connection. Implements ILanguageClient and exposes documentSymbol, outgoingCalls, incomingCalls, references, prepareCallHierarchy, hover, definition, declaration, etc. The single most-imported class in the codebase.",
+  "relations": {
+    "implements": [
+      { "type": "ILanguageClient" }
+    ],
+    "contains_methods": [
+      "openFile", "documentSymbol", "outgoingCalls", "incomingCalls",
+      "references", "prepareCallHierarchy", "hover", "definition",
+      "declaration", "typeDefinition", "implementation", "documentHighlight",
+      "workspaceSymbol", "foldingRange", "signatureHelp", "rename"
+    ]
+  },
+  "contract": {
+    "required_node_kinds": ["class", "method"],
+    "minimum_method_count": 12,
+    "notes": "Static factory create() should also be detected. The class implements ILanguageClient — `implements` edge required."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "intelgraph_self",
+    "method": "manual_grep"
+  }
+}

@@ -59,6 +59,7 @@ export const CANONICAL_WLAN_WORKSPACE = "/local/mnt/workspace/code1/WLAN.CNG.1.0
 export function getWlanWorkspaceRoot(): string {
   return (
     process.env.WLAN_WORKSPACE_ROOT ||
+    process.env.INTELGRAPH_WORKSPACE_ROOT ||
     process.env.CLANGD_MCP_WORKSPACE_ROOT ||
     CANONICAL_WLAN_WORKSPACE
   )

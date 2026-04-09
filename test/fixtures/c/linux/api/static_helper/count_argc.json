@@ -1,0 +1,36 @@
+{
+  "kind": "function",
+  "kind_verbose": "static_file_local_helper",
+  "canonical_name": "count_argc",
+  "category": "static_helper",
+  "aliases": [],
+  "source": {
+    "file": "lib/argv_split.c",
+    "line": 12,
+    "character": 12
+  },
+  "description": "File-static helper that counts whitespace-separated tokens in a string. Only used by argv_split in the same file. Exercises the within-file caller path (no cross-file index dependency).",
+  "relations": {
+    "calls_in_direct": [
+      { "caller": "argv_split", "callee": "count_argc", "file": "lib/argv_split.c", "line": 71 }
+    ],
+    "calls_in_runtime": [],
+    "calls_out": [],
+    "registrations_in": [],
+    "registrations_out": [],
+    "structures": [],
+    "logs": []
+  },
+  "contract": {
+    "required_relation_kinds": ["calls_in_direct"],
+    "required_directions":     ["incoming"],
+    "minimum_counts": {
+      "calls_in_direct": 1
+    },
+    "notes": "Within-file caller — should pass even with a fully cold clangd background index, because clangd's per-file documentSymbol/callHierarchy works without the cross-file index."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_linux_kernel_6.12",
+    "method": "manual_grep_against_/home/abhi/qprojects/linux"
+  }
+}

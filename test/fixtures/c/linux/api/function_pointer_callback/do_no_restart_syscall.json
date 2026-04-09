@@ -1,0 +1,60 @@
+{
+  "kind": "function",
+  "kind_verbose": "fn_ptr_callback_field_assignment",
+  "canonical_name": "do_no_restart_syscall",
+  "category": "function_pointer_callback",
+  "aliases": [],
+  "source": {
+    "file": "kernel/signal.c",
+    "line": 3068,
+    "character": 5
+  },
+  "description": "Default no-op restart-block callback. Assigned to restart_block.fn so that __do_sys_restart_syscall calls it via restart->fn(restart). Tests detection of fn-ptr-via-struct-field where the registrar is a plain assignment (not a registration call).",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "__do_sys_restart_syscall",
+        "callee": "do_no_restart_syscall",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "fn_ptr_field_dispatch",
+        "derivation": "runtime",
+        "confidence": 0.9,
+        "dispatch_chain": [
+          "__do_sys_restart_syscall",
+          "current->restart_block.fn",
+          "do_no_restart_syscall"
+        ],
+        "runtime_trigger": "any task whose restart_block.fn was set to do_no_restart_syscall"
+      }
+    ],
+    "calls_out": [],
+    "registrations_in": [
+      {
+        "registrar": "assign_to_restart_block_fn",
+        "callback": "do_no_restart_syscall",
+        "edge_kind": "register_via_struct_field",
+        "registration_kind": "restart_block.fn",
+        "container_type": "struct restart_block",
+        "field": "fn",
+        "notes": "find every assignment of the form `<expr>.fn = do_no_restart_syscall` or `<ptr>->fn = do_no_restart_syscall` across the kernel"
+      }
+    ],
+    "registrations_out": [],
+    "structures": [],
+    "logs": []
+  },
+  "contract": {
+    "required_relation_kinds": ["calls_in_runtime", "registrations_in"],
+    "required_directions":     ["incoming"],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "registrations_in": 1
+    },
+    "notes": "Hardest case: fn-ptr assigned to a struct field at file scope OR inside a function body, then later invoked via the field. Backend currently has no general mechanism for this."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_linux_kernel_6.12",
+    "method": "manual_grep_against_/home/abhi/qprojects/linux"
+  }
+}

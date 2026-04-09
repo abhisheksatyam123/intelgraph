@@ -1,6 +1,6 @@
-# clangd-mcp Test Suite
+# intelgraph Test Suite
 
-Comprehensive test coverage for the clangd-mcp server.
+Comprehensive test coverage for the intelgraph server.
 
 ## Test Structure
 
@@ -51,7 +51,7 @@ bun test --watch
 
 ### End-to-End Tests (Manual)
 
-E2E tests require a running clangd-mcp server and real workspace:
+E2E tests require a running intelgraph server and real workspace:
 
 ```bash
 # 1. Start the server
@@ -169,7 +169,7 @@ E2E tests are run manually before releases due to workspace requirements.
 
 - **First integration test run**: May take longer while clangd builds index
 - **Port conflicts**: If tests fail with "port in use", kill stale processes
-- **Stale state**: Delete `.clangd-mcp-state.json` if daemon tests fail
+- **Stale state**: Delete `.intelgraph-state.json` (or legacy `.clangd-mcp-state.json`) if daemon tests fail
 
 ## Contributing
 
@@ -189,8 +189,8 @@ Set environment variable before running integration tests:
 ```bash
 export WLAN_WORKSPACE_ROOT="/local/mnt/workspace/code1/WLAN.CNG.1.0-01880.3-QCACNGSWPL_V1_V2_SILICON-1"
 
-# or generic config name
-export CLANGD_MCP_WORKSPACE_ROOT="/local/mnt/workspace/code1/WLAN.CNG.1.0-01880.3-QCACNGSWPL_V1_V2_SILICON-1"
+# or generic config name (legacy CLANGD_MCP_WORKSPACE_ROOT is still honoured)
+export INTELGRAPH_WORKSPACE_ROOT="/local/mnt/workspace/code1/WLAN.CNG.1.0-01880.3-QCACNGSWPL_V1_V2_SILICON-1"
 ```
 
 Then run:

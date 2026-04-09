@@ -1,6 +1,6 @@
 # End-to-End Tests
 
-These tests verify the full clangd-mcp stack against a real workspace.
+These tests verify the full intelgraph stack against a real workspace.
 
 ## Test Files
 
@@ -21,7 +21,7 @@ node test/e2e/full-suite.test.mjs --url http://localhost:7777/mcp
 
 ## Requirements
 
-- A running clangd-mcp server (HTTP mode)
+- A running intelgraph server (HTTP mode)
 - Valid workspace with compile_commands.json
 - clangd binary available
 

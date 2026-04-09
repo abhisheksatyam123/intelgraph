@@ -1,0 +1,86 @@
+{
+  "language": "c",
+  "project": "linux",
+  "workspace": "/home/abhi/qprojects/linux",
+  "timestamp": "2026-04-09T05:23:13.824Z",
+  "totals": {
+    "pass": 0,
+    "wknd": 0,
+    "miss": 11,
+    "total": 11,
+    "pct": 0
+  },
+  "results": [
+    {
+      "fixture": "function_pointer_callback/do_no_restart_syscall.json",
+      "status": "missing",
+      "expectedName": "do_no_restart_syscall",
+      "fuzzyHits": []
+    },
+    {
+      "fixture": "heavily_called_helper/kstrtoint.json",
+      "status": "missing",
+      "expectedName": "kstrtoint",
+      "fuzzyHits": []
+    },
+    {
+      "fixture": "irq_handler/i8042_interrupt.json",
+      "status": "missing",
+      "expectedName": "i8042_interrupt",
+      "fuzzyHits": []
+    },
+    {
+      "fixture": "leaf_helper/argv_free.json",
+      "status": "missing",
+      "expectedName": "argv_free",
+      "fuzzyHits": []
+    },
+    {
+      "fixture": "leaf_helper/argv_split.json",
+      "status": "missing",
+      "expectedName": "argv_split",
+      "fuzzyHits": []
+    },
+    {
+      "fixture": "static_helper/count_argc.json",
+      "status": "missing",
+      "expectedName": "count_argc",
+      "fuzzyHits": []
+    },
+    {
+      "fixture": "syscall_handler/restart_syscall.json",
+      "status": "missing",
+      "expectedName": "__do_sys_restart_syscall",
+      "fuzzyHits": []
+    },
+    {
+      "fixture": "syscall_handler/sched_yield.json",
+      "status": "missing",
+      "expectedName": "__do_sys_sched_yield",
+      "fuzzyHits": []
+    },
+    {
+      "fixture": "vfs_callback/null_lseek.json",
+      "status": "missing",
+      "expectedName": "null_lseek",
+      "fuzzyHits": []
+    },
+    {
+      "fixture": "vfs_callback/read_mem.json",
+      "status": "missing",
+      "expectedName": "read_mem",
+      "fuzzyHits": [
+        {
+          "canonical_name": "read_mem_block",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "fixture": "vfs_callback/write_mem.json",
+      "status": "missing",
+      "expectedName": "write_mem",
+      "fuzzyHits": []
+    }
+  ]
+}

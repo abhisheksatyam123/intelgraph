@@ -187,7 +187,7 @@ let _globalLogger: Logger | null = null
 export function initLogger(options: LoggerOptions): Logger {
   _globalLogger = new Logger(options)
   _globalLogger.info("=".repeat(72))
-  _globalLogger.info(`clangd-mcp starting — PID ${process.pid}`)
+  _globalLogger.info(`intelgraph starting — PID ${process.pid}`)
   _globalLogger.info(`Log file: ${_globalLogger.getLogFile() ?? "disabled"}`)
   _globalLogger.info(`Node version: ${process.version}`)
   _globalLogger.info(`Platform: ${process.platform}`)
@@ -197,7 +197,7 @@ export function initLogger(options: LoggerOptions): Logger {
 export function getLogger(): Logger {
   if (!_globalLogger) {
     // Fallback logger if not initialized
-    _globalLogger = new Logger({ component: "clangd-mcp" })
+    _globalLogger = new Logger({ component: "intelgraph" })
   }
   return _globalLogger
 }
@@ -233,5 +233,5 @@ export function logError(message: string, err?: unknown): void {
 }
 
 export function getLogFile(): string {
-  return getLogger().getLogFile() ?? "/tmp/clangd-mcp.log"
+  return getLogger().getLogFile() ?? "/tmp/intelgraph.log"
 }

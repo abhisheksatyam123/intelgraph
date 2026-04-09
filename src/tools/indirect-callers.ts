@@ -12,7 +12,8 @@ import { fileURLToPath } from "url"
 import path from "path"
 import type { ILanguageClient } from "../lsp/types.js"
 import { findEnclosingCall, findEnclosingConstruct } from "./pattern-detector/index.js"
-import { CALL_PATTERNS, INIT_PATTERNS } from "./pattern-detector/index.js"
+import { CALL_PATTERNS, INIT_PATTERNS, classifyGenericStructFieldCallback } from "./pattern-detector/index.js"
+import { initParser } from "./pattern-detector/c-parser.js"
 import type { FunctionCall } from "./pattern-detector/index.js"
 import { resolveChain } from "./pattern-resolver/index.js"
 import type { ResolvedChain } from "./pattern-resolver/types.js"
@@ -67,6 +68,12 @@ export async function collectIndirectCallers(
   client: ILanguageClient,
   args: { file: string; line: number; character: number; maxNodes?: number; resolve?: boolean },
 ): Promise<IndirectCallerGraph> {
+  // Ensure tree-sitter is initialized so the generic struct-field-callback
+  // classifier can walk AST parents from initializer_list nodes. Without
+  // this, findEnclosingConstruct falls back to the char-based parser which
+  // does not set tsNode, and the generic classifier short-circuits.
+  await initParser()
+
   const maxNodes = args.maxNodes ?? 50
   const shouldResolve = args.resolve ?? false
   const filePath = args.file
@@ -258,6 +265,14 @@ interface ClassificationResult {
 /**
  * Classify a reference site by reading the full source file and using the
  * C parser to find the enclosing call/construct.
+ *
+ * Two passes for struct initializers:
+ *   1. Project-specific INIT_PATTERNS (WLAN dispatch table etc.)
+ *   2. Generic struct-field-callback fallback that handles ANY
+ *      `.field = callbackName` assignment in ANY struct
+ *      (Linux file_operations, net_device_ops, irq_chip, …) — uses
+ *      tree-sitter to recover the container type and variable name with
+ *      zero per-struct hardcoding.
  */
 function classifyReference(
   filePath: string,
@@ -276,10 +291,10 @@ function classifyReference(
     return classifyFunctionCall(call)
   }
 
-  // Try struct initializer (WMI dispatch table, etc.)
+  // Try struct initializer (WMI dispatch table, file_operations, etc.)
   const construct = findEnclosingConstruct(source, refLine0, refChar0)
   if (construct && construct.nodeType === "initializer_list") {
-    return classifyInitializer(construct)
+    return classifyInitializer(construct, callbackName, filePath, refLine0, refChar0)
   }
 
   // No enclosing call or initializer
@@ -312,9 +327,22 @@ function classifyFunctionCall(call: FunctionCall): ClassificationResult {
 }
 
 /**
- * Classify a struct initializer against the init-pattern registry.
+ * Classify a struct initializer.
+ *
+ * Pass 1: project-specific INIT_PATTERNS (WLAN's WMI dispatch table, etc.).
+ * Pass 2: generic struct-field-callback fallback — handles any
+ *         `.field = callbackName` assignment in ANY struct shape, by
+ *         walking the tree-sitter AST upward to recover the container
+ *         variable + struct type. Zero per-struct hardcoding.
  */
-function classifyInitializer(init: FunctionCall): ClassificationResult {
+function classifyInitializer(
+  init: FunctionCall,
+  callbackName: string,
+  filePath: string,
+  refLine0: number,
+  refChar0: number,
+): ClassificationResult {
+  // ── Pass 1: registered INIT_PATTERNS ──────────────────────────────────
   for (const pattern of INIT_PATTERNS) {
     if (init.args.length > pattern.markerArgIndex) {
       const markerArg = init.args[pattern.markerArgIndex].trim()
@@ -332,6 +360,26 @@ function classifyInitializer(init: FunctionCall): ClassificationResult {
           },
         }
       }
+    }
+  }
+
+  // ── Pass 2: generic struct-field-callback fallback ────────────────────
+  const generic = classifyGenericStructFieldCallback(
+    init,
+    callbackName,
+    filePath,
+    refLine0,
+    refChar0,
+  )
+  if (generic && generic.matchedPattern) {
+    return {
+      sourceText: generic.sourceText,
+      match: {
+        patternName: generic.matchedPattern.name,
+        registrationApi: generic.viaRegistrationApi ?? "",
+        dispatchKey: generic.dispatchKey ?? "",
+        connectionKind: generic.connectionKind,
+      },
     }
   }
 

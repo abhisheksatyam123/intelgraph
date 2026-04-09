@@ -8,7 +8,7 @@
  * - Removes test/mock/stub files (optional)
  * - Deduplicates entries
  * - Cleans problematic compiler flags
- * - Tracks cleaning state in .clangd-mcp.json to avoid redundant work
+ * - Tracks cleaning state in .intelgraph.json (legacy: .clangd-mcp.json) to avoid redundant work
  */
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "fs"

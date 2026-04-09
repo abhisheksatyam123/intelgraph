@@ -1,0 +1,26 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/vault/core.rs#Vault.hash",
+  "category": "impl_trait",
+  "source": {
+    "file": "src/vault/core.rs",
+    "line": 34
+  },
+  "description": "The `hash` method synthesised by `impl Hash for Vault` (file src/vault/core.rs:33). The rust-core extractor doesn't create a separate node for the impl block — instead it adds the impl's methods to the implementing struct AND emits an `implements` edge from Vault → Hash. Verifying the method's presence is the strongest single-node evidence the impl was extracted.",
+  "relations": {
+    "owning_struct": "Vault",
+    "implements_edge": {
+      "src": "module:src/vault/core.rs#Vault",
+      "dst": "Hash",
+      "edge_kind": "implements"
+    }
+  },
+  "contract": {
+    "required_node_kinds": ["method"],
+    "notes": "Pair this fixture with a separate edge-presence check (the runner counts implements edges in the graph). If Vault.hash exists, the impl block was extracted."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "markdown-oxide",
+    "method": "manual_grep"
+  }
+}

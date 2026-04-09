@@ -1,0 +1,37 @@
+{
+  "kind": "module",
+  "canonical_name": "module:src/daemon/index.ts",
+  "category": "module",
+  "source": {
+    "file": "src/daemon/index.ts",
+    "line": 1
+  },
+  "description": "Persistent clangd daemon management. Top-level module — should be created as a `module` node with `contains` edges to every top-level export.",
+  "relations": {
+    "imports_out": [
+      { "from": "module:src/daemon/index.ts", "to": "node:net" },
+      { "from": "module:src/daemon/index.ts", "to": "node:fs" },
+      { "from": "module:src/daemon/index.ts", "to": "node:child_process" },
+      { "from": "module:src/daemon/index.ts", "to": "node:path" },
+      { "from": "module:src/daemon/index.ts", "to": "node:url" },
+      { "from": "module:src/daemon/index.ts", "to": "node:crypto" },
+      { "from": "module:src/daemon/index.ts", "to": "module:src/logging/logger.ts" }
+    ],
+    "contains_top_level_exports": [
+      "normaliseRoot", "DaemonState", "stateFilePath", "computeWorkspaceId",
+      "readState", "writeState", "clearState", "tryAcquireSpawnLock",
+      "releaseSpawnLock", "waitForSpawnLockRelease", "isProcessAlive",
+      "isTcpPortOpen", "checkDaemonAlive", "spawnHttpDaemon"
+    ]
+  },
+  "contract": {
+    "required_node_kinds": ["module"],
+    "minimum_imports": 5,
+    "minimum_contains": 10,
+    "notes": "Module-level fixture exercises the file-as-symbol path plus the contains relation."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "intelgraph_self",
+    "method": "manual_grep"
+  }
+}

@@ -2,7 +2,7 @@
 
 ## Overview
 
-All intelgraph configuration is stored in a single file: **`.clangd-mcp.json`** at your workspace root. The filename retains the legacy `clangd-mcp` prefix for backwards compatibility with existing workspaces — the project was renamed but the config file path was kept stable so users don't need to migrate.
+All intelgraph configuration is stored in a single file: **`.intelgraph.json`** at your workspace root. (The legacy filename **`.clangd-mcp.json`** is still read as a fallback so existing workspaces keep working without migration — but new repos should use the new name.)
 
 This file serves as **persistent memory** across sessions, storing:
 - Core clangd settings
@@ -18,12 +18,12 @@ This file serves as **persistent memory** across sessions, storing:
 Copy the example to your workspace root:
 
 ```bash
-cp .clangd-mcp.example.json /path/to/workspace/.clangd-mcp.json
+cp .intelgraph.example.json /path/to/workspace/.intelgraph.json
 ```
 
 ### 2. Basic Configuration
 
-Minimal `.clangd-mcp.json`:
+Minimal `.intelgraph.json`:
 
 ```json
 {
@@ -39,7 +39,7 @@ Minimal `.clangd-mcp.json`:
 
 ### 3. Full Configuration
 
-See `.clangd-mcp.example.json` for all available options.
+See `.intelgraph.example.json` for all available options.
 
 ## Configuration Sections
 
@@ -232,17 +232,21 @@ addRecentFile('/path/to/workspace', '/path/to/file.c')
 
 ## Migration from Old Config
 
-If you have separate config files (`.clangd-mcp-state.json`, etc.), they will be automatically migrated to the unified `.clangd-mcp.json` on first run.
+If you have legacy files (`.clangd-mcp.json`, `.clangd-mcp-state.json`), they
+are read transparently — the daemon prefers the new `.intelgraph.json` /
+`.intelgraph-state.json` names but falls back to the legacy ones when present.
+You can keep using the old filenames indefinitely; renaming them on disk is
+optional.
 
 ## Best Practices
 
-1. **Commit to repo**: Add `.clangd-mcp.json` to your repository so all team members use the same settings
+1. **Commit to repo**: Add `.intelgraph.json` to your repository so all team members use the same settings
 2. **Exclude auto-managed sections**: Add to `.gitignore` if you don't want to commit daemon state:
    ```gitignore
    # Exclude auto-managed sections
-   .clangd-mcp.json
+   .intelgraph.json
    ```
-   Then provide a `.clangd-mcp.example.json` for team members to copy.
+   Then provide a `.intelgraph.example.json` for team members to copy.
 
 3. **Use notes field**: Document workspace-specific quirks:
    ```json
@@ -271,26 +275,26 @@ If you have separate config files (`.clangd-mcp-state.json`, etc.), they will be
 
 Check logs:
 ```bash
-tail -f ~/.local/share/clangd-mcp/logs/clangd-mcp.log | grep "config"
+tail -f ~/.local/share/intelgraph/logs/intelgraph.log | grep "config"
 ```
 
 ### Cleaning not working
 
 Verify config:
 ```bash
-cat /path/to/workspace/.clangd-mcp.json | jq '.compileCommandsCleaning'
+cat /path/to/workspace/.intelgraph.json | jq '.compileCommandsCleaning'
 ```
 
 Force re-clean by removing hash:
 ```bash
-jq 'del(.compileCommandsCleaning.lastCleanedHash)' .clangd-mcp.json > tmp.json && mv tmp.json .clangd-mcp.json
+jq 'del(.compileCommandsCleaning.lastCleanedHash)' .intelgraph.json > tmp.json && mv tmp.json .intelgraph.json
 ```
 
 ### Daemon state stale
 
 Clear daemon state:
 ```bash
-jq 'del(.daemon)' .clangd-mcp.json > tmp.json && mv tmp.json .clangd-mcp.json
+jq 'del(.daemon)' .intelgraph.json > tmp.json && mv tmp.json .intelgraph.json
 pkill -f "clangd.*workspace-name"
 ```
 

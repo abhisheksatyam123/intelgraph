@@ -1,0 +1,27 @@
+{
+  "kind": "method",
+  "canonical_name": "module:src/backend/handlers.rs#Backend.hover",
+  "category": "impl_trait",
+  "source": {
+    "file": "src/backend/handlers.rs",
+    "line": 20
+  },
+  "description": "The `hover` method synthesised by `impl LanguageServer for Backend` (the tower-lsp trait impl, src/backend/handlers.rs:20). Same pattern as Vault.hash — the impl block doesn't get its own node; we verify the impl by checking the method node it produces.",
+  "relations": {
+    "owning_struct": "Backend",
+    "implements_edge": {
+      "src": "module:src/backend/handlers.rs#Backend",
+      "dst": "LanguageServer",
+      "edge_kind": "implements"
+    },
+    "calls_out_expected": ["hover"]
+  },
+  "contract": {
+    "required_node_kinds": ["method"],
+    "notes": "If Backend.hover exists as a method node, the impl LanguageServer for Backend block was extracted. The other LSP handler methods (goto_definition, references, rename, etc.) should also be present."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "markdown-oxide",
+    "method": "manual_grep"
+  }
+}

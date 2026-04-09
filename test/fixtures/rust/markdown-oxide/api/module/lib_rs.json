@@ -1,0 +1,26 @@
+{
+  "kind": "module",
+  "canonical_name": "module:src/lib.rs",
+  "category": "module",
+  "source": {
+    "file": "src/lib.rs",
+    "line": 1
+  },
+  "description": "Top-level lib.rs — declares every top-level module via `pub mod xxx;`. The rust-core extractor should emit a module node for lib.rs plus contains edges to every declared sub-module.",
+  "relations": {
+    "contains_modules": [
+      "backend", "cli", "codeactions", "codelens", "commands",
+      "completion", "config", "diagnostics", "gotodef", "hover",
+      "inlay_hints", "logging", "macros", "notes", "references",
+      "rename", "symbol", "tokens", "ui", "vault"
+    ]
+  },
+  "contract": {
+    "required_node_kinds": ["module"],
+    "minimum_contains_count": 10
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "markdown-oxide",
+    "method": "manual_grep"
+  }
+}

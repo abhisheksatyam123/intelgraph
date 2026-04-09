@@ -1,0 +1,26 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/daemon/index.ts#computeWorkspaceId",
+  "category": "exported_function",
+  "source": {
+    "file": "src/daemon/index.ts",
+    "line": 119
+  },
+  "description": "Computes a stable, hash-based identifier for a workspace root. Used as a key for the spawn lock and the per-workspace state directory.",
+  "relations": {
+    "calls_in_direct": [
+      { "caller": "module:src/index.ts", "callee": "computeWorkspaceId" }
+    ],
+    "calls_out": [
+      { "caller": "computeWorkspaceId", "callee": "createHash" }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": ["function"],
+    "notes": "Single callee, single caller — minimal fixture for round-trip caller-graph verification."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "intelgraph_self",
+    "method": "manual_grep"
+  }
+}

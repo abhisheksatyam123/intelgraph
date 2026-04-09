@@ -1,0 +1,50 @@
+{
+  "kind": "function",
+  "kind_verbose": "exported_helper",
+  "canonical_name": "kstrtoint",
+  "category": "heavily_called_helper",
+  "aliases": [],
+  "source": {
+    "file": "lib/kstrtox.c",
+    "line": 259,
+    "character": 5
+  },
+  "description": "Converts a string to an int with overflow checking. Exported and used by hundreds of files across the kernel — exercises the cross-file caller path that depends on a warm clangd background index.",
+  "relations": {
+    "calls_in_direct": [
+      { "caller": "kstrtoint_from_user", "callee": "kstrtoint", "file": "lib/kstrtox.c", "line": 427 }
+    ],
+    "calls_in_direct_at_least": 50,
+    "calls_in_direct_known_callers_files": [
+      "kernel/ksysfs.c",
+      "kernel/events/core.c",
+      "kernel/params.c",
+      "kernel/sched/topology.c",
+      "kernel/cpu.c",
+      "kernel/cgroup/cgroup.c",
+      "sound/hda/hdac_sysfs.c",
+      "sound/drivers/aloop.c"
+    ],
+    "calls_in_runtime": [],
+    "calls_out": [
+      { "caller": "kstrtoint", "callee": "kstrtoll", "file": "lib/kstrtox.c", "line": 264 }
+    ],
+    "registrations_in": [],
+    "registrations_out": [],
+    "structures": [],
+    "logs": []
+  },
+  "contract": {
+    "required_relation_kinds": ["calls_in_direct", "calls_out"],
+    "required_directions":     ["incoming", "outgoing"],
+    "minimum_counts": {
+      "calls_in_direct": 10,
+      "calls_out":       1
+    },
+    "notes": "Tests cross-file caller resolution — REQUIRES clangd background index ≥ ~30% to find more than the within-file caller (kstrtoint_from_user). With a fully cold index this fixture will report only 1 caller."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_linux_kernel_6.12",
+    "method": "rg_known_callers_files_lookup"
+  }
+}

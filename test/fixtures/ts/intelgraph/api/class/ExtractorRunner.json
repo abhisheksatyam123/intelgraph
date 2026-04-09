@@ -1,0 +1,28 @@
+{
+  "kind": "class",
+  "canonical_name": "module:src/intelligence/extraction/runner.ts#ExtractorRunner",
+  "category": "class",
+  "source": {
+    "file": "src/intelligence/extraction/runner.ts",
+    "line": 126
+  },
+  "description": "Orchestrates the extraction phase: takes a workspace, an LSP client, a sink, and a list of plugins, then walks each plugin's extract() generator and routes facts into the SQLite store. Has constructor + run() method + helpers.",
+  "relations": {
+    "calls_in_direct": [
+      { "caller": "module:src/intelligence/init.ts",                "callee": "ExtractorRunner",          "construct": "new"  },
+      { "caller": "module:src/bin/snapshot-stats.ts#buildDashboard","callee": "ExtractorRunner",          "construct": "new"  }
+    ],
+    "contains_methods": ["constructor", "run"],
+    "extends": null,
+    "implements": null
+  },
+  "contract": {
+    "required_node_kinds": ["class", "method"],
+    "minimum_method_count": 2,
+    "notes": "Backend must emit a `class` node + `contains` edges from the class to each method (constructor, run, plus any private helpers)."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "intelgraph_self",
+    "method": "manual_grep"
+  }
+}

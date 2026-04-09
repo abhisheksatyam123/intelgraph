@@ -13,9 +13,18 @@
  *   - Field names in struct/array access expressions
  */
 
-import { readFileSync } from "fs"
+import { readFileSync, statSync } from "fs"
 import { fileURLToPath } from "url"
 import path from "path"
+
+/** Like fs.statSync but returns null instead of throwing on missing files. */
+function statSyncOrNull(p: string): import("fs").Stats | null {
+  try {
+    return statSync(p)
+  } catch {
+    return null
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Types
@@ -59,11 +68,53 @@ export async function initParser(): Promise<void> {
       const initWork = async () => {
         const { Parser, Language } = await import("web-tree-sitter")
 
-        // Locate WASM files relative to this module
+        // Locate the web-tree-sitter and tree-sitter-c WASM files. The
+        // module's import.meta.url depends on whether we're running from
+        // source (src/tools/pattern-detector/c-parser.ts) or from the
+        // bundled dist/index.js — those put node_modules at different
+        // ancestor depths. Try every plausible candidate and pick the
+        // first one that exists.
         const moduleDir = path.dirname(fileURLToPath(import.meta.url))
-        const projectRoot = path.resolve(moduleDir, "../../..")
-        const wasmBinaryPath = path.join(projectRoot, "node_modules/web-tree-sitter/web-tree-sitter.wasm")
-        const langWasmPath = path.join(projectRoot, "node_modules/tree-sitter-c/tree-sitter-c.wasm")
+        const candidateRoots = [
+          // bundled dist/index.js  → node_modules is one level up
+          path.resolve(moduleDir, ".."),
+          // bundled dist/index.js  → node_modules is a sibling of dist/
+          path.resolve(moduleDir, "../"),
+          // source src/tools/pattern-detector/  → up three to repo root
+          path.resolve(moduleDir, "../../.."),
+          // tests run from a worktree subdir → up four
+          path.resolve(moduleDir, "../../../.."),
+          // last-resort: process.cwd() (ingest CLI invocation point)
+          process.cwd(),
+        ]
+        let projectRoot: string | null = null
+        let wasmBinaryPath = ""
+        let langWasmPath = ""
+        for (const root of candidateRoots) {
+          const wasm = path.join(root, "node_modules/web-tree-sitter/web-tree-sitter.wasm")
+          const lang = path.join(root, "node_modules/tree-sitter-c/tree-sitter-c.wasm")
+          try {
+            // existsSync is the cheap path; readFileSync (below) does the real load
+            if (
+              path.isAbsolute(wasm) &&
+              path.isAbsolute(lang) &&
+              statSyncOrNull(wasm)?.isFile() &&
+              statSyncOrNull(lang)?.isFile()
+            ) {
+              projectRoot = root
+              wasmBinaryPath = wasm
+              langWasmPath = lang
+              break
+            }
+          } catch {
+            // try next candidate
+          }
+        }
+        if (!projectRoot) {
+          throw new Error(
+            `tree-sitter WASM files not found in any of: ${candidateRoots.join(", ")}`,
+          )
+        }
 
         await Parser.init({
           wasmBinary: readFileSync(wasmBinaryPath),

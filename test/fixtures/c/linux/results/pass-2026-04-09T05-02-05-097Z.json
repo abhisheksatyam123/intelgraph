@@ -1,0 +1,58 @@
+{
+  "workspace": "/home/abhi/qprojects/linux",
+  "timestamp": "2026-04-09T05:02:05.098Z",
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "err": 0,
+    "total": 1
+  },
+  "results": [
+    {
+      "canonical_name": "null_lseek",
+      "category": "vfs_callback",
+      "overall": "fail",
+      "checks": [
+        {
+          "kind": "calls_in_runtime",
+          "status": "fail",
+          "want": 1,
+          "minN": 1,
+          "got": 0,
+          "matches": 0,
+          "missing": [
+            {
+              "caller": "vfs_llseek",
+              "dispatch_chain": [
+                "userspace_lseek_syscall",
+                "ksys_lseek",
+                "vfs_llseek",
+                "fp->f_op->llseek",
+                "null_lseek"
+              ]
+            }
+          ],
+          "raw_first_line": "No callers found — symbol not resolved by clangd."
+        },
+        {
+          "kind": "registrations_in",
+          "status": "fail",
+          "want": 2,
+          "minN": 1,
+          "got": 0,
+          "found": [],
+          "missing": [
+            {
+              "registrar": "null_fops",
+              "registration_kind": "file_operations.llseek"
+            },
+            {
+              "registrar": "full_fops",
+              "registration_kind": "file_operations.llseek"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

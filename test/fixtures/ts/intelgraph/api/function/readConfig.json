@@ -1,0 +1,32 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/config/config.ts#readConfig",
+  "category": "exported_function",
+  "source": {
+    "file": "src/config/config.ts",
+    "line": 207
+  },
+  "description": "Reads .intelgraph.json (or legacy .clangd-mcp.json) from the workspace and returns an IntelgraphConfig. The canonical entry point for workspace config loading. Called by lifecycle, daemon, and CLI bootstrap.",
+  "relations": {
+    "calls_in_direct": [
+      { "caller": "module:src/index.ts",         "callee": "readConfig" },
+      { "caller": "module:src/daemon/index.ts",  "callee": "readConfig" }
+    ],
+    "calls_out": [
+      { "caller": "readConfig", "callee": "resolveConfigPath" },
+      { "caller": "readConfig", "callee": "JSON.parse" },
+      { "caller": "readConfig", "callee": "logError" }
+    ],
+    "references_type": ["IntelgraphConfig"]
+  },
+  "contract": {
+    "required_node_kinds": ["function"],
+    "minimum_caller_count": 1,
+    "minimum_callee_count": 2,
+    "notes": "Function returns IntelgraphConfig — references_type edge to that interface required."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "intelgraph_self",
+    "method": "manual_grep"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "kind": "function",
+  "kind_verbose": "syscall_handler",
+  "canonical_name": "__do_sys_restart_syscall",
+  "category": "syscall_handler",
+  "aliases": ["sys_restart_syscall", "restart_syscall"],
+  "source": {
+    "file": "kernel/signal.c",
+    "line": 3059,
+    "character": 16
+  },
+  "description": "SYSCALL_DEFINE0(restart_syscall) — handler for the restart_syscall(0) system call. The SYSCALL_DEFINE0 macro expands to a wrapper named __do_sys_restart_syscall that's called from the syscall dispatch table at runtime.",
+  "relations": {
+    "calls_in_direct": [],
+    "calls_in_runtime": [
+      {
+        "caller": "syscall_dispatch",
+        "callee": "__do_sys_restart_syscall",
+        "edge_kind": "call_runtime",
+        "edge_kind_verbose": "syscall_table_dispatch",
+        "derivation": "runtime",
+        "confidence": 0.95,
+        "dispatch_chain": [
+          "userspace_syscall(__NR_restart_syscall)",
+          "syscall_dispatch",
+          "__do_sys_restart_syscall"
+        ],
+        "runtime_trigger": "userspace restart_syscall syscall (auto-triggered after EINTR with restart_block)"
+      }
+    ],
+    "calls_out": [],
+    "registrations_in": [
+      {
+        "registrar": "SYSCALL_DEFINE0",
+        "callback": "restart_syscall",
+        "edge_kind": "register_macro",
+        "registration_kind": "syscall_table",
+        "evidence": { "kind": "macro_expansion", "loc": { "file": "kernel/signal.c", "line": 3059 } }
+      }
+    ],
+    "registrations_out": [],
+    "structures": [
+      {
+        "function": "__do_sys_restart_syscall",
+        "struct": "task_struct",
+        "field": "restart_block",
+        "access_kind": "read",
+        "evidence": { "kind": "field_read", "loc": { "file": "kernel/signal.c", "line": 3061 } }
+      }
+    ],
+    "logs": []
+  },
+  "contract": {
+    "required_relation_kinds": ["calls_in_runtime", "registrations_in"],
+    "required_directions":     ["incoming"],
+    "minimum_counts": {
+      "calls_in_runtime": 1,
+      "registrations_in": 1
+    },
+    "notes": "SYSCALL_DEFINE* is a macro pattern. The backend must understand that the user-visible name (restart_syscall) maps to the macro-expanded name (__do_sys_restart_syscall), and that the macro itself counts as a registration into the syscall table."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "actual_linux_kernel_6.12",
+    "method": "manual_grep_against_/home/abhi/qprojects/linux"
+  }
+}

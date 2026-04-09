@@ -1,0 +1,23 @@
+{
+  "kind": "enum",
+  "canonical_name": "module:src/vault/referenceable.rs#Referenceable",
+  "category": "enum",
+  "source": {
+    "file": "src/vault/referenceable.rs",
+    "line": 130
+  },
+  "description": "Sum type representing every kind of referenceable item in the vault (heading, tag, footnote, file, etc.). Has a lifetime parameter `'a`. Tests rust-core's enum extraction with variants.",
+  "relations": {
+    "contains_variants": ["File", "Heading", "Tag", "Footnote", "IndexedBlock"],
+    "has_lifetime_param": true
+  },
+  "contract": {
+    "required_node_kinds": ["enum", "enum_variant"],
+    "minimum_variant_count": 3,
+    "notes": "Backend must emit one enum_variant node per arm, contained inside the enum. Lifetime parameters are usually ignored by tree-sitter walks but the enum identifier should still extract correctly."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "markdown-oxide",
+    "method": "manual_grep"
+  }
+}

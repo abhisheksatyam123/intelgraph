@@ -45,7 +45,7 @@ alias handling, or role classification logic.
 
 ## High-level architecture
 
-`src/index.ts` is the entrypoint. It reads process args and `.clangd-mcp.json`, initializes logging, optionally boots the intelligence backend, then chooses one of three transports: default stdio proxy to a detached HTTP daemon, explicit `--port` HTTP mode, or direct `--stdio` mode.
+`src/index.ts` is the entrypoint. It reads process args and the workspace config (`.intelgraph.json`, with legacy `.clangd-mcp.json` as fallback), initializes logging, optionally boots the intelligence backend, then chooses one of three transports: default stdio proxy to a detached HTTP daemon, explicit `--port` HTTP mode, or direct `--stdio` mode.
 
 The runtime is centered on a shared `LspClient` connected to clangd. Lifecycle and reconnect behavior live under `src/core/` and `src/daemon/`; the index tracker in `src/tracking/` feeds readiness and file-status suffixes back into tool outputs.
 

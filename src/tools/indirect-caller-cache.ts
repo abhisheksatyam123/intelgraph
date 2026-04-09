@@ -25,7 +25,14 @@ export interface CachedIndirectCallers {
 }
 
 function cacheDir(workspaceRoot: string): string {
-  return path.join(workspaceRoot, ".clangd-mcp-indirect-caller-cache")
+  // New canonical location. Older workspaces may still hold a
+  // .clangd-mcp-indirect-caller-cache directory; if found and the new path
+  // does not yet exist, keep using the legacy directory so cache hits survive
+  // the rename.
+  const newDir = path.join(workspaceRoot, ".intelgraph-indirect-caller-cache")
+  const legacyDir = path.join(workspaceRoot, ".clangd-mcp-indirect-caller-cache")
+  if (existsSync(legacyDir) && !existsSync(newDir)) return legacyDir
+  return newDir
 }
 
 function cacheFile(workspaceRoot: string, cacheKey: string): string {

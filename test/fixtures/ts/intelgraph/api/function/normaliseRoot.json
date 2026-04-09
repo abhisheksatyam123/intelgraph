@@ -1,0 +1,28 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/daemon/index.ts#normaliseRoot",
+  "category": "exported_function",
+  "source": {
+    "file": "src/daemon/index.ts",
+    "line": 38
+  },
+  "description": "Normalizes a workspace root path: strips trailing VCS marker dirs (.git, .hg, .svn) so state files always land in the real project root. Single source of truth for root normalisation in intelgraph.",
+  "relations": {
+    "calls_in_direct": [
+      { "caller": "module:src/index.ts", "callee": "normaliseRoot" }
+    ],
+    "calls_out": [
+      { "caller": "normaliseRoot", "callee": "path.resolve" },
+      { "caller": "normaliseRoot", "callee": "path.basename" },
+      { "caller": "normaliseRoot", "callee": "statSync" }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": ["function"],
+    "notes": "Pure leaf function with bounded fan-out — easy fixture for verifying basic call extraction."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "intelgraph_self",
+    "method": "manual_grep"
+  }
+}

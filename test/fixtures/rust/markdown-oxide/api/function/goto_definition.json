@@ -1,0 +1,22 @@
+{
+  "kind": "function",
+  "canonical_name": "module:src/gotodef.rs#goto_definition",
+  "category": "exported_function",
+  "source": {
+    "file": "src/gotodef.rs",
+    "line": 7
+  },
+  "description": "pub fn goto_definition — handles textDocument/definition. Mirror of hover() in shape.",
+  "relations": {
+    "calls_in_direct": [
+      { "caller": "module:src/backend/handlers.rs#impl_LanguageServer.goto_definition", "callee": "goto_definition" }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": ["function"]
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "markdown-oxide",
+    "method": "manual_grep"
+  }
+}

@@ -14,7 +14,13 @@ function safeName(key: string): string {
 }
 
 function dbDir(workspaceRoot: string): string {
-  return path.join(workspaceRoot, ".clangd-mcp-llm-db")
+  // New canonical location. Older workspaces may still hold a
+  // .clangd-mcp-llm-db directory; if it exists and the new path does not,
+  // keep using the legacy directory so prior llm-db entries survive the rename.
+  const newDir = path.join(workspaceRoot, ".intelgraph-llm-db")
+  const legacyDir = path.join(workspaceRoot, ".clangd-mcp-llm-db")
+  if (existsSync(legacyDir) && !existsSync(newDir)) return legacyDir
+  return newDir
 }
 
 function dbFile(workspaceRoot: string, connectionKey: string): string {

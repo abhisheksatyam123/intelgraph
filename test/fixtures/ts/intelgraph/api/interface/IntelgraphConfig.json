@@ -1,0 +1,27 @@
+{
+  "kind": "interface",
+  "canonical_name": "module:src/config/config.ts#IntelgraphConfig",
+  "category": "interface",
+  "source": {
+    "file": "src/config/config.ts",
+    "line": 18
+  },
+  "description": "Top-level workspace config interface for intelgraph. Renamed from ClangdMcpConfig during the project rename. Heavily referenced across config.ts, lifecycle, and the daemon.",
+  "relations": {
+    "references_type_in": [
+      { "referrer": "module:src/config/config.ts#readConfig",   "type": "IntelgraphConfig" },
+      { "referrer": "module:src/config/config.ts#writeConfig",  "type": "IntelgraphConfig" },
+      { "referrer": "module:src/config/config.ts#updateConfig", "type": "IntelgraphConfig" }
+    ],
+    "field_kinds_present": ["root", "clangd", "args", "enabled", "compileCommandsCleaning", "intelligenceLocal", "daemon", "index"]
+  },
+  "contract": {
+    "required_node_kinds": ["interface"],
+    "minimum_field_count": 4,
+    "notes": "Backend must extract this interface as a node with kind=interface and emit references_type edges from every function in config.ts that takes or returns it."
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "intelgraph_self",
+    "method": "manual_grep_against_/home/abhi/qprojects/intelgraph"
+  }
+}

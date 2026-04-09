@@ -1,0 +1,21 @@
+{
+  "kind": "enum",
+  "canonical_name": "module:src/config.rs#Case",
+  "category": "enum",
+  "source": {
+    "file": "src/config.rs",
+    "line": 42
+  },
+  "description": "Case-handling preference enum from the config. Three unit variants — minimal exercise of enum_variant extraction.",
+  "relations": {
+    "contains_variants": ["Ignore", "Smart", "Respect"]
+  },
+  "contract": {
+    "required_node_kinds": ["enum", "enum_variant"],
+    "minimum_variant_count": 3
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "markdown-oxide",
+    "method": "manual_grep"
+  }
+}

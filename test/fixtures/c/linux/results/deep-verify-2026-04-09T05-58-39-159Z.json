@@ -1,0 +1,179 @@
+{
+  "language": "c",
+  "project": "linux",
+  "workspace": "/home/abhi/qprojects/linux/lib",
+  "timestamp": "2026-04-09T05:58:39.159Z",
+  "summary": {
+    "pass": 0,
+    "partial": 1,
+    "failAll": 3,
+    "nodeOnly": 0,
+    "nodeMiss": 7,
+    "total": 11,
+    "allExpected": 22,
+    "allMatched": 1,
+    "relationPct": 5
+  },
+  "results": [
+    {
+      "fixture": "function_pointer_callback/do_no_restart_syscall.json",
+      "status": "node-missing",
+      "expected": "do_no_restart_syscall"
+    },
+    {
+      "fixture": "heavily_called_helper/kstrtoint.json",
+      "canonical_name": "kstrtoint",
+      "status": "partial",
+      "checks": [
+        {
+          "key": "calls_in_direct",
+          "kind": "calls (incoming)",
+          "expected": 1,
+          "found": 1,
+          "matched": 0,
+          "missing": [
+            "kstrtoint_from_user"
+          ]
+        },
+        {
+          "key": "calls_out",
+          "kind": "calls (outgoing)",
+          "expected": 1,
+          "found": 2,
+          "matched": 1,
+          "missing": []
+        }
+      ],
+      "unhandledKeys": [
+        "calls_in_direct_known_callers_files"
+      ],
+      "totalExpected": 2,
+      "totalMatched": 1
+    },
+    {
+      "fixture": "irq_handler/i8042_interrupt.json",
+      "status": "node-missing",
+      "expected": "i8042_interrupt"
+    },
+    {
+      "fixture": "leaf_helper/argv_free.json",
+      "canonical_name": "argv_free",
+      "status": "fail-all-relations",
+      "checks": [
+        {
+          "key": "calls_in_direct",
+          "kind": "calls (incoming)",
+          "expected": 5,
+          "found": 0,
+          "matched": 0,
+          "missing": [
+            "machine_shutdown",
+            "trace_probe_create",
+            "create_filter_finish",
+            "trace_dynevent_create",
+            "parse_synth_field"
+          ]
+        },
+        {
+          "key": "calls_out",
+          "kind": "calls (outgoing)",
+          "expected": 2,
+          "found": 0,
+          "matched": 0,
+          "missing": [
+            "kfree",
+            "kfree"
+          ]
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 7,
+      "totalMatched": 0
+    },
+    {
+      "fixture": "leaf_helper/argv_split.json",
+      "canonical_name": "argv_split",
+      "status": "fail-all-relations",
+      "checks": [
+        {
+          "key": "calls_in_direct",
+          "kind": "calls (incoming)",
+          "expected": 7,
+          "found": 0,
+          "matched": 0,
+          "missing": [
+            "machine_shutdown",
+            "trace_probe_create",
+            "create_filter_start",
+            "trace_dynevent_create",
+            "parse_synth_field",
+            "parse_event_command",
+            "user_event_get_field_arg"
+          ]
+        },
+        {
+          "key": "calls_out",
+          "kind": "calls (outgoing)",
+          "expected": 5,
+          "found": 0,
+          "matched": 0,
+          "missing": [
+            "kstrndup",
+            "count_argc",
+            "kmalloc_array",
+            "kfree",
+            "isspace"
+          ]
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 12,
+      "totalMatched": 0
+    },
+    {
+      "fixture": "static_helper/count_argc.json",
+      "canonical_name": "count_argc",
+      "status": "fail-all-relations",
+      "checks": [
+        {
+          "key": "calls_in_direct",
+          "kind": "calls (incoming)",
+          "expected": 1,
+          "found": 0,
+          "matched": 0,
+          "missing": [
+            "argv_split"
+          ]
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 1,
+      "totalMatched": 0
+    },
+    {
+      "fixture": "syscall_handler/restart_syscall.json",
+      "status": "node-missing",
+      "expected": "__do_sys_restart_syscall"
+    },
+    {
+      "fixture": "syscall_handler/sched_yield.json",
+      "status": "node-missing",
+      "expected": "__do_sys_sched_yield"
+    },
+    {
+      "fixture": "vfs_callback/null_lseek.json",
+      "status": "node-missing",
+      "expected": "null_lseek"
+    },
+    {
+      "fixture": "vfs_callback/read_mem.json",
+      "status": "node-missing",
+      "expected": "read_mem"
+    },
+    {
+      "fixture": "vfs_callback/write_mem.json",
+      "status": "node-missing",
+      "expected": "write_mem"
+    }
+  ]
+}

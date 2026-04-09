@@ -7,9 +7,9 @@ query intents over MCP and a built-in CLI.
 
 Two extractor plugins ship today:
 
-- **`clangd-core`** for C/C++, backed by a persistent clangd LSP daemon. Started
-  life as the only thing this project did — hence the legacy `clangd-mcp` config
-  file names you'll see referenced below.
+- **`clangd-core`** for C/C++, backed by a persistent clangd LSP daemon. (This
+  was the project's original scope back when it was named `clangd-mcp`; the
+  legacy filename references below are kept for backwards compat.)
 - **`ts-core`** for TypeScript / JavaScript / JSX / TSX, using `tree-sitter`
   with no LSP required. Produces a richly annotated graph with cross-file call
   resolution, type references from signatures and bodies, JSX component edges,
@@ -23,8 +23,9 @@ which prints a workspace dashboard for any TS or C/C++ project.
 
 - starts or reuses a workspace-scoped clangd service for C/C++ extraction
 - runs the ts-core tree-sitter extractor for TypeScript/JS workspaces
-- writes facts into an embedded SQLite graph (`.clangd-mcp/intelligence.db`
-  by default; the directory name is legacy and stays for backwards compat)
+- writes facts into an embedded SQLite graph (`.intelgraph/intelligence.db` by
+  default, with the legacy `.clangd-mcp/intelligence.db` still honoured if it
+  already exists in the workspace)
 - exposes 38+ structural query intents as MCP tools (`intelligence_query`)
 - supports direct stdio mode, standalone HTTP mode, and the default stdio proxy
   to a detached HTTP daemon
@@ -76,7 +77,7 @@ Minimal recommended setup:
     "lsp": "allow"
   },
   "mcp": {
-    "clangd": {
+    "intelgraph": {
       "type": "local",
       "command": [
         "bun",
@@ -141,7 +142,7 @@ append readiness hints while background indexing is still in progress.
 ### CLI options
 
 ```text
---root <path>         Workspace root. Defaults to .clangd-mcp.json, then cwd.
+--root <path>         Workspace root. Defaults to .intelgraph.json (or legacy .clangd-mcp.json), then cwd.
 --stdio               Direct stdio MCP mode.
 --port <number>       Standalone HTTP MCP mode on this port.
 --http-daemon         Detached HTTP daemon mode (normally spawned internally).
@@ -152,7 +153,8 @@ append readiness hints while background indexing is still in progress.
 
 ### Workspace config file
 
-You can commit a `.clangd-mcp.json` file at the workspace root:
+You can commit a `.intelgraph.json` file at the workspace root (the legacy
+`.clangd-mcp.json` is still read as a fallback so existing repos keep working):
 
 ```json
 {
@@ -169,7 +171,7 @@ You can commit a `.clangd-mcp.json` file at the workspace root:
 Precedence is:
 
 1. CLI flags
-2. `.clangd-mcp.json`
+2. `.intelgraph.json` (or legacy `.clangd-mcp.json`)
 3. built-in defaults
 
 ### Example `.clangd` file
@@ -226,13 +228,16 @@ higher-level reconnect logic.
 
 Per-workspace runtime state is stored under the workspace root:
 
-- `.clangd-mcp-state.json` — saved bridge/HTTP daemon metadata
-- `.clangd-mcp-spawn.lock` — coordination file to avoid duplicate daemon spawn
+- `.intelgraph-state.json` — saved bridge/HTTP daemon metadata (legacy: `.clangd-mcp-state.json`)
+- `.intelgraph-spawn.lock` — coordination file to avoid duplicate daemon spawn (legacy: `.clangd-mcp-spawn.lock`)
 
-Log files are written to `~/.local/share/clangd-mcp/logs/`:
+Log files are written to `~/.local/share/intelgraph/logs/` (the legacy
+`~/.local/share/clangd-mcp/logs/` is still honoured if it already exists):
 
-- `clangd-mcp.log` — main server log (override with `CLANGD_MCP_LOG_DIR`)
-- `clangd-mcp-bridge.log` — detached bridge log (written to workspace root)
+- `intelgraph.log` — main server log (override with `INTELGRAPH_LOG_DIR`; the
+  legacy `CLANGD_MCP_LOG_DIR` env var is still read as a fallback)
+- `intelgraph-bridge.log` — detached bridge log (written to workspace root,
+  legacy: `clangd-mcp-bridge.log`)
 
 ## Manual operation examples
 
@@ -257,7 +262,7 @@ Then configure OpenCode as a remote MCP server:
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "clangd": {
+    "intelgraph": {
       "type": "remote",
       "url": "http://localhost:7777/mcp",
       "enabled": true
@@ -308,15 +313,19 @@ mode is to pay that cost once, then reuse the warm index.
 
 ### Existing daemon seems stale
 
-Delete the workspace-local `.clangd-mcp-state.json` and restart.
+Delete the workspace-local `.intelgraph-state.json` (or legacy
+`.clangd-mcp-state.json`) and restart.
 
 ### Need logs
 
 Check:
 
-- `~/.local/share/clangd-mcp/logs/clangd-mcp.log` — main server log
-- `<workspace>/clangd-mcp-bridge.log` — detached bridge log
-- Set `CLANGD_MCP_LOG_DIR` to override the log directory
+- `~/.local/share/intelgraph/logs/intelgraph.log` — main server log
+  (legacy: `~/.local/share/clangd-mcp/logs/clangd-mcp.log`)
+- `<workspace>/intelgraph-bridge.log` — detached bridge log
+  (legacy: `clangd-mcp-bridge.log`)
+- Set `INTELGRAPH_LOG_DIR` to override the log directory (legacy
+  `CLANGD_MCP_LOG_DIR` is still honoured as a fallback)
 
 ## More docs
 
@@ -325,8 +334,8 @@ Check:
 - `doc/atomic/domain/graph-db/philosophy-graph-instrumentation.md` — **core philosophy**: persistent LSP, graph model, intent-driven queries
 - `doc/architecture.md` — repo-facing architecture summary
 - `doc/WLAN_ANALYSIS_ARCHITECTURE.md` — **WLAN code analysis pipeline + PostgreSQL schema design**
-- `doc/diagrams/clangd-mcp-architecture.puml` — PlantUML component diagram (basic runtime)
-- `doc/diagrams/clangd-mcp-complete-architecture.puml` — **PlantUML complete architecture (multi-client + PostgreSQL)**
+- `doc/diagrams/intelgraph-architecture.puml` — PlantUML component diagram (basic runtime)
+- `doc/diagrams/intelgraph-complete-architecture.puml` — **PlantUML complete architecture (multi-client + PostgreSQL)**
 - `doc/components/daemon-manager.md` — daemon lifecycle reference
 - `doc/LOG_ANALYSIS.md` — logging subsystem reference
 
@@ -336,10 +345,10 @@ If you have PlantUML installed locally:
 
 ```bash
 # Basic runtime architecture
-plantuml doc/diagrams/clangd-mcp-architecture.puml
+plantuml doc/diagrams/intelgraph-architecture.puml
 
 # Complete architecture with PostgreSQL intelligence store
-plantuml doc/diagrams/clangd-mcp-complete-architecture.puml
+plantuml doc/diagrams/intelgraph-complete-architecture.puml
 ```
 
 This generates diagram images next to the `.puml` source files.
