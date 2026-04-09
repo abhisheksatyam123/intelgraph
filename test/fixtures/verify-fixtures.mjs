@@ -266,17 +266,46 @@ function checkContains(srcNodeId, expectedNames, allowedKinds) {
 
 // Map from fixture relation key → check function. Each entry returns
 // { kind, status, expected, found, matched, missing }.
+//
+// Two naming conventions are supported:
+//   1. Hand-authored: calls_in_direct, calls_out, references_type_in, etc.
+//   2. Batch-generated: <edge_kind>_out, <edge_kind>_in (e.g. calls_out,
+//      calls_in, contains_out, contains_in, references_type_out, etc.)
+//
+// The batch-generated entries use "src"/"dst" fields; the hand-authored
+// use "caller"/"callee"/"referrer"/"type"/"to". The nameExtractor params
+// below handle both forms.
 const RELATION_CHECKERS = {
-  // Incoming caller-style edges
+  // ── Hand-authored convention ──────────────────────────────────────────
   calls_in_direct:    (target, value) => ({ kind: "calls (incoming)",         ...checkIncoming(target, "calls",           value, "caller") }),
-  references_type_in: (target, value) => ({ kind: "references_type (in)",     ...checkIncoming(target, "references_type", value, "referrer") }),
-  // Outgoing callee-style edges
-  calls_out:          (target, value) => ({ kind: "calls (outgoing)",         ...checkOutgoing(target, "calls",           value, "callee") }),
-  references_type:    (target, value) => ({ kind: "references_type (out)",    ...checkOutgoing(target, "references_type", value, "type") }),
-  imports_out:        (target, value) => ({ kind: "imports (outgoing)",       ...checkOutgoing(target, "imports",         value, "to") }),
-  implements:         (target, value) => ({ kind: "implements (outgoing)",    ...checkOutgoing(target, "implements",      value, "type") }),
-  extends:            (target, value) => ({ kind: "extends (outgoing)",       ...checkOutgoing(target, "extends",         value, "type") }),
-  // Containment-style relations
+  // ── Batch-generated convention: <edge_kind>_out / <edge_kind>_in ──────
+  // Incoming edges (suffix _in)
+  calls_in:                  (target, value) => ({ kind: "calls (in)",              ...checkIncoming(target, "calls",           value, "src") }),
+  contains_in:               (target, value) => ({ kind: "contains (in)",           ...checkIncoming(target, "contains",        value, "src") }),
+  references_type_in:        (target, value) => ({ kind: "references_type (in)",    ...checkIncoming(target, "references_type", value, "src") }),
+  implements_in:             (target, value) => ({ kind: "implements (in)",          ...checkIncoming(target, "implements",      value, "src") }),
+  extends_in:                (target, value) => ({ kind: "extends (in)",             ...checkIncoming(target, "extends",         value, "src") }),
+  imports_in:                (target, value) => ({ kind: "imports (in)",             ...checkIncoming(target, "imports",         value, "src") }),
+  field_of_type_in:          (target, value) => ({ kind: "field_of_type (in)",      ...checkIncoming(target, "field_of_type",   value, "src") }),
+  aggregates_in:             (target, value) => ({ kind: "aggregates (in)",          ...checkIncoming(target, "aggregates",      value, "src") }),
+  reads_field_in:            (target, value) => ({ kind: "reads_field (in)",         ...checkIncoming(target, "reads_field",     value, "src") }),
+  writes_field_in:           (target, value) => ({ kind: "writes_field (in)",        ...checkIncoming(target, "writes_field",    value, "src") }),
+  // Outgoing edges (suffix _out)
+  calls_out:                 (target, value) => ({ kind: "calls (out)",             ...checkOutgoing(target, "calls",           value, "dst") }),
+  contains_out:              (target, value) => ({ kind: "contains (out)",          ...checkOutgoing(target, "contains",        value, "dst") }),
+  references_type_out:       (target, value) => ({ kind: "references_type (out)",   ...checkOutgoing(target, "references_type", value, "dst") }),
+  implements_out:            (target, value) => ({ kind: "implements (out)",         ...checkOutgoing(target, "implements",      value, "dst") }),
+  extends_out:               (target, value) => ({ kind: "extends (out)",            ...checkOutgoing(target, "extends",         value, "dst") }),
+  imports_out:               (target, value) => ({ kind: "imports (out)",            ...checkOutgoing(target, "imports",         value, "dst") }),
+  field_of_type_out:         (target, value) => ({ kind: "field_of_type (out)",     ...checkOutgoing(target, "field_of_type",   value, "dst") }),
+  aggregates_out:            (target, value) => ({ kind: "aggregates (out)",         ...checkOutgoing(target, "aggregates",      value, "dst") }),
+  reads_field_out:           (target, value) => ({ kind: "reads_field (out)",        ...checkOutgoing(target, "reads_field",     value, "dst") }),
+  writes_field_out:          (target, value) => ({ kind: "writes_field (out)",       ...checkOutgoing(target, "writes_field",    value, "dst") }),
+  // ── Hand-authored aliases ─────────────────────────────────────────────
+  references_type:    (target, value) => ({ kind: "references_type (hand-out)", ...checkOutgoing(target, "references_type", value, "type") }),
+  implements:         (target, value) => ({ kind: "implements (hand-out)",      ...checkOutgoing(target, "implements",      value, "type") }),
+  extends:            (target, value) => ({ kind: "extends (hand-out)",         ...checkOutgoing(target, "extends",         value, "type") }),
+  // ── Containment-style (hand-authored only) ────────────────────────────
   contains_methods:           (target, value) => ({ kind: "contains methods",        ...checkContains(target, value, ["method"]) }),
   contains_variants:          (target, value) => ({ kind: "contains enum_variants",  ...checkContains(target, value, ["enum_variant"]) }),
   contains_modules:           (target, value) => ({ kind: "contains modules",        ...checkContains(target, value, ["module", "namespace"]) }),
