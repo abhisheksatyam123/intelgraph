@@ -9,17 +9,36 @@
   },
   "exported": null,
   "line_count": null,
-  "relations": {},
+  "relations": {
+    "logs_event_out": [
+      {
+        "dst": "log:pr_devel:639",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:640",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:641",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:642",
+        "confidence": 0.9
+      }
+    ]
+  },
   "contract": {
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 0,
+    "total_outgoing_edges": 4,
     "total_incoming_edges": 0
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:57:01.837Z"
+    "generated_at": "2026-04-09T09:15:38.083Z"
   }
 }

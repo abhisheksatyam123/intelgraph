@@ -9,17 +9,134 @@
   },
   "exported": null,
   "line_count": null,
-  "relations": {},
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "__ffs",
+        "confidence": 1
+      },
+      {
+        "dst": "__ilog2_u32",
+        "confidence": 1
+      },
+      {
+        "dst": "__ilog2_u64",
+        "confidence": 1
+      },
+      {
+        "dst": "_printk",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_node_to_ptr",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_is_node",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_to_node",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_shortcut_to_ptr",
+        "confidence": 1
+      },
+      {
+        "dst": "kzalloc_noprof",
+        "confidence": 1
+      },
+      {
+        "dst": "memcpy",
+        "confidence": 1
+      },
+      {
+        "dst": "size_add",
+        "confidence": 1
+      },
+      {
+        "dst": "size_mul",
+        "confidence": 1
+      }
+    ],
+    "logs_event_out": [
+      {
+        "dst": "log:BUG_ON:978",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1016",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:1032",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:1053",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1090",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1104",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1120",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:1125",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1143",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1174",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1182",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1226",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:1227",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG:1232",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1251",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1279",
+        "confidence": 0.9
+      }
+    ]
+  },
   "contract": {
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 0,
+    "total_outgoing_edges": 28,
     "total_incoming_edges": 0
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:57:01.837Z"
+    "generated_at": "2026-04-09T09:15:38.082Z"
   }
 }

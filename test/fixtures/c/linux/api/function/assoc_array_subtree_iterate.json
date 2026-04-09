@@ -9,17 +9,178 @@
   },
   "exported": null,
   "line_count": null,
-  "relations": {},
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "__compiletime_assert_0",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_1",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_2",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_3",
+        "confidence": 1
+      },
+      {
+        "dst": "__compiletime_assert_4",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_is_leaf",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_is_meta",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_is_shortcut",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_to_leaf",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_to_node",
+        "confidence": 1
+      },
+      {
+        "dst": "assoc_array_ptr_to_shortcut",
+        "confidence": 1
+      }
+    ],
+    "logs_event_out": [
+      {
+        "dst": "log:pr_devel:183",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:200",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:211",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:221",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:243",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:245",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:351",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:355",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:362",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:363",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:365",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:366",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:370",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:373",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:375",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:376",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:380",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:392",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:399",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:408",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:412",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:417",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:421",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:455",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:467",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:492",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:513",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:516",
+        "confidence": 0.9
+      }
+    ]
+  },
   "contract": {
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 0,
+    "total_outgoing_edges": 39,
     "total_incoming_edges": 0
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:57:01.837Z"
+    "generated_at": "2026-04-09T09:15:38.083Z"
   }
 }

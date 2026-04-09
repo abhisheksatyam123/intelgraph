@@ -9,17 +9,32 @@
   },
   "exported": null,
   "line_count": null,
-  "relations": {},
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "bitmap_weight",
+        "confidence": 1
+      },
+      {
+        "dst": "const_test_bit",
+        "confidence": 1
+      },
+      {
+        "dst": "generic_test_bit",
+        "confidence": 1
+      }
+    ]
+  },
   "contract": {
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 0,
+    "total_outgoing_edges": 3,
     "total_incoming_edges": 0
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:57:01.840Z"
+    "generated_at": "2026-04-09T09:15:38.085Z"
   }
 }

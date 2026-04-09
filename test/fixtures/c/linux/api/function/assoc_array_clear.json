@@ -9,17 +9,68 @@
   },
   "exported": null,
   "line_count": null,
-  "relations": {},
+  "relations": {
+    "logs_event_out": [
+      {
+        "dst": "log:pr_devel:1579",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:1586",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:1596",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:1599",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1605",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1613",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1616",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1628",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1645",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1681",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:BUG_ON:1710",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_devel:1722",
+        "confidence": 0.9
+      }
+    ]
+  },
   "contract": {
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 0,
+    "total_outgoing_edges": 12,
     "total_incoming_edges": 0
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:57:01.835Z"
+    "generated_at": "2026-04-09T09:15:38.081Z"
   }
 }

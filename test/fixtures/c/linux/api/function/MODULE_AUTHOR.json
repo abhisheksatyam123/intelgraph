@@ -3,8 +3,8 @@
   "canonical_name": "MODULE_AUTHOR",
   "category": "function",
   "source": {
-    "file": "/home/abhi/qprojects/linux/lib/crypto/blake2s.c",
-    "line": 71,
+    "file": "/home/abhi/qprojects/linux/lib/crc32test.c",
+    "line": 850,
     "character": 1
   },
   "exported": null,
@@ -20,6 +20,6 @@
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:57:01.826Z"
+    "generated_at": "2026-04-09T09:15:38.073Z"
   }
 }

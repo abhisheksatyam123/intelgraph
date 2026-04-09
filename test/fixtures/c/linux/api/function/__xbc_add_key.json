@@ -9,17 +9,54 @@
   },
   "exported": null,
   "line_count": null,
-  "relations": {},
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "find_match_node",
+        "confidence": 1
+      },
+      {
+        "dst": "xbc_add_child",
+        "confidence": 1
+      },
+      {
+        "dst": "xbc_node_get_child",
+        "confidence": 1
+      },
+      {
+        "dst": "xbc_node_get_next",
+        "confidence": 1
+      },
+      {
+        "dst": "xbc_node_is_value",
+        "confidence": 1
+      },
+      {
+        "dst": "xbc_parse_error",
+        "confidence": 1
+      },
+      {
+        "dst": "xbc_valid_keyword",
+        "confidence": 1
+      }
+    ],
+    "calls_in": [
+      {
+        "src": "__xbc_parse_keys",
+        "confidence": 1
+      }
+    ]
+  },
   "contract": {
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 0,
-    "total_incoming_edges": 0
+    "total_outgoing_edges": 7,
+    "total_incoming_edges": 1
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:57:01.830Z"
+    "generated_at": "2026-04-09T09:15:38.076Z"
   }
 }

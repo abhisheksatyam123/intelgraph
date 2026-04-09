@@ -9,17 +9,44 @@
   },
   "exported": null,
   "line_count": null,
-  "relations": {},
+  "relations": {
+    "calls_in": [
+      {
+        "src": "compute_error_locator_polynomial",
+        "confidence": 1
+      },
+      {
+        "src": "find_affine4_roots",
+        "confidence": 1
+      },
+      {
+        "src": "find_poly_deg4_roots",
+        "confidence": 1
+      },
+      {
+        "src": "gf_poly_logrep",
+        "confidence": 1
+      },
+      {
+        "src": "gf_poly_mod",
+        "confidence": 1
+      },
+      {
+        "src": "build_deg2_base",
+        "confidence": 1
+      }
+    ]
+  },
   "contract": {
     "required_node_kinds": [
       "function"
     ],
     "total_outgoing_edges": 0,
-    "total_incoming_edges": 0
+    "total_incoming_edges": 6
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:57:01.831Z"
+    "generated_at": "2026-04-09T09:15:38.077Z"
   }
 }

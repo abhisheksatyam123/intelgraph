@@ -1,0 +1,64 @@
+{
+  "kind": "function",
+  "canonical_name": "bval",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/btree.c",
+    "line": 152,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_in": [
+      {
+        "src": "btree_lookup_node",
+        "confidence": 1
+      },
+      {
+        "src": "getfill",
+        "confidence": 1
+      },
+      {
+        "src": "find_level",
+        "confidence": 1
+      },
+      {
+        "src": "btree_shrink",
+        "confidence": 1
+      },
+      {
+        "src": "btree_insert_level",
+        "confidence": 1
+      },
+      {
+        "src": "btree_remove_level",
+        "confidence": 1
+      },
+      {
+        "src": "merge",
+        "confidence": 1
+      },
+      {
+        "src": "rebalance",
+        "confidence": 1
+      },
+      {
+        "src": "__btree_for_each",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 0,
+    "total_incoming_edges": 9
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:15:38.089Z"
+  }
+}

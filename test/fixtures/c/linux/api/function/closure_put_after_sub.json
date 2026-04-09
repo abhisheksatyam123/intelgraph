@@ -1,0 +1,48 @@
+{
+  "kind": "function",
+  "canonical_name": "closure_put_after_sub",
+  "category": "function",
+  "source": {
+    "file": "/home/abhi/qprojects/linux/lib/closure.c",
+    "line": 30,
+    "character": 1
+  },
+  "exported": null,
+  "line_count": null,
+  "relations": {
+    "calls_out": [
+      {
+        "dst": "atomic_set",
+        "confidence": 1
+      },
+      {
+        "dst": "closure_debug_destroy",
+        "confidence": 1
+      },
+      {
+        "dst": "closure_put",
+        "confidence": 1
+      },
+      {
+        "dst": "closure_put_after_sub_checks",
+        "confidence": 1
+      },
+      {
+        "dst": "closure_queue",
+        "confidence": 1
+      }
+    ]
+  },
+  "contract": {
+    "required_node_kinds": [
+      "function"
+    ],
+    "total_outgoing_edges": 5,
+    "total_incoming_edges": 0
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "batch-generate.mjs",
+    "method": "graph_edges_walk_from_pre-extracted_db",
+    "generated_at": "2026-04-09T09:15:38.089Z"
+  }
+}

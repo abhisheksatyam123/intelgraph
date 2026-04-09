@@ -9,17 +9,72 @@
   },
   "exported": null,
   "line_count": null,
-  "relations": {},
+  "relations": {
+    "logs_event_out": [
+      {
+        "dst": "log:pr_debug:201",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:234",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:247",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:305",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:336",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:359",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_err:374",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:399",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:411",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:424",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:430",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_err:472",
+        "confidence": 0.9
+      },
+      {
+        "dst": "log:pr_debug:515",
+        "confidence": 0.9
+      }
+    ]
+  },
   "contract": {
     "required_node_kinds": [
       "function"
     ],
-    "total_outgoing_edges": 0,
+    "total_outgoing_edges": 13,
     "total_incoming_edges": 0
   },
   "ground_truth_metadata": {
     "extracted_from": "batch-generate.mjs",
     "method": "graph_edges_walk_from_pre-extracted_db",
-    "generated_at": "2026-04-09T06:57:01.835Z"
+    "generated_at": "2026-04-09T09:15:38.080Z"
   }
 }
