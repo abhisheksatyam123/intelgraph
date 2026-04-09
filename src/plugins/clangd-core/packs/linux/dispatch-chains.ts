@@ -366,6 +366,326 @@ const linuxDispatchChains: readonly DispatchChainTemplate[] = [
     triggerKind: "event",
     triggerDescription: "Intel GTT chipset flush",
   },
+
+  // ── RCU callbacks ───────────────────────────────────────────────────────
+  {
+    registrationApi: "call_rcu",
+    chain: ["rcu_grace_period", "rcu_do_batch", "rcu_cblist_invoke", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "RCU grace period expiry → callback invocation",
+  },
+  {
+    registrationApi: "call_rcu_hurry",
+    chain: ["rcu_grace_period", "rcu_do_batch", "rcu_cblist_invoke", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Expedited RCU callback invocation",
+  },
+  {
+    registrationApi: "call_srcu",
+    chain: ["srcu_grace_period", "srcu_invoke_callbacks", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "SRCU callback invocation after grace period",
+  },
+
+  // ── IPI cross-CPU calls ─────────────────────────────────────────────────
+  {
+    registrationApi: "smp_call_function",
+    chain: ["IPI_interrupt", "generic_smp_call_function", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "IPI cross-CPU function call on all other CPUs",
+  },
+  {
+    registrationApi: "smp_call_function_single",
+    chain: ["IPI_interrupt", "generic_smp_call_function_single", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "IPI cross-CPU function call on specific CPU",
+  },
+  {
+    registrationApi: "smp_call_function_many",
+    chain: ["IPI_interrupt", "generic_smp_call_function_many", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "IPI cross-CPU function call on CPU mask",
+  },
+
+  // ── Softirq ─────────────────────────────────────────────────────────────
+  {
+    registrationApi: "open_softirq",
+    chain: ["hardware_irq", "do_softirq", "softirq_action", "%CALLBACK%"],
+    triggerKind: "hardware_interrupt",
+    triggerDescription: "Softirq handler for softirq %KEY%",
+  },
+
+  // ── CPU hotplug ─────────────────────────────────────────────────────────
+  {
+    registrationApi: "cpuhp_setup_state",
+    chain: ["cpu_hotplug_event", "cpuhp_invoke_callback", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "CPU hotplug state transition callback",
+  },
+  {
+    registrationApi: "cpuhp_setup_state_nocalls",
+    chain: ["cpu_hotplug_event", "cpuhp_invoke_callback", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "CPU hotplug state transition (no initial call)",
+  },
+
+  // ── Stop machine ────────────────────────────────────────────────────────
+  {
+    registrationApi: "stop_machine",
+    chain: ["stop_machine_cpuslocked", "multi_cpu_stop", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Stop-machine all-CPU synchronized callback",
+  },
+
+  // ── NAPI poll ───────────────────────────────────────────────────────────
+  {
+    registrationApi: "netif_napi_add",
+    chain: ["net_rx_action", "napi_poll", "napi->poll", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "NAPI poll in network receive softirq",
+  },
+  {
+    registrationApi: "netif_napi_add_weight",
+    chain: ["net_rx_action", "napi_poll", "napi->poll", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "NAPI poll (weighted) in network receive softirq",
+  },
+
+  // ── Module lifecycle ────────────────────────────────────────────────────
+  {
+    registrationApi: "module_init",
+    chain: ["kernel_boot", "do_initcalls", "do_one_initcall", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Module init during kernel boot or module load",
+  },
+  {
+    registrationApi: "module_exit",
+    chain: ["module_unload", "SyS_delete_module", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Module exit during module unload",
+  },
+  {
+    registrationApi: "late_initcall",
+    chain: ["kernel_boot", "do_initcalls", "do_one_initcall", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Late initcall during kernel boot",
+  },
+  {
+    registrationApi: "subsys_initcall",
+    chain: ["kernel_boot", "do_initcalls", "do_one_initcall", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Subsystem initcall during kernel boot",
+  },
+  {
+    registrationApi: "core_initcall",
+    chain: ["kernel_boot", "do_initcalls", "do_one_initcall", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Core initcall during kernel boot",
+  },
+  {
+    registrationApi: "device_initcall",
+    chain: ["kernel_boot", "do_initcalls", "do_one_initcall", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Device initcall during kernel boot",
+  },
+  {
+    registrationApi: "fs_initcall",
+    chain: ["kernel_boot", "do_initcalls", "do_one_initcall", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Filesystem initcall during kernel boot",
+  },
+  {
+    registrationApi: "arch_initcall",
+    chain: ["kernel_boot", "do_initcalls", "do_one_initcall", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Architecture initcall during kernel boot",
+  },
+
+  // ── Filesystem struct-field callbacks ──────────────────────────────────
+  {
+    registrationApi: "__struct_field:address_space_operations.readpage",
+    chain: ["page_cache_sync_readahead", "read_pages", "aops->readpage", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Page cache readahead → address_space_operations.readpage",
+  },
+  {
+    registrationApi: "__struct_field:address_space_operations.writepage",
+    chain: ["writeback_thread", "do_writepages", "aops->writepage", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Writeback → address_space_operations.writepage",
+  },
+  {
+    registrationApi: "__struct_field:address_space_operations.readahead",
+    chain: ["page_cache_sync_readahead", "read_pages", "aops->readahead", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Page cache readahead → address_space_operations.readahead",
+  },
+  {
+    registrationApi: "__struct_field:inode_operations.lookup",
+    chain: ["path_lookupat", "lookup_slow", "iop->lookup", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "VFS path lookup → inode_operations.lookup",
+  },
+  {
+    registrationApi: "__struct_field:inode_operations.create",
+    chain: ["vfs_create", "dir->i_op->create", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "VFS create → inode_operations.create",
+  },
+  {
+    registrationApi: "__struct_field:inode_operations.mkdir",
+    chain: ["vfs_mkdir", "dir->i_op->mkdir", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "VFS mkdir → inode_operations.mkdir",
+  },
+  {
+    registrationApi: "__struct_field:inode_operations.unlink",
+    chain: ["vfs_unlink", "dir->i_op->unlink", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "VFS unlink → inode_operations.unlink",
+  },
+  {
+    registrationApi: "__struct_field:super_operations.alloc_inode",
+    chain: ["new_inode", "alloc_inode", "sb->s_op->alloc_inode", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "VFS alloc_inode → super_operations.alloc_inode",
+  },
+  {
+    registrationApi: "__struct_field:super_operations.destroy_inode",
+    chain: ["iput", "destroy_inode", "sb->s_op->destroy_inode", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "VFS destroy_inode → super_operations.destroy_inode",
+  },
+
+  // ── Block device operations ─────────────────────────────────────────────
+  {
+    registrationApi: "__struct_field:block_device_operations.open",
+    chain: ["blkdev_open", "bdev->bd_disk->fops->open", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Block device open → block_device_operations.open",
+  },
+  {
+    registrationApi: "__struct_field:block_device_operations.submit_bio",
+    chain: ["submit_bio", "blk_mq_submit_bio", "disk->fops->submit_bio", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Block I/O submission → block_device_operations.submit_bio",
+  },
+  {
+    registrationApi: "__struct_field:block_device_operations.ioctl",
+    chain: ["blkdev_ioctl", "disk->fops->ioctl", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Block device ioctl → block_device_operations.ioctl",
+  },
+
+  // ── Power management struct-field callbacks ─────────────────────────────
+  {
+    registrationApi: "__struct_field:dev_pm_ops.suspend",
+    chain: ["pm_suspend", "dpm_suspend", "dev->pm->suspend", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "System suspend → dev_pm_ops.suspend",
+  },
+  {
+    registrationApi: "__struct_field:dev_pm_ops.resume",
+    chain: ["pm_resume", "dpm_resume", "dev->pm->resume", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "System resume → dev_pm_ops.resume",
+  },
+  {
+    registrationApi: "__struct_field:dev_pm_ops.runtime_suspend",
+    chain: ["rpm_suspend", "dev->pm->runtime_suspend", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Runtime PM suspend → dev_pm_ops.runtime_suspend",
+  },
+  {
+    registrationApi: "__struct_field:dev_pm_ops.runtime_resume",
+    chain: ["rpm_resume", "dev->pm->runtime_resume", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Runtime PM resume → dev_pm_ops.runtime_resume",
+  },
+
+  // ── USB driver ──────────────────────────────────────────────────────────
+  {
+    registrationApi: "__struct_field:usb_driver.probe",
+    chain: ["usb_probe_interface", "driver->probe", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "USB device probe → usb_driver.probe",
+  },
+  {
+    registrationApi: "__struct_field:usb_driver.disconnect",
+    chain: ["usb_unbind_interface", "driver->disconnect", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "USB device disconnect → usb_driver.disconnect",
+  },
+
+  // ── I2C driver ──────────────────────────────────────────────────────────
+  {
+    registrationApi: "__struct_field:i2c_driver.probe",
+    chain: ["i2c_device_probe", "driver->probe", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "I2C device probe → i2c_driver.probe",
+  },
+
+  // ── SPI driver ──────────────────────────────────────────────────────────
+  {
+    registrationApi: "__struct_field:spi_driver.probe",
+    chain: ["spi_drv_probe", "sdrv->probe", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "SPI device probe → spi_driver.probe",
+  },
+
+  // ── Input subsystem ─────────────────────────────────────────────────────
+  {
+    registrationApi: "__struct_field:input_handler.event",
+    chain: ["input_event", "input_pass_values", "handler->event", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Input event → input_handler.event",
+  },
+  {
+    registrationApi: "__struct_field:input_handler.connect",
+    chain: ["input_register_device", "input_attach_handler", "handler->connect", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Input device connect → input_handler.connect",
+  },
+
+  // ── UART/serial ─────────────────────────────────────────────────────────
+  {
+    registrationApi: "__struct_field:uart_ops.startup",
+    chain: ["uart_port_startup", "uport->ops->startup", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "UART port startup → uart_ops.startup",
+  },
+  {
+    registrationApi: "__struct_field:uart_ops.shutdown",
+    chain: ["uart_port_shutdown", "uport->ops->shutdown", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "UART port shutdown → uart_ops.shutdown",
+  },
+
+  // ── Socket operations ───────────────────────────────────────────────────
+  {
+    registrationApi: "__struct_field:proto_ops.connect",
+    chain: ["sys_connect", "__sys_connect", "sock->ops->connect", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Userspace connect() syscall → proto_ops.connect",
+  },
+  {
+    registrationApi: "__struct_field:proto_ops.accept",
+    chain: ["sys_accept4", "__sys_accept4", "sock->ops->accept", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Userspace accept() syscall → proto_ops.accept",
+  },
+  {
+    registrationApi: "__struct_field:proto_ops.sendmsg",
+    chain: ["sys_sendmsg", "sock_sendmsg", "sock->ops->sendmsg", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Userspace sendmsg() syscall → proto_ops.sendmsg",
+  },
+  {
+    registrationApi: "__struct_field:proto_ops.recvmsg",
+    chain: ["sys_recvmsg", "sock_recvmsg", "sock->ops->recvmsg", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Userspace recvmsg() syscall → proto_ops.recvmsg",
+  },
 ]
 
 export default linuxDispatchChains

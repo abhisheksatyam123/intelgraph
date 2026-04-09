@@ -36,6 +36,10 @@ import irqPatterns from "./irq.js"
 import procPatterns from "./proc.js"
 import driverPatterns from "./driver.js"
 import threadPatterns from "./thread.js"
+import ipcPatterns from "./ipc.js"
+import networkPatterns from "./network.js"
+import fsPatterns from "./fs.js"
+import pmPatterns from "./pm.js"
 import linuxLogMacros from "./log-macros.js"
 import linuxDispatchChains from "./dispatch-chains.js"
 import linuxHWEntities from "./hw-entities.js"
@@ -46,6 +50,10 @@ const callPatterns: readonly CallPattern[] = [
   ...procPatterns,
   ...driverPatterns,
   ...threadPatterns,
+  ...ipcPatterns,
+  ...networkPatterns,
+  ...fsPatterns,
+  ...pmPatterns,
 ]
 
 const initPatterns: readonly InitPattern[] = []

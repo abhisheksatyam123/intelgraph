@@ -197,6 +197,142 @@ const linuxHWEntities: readonly HWEntityDef[] = [
     description: "Linux network interface open — dev_open → ndo_open → handler",
     matchesChainSteps: ["dev_open"],
   },
+
+  // ── RCU subsystem ───────────────────────────────────────────────────────
+  {
+    name: "RCU",
+    kind: "thread",
+    description: "Read-Copy-Update grace period mechanism — deferred callback invocation",
+    matchesChainSteps: ["rcu_grace_period", "rcu_do_batch", "rcu_cblist_invoke", "srcu_grace_period", "srcu_invoke_callbacks"],
+  },
+
+  // ── IPI subsystem ───────────────────────────────────────────────────────
+  {
+    name: "IPI (Inter-Processor Interrupt)",
+    kind: "interrupt",
+    description: "Cross-CPU function invocation via inter-processor interrupts",
+    matchesChainSteps: ["IPI_interrupt", "generic_smp_call_function", "generic_smp_call_function_single", "generic_smp_call_function_many"],
+  },
+
+  // ── CPU hotplug ─────────────────────────────────────────────────────────
+  {
+    name: "CPU Hotplug",
+    kind: "hw_block",
+    description: "CPU online/offline state machine — invokes callbacks on state transitions",
+    matchesChainSteps: ["cpu_hotplug_event", "cpuhp_invoke_callback"],
+  },
+
+  // ── Stop machine ────────────────────────────────────────────────────────
+  {
+    name: "Stop Machine",
+    kind: "thread",
+    description: "Stop-machine all-CPU synchronized execution — stops all CPUs to run a function",
+    matchesChainSteps: ["stop_machine_cpuslocked", "multi_cpu_stop"],
+  },
+
+  // ── NAPI (network receive) ──────────────────────────────────────────────
+  {
+    name: "NAPI Receive",
+    kind: "hw_block",
+    description: "NAPI poll-based network receive processing in softirq context",
+    matchesChainSteps: ["net_rx_action", "napi_poll"],
+  },
+
+  // ── Module loader ───────────────────────────────────────────────────────
+  {
+    name: "Module Loader",
+    kind: "hw_block",
+    description: "Kernel module load/unload lifecycle — initcalls during boot, module_init/exit at runtime",
+    matchesChainSteps: ["kernel_boot", "do_initcalls", "do_one_initcall", "module_unload", "SyS_delete_module"],
+  },
+
+  // ── Page cache / writeback ──────────────────────────────────────────────
+  {
+    name: "Page Cache",
+    kind: "hw_block",
+    description: "Page cache readahead and writeback — invokes address_space_operations callbacks",
+    matchesChainSteps: ["page_cache_sync_readahead", "read_pages", "writeback_thread", "do_writepages"],
+  },
+
+  // ── VFS path lookup ─────────────────────────────────────────────────────
+  {
+    name: "VFS Path Lookup",
+    kind: "hw_block",
+    description: "VFS path resolution — walks dcache and invokes inode_operations.lookup",
+    matchesChainSteps: ["path_lookupat", "lookup_slow"],
+  },
+
+  // ── Block I/O ───────────────────────────────────────────────────────────
+  {
+    name: "Block I/O",
+    kind: "hw_block",
+    description: "Block layer I/O submission — submit_bio dispatches to block_device_operations",
+    matchesChainSteps: ["submit_bio", "blk_mq_submit_bio", "blkdev_open", "blkdev_ioctl"],
+  },
+
+  // ── Power Management ────────────────────────────────────────────────────
+  {
+    name: "Power Management",
+    kind: "hw_block",
+    description: "System/runtime PM — invokes dev_pm_ops suspend/resume callbacks",
+    matchesChainSteps: ["pm_suspend", "dpm_suspend", "pm_resume", "dpm_resume", "rpm_suspend", "rpm_resume"],
+  },
+
+  // ── USB subsystem ───────────────────────────────────────────────────────
+  {
+    name: "USB Bus",
+    kind: "hw_block",
+    description: "USB device enumeration — invokes usb_driver.probe/disconnect on device attach",
+    matchesChainSteps: ["usb_probe_interface", "usb_unbind_interface"],
+  },
+
+  // ── I2C bus ─────────────────────────────────────────────────────────────
+  {
+    name: "I2C Bus",
+    kind: "hw_block",
+    description: "I2C device enumeration — invokes i2c_driver.probe on device match",
+    matchesChainSteps: ["i2c_device_probe"],
+  },
+
+  // ── SPI bus ─────────────────────────────────────────────────────────────
+  {
+    name: "SPI Bus",
+    kind: "hw_block",
+    description: "SPI device enumeration — invokes spi_driver.probe on device match",
+    matchesChainSteps: ["spi_drv_probe"],
+  },
+
+  // ── Input subsystem ─────────────────────────────────────────────────────
+  {
+    name: "Input Subsystem",
+    kind: "hw_block",
+    description: "Input event delivery — invokes input_handler.event on keypress/mouse/touch",
+    matchesChainSteps: ["input_event", "input_pass_values", "input_register_device", "input_attach_handler"],
+  },
+
+  // ── UART/Serial ─────────────────────────────────────────────────────────
+  {
+    name: "UART/Serial",
+    kind: "hw_block",
+    description: "UART serial port — invokes uart_ops callbacks on port open/close/transmit",
+    matchesChainSteps: ["uart_port_startup", "uart_port_shutdown"],
+  },
+
+  // ── Socket layer ────────────────────────────────────────────────────────
+  {
+    name: "Socket Layer",
+    kind: "hw_block",
+    description: "BSD socket dispatch — invokes proto_ops callbacks on connect/accept/send/recv",
+    matchesChainSteps: ["sys_connect", "__sys_connect", "sys_accept4", "__sys_accept4", "sys_sendmsg", "sock_sendmsg", "sys_recvmsg", "sock_recvmsg"],
+  },
+
+  // ── Netfilter ───────────────────────────────────────────────────────────
+  {
+    name: "Netfilter",
+    kind: "hw_block",
+    description: "Netfilter hook dispatch — invokes nf_hook_ops callbacks on packet traverse",
+    matchesChainSteps: ["nf_hook_slow", "nf_iterate"],
+  },
 ]
 
 export default linuxHWEntities
