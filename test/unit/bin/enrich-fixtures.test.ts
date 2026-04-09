@@ -70,8 +70,8 @@ describe("enrich-fixtures CLI", () => {
 
     it("fixture path is constructed correctly", () => {
       const apiName = "test_api"
-      const expectedPath = path.join(process.cwd(), "test/fixtures/wlan/api", `${apiName}.json`)
-      expect(expectedPath).toContain("test/fixtures/wlan/api")
+      const expectedPath = path.join(process.cwd(), "test/fixtures/c/wlan/api", `${apiName}.json`)
+      expect(expectedPath).toContain("test/fixtures/c/wlan/api")
       expect(expectedPath).toContain(".json")
     })
   })
@@ -98,7 +98,7 @@ describe("enrich-fixtures CLI", () => {
 
     it("logs output indicating dry-run simulation", () => {
       const dryRun = true
-      const fixturePath = "test/fixtures/wlan/api/test.json"
+      const fixturePath = "test/fixtures/c/wlan/api/test.json"
 
       if (dryRun) {
         const dryRunMessage = `[DRY-RUN] Would write ${fixturePath}`
@@ -111,7 +111,7 @@ describe("enrich-fixtures CLI", () => {
   describe("error handling", () => {
     it("reports error when fixture file not found", async () => {
       const nonexistentApi = "nonexistent_api_xyz"
-      const fixturePath = path.join(process.cwd(), "test/fixtures/wlan/api", `${nonexistentApi}.json`)
+      const fixturePath = path.join(process.cwd(), "test/fixtures/c/wlan/api", `${nonexistentApi}.json`)
 
       try {
         await fs.readFile(fixturePath, "utf-8")
@@ -153,7 +153,7 @@ describe("enrich-fixtures CLI", () => {
       expect(args.length).toBe(0) // No API specified, defaults to batch
 
       try {
-        const apiDir = path.join(process.cwd(), "test/fixtures/wlan/api")
+        const apiDir = path.join(process.cwd(), "test/fixtures/c/wlan/api")
         const files = await fs.readdir(apiDir)
         const jsonFiles = files.filter((f) => f.endsWith(".json"))
 
@@ -302,10 +302,10 @@ Options:
   describe("fixture path handling", () => {
     it("constructs correct fixture path for API name", () => {
       const apiName = "test_api"
-      const basePath = path.join(process.cwd(), "test/fixtures/wlan/api")
+      const basePath = path.join(process.cwd(), "test/fixtures/c/wlan/api")
       const fixturePath = path.join(basePath, `${apiName}.json`)
 
-      expect(fixturePath).toContain("test/fixtures/wlan/api")
+      expect(fixturePath).toContain("test/fixtures/c/wlan/api")
       expect(fixturePath).toContain(`${apiName}.json`)
     })
 
@@ -320,7 +320,7 @@ Options:
       for (const name of validApiNames) {
         const fixturePath = path.join(
           process.cwd(),
-          "test/fixtures/wlan/api",
+          "test/fixtures/c/wlan/api",
           `${name}.json`,
         )
         expect(fixturePath).toContain(name)

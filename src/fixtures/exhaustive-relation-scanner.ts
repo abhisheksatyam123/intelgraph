@@ -41,7 +41,7 @@ async function queryBackend(request: QueryRequest): Promise<NormalizedQueryRespo
 async function loadFixture(apiName: string): Promise<ApiFixture> {
   const fixturePath = path.join(
     process.cwd(),
-    "test/fixtures/wlan/api",
+    "test/fixtures/c/wlan/api",
     `${apiName}.json`,
   )
 
@@ -59,7 +59,7 @@ async function loadFixture(apiName: string): Promise<ApiFixture> {
 async function saveFixture(apiName: string, fixture: ApiFixture): Promise<void> {
   const fixturePath = path.join(
     process.cwd(),
-    "test/fixtures/wlan/api",
+    "test/fixtures/c/wlan/api",
     `${apiName}.json`,
   )
 
@@ -178,12 +178,12 @@ export interface FixtureEnrichmentReport {
 }
 
 /**
- * Enrich all API fixtures in the test/fixtures/wlan/api directory.
+ * Enrich all API fixtures in the test/fixtures/c/wlan/api directory.
  */
 export async function enrichAllApis(
   snapshotIds: Record<string, number>,
 ): Promise<FixtureEnrichmentReport> {
-  const fixturesDir = path.join(process.cwd(), "test/fixtures/wlan/api")
+  const fixturesDir = path.join(process.cwd(), "test/fixtures/c/wlan/api")
   const files = await fs.readdir(fixturesDir)
   const apiNames = files
     .filter((f) => f.endsWith(".json"))

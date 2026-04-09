@@ -24,7 +24,7 @@ import { join, dirname, basename } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const FIXTURE_ROOT = join(__dirname, "../../fixtures/wlan")
+const FIXTURE_ROOT = join(__dirname, "../../fixtures/c/wlan")
 const API_FIXTURE_DIR = join(FIXTURE_ROOT, "api")
 
 // ── Role detection heuristics ────────────────────────────────────────────────
