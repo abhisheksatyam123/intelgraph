@@ -373,6 +373,91 @@ const clangdCoreExtractor = defineExtractor({
         }
       }
     }
+
+    // ---- Phase 4: struct field access edges via tree-sitter ----
+    //
+    // Walk each function body looking for field_expression (-> access)
+    // and member_expression (. access) nodes. For each, emit either a
+    // `reads_field` or `writes_field` edge depending on context:
+    //   - LHS of assignment_expression → writes_field
+    //   - Everything else → reads_field
+    //
+    // This captures "function X reads struct->field" and "function X
+    // writes struct->field" relations that are critical for data-flow
+    // analysis of C codebases.
+    for (const [file, symbols] of fileSymbols.entries()) {
+      if (ctx.signal.aborted) return
+      const text = ctx.workspace.readFile(file)
+      if (!text) continue
+
+      const root = parseSource(text)
+      if (!root) continue
+
+      // Collect function line ranges for attribution
+      const fnRanges: Array<{ name: string; startLine: number; endLine: number }> = []
+      for (const sym of symbols) {
+        if (sym.kind === "function" && sym.location) {
+          fnRanges.push({
+            name: sym.name,
+            startLine: sym.location.line - 1,
+            endLine: (sym.location.line - 1) + 500,
+          })
+        }
+      }
+
+      // Find all field_expression nodes (ptr->field and obj.field)
+      const fieldExprs = findAllNodes(root, "field_expression")
+      for (const fe of fieldExprs) {
+        const fieldNode = fe.childForFieldName?.("field")
+        const argNode = fe.childForFieldName?.("argument")
+        if (!fieldNode || !argNode) continue
+
+        const fieldName = fieldNode.text
+        const structExpr = argNode.text?.slice(0, 60)
+        if (!fieldName || !structExpr) continue
+
+        const accessLine = fe.startPosition?.row ?? 0
+
+        // Determine if this is a write (LHS of assignment) or read
+        let edgeKind: "reads_field" | "writes_field" = "reads_field"
+        const parent = fe.parent
+        if (parent?.type === "assignment_expression") {
+          const lhs = parent.childForFieldName?.("left")
+          if (lhs && lhs.id === fe.id) {
+            edgeKind = "writes_field"
+          }
+        }
+
+        // Find enclosing function
+        let enclosingFn = "(file-scope)"
+        for (const fn of fnRanges) {
+          if (accessLine >= fn.startLine && accessLine <= fn.endLine) {
+            enclosingFn = fn.name
+            break
+          }
+        }
+
+        yield ctx.edge({
+          payload: {
+            edgeKind,
+            srcSymbolName: enclosingFn,
+            dstSymbolName: `${structExpr}.${fieldName}`,
+            confidence: 0.85,
+            derivation: "clangd",
+            metadata: {
+              structExpr,
+              fieldName,
+              accessPath: `${structExpr}.${fieldName}`,
+            },
+            evidence: {
+              sourceKind: "file_line",
+              location: { filePath: file, line: accessLine + 1 },
+            },
+          },
+        })
+        ctx.metrics.count(`edges.${edgeKind}`)
+      }
+    }
   },
 })
 

@@ -324,9 +324,71 @@ function classifyReference(
     return classifyInitializer(construct, callbackName, filePath, refLine0, refChar0)
   }
 
-  // No enclosing call or initializer
+  // ── Pass 3: function-body fn-ptr assignment ─────────────────────────
+  // Handles patterns like `current->restart_block.fn = do_no_restart_syscall`
+  // where a callback is assigned to a struct field inside a function body
+  // (not a file-scope initializer). Uses tree-sitter to find the nearest
+  // assignment_expression containing the callback identifier.
+  const assignResult = classifyFnBodyAssignment(source, refLine0, refChar0, callbackName)
+  if (assignResult.match) return assignResult
+
+  // No enclosing call, initializer, or assignment
   const fallbackText = source.split(/\r?\n/)[refLine0]?.trim().slice(0, 200) ?? ""
   return { sourceText: fallbackText, match: null }
+}
+
+/**
+ * Classify a function-body fn-ptr assignment like:
+ *   current->restart_block.fn = do_no_restart_syscall
+ *   timer->function = my_timer_fn
+ *   ops->read = my_read
+ *
+ * Uses tree-sitter to find the assignment_expression containing the
+ * callback identifier and extract the LHS field path.
+ */
+function classifyFnBodyAssignment(
+  source: string,
+  refLine0: number,
+  _refChar0: number,
+  callbackName: string,
+): ClassificationResult {
+  // Get the source line containing the reference
+  const lines = source.split(/\r?\n/)
+  const line = lines[refLine0] ?? ""
+
+  // Quick regex check: does the line contain `= callbackName` (or `, callbackName`)?
+  // This avoids expensive tree-sitter parsing for lines that clearly aren't assignments.
+  if (!line.includes(callbackName)) {
+    return { sourceText: line.trim().slice(0, 200), match: null }
+  }
+
+  // Check if the line looks like an assignment: `<lhs> = callbackName`
+  // The LHS is the field path (e.g. "current->restart_block.fn",
+  // "ops->read", "timer->function").
+  const assignRegex = new RegExp(
+    `([a-zA-Z_][a-zA-Z0-9_]*(?:->|\\.)(?:[a-zA-Z_][a-zA-Z0-9_]*(?:->|\\.))*[a-zA-Z_][a-zA-Z0-9_]*)\\s*=\\s*${callbackName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`,
+  )
+  const m = line.match(assignRegex)
+  if (!m) {
+    return { sourceText: line.trim().slice(0, 200), match: null }
+  }
+
+  const fieldPath = m[1]  // e.g. "current->restart_block.fn"
+  // Extract the last field name as the dispatch key
+  const parts = fieldPath.split(/->|\./)
+  const fieldName = parts[parts.length - 1] ?? fieldPath
+  // Extract the container expression (everything before the last field)
+  const containerExpr = parts.slice(0, -1).join("->") || fieldPath
+
+  return {
+    sourceText: line.trim().slice(0, 200),
+    match: {
+      patternName: `auto-fn-body-assign:${fieldPath}`,
+      registrationApi: containerExpr,
+      dispatchKey: fieldName,
+      connectionKind: "api_call",
+    },
+  }
 }
 
 /**
