@@ -11,14 +11,14 @@
 import { createIntelligenceBackend } from "./backend-factory.js"
 import type { LspClientForExtraction, IntelligenceBackend } from "./backend-types.js"
 import { setIntelligenceDeps } from "../tools/index.js"
-import { setDbFoundation, setIngestDeps } from "./tools/index.js"
+import { setDbFoundation, setIngestDeps, setExtractFileDeps } from "./tools/index.js"
 import { getLogger } from "../logging/logger.js"
 import type { ClangdEnricher, CParserEnricher } from "./index.js"
 import type { ILanguageClient } from "../lsp/types.js"
 import { collectIndirectCallers } from "../tools/indirect-callers.js"
 import { BUILT_IN_EXTRACTORS } from "../plugins/index.js"
-import { join } from "node:path"
-import { existsSync } from "node:fs"
+import { join, relative, extname } from "node:path"
+import { existsSync, watch } from "node:fs"
 
 // ── Module-level backend storage for graceful shutdown ──────────────────────
 let _backend: { close: () => Promise<void> } | null = null
@@ -94,6 +94,10 @@ export async function initIntelligenceBackend(
   setIntelligenceDeps(backend.deps)
   setDbFoundation(backend.db)
 
+  // Store DB foundation ref so intelligence_query can auto-resolve snapshotId
+  const { setDbFoundationRef } = await import("../tools/index.js")
+  setDbFoundationRef(backend.db)
+
   // Build an indirect caller resolver closure only when a real language
   // client is available — it needs prepareCallHierarchy and references in
   // addition to the three methods declared in LspClientForExtraction.
@@ -155,7 +159,7 @@ export async function initIntelligenceBackend(
       shutdown: async () => {},
     } as unknown as ILanguageClient)
 
-  setIngestDeps({
+  const ingestDeps = {
     db: backend.db,
     lsp: lspForRunner,
     sink: backend.sink,
@@ -163,58 +167,166 @@ export async function initIntelligenceBackend(
     projection: backend.deps.persistence.graphProjection,
     ingestion: backend.ingestion,
     indirectCallerResolver,
-  })
+  }
+  setIngestDeps(ingestDeps)
+  setExtractFileDeps(ingestDeps)
 
   getLogger().info("intelligence backend: initialised", { dbPath: sqliteDbPath })
 
   // ── Auto-extract if no ready snapshot exists ─────────────────────────
   // For TS/Rust workspaces, clangd can't index the files, so the only
   // way to populate the intelligence graph is to run the extractors
-  // (ts-core, rust-core) explicitly. We do this on first startup if the
-  // SQLite db has no "ready" snapshot for the current workspace root.
+  // (ts-core, rust-core) explicitly.
+  //
+  // Preferred workflow: run `npm run extract` (or `npx tsx src/bin/extract.ts`)
+  // before starting the daemon. The CLI builds .intelgraph/intelligence.db
+  // in one shot, and the daemon reads it instantly.
+  //
+  // Fallback: if no snapshot exists at startup, kick off extraction in the
+  // background so the daemon is responsive immediately. Queries return
+  // not_found until extraction completes.
   const workspaceRoot = process.cwd()
   try {
     const existingSnapshot = await backend.db.getLatestReadySnapshot(workspaceRoot)
 
     if (!existingSnapshot) {
-      getLogger().info("intelligence backend: no ready snapshot — running auto-extraction", { workspaceRoot })
-      const { ExtractorRunner } = await import("./extraction/runner.js")
-      const ref = await backend.db.beginSnapshot({
-        workspaceRoot,
-        compileDbHash: "auto-extract",
-        parserVersion: "0.1.0",
-      })
-      const extractRunner = new ExtractorRunner({
-        snapshotId: ref.snapshotId,
-        workspaceRoot,
-        lsp: lspForRunner,
-        sink: backend.sink,
-        plugins: BUILT_IN_EXTRACTORS,
-      })
-      const report = await extractRunner.run()
-      await backend.db.commitSnapshot(ref.snapshotId)
+      getLogger().info("intelligence backend: no ready snapshot — starting background extraction (run `npm run extract` to pre-build)", { workspaceRoot })
 
-      let totalFacts = 0
-      for (const p of report.perPlugin) {
-        const counters = p.metrics?.counters ?? {}
-        for (const v of Object.values(counters)) {
-          if (typeof v === "number") totalFacts += v
+      // Fire-and-forget: don't block daemon init
+      void (async () => {
+        try {
+          const { ExtractorRunner } = await import("./extraction/runner.js")
+          const ref = await backend.db.beginSnapshot({
+            workspaceRoot,
+            compileDbHash: "auto-extract",
+            parserVersion: "0.1.0",
+          })
+          const extractRunner = new ExtractorRunner({
+            snapshotId: ref.snapshotId,
+            workspaceRoot,
+            lsp: lspForRunner,
+            sink: backend.sink,
+            plugins: BUILT_IN_EXTRACTORS,
+            flushThreshold: 2000,
+          })
+          const report = await extractRunner.run()
+          await backend.db.commitSnapshot(ref.snapshotId)
+
+          let totalFacts = 0
+          for (const p of report.perPlugin) {
+            const counters = p.metrics?.counters ?? {}
+            for (const v of Object.values(counters)) {
+              if (typeof v === "number") totalFacts += v
+            }
+          }
+          getLogger().info("intelligence backend: background extraction complete", {
+            snapshotId: ref.snapshotId,
+            pluginsRun: report.pluginsRun,
+            totalFacts,
+          })
+        } catch (err) {
+          getLogger().warn("intelligence backend: background extraction failed", {
+            error: String(err),
+          })
         }
-      }
-      getLogger().info("intelligence backend: auto-extraction complete", {
-        snapshotId: ref.snapshotId,
-        pluginsRun: report.pluginsRun,
-        totalFacts,
-      })
+      })()
     } else {
-      getLogger().info("intelligence backend: existing snapshot found, skipping auto-extraction", {
+      getLogger().info("intelligence backend: existing snapshot found, skipping extraction", {
         snapshotId: existingSnapshot.snapshotId,
       })
     }
   } catch (err) {
-    getLogger().warn("intelligence backend: auto-extraction failed — continuing without it", {
+    getLogger().warn("intelligence backend: snapshot check failed — continuing without extraction", {
       error: String(err),
     })
+  }
+
+  // ── File watcher for incremental re-extraction ────────────────────────
+  // Watches the workspace for source file changes (TS/JS/Rust) and
+  // re-extracts just the changed file. Runs in the daemon process so
+  // there's no cold start — re-extraction takes ~100-200ms per file.
+  // Same as clangd's textDocument/didSave re-indexing.
+  const WATCHED_EXTS = new Set([".ts", ".tsx", ".js", ".jsx", ".mts", ".cts", ".mjs", ".cjs", ".rs"])
+  const SKIP_PATTERNS = ["node_modules", "dist", "build", ".git", "target", ".intelgraph"]
+
+  const pendingExtracts = new Map<string, ReturnType<typeof setTimeout>>()
+
+  function shouldWatch(filePath: string): boolean {
+    const ext = extname(filePath)
+    if (!WATCHED_EXTS.has(ext)) return false
+    for (const skip of SKIP_PATTERNS) {
+      if (filePath.includes(`/${skip}/`) || filePath.includes(`\\${skip}\\`)) return false
+    }
+    return true
+  }
+
+  async function extractSingleFile(absPath: string): Promise<void> {
+    try {
+      const snapshot = await backend.db.getLatestReadySnapshot(workspaceRoot)
+      if (!snapshot) return
+
+      const relPath = relative(workspaceRoot, absPath)
+      const sinkAsStore = backend.sink as import("./db/sqlite/graph-store.js").SqliteGraphStore
+      if (typeof sinkAsStore.purgeFile === "function") {
+        await sinkAsStore.purgeFile(snapshot.snapshotId, relPath)
+      }
+
+      const { ExtractorRunner } = await import("./extraction/runner.js")
+      const runner = new ExtractorRunner({
+        snapshotId: snapshot.snapshotId,
+        workspaceRoot,
+        lsp: lspForRunner,
+        sink: backend.sink,
+        plugins: BUILT_IN_EXTRACTORS,
+        flushThreshold: 500,
+        fileFilter: new Set([absPath]),
+      })
+      const report = await runner.run()
+      const facts = report.perPlugin.reduce((n, p) => n + p.factsYielded, 0)
+      if (facts > 0) {
+        getLogger().info("intelligence: incremental re-extract", { file: relPath, facts, ms: report.totalDurationMs })
+      }
+    } catch (err) {
+      getLogger().warn("intelligence: incremental re-extract failed", {
+        file: absPath,
+        error: String(err),
+      })
+    }
+  }
+
+  try {
+    const watcher = watch(workspaceRoot, { recursive: true }, (_event, filename) => {
+      if (!filename || !shouldWatch(filename)) return
+      const absPath = join(workspaceRoot, filename)
+
+      // Debounce: if the same file changes multiple times quickly (e.g.
+      // formatter runs after save), only extract once after 300ms of quiet.
+      const existing = pendingExtracts.get(absPath)
+      if (existing) clearTimeout(existing)
+      pendingExtracts.set(
+        absPath,
+        setTimeout(() => {
+          pendingExtracts.delete(absPath)
+          void extractSingleFile(absPath)
+        }, 300),
+      )
+    })
+
+    // Clean up watcher on shutdown
+    const origClose = _backend?.close
+    if (_backend && origClose) {
+      _backend.close = async () => {
+        watcher.close()
+        for (const timer of pendingExtracts.values()) clearTimeout(timer)
+        pendingExtracts.clear()
+        await origClose.call(_backend)
+      }
+    }
+
+    getLogger().info("intelligence: file watcher active — saves trigger incremental re-extraction")
+  } catch {
+    // fs.watch with recursive may not be supported on all platforms
+    getLogger().info("intelligence: file watcher not available — use `npm run extract` for updates")
   }
 
   return true

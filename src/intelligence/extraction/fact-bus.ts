@@ -345,7 +345,7 @@ export class FactBus {
     // Standalone evidence → graph evidence rows
     for (const fact of this.evidence.values()) {
       // Standalone evidence references an existing fact by canonical key.
-      // The Neo4j layer keys evidence by edge_id, so we synthesize one
+      // The storage layer keys evidence by edge_id, so we synthesize one
       // from the attached fact's canonical key. The query layer can
       // re-resolve by canonical key when needed.
       const synthesizedId = `synth-evidence:${fact.attachedTo.canonicalKey}`
@@ -383,7 +383,7 @@ export class FactBus {
       )
     }
 
-    // TypeFact and AggregateFieldFact are not written to Neo4j yet —
+    // TypeFact and AggregateFieldFact are not written to SQLite yet —
     // matches the existing materializeSnapshot() behavior which only
     // counts them in the report. Once Problem 3 lands and IGraphStore
     // adds proper type/field tables, these get serialized too.
@@ -393,7 +393,7 @@ export class FactBus {
 
   /**
    * Embed provenance into the row's payload/metadata so it survives the
-   * Neo4j round-trip. Plugins downstream of the bus can read producedBy
+   * storage round-trip. Plugins downstream of the bus can read producedBy
    * from the row metadata to do their own attribution.
    */
   private injectProvenance<

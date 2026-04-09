@@ -1,54 +1,21 @@
 {
-  "$schema": "https://raw.githubusercontent.com/your-org/clangd-mcp/main/schema.json",
-  "version": "1.0.0",
-  
-  "_comment": "Unified clangd-mcp configuration - serves as persistent memory across sessions",
-  
+  "$schema": "https://raw.githubusercontent.com/opencode-ai/intelgraph/main/schema.json",
+
   "enabled": true,
-  "clangd": "/usr/local/bin/clangd-20",
+  "language": "typescript",
+  "intelligence": "auto",
+
+  "_comment_language": "c | cpp | typescript | javascript | rust — determines the intelligence backend",
+  "_comment_intelligence": "auto (detect from language) | lsp (clangd) | graph (SQLite, run npm run extract first)",
+
+  "server": "clangd",
   "args": [
     "--background-index",
     "--enable-config",
     "--log=error"
   ],
-  
+
   "compileCommandsCleaning": {
-    "_comment": "Automatic compile_commands.json cleaning on startup",
-    "enabled": true,
-    "removeTests": false,
-    "cleanFlags": true,
-    "_comment_lastCleanedHash": "Auto-managed: hash of last cleaned compile_commands.json",
-    "_comment_lastCleanedAt": "Auto-managed: timestamp of last cleaning",
-    "_comment_lastStats": "Auto-managed: statistics from last cleaning"
-  },
-  
-  "daemon": {
-    "_comment": "Auto-managed: clangd daemon state (do not edit manually)",
-    "_comment_port": "TCP port for clangd bridge",
-    "_comment_bridgePid": "Bridge process PID",
-    "_comment_clangdPid": "Clangd process PID",
-    "_comment_httpPort": "HTTP daemon port",
-    "_comment_httpPid": "HTTP daemon PID",
-    "_comment_startedAt": "When the daemon was started"
-  },
-  
-  "index": {
-    "_comment": "Auto-managed: background index state",
-    "_comment_ready": "Whether background index is ready",
-    "_comment_progress": "Index build progress (0-100)",
-    "_comment_lastCheckedAt": "Last index status check timestamp"
-  },
-  
-  "memory": {
-    "_comment": "Persistent session memory across restarts",
-    "recentFiles": [],
-    "dismissedWarnings": [],
-    "preferences": {
-      "logLevel": "info",
-      "autoRestart": true,
-      "maxReconnectAttempts": 5
-    }
-  },
-  
-  "notes": "Custom configuration for this workspace. Add your notes here."
+    "preflightPolicy": "fix"
+  }
 }

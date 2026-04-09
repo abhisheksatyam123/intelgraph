@@ -10,6 +10,17 @@ import { resolveConfigPath } from "./config.js"
 
 // ── Workspace config (.intelgraph.json / legacy .clangd-mcp.json) ───────────
 
+/**
+ * Intelligence backend query strategy.
+ *   - "graph" → SQLite intelligence graph. All languages. Provides direct
+ *               callers, indirect/runtime callers, dispatch chains, callback
+ *               registrations, HW entities — everything the extractors found.
+ *               This is the default for ALL languages.
+ *   - "lsp"   → clangd LSP only. Direct call hierarchy only — no indirect
+ *               callers, no runtime chains, no HW entities. Legacy mode.
+ */
+export type IntelligenceBackendKind = "graph" | "lsp"
+
 export interface WorkspaceConfig {
   root?: string
   /** Generic server path. Replaces clangd (backward-compat alias). */
@@ -19,24 +30,27 @@ export interface WorkspaceConfig {
   /** Server arguments. */
   args?: string[]
   enabled?: boolean
-  /** Language hint (e.g., "c", "cpp", "rust", "python"). Defaults to "c" for backward compat. */
+  /**
+   * Primary language of the workspace.
+   * Defaults to "c" for backward compat.
+   */
   language?: string
+  /**
+   * Intelligence backend strategy. Defaults to "graph" (SQLite intelligence
+   * graph) which works for all languages and provides indirect/runtime
+   * callers. Set to "lsp" to use clangd-only direct call hierarchy (C/C++).
+   */
+  intelligence?: IntelligenceBackendKind
   compileCommandsCleaning?: {
     preflightPolicy?: "reject" | "fix" | "remap"
   }
-  intelligenceLocal?: {
-    enabled?: boolean
-    composeFile?: string
-    startScript?: string
-    services?: Record<string, unknown>
-    env?: {
-      INTELLIGENCE_NEO4J_URL?: string
-      INTELLIGENCE_NEO4J_USER?: string
-      INTELLIGENCE_NEO4J_PASSWORD?: string
-      [key: string]: string | undefined
-    }
-    storage?: Record<string, string>
-  }
+}
+
+/** Resolve the effective intelligence backend for a workspace config. */
+export function resolveIntelligenceBackend(ws: WorkspaceConfig): "lsp" | "graph" {
+  if (ws.intelligence === "lsp") return "lsp"
+  // Default: always graph — it has everything (direct + indirect + runtime)
+  return "graph"
 }
 
 export function readWorkspaceConfig(dir: string): WorkspaceConfig {

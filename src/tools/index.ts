@@ -42,9 +42,29 @@ import {
   getIntelligenceDeps,
 } from "./dispatch.js"
 
-export { setDbFoundation, setIngestDeps } from "../intelligence/tools/index.js"
+export { setDbFoundation, setIngestDeps, setExtractFileDeps } from "../intelligence/tools/index.js"
 export { setUnifiedBackend, setIntelligenceDeps } from "./dispatch.js"
 export type { ToolDef }
+
+import type { WorkspaceConfig } from "../config/bootstrap.js"
+
+// Module-level workspace config, set once during init so tools can read it.
+let _workspaceConfig: WorkspaceConfig | null = null
+let _resolvedBackendKind: "lsp" | "graph" | null = null
+
+export function setWorkspaceIntelligenceConfig(ws: WorkspaceConfig, backend: "lsp" | "graph"): void {
+  _workspaceConfig = ws
+  _resolvedBackendKind = backend
+}
+
+export function getResolvedBackendKind(): "lsp" | "graph" {
+  return _resolvedBackendKind ?? "lsp"
+}
+
+// DB foundation ref for auto-resolving snapshotId in intelligence_query
+import type { IDbFoundation } from "../intelligence/contracts/db-foundation.js"
+let _dbFoundationRef: IDbFoundation | null = null
+export function setDbFoundationRef(db: IDbFoundation): void { _dbFoundationRef = db }
 
 // Re-export formatters for backward compatibility (tests import from tools/index)
 export {
@@ -554,6 +574,27 @@ export const TOOLS: ToolDef[] = [
     },
   },
 
+  // ── intelligence_backend_info ────────────────────────────────────────────
+  // Returns the workspace intelligence backend kind so the TUI can route
+  // symbol resolution and caller queries to the right backend.
+  {
+    name: "intelligence_backend_info",
+    description:
+      "Returns the workspace intelligence backend configuration. " +
+      "The 'backend' field is either 'lsp' (clangd, for C/C++) or 'graph' (SQLite, for TS/Rust). " +
+      "The TUI uses this to decide whether to call lsp_hover/get_callers or intelligence_query.",
+    inputSchema: z.object({}),
+    execute: async () => {
+      const ws = _workspaceConfig ?? {}
+      const backendKind = _resolvedBackendKind ?? "lsp"
+      return JSON.stringify({
+        backend: backendKind,
+        language: ws.language ?? "c",
+        hasSnapshot: Boolean(getIntelligenceDeps()),
+      })
+    },
+  },
+
   // ── lsp_index_status ──────────────────────────────────────────────────────
   {
     name: "lsp_index_status",
@@ -657,7 +698,7 @@ export const TOOLS: ToolDef[] = [
       "All supported intents: " + QUERY_INTENTS.join(", "),
     inputSchema: z.object({
       intent: z.enum(QUERY_INTENTS).describe("Query intent"),
-      snapshotId: z.number().int().positive().describe("Snapshot ID to query against"),
+      snapshotId: z.number().int().nonnegative().optional().describe("Snapshot ID to query against (0 or omitted = latest ready snapshot)"),
       apiName: z.string().optional().describe("API/function name (required for caller/callee/dispatch/log intents)"),
       structName: z.string().optional().describe("Struct name (required for struct ownership intents)"),
       fieldName: z.string().optional().describe("Field name (required for find_field_access_path)"),
@@ -678,10 +719,24 @@ export const TOOLS: ToolDef[] = [
         return JSON.stringify(toLegacyFlatResponse(toNodeErrorResponse({
           intent: args.intent,
           snapshotId: typeof args.snapshotId === "number" ? args.snapshotId : undefined,
-          errors: ["intelligence_query: backend not initialized. Set INTELLIGENCE_NEO4J_URL to enable."],
+          errors: ["intelligence_query: intelligence backend not initialized."],
         })))
       }
-      const validated = validateQueryRequest(args)
+      // Auto-resolve snapshotId to latest ready snapshot when 0 or absent.
+      // This lets the TUI skip snapshot initialization and query directly.
+      let resolvedArgs = args
+      if (!args.snapshotId || args.snapshotId <= 0) {
+        const dbFoundation = _dbFoundationRef
+        if (dbFoundation) {
+          try {
+            const latest = await dbFoundation.getLatestReadySnapshot(process.cwd())
+            if (latest?.snapshotId) {
+              resolvedArgs = { ...args, snapshotId: latest.snapshotId }
+            }
+          } catch { /* use args as-is */ }
+        }
+      }
+      const validated = validateQueryRequest(resolvedArgs)
       if (!validated.ok) {
         return JSON.stringify(toLegacyFlatResponse(toNodeErrorResponse({
           intent: args.intent,

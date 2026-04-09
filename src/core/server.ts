@@ -110,7 +110,7 @@ export async function startStdio(deps: BackendDeps): Promise<void> {
 
 // How long the HTTP daemon stays alive with zero active sessions before auto-exiting.
 // This prevents permanent daemon accumulation when all clients disconnect.
-// Reduced to 5 minutes so the Neo4j backend doesn't remain a long-lived daemon.
+// Reduced to 5 minutes so the backend doesn't remain a long-lived daemon.
 const HTTP_IDLE_TIMEOUT_MS = 5 * 60 * 1000 // 5 minutes
 
 export async function startHttp(
@@ -124,7 +124,7 @@ export async function startHttp(
   // ── Idle auto-exit: shut down when no sessions remain for too long ──────
   let idleTimer: ReturnType<typeof setTimeout> | null = null
 
-  // Graceful shutdown: close Neo4j backend before exiting
+  // Graceful shutdown: close intelligence backend before exiting
   const gracefulExit = async (reason: string): Promise<void> => {
     log("INFO", `HTTP daemon ${reason} — closing intelligence backend`, {
       port, pid: process.pid,

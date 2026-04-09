@@ -1,17 +1,14 @@
 /**
  * db-lookup.ts — SQLite implementation of DbLookupRepository.
  *
- * This is the Phase 3 port of src/intelligence/db/neo4j/db-lookup.ts.
- * Same intent vocabulary (22 intents), same row shapes, same fallback
- * semantics. The data model is identical: graph_nodes + graph_edges +
- * graph_observations, keyed by (snapshot_id, id).
+ * SQLite implementation of DbLookupRepository.
+ * 22 intents, same row shapes, same fallback semantics. The data model:
+ * graph_nodes + graph_edges + graph_observations, keyed by (snapshot_id, id).
  *
  * Implementation notes:
  *
- * 1. The Neo4j queries were all three-way joins between GraphNode,
- *    GraphEdge, and GraphNode again — never real Cypher path traversal.
- *    Each Cypher query ports to a standard SQL INNER JOIN with two
- *    self-joins on graph_nodes. The pattern is:
+ * 1. The queries are three-way joins between GraphNode, GraphEdge, and
+ *    GraphNode again. The pattern is:
  *
  *      SELECT ... FROM graph_edges e
  *      INNER JOIN graph_nodes src ON e.src_node_id = src.node_id
@@ -144,10 +141,53 @@ export class SqliteDbLookup implements DbLookupRepository {
   // Intent dispatch
   // -------------------------------------------------------------------------
 
+  /**
+   * Resolve bare names (e.g. "getLogger") to their canonical forms
+   * (e.g. "module:src/logging/logger.ts#getLogger") by looking up
+   * graph_nodes. If a name already matches a canonical_name exactly,
+   * it is kept. Otherwise, we look for nodes whose canonical_name ends
+   * with "#<name>" (module-qualified format from ts-core/rust-core).
+   */
+  private resolveNames(snapshotId: number, names: string[]): string[] {
+    if (names.length === 0) return names
+    const resolved = new Set<string>()
+    for (const name of names) {
+      // Always keep the original name (works for C where canonical == bare name)
+      resolved.add(name)
+      // Check for module-qualified matches: canonical_name ending with #<name>
+      const suffix = `#${name}`
+      const matches = this.raw
+        .prepare(
+          `SELECT canonical_name FROM graph_nodes
+           WHERE snapshot_id = ? AND canonical_name LIKE ?
+           LIMIT 20`,
+        )
+        .all(snapshotId, `%${suffix}`) as Array<{ canonical_name: string }>
+      for (const m of matches) {
+        // Verify exact suffix match (LIKE '%#name' could over-match e.g. '#myGetLogger')
+        if (m.canonical_name.endsWith(suffix)) {
+          resolved.add(m.canonical_name)
+        }
+      }
+    }
+    return [...resolved]
+  }
+
+  /**
+   * Resolve a single bare name to its canonical form. Returns the first
+   * canonical match, or the original value if no resolution is found.
+   */
+  private resolveSingle(snapshotId: number, name: string | undefined): string | undefined {
+    if (!name) return name
+    const resolved = this.resolveNames(snapshotId, [name])
+    // Prefer the resolved canonical name over the bare name
+    return resolved.find((n) => n !== name) ?? name
+  }
+
   private dispatch(request: QueryRequest): Array<Record<string, unknown>> {
     const { intent, snapshotId } = request
     const limit = request.limit ?? 200
-    const apiNames = buildApiNames(request)
+    const apiNames = this.resolveNames(snapshotId, buildApiNames(request))
 
     switch (intent) {
       case "who_calls_api":
@@ -169,16 +209,16 @@ export class SqliteDbLookup implements DbLookupRepository {
         return this.dispatchSites(snapshotId, apiNames, limit)
       case "find_struct_writers":
       case "where_struct_modified": {
-        const structNames = request.structName ? [request.structName] : apiNames
+        const structNames = this.resolveNames(snapshotId, request.structName ? [request.structName] : apiNames)
         return this.structAccess(snapshotId, structNames, "writes_field", limit)
       }
       case "find_struct_readers":
       case "where_struct_initialized": {
-        const structNames = request.structName ? [request.structName] : apiNames
+        const structNames = this.resolveNames(snapshotId, request.structName ? [request.structName] : apiNames)
         return this.structAccess(snapshotId, structNames, "reads_field", limit)
       }
       case "find_struct_owners": {
-        const structNames = request.structName ? [request.structName] : apiNames
+        const structNames = this.resolveNames(snapshotId, request.structName ? [request.structName] : apiNames)
         return this.structAccess(snapshotId, structNames, "owns", limit)
       }
       case "find_api_struct_writes":
@@ -188,7 +228,7 @@ export class SqliteDbLookup implements DbLookupRepository {
       case "find_field_access_path":
         return this.fieldAccessPath(snapshotId, request.structName, request.fieldName, limit)
       case "show_cross_module_path":
-        return this.crossModulePath(snapshotId, request.srcApi, request.dstApi, limit)
+        return this.crossModulePath(snapshotId, this.resolveSingle(snapshotId, request.srcApi), this.resolveSingle(snapshotId, request.dstApi), limit)
       case "show_hot_call_paths":
         return this.hotCallPaths(snapshotId, apiNames, limit)
       case "why_api_invoked":
@@ -240,8 +280,8 @@ export class SqliteDbLookup implements DbLookupRepository {
       case "find_data_path":
         return this.dataPath(
           snapshotId,
-          request.srcApi ?? "",
-          request.dstApi ?? "",
+          this.resolveSingle(snapshotId, request.srcApi) ?? "",
+          this.resolveSingle(snapshotId, request.dstApi) ?? "",
           request.depth ?? 6,
           limit,
         )
@@ -289,8 +329,8 @@ export class SqliteDbLookup implements DbLookupRepository {
       case "find_call_chain":
         return this.callChain(
           snapshotId,
-          request.srcApi ?? "",
-          request.dstApi ?? "",
+          this.resolveSingle(snapshotId, request.srcApi) ?? "",
+          this.resolveSingle(snapshotId, request.dstApi) ?? "",
           request.depth ?? 6,
           limit,
         )
@@ -336,8 +376,8 @@ export class SqliteDbLookup implements DbLookupRepository {
       case "find_module_interactions":
         return this.moduleInteractions(
           snapshotId,
-          request.srcApi ?? "",
-          request.dstApi ?? "",
+          this.resolveSingle(snapshotId, request.srcApi) ?? "",
+          this.resolveSingle(snapshotId, request.dstApi) ?? "",
           limit,
         )
       case "find_modules_overview":
@@ -2200,6 +2240,9 @@ export class SqliteDbLookup implements DbLookupRepository {
     limit: number,
   ): Array<Record<string, unknown>> {
     if (!filePath) return []
+    // Support both absolute and relative (workspace-relative) file paths.
+    // The stored location.filePath may be absolute; try exact match first,
+    // then fall back to a suffix match for relative paths.
     const sql = `
       SELECT
         canonical_name,
@@ -2208,13 +2251,15 @@ export class SqliteDbLookup implements DbLookupRepository {
         json_extract(payload, '$.metadata.endLine') AS end_line
       FROM graph_nodes
       WHERE snapshot_id = ?
-        AND json_extract(location, '$.filePath') = ?
+        AND (json_extract(location, '$.filePath') = ?
+             OR json_extract(location, '$.filePath') LIKE ?)
       ORDER BY json_extract(location, '$.line') ASC, canonical_name ASC
       LIMIT ?
     `
+    const suffixPattern = `%/${filePath}`
     const rows = this.raw
       .prepare(sql)
-      .all(snapshotId, filePath, limit) as Array<Record<string, unknown>>
+      .all(snapshotId, filePath, suffixPattern, limit) as Array<Record<string, unknown>>
     return rows.map((obj) => ({
       kind: obj.kind ?? "function",
       canonical_name: obj.canonical_name,
@@ -2430,6 +2475,7 @@ export class SqliteDbLookup implements DbLookupRepository {
     limit: number,
   ): Array<Record<string, unknown>> {
     if (!filePath || lineNumber <= 0) return []
+    const suffixPattern = `%/${filePath}`
     const sql = `
       SELECT
         canonical_name,
@@ -2439,11 +2485,13 @@ export class SqliteDbLookup implements DbLookupRepository {
         json_extract(location, '$.line') AS start_line
       FROM graph_nodes
       WHERE snapshot_id = ?
-        AND json_extract(location, '$.filePath') = ?
+        AND (json_extract(location, '$.filePath') = ?
+             OR json_extract(location, '$.filePath') LIKE ?)
         AND json_extract(location, '$.line') <= ?
         AND COALESCE(json_extract(payload, '$.metadata.endLine'), json_extract(location, '$.line')) >= ?
-        AND kind != 'module'
       ORDER BY
+        -- Prefer non-module symbols (narrower scope) over the module itself
+        CASE WHEN kind = 'module' THEN 1 ELSE 0 END ASC,
         (COALESCE(json_extract(payload, '$.metadata.endLine'), json_extract(location, '$.line'))
           - json_extract(location, '$.line')) ASC,
         json_extract(location, '$.line') DESC
@@ -2451,7 +2499,7 @@ export class SqliteDbLookup implements DbLookupRepository {
     `
     const rows = this.raw
       .prepare(sql)
-      .all(snapshotId, filePath, lineNumber, lineNumber, limit) as Array<
+      .all(snapshotId, filePath, suffixPattern, lineNumber, lineNumber, limit) as Array<
       Record<string, unknown>
     >
     return rows.map((obj) => ({

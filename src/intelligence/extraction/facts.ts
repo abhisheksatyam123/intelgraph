@@ -3,7 +3,7 @@
  *
  * A Fact is the unit a plugin emits. Each kind wraps an existing row type
  * from `../contracts/common.ts` so the FactBus can pass facts straight
- * through to the existing Neo4j sink without an intermediate translation.
+ * through to the storage sink without an intermediate translation.
  *
  * Plugins do NOT construct Fact objects directly. They call the builder
  * methods on `ctx` (`ctx.symbol(...)`, `ctx.edge(...)`, `ctx.evidence(...)`,
@@ -241,7 +241,7 @@ export class FactValidationError extends Error {
  * description of which producer emitted what offending fact.
  *
  * The validation rules are intentionally minimal: only fields that are
- * required for canonical-key derivation, dedup, and downstream Neo4j writes
+ * required for canonical-key derivation, dedup, and downstream SQLite writes
  * are checked. Schema-level richness checks (e.g. is this confidence value
  * sensible) are out of scope here — they belong to the query layer.
  */

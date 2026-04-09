@@ -10,10 +10,11 @@
     "intelgraph": "./dist/index.js"
   },
   "scripts": {
-    "build": "/usr2/adagur/.bun/bin/bun build ./src/index.ts --outfile ./dist/index.js --target node --format esm --external better-sqlite3 && /usr2/adagur/.bun/bin/bun build ./src/bridge/index.ts --outfile ./dist/bridge.js --target node --format esm",
-    "dev": "/usr2/adagur/.bun/bin/bun run ./src/index.ts",
-    "enrich:fixtures": "/usr2/adagur/.bun/bin/bun run ./src/bin/enrich-fixtures.ts",
-    "audit:fixtures": "/usr2/adagur/.bun/bin/bun run ./src/bin/audit-fixtures.ts",
+    "build": "bun build ./src/index.ts --outfile ./dist/index.js --target node --format esm --external better-sqlite3 && bun build ./src/bridge/index.ts --outfile ./dist/bridge.js --target node --format esm",
+    "dev": "bun run ./src/index.ts",
+    "enrich:fixtures": "bun run ./src/bin/enrich-fixtures.ts",
+    "audit:fixtures": "bun run ./src/bin/audit-fixtures.ts",
+    "extract": "npx tsx ./src/bin/extract.ts",
     "snapshot:stats": "npx tsx ./src/bin/snapshot-stats.ts",
     "test": "vitest run",
     "test:unit": "vitest run test/unit/",

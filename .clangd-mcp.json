@@ -1,29 +1,14 @@
 {
-  "clangd": "clangd",
+  "enabled": true,
+  "language": "typescript",
+  "intelligence": "graph",
+  "server": "clangd",
   "args": [
     "--background-index",
     "--enable-config",
     "--log=error"
   ],
-  "enabled": true,
   "compileCommandsCleaning": {
-    "preflightPolicy": "fix",
-    "preflight": {
-      "requireZeroUnmatched": false,
-      "preflightOk": true
-    }
-  },
-  "intelligenceLocal": {
-    "enabled": true,
-    "composeFile": "docker-compose.intelligence.local.yml",
-    "env": {
-      "INTELLIGENCE_NEO4J_URL": "bolt://localhost:57687",
-      "INTELLIGENCE_NEO4J_USER": "neo4j",
-      "INTELLIGENCE_NEO4J_PASSWORD": "neo4j1234"
-    },
-    "storage": {
-      "neo4jDataDir": ".intelligence-data/neo4j/data",
-      "neo4jLogsDir": ".intelligence-data/neo4j/logs"
-    }
+    "preflightPolicy": "fix"
   }
 }

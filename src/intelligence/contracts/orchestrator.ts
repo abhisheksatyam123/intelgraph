@@ -401,7 +401,7 @@ export function decideOrchestrationAction(state: OrchestrationState): Orchestrat
   if (llmAttempt?.status === "success") {
     return { type: "retry_lookup" }
   }
-  if (llmAttempt?.status === "failed") {
+  if (llmAttempt?.status === "failed" || llmAttempt?.status === "skipped") {
     return { type: "return_not_found" }
   }
 

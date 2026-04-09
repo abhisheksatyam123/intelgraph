@@ -1,19 +1,15 @@
 /**
  * schema.ts — Drizzle schema for the intelligence graph.
  *
- * Five tables mirror the Neo4j labels the legacy layer used:
+ * Five core tables for the intelligence graph:
  *   graph_snapshots
  *   graph_nodes
  *   graph_edges
  *   graph_evidence
  *   graph_observations
  *
- * We model edges as rows with src_node_id / dst_node_id foreign keys
- * (not as native graph relationships) because the existing query code
- * already treated them that way — the Neo4j schema was a triple store
- * dressed up in Cypher syntax, not a native-graph layout. Keeping the
- * same shape makes porting the 22 intent queries a mechanical JOIN
- * rewrite rather than a data-model redesign.
+ * Edges are rows with src_node_id / dst_node_id foreign keys.
+ * The query code uses standard SQL JOINs across the 22 intent queries.
  *
  * JSON-shaped fields (`location`, `payload`, `metadata`) use Drizzle's
  * `text({ mode: 'json' })` column mode so Drizzle auto-serializes and

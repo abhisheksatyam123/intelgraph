@@ -1,8 +1,7 @@
 /**
  * backend-types.ts — storage-agnostic types for the intelligence backend.
  *
- * Used to live inside backend-factory.ts (which was Neo4j-specific). After
- * the SQLite migration these types stay relevant: they describe the
+ * Extracted from backend-factory.ts to stay storage-agnostic. They describe the
  * IntelligenceBackend shape every storage implementation must satisfy and
  * the narrow LSP client surface that ingest paths actually depend on.
  */

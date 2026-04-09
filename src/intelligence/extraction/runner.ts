@@ -77,6 +77,14 @@ export interface ExtractorRunnerOptions {
     level: "debug" | "info" | "warn" | "error",
     line: string,
   ) => void
+  /**
+   * Optional file filter for incremental extraction. When set, only
+   * files whose absolute path is in this set will be returned by
+   * ctx.workspace.walkFiles(). Plugins that call walkFiles() will
+   * only see the filtered subset, effectively limiting extraction to
+   * changed files.
+   */
+  fileFilter?: Set<string>
 }
 
 export type PluginRunStatus = "success" | "error" | "skipped"
@@ -136,7 +144,14 @@ export class ExtractorRunner {
     })
     const treesitterService = new TreeSitterServiceImpl()
     const ripgrepService = new RipgrepServiceImpl(this.opts.workspaceRoot)
-    const workspaceService = new WorkspaceServiceImpl(this.opts.workspaceRoot)
+    const baseWorkspaceService = new WorkspaceServiceImpl(this.opts.workspaceRoot)
+
+    // When a fileFilter is set, wrap the workspace service so walkFiles()
+    // only returns files in the filter set. This enables incremental
+    // extraction — plugins only see changed files.
+    const workspaceService: WorkspaceService = this.opts.fileFilter
+      ? new FilteredWorkspaceService(baseWorkspaceService, this.opts.fileFilter)
+      : baseWorkspaceService
 
     // ---- Workspace probe ----
     const probe: WorkspaceProbe = {
@@ -247,7 +262,7 @@ export class ExtractorRunner {
     lspService: LspServiceImpl
     treesitterService: TreeSitterServiceImpl
     ripgrepService: RipgrepServiceImpl
-    workspaceService: WorkspaceServiceImpl
+    workspaceService: WorkspaceService
   }): Promise<PluginRunReport> {
     const { plugin, bus, lspService, treesitterService, ripgrepService, workspaceService } = args
     const start = Date.now()
@@ -300,6 +315,36 @@ export class ExtractorRunner {
 }
 
 // ---------------------------------------------------------------------------
+// FilteredWorkspaceService — wraps a WorkspaceService to only return files
+// in a given set. Used by the runner for incremental extraction.
+// ---------------------------------------------------------------------------
+
+import type { WorkspaceService, WalkFilesOptions } from "./services/workspace-service.js"
+
+class FilteredWorkspaceService implements WorkspaceService {
+  constructor(
+    private readonly inner: WorkspaceServiceImpl,
+    private readonly allowedFiles: Set<string>,
+  ) {}
+
+  get root(): string { return this.inner.root }
+  get hasCompileCommands(): boolean { return this.inner.hasCompileCommands }
+
+  async walkFiles(opts?: WalkFilesOptions): Promise<string[]> {
+    const allFiles = await this.inner.walkFiles(opts)
+    return allFiles.filter((f) => this.allowedFiles.has(f))
+  }
+
+  readFile(filePath: string): string | undefined {
+    return this.inner.readFile(filePath)
+  }
+
+  compileCommands() {
+    return this.inner.compileCommands()
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Convenience: aggregate report → existing IngestReport shape
 // ---------------------------------------------------------------------------
 
@@ -310,7 +355,7 @@ export class ExtractorRunner {
  *
  * Note: type/field/runtime/log/timer counters are not yet populated by
  * the new pipeline (those facts are emitted but not yet serialized to
- * Neo4j tables — see Problem 3 for IGraphStore extensions). For now they
+ * storage tables — see Problem 3 for IGraphStore extensions). For now they
  * are mirrored from the bus's by-kind counts.
  */
 export function runnerReportToIngestCounts(report: RunnerReport): {

@@ -87,7 +87,7 @@ export const ingestInputSchema = z.object({
   compileDbHash: z.string().optional().describe("Hash of compile_commands.json (auto-computed if omitted)"),
   parserVersion: z.string().optional().describe("Parser version string (default: 1.0.0)"),
   fileLimit: z.number().int().positive().optional().describe("Max files to extract (default: 200)"),
-  syncProjection: z.boolean().optional().describe("Sync Neo4j projection after ingest (default: true)"),
+  syncProjection: z.boolean().optional().describe("Sync projection after ingest (default: true)"),
   maxRuntimeTargets: z.number().int().positive().optional().describe("Max function symbols to resolve indirect callers for (default: 200)"),
 })
 
@@ -206,7 +206,7 @@ function graphNodesToRuntimeCallerRows(
 
 export async function executeIngestTool(args: z.infer<typeof ingestInputSchema>): Promise<string> {
   if (!INGEST_DEPS) {
-    return "intelligence_ingest: backend not initialized. Set INTELLIGENCE_NEO4J_URL to enable."
+    return "intelligence_ingest: intelligence backend not initialized."
   }
   const { db: DB_FOUNDATION, projection: GRAPH_PROJECTION } = INGEST_DEPS
 

@@ -1,8 +1,8 @@
 /**
  * foundation.ts — SQLite implementation of IDbFoundation, via Drizzle.
  *
- * Mirrors Neo4jDbFoundation but talks to better-sqlite3 through the
- * Drizzle ORM. Snapshot lifecycle is the entirety of this class; the
+ * SQLite implementation of IDbFoundation, via Drizzle + better-sqlite3.
+ * Snapshot lifecycle is the entirety of this class; the
  * write path for nodes/edges lives in SqliteGraphStore.
  *
  * Database lifetime: the Drizzle db handle is passed in, not owned. A
@@ -113,7 +113,7 @@ export class SqliteDbFoundation implements IDbFoundation {
   }
 
   async withTransaction<T>(fn: (tx: DbTxContext) => Promise<T>): Promise<T> {
-    // The legacy Neo4j implementation returned an empty query stub — no
+    // The legacy implementation returned an empty query stub — no
     // consumer actually exercises withTransaction's query() method today.
     // We match that behavior. Real transactions on the write path use
     // db.transaction(() => { ... }) inside SqliteGraphStore.

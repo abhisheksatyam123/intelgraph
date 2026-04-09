@@ -63,7 +63,6 @@ import { LspClient } from "./lsp/index.js"
 import { startHttp, startStdio } from "./core/server.js"
 import { initLogger, log, logError, getLogFile } from "./logging/logger.js"
 import { initIntelligenceBackend } from "./intelligence/init.js"
-import { ensureLocalIntelligenceRuntime } from "./intelligence/local-runtime.js"
 import { IndexTracker } from "./tracking/index.js"
 import {
   normaliseRoot,
@@ -73,6 +72,7 @@ import {
   parseArgs,
   readWorkspaceConfig,
   retryWithBackoff,
+  resolveIntelligenceBackend,
 } from "./config/bootstrap.js"
 import {
   connectToClangd,
@@ -105,6 +105,7 @@ async function main(): Promise<void> {
   const serverPath = cli.serverPath || ws.server || ws.clangd || "clangd"
   const serverArgs = cli.serverArgs || ws.args || []
   const language = ws.language ?? "c" // default to c for backward compat
+  const intelligenceBackend = resolveIntelligenceBackend(ws)
   const port = cli.port
 
   // ── Multi-client sharing by default ──────────────────────────────────────────
@@ -120,25 +121,6 @@ async function main(): Promise<void> {
 
   // ── Initialize logger FIRST so all subsequent messages go to the log file ──
   initLogger({ component: "intelgraph" })
-
-  // ── Intelligence backend auto-init (no-op when env vars not set) ────────────
-  // Inject env vars from workspace config intelligenceLocal.env before init.
-  // Precedence: existing process.env > workspace config intelligenceLocal.env
-  // (so explicit env overrides always win, config fills in the gaps).
-  const wsIntelEnv = ws.intelligenceLocal?.env
-  if (wsIntelEnv && ws.intelligenceLocal?.enabled !== false) {
-    const keys = [
-      "INTELLIGENCE_NEO4J_URL",
-      "INTELLIGENCE_NEO4J_USER",
-      "INTELLIGENCE_NEO4J_PASSWORD",
-    ] as const
-    for (const key of keys) {
-      if (!process.env[key] && wsIntelEnv[key]) {
-        process.env[key] = wsIntelEnv[key]
-        log("INFO", `intelligence: injected ${key} from workspace config`, { source: "workspace config" })
-      }
-    }
-  }
 
   // ── Shared state (declared early so the lazy LSP proxy can close over it) ───
   const tracker = new IndexTracker()
@@ -166,9 +148,11 @@ async function main(): Promise<void> {
       currentClient ? currentClient.outgoingCalls(filePath, line, char) : Promise.resolve([]),
   }
 
-  // Auto-provision local intelligence runtime for this workspace.
-  // Creates workspace-scoped config/data files and starts DB infra if missing.
-  ensureLocalIntelligenceRuntime(root, ws)
+  // Register workspace intelligence config so tools can route by backend kind
+  const { setWorkspaceIntelligenceConfig } = await import("./tools/index.js")
+  setWorkspaceIntelligenceConfig(ws, intelligenceBackend)
+  log("INFO", "intelligence backend kind resolved", { language, backend: intelligenceBackend })
+
   // Await intelligence init so the ingest/query tools are ready before the
   // HTTP server starts accepting tool calls. Failure is non-fatal.
   await initIntelligenceBackend(undefined, lazyLspClient).catch((err) =>

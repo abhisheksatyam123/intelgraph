@@ -34,7 +34,7 @@ function mapErrors(errors?: string[]): NodeProtocolResponse["errors"] {
     if (m.includes("validation_error") || m.includes("validation")) return "VALIDATION_ERROR"
     if (m.includes("not_found") || m.includes("not found")) return "NOT_FOUND"
     if (m.includes("snapshot_not_ready") || m.includes("snapshot not ready")) return "SNAPSHOT_NOT_READY"
-    if (m.includes("db_error") || m.includes("neo4j") || m.includes("database") || m.includes("sql")) return "DB_ERROR"
+    if (m.includes("db_error") || m.includes("database") || m.includes("sql")) return "DB_ERROR"
     if (m.includes("not_initialized") || m.includes("not initialized")) return "NOT_INITIALIZED"
     return "INTERNAL_ERROR"
   }

@@ -173,7 +173,7 @@ export interface ExtractionContext {
 // ---------------------------------------------------------------------------
 //
 // All concrete classes for the helpers exposed via ExtractionContext.
-// They're small, single-purpose, and have no dependencies on the Neo4j
+// They're small, single-purpose, and have no dependencies on the storage
 // layer or the FactBus — the bus consumes the facts a plugin yields, but
 // the context itself never touches the bus directly.
 

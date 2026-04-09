@@ -1,14 +1,14 @@
 /**
  * graph-store.ts — SQLite implementation of GraphWriteSink (and SymbolFinder).
  *
- * Mirrors Neo4jGraphStore but writes through Drizzle into the five
+ * SQLite implementation of GraphWriteSink. Writes through Drizzle into the five
  * SQLite tables defined in schema.ts. The whole write() call runs in
  * one synchronous better-sqlite3 transaction for atomicity — either
  * every node/edge/evidence/observation in the batch is visible to
  * subsequent reads, or nothing is (on error).
  *
  * Conflict handling: INSERT ... ON CONFLICT(snapshot_id, id) DO UPDATE
- * matches the Neo4j MERGE semantics the legacy code used. Re-running
+ * matches the MERGE semantics the legacy code used. Re-running
  * an ingest against the same snapshot is safe and idempotent.
  *
  * JSON columns: Drizzle's text(mode: 'json') auto-serializes on insert
@@ -165,6 +165,90 @@ export class SqliteGraphStore implements GraphWriteSink, SymbolFinder {
         },
       })
       .run()
+  }
+
+  /**
+   * Delete all graph data (nodes, edges, evidence, observations) whose
+   * node_id or location contains the given file path. Used by incremental
+   * extraction to purge stale data for a changed file before re-inserting.
+   *
+   * The node_id format is `graph_node:{snapshotId}:symbol:module:{filePath}#...`
+   * so a LIKE '%{filePath}%' on node_id catches all nodes from that file.
+   * Edges are purged when either endpoint references a node from that file.
+   */
+  async purgeFile(snapshotId: number, filePath: string): Promise<{ nodes: number; edges: number }> {
+    const filePattern = `%${filePath}%`
+    let nodes = 0
+    let edges = 0
+
+    this.db.transaction((tx) => {
+      // Find node IDs belonging to this file
+      const nodeIds = tx
+        .select({ nodeId: graphNodes.nodeId })
+        .from(graphNodes)
+        .where(
+          and(
+            eq(graphNodes.snapshotId, snapshotId),
+            sql`(${graphNodes.nodeId} LIKE ${filePattern} OR json_extract(${graphNodes.location}, '$.filePath') LIKE ${filePattern})`,
+          ),
+        )
+        .all()
+        .map((r) => r.nodeId)
+
+      if (nodeIds.length === 0) return
+
+      const idSet = new Set(nodeIds)
+
+      // Delete edges where src or dst is one of these nodes
+      for (const nodeId of nodeIds) {
+        const pattern = `%${nodeId.replace(/[%_]/g, "")}%`
+        const edgeResult = tx
+          .delete(graphEdges)
+          .where(
+            and(
+              eq(graphEdges.snapshotId, snapshotId),
+              sql`(${graphEdges.srcNodeId} = ${nodeId} OR ${graphEdges.dstNodeId} = ${nodeId})`,
+            ),
+          )
+          .run()
+        edges += edgeResult.changes
+      }
+
+      // Delete evidence and observations for these nodes
+      for (const nodeId of nodeIds) {
+        tx.delete(graphEvidence)
+          .where(
+            and(
+              eq(graphEvidence.snapshotId, snapshotId),
+              eq(graphEvidence.nodeId, nodeId),
+            ),
+          )
+          .run()
+        tx.delete(graphObservations)
+          .where(
+            and(
+              eq(graphObservations.snapshotId, snapshotId),
+              eq(graphObservations.nodeId, nodeId),
+            ),
+          )
+          .run()
+      }
+
+      // Delete the nodes themselves
+      for (const nodeId of nodeIds) {
+        tx.delete(graphNodes)
+          .where(
+            and(
+              eq(graphNodes.snapshotId, snapshotId),
+              eq(graphNodes.nodeId, nodeId),
+            ),
+          )
+          .run()
+      }
+      nodes = nodeIds.length
+    })
+
+    return { nodes, edges }
   }
 
   private writeObservations(

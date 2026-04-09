@@ -2,9 +2,7 @@
  * backend-factory.ts — wires up an IntelligenceBackend backed by
  * SQLite (via Drizzle + better-sqlite3).
  *
- * After Phase 7 of the Neo4j → SQLite migration, this is the only
- * backend factory. The Neo4j-based factory was deleted along with
- * src/intelligence/db/neo4j/ — intelgraph now has zero external
+ * This is the only backend factory — intelgraph has zero external
  * service dependencies for its intelligence layer.
  *
  * The backend talks to a local .intelgraph/intelligence.db file (legacy:
@@ -129,8 +127,7 @@ export async function createIntelligenceBackend(
   const ingestWriter = new SnapshotIngestWriter(extractor)
 
   // The indirect-caller ingestion service needs a SymbolFinder (hasSymbol)
-  // and a GraphWriteSink. SqliteGraphStore implements both, same as
-  // Neo4jGraphStore.
+  // and a GraphWriteSink. SqliteGraphStore implements both.
   const ingestion = new IndirectCallerIngestionService(sink, sink)
 
   const store = new NoopAuthoritativeStore()

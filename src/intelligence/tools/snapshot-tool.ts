@@ -29,7 +29,7 @@ export const snapshotInputSchema = z.object({
 
 export async function executeSnapshotTool(args: z.infer<typeof snapshotInputSchema>): Promise<string> {
   if (!DB_FOUNDATION) {
-    return "intelligence_snapshot: backend not initialized. Set INTELLIGENCE_NEO4J_URL to enable."
+    return "intelligence_snapshot: intelligence backend not initialized."
   }
 
   try {

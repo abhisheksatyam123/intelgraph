@@ -100,7 +100,7 @@ export interface ExtractorMetadata {
  *
  * Plugins must NOT:
  *  - construct Fact objects directly (use ctx.symbol/edge/evidence/observation)
- *  - touch Neo4j or any storage backend
+ *  - touch the storage backend directly
  *  - manage their own snapshot or transaction lifecycle
  *  - do their own deduplication, batching, or retry
  *  - hold long-lived state across snapshots (the bus is per-snapshot)

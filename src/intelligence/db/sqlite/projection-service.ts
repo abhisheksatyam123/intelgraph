@@ -1,11 +1,9 @@
 /**
  * projection-service.ts — SQLite (no-op) projection service.
  *
- * The Neo4j version at src/intelligence/db/neo4j/projection-service.ts
- * is itself a no-op — syncFromAuthoritative() always returns
- * { synced: false, nodesUpserted: 0, edgesUpserted: 0 }. The
- * "projection" concept was planned as a separate read-optimized layer
- * (auth store → derived view), but it was never implemented.
+ * No-op projection service. The "projection" concept was planned as a
+ * separate read-optimized layer (auth store -> derived view), but it was
+ * never implemented.
  *
  * SQLite doesn't need a projection layer: graph_nodes and graph_edges
  * are already directly queryable by SqliteDbLookup. Keeping the same

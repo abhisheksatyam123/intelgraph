@@ -714,7 +714,7 @@ function dbInvocationTypeToCallerType(raw: string): CallerInvocationType {
     case "runtime_callback_registration_call": return "runtime_callback_registration_call"
     case "runtime_function_pointer_call":      return "runtime_function_pointer_call"
     case "runtime_dispatch_table_call":        return "runtime_dispatch_table_call"
-    // Raw edge_kind values that Neo4j/db-lookup emits on runtime caller rows
+    // Raw edge_kind values that db-lookup emits on runtime caller rows
     case "runtime_calls":
     case "indirect_calls":                     return "runtime_function_pointer_call"
     case "registers_callback":
