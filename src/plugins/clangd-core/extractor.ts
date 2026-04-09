@@ -40,6 +40,8 @@ import { extractCalls } from "./phases/calls.js"
 import { extractLogs } from "./phases/logs.js"
 import { extractFieldAccess } from "./phases/field-access.js"
 import { extractCallbacks } from "./phases/callbacks.js"
+import { extractContainment } from "./phases/containment.js"
+import { extractTypeRefs } from "./phases/type-refs.js"
 import type { FileSymbolMap } from "./phases/types.js"
 
 const CAPABILITIES: Capability[] = [
@@ -108,6 +110,12 @@ const clangdCoreExtractor = defineExtractor({
       dispatchTemplateMap,
       hwEntities,
     })
+
+    // ── Phase 6: containment + import edges (tree-sitter) ─────────────
+    yield* extractContainment(ctx as any, files, fileSymbols)
+
+    // ── Phase 7: type references + field_of_type + aggregates ─────────
+    yield* extractTypeRefs(ctx as any, fileSymbols)
   },
 })
 

@@ -18,11 +18,11 @@
     "reads_field": 26,
     "writes_field": 7,
     "logs_event": 15,
-    "total_edges": 51
+    "total_edges": 52
   },
   "ground_truth_metadata": {
     "extracted_from": "100api-verification",
     "method": "5-phase extraction + edge walk",
-    "generated_at": "2026-04-09T10:44:33.764Z"
+    "generated_at": "2026-04-09T11:53:02.311Z"
   }
 }

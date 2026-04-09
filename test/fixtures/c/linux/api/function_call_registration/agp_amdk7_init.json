@@ -1,0 +1,29 @@
+{
+  "kind": "function",
+  "canonical_name": "agp_amdk7_init",
+  "category": "function_call_registration",
+  "registration_kind": "function_call",
+  "relations": {},
+  "verification": {
+    "has_registration": true,
+    "has_runtime_chain": true,
+    "dispatch_chain": [
+      "kernel_boot",
+      "do_initcalls",
+      "do_one_initcall",
+      "agp_amdk7_init"
+    ],
+    "trigger_kind": "event",
+    "direct_callers_in": 0,
+    "calls_out": 1,
+    "reads_field": 0,
+    "writes_field": 0,
+    "logs_event": 0,
+    "total_edges": 5
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "100api-verification",
+    "method": "5-phase extraction + edge walk",
+    "generated_at": "2026-04-09T11:53:02.136Z"
+  }
+}
