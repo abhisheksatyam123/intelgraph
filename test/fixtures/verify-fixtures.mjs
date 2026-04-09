@@ -139,13 +139,46 @@ function nodeIdToCanonical(nodeId) {
   return nodeId.startsWith(NODE_ID_PREFIX) ? nodeId.slice(NODE_ID_PREFIX.length) : nodeId
 }
 
+// Module-path needle = "module:<path>" ending in a source file extension.
+// Used so a fixture can say "called from anywhere inside src/index.ts"
+// without naming the specific enclosing function.
+const MODULE_PATH_EXT_RE = /\.(ts|tsx|js|jsx|mjs|cjs|rs|c|h|cpp)$/
+function isModulePathNeedle(needle) {
+  return typeof needle === "string"
+      && needle.startsWith("module:")
+      && MODULE_PATH_EXT_RE.test(needle)
+}
+
+/**
+ * Match an actual canonical_name from graph_edges against an expected needle
+ * from a fixture. Tried in this order:
+ *   1. exact match                       — "foo" vs "foo"
+ *   2. suffix after '#'                  — "foo" vs "module:src/a.ts#foo"
+ *   3. suffix after '.'                  — "bar" vs "Foo.bar"
+ *   4. module-path prefix  (NEW)         — "module:src/a.ts" matches itself
+ *                                          OR "module:src/a.ts#anySymbol"
+ *                                          (only when the needle looks like a
+ *                                          module path ending in .ts/.rs/etc.)
+ *   5. plain substring                   — last-resort, loose fallback
+ *
+ * Sanity checks the module-path branch is meant to satisfy:
+ *   nameMatches("module:src/index.ts#main", "module:src/index.ts") === true
+ *   nameMatches("module:src/index.ts",      "module:src/index.ts") === true
+ *   nameMatches("module:src/indexFoo.ts",   "module:src/index.ts") === false
+ *   nameMatches("module:src/other.ts#main", "module:src/index.ts") === false
+ */
 function nameMatches(actualCanonical, expectedNeedle) {
   if (!actualCanonical || !expectedNeedle) return false
-  // Either an exact match or actual canonical contains the expected suffix
-  // (so we can match by short name like "kfree" against "module:fs#kfree")
   if (actualCanonical === expectedNeedle) return true
   if (actualCanonical.endsWith("#" + expectedNeedle)) return true
   if (actualCanonical.endsWith("." + expectedNeedle)) return true
+  if (isModulePathNeedle(expectedNeedle)) {
+    // Strict module-path prefix: either identical, or followed immediately
+    // by '#' introducing an in-module symbol. Disallows "src/index.ts" also
+    // matching "src/indexFoo.ts".
+    if (actualCanonical === expectedNeedle) return true
+    if (actualCanonical.startsWith(expectedNeedle + "#")) return true
+  }
   if (actualCanonical.includes(expectedNeedle)) return true
   return false
 }
