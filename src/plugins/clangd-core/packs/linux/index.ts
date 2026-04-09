@@ -37,6 +37,7 @@ import procPatterns from "./proc.js"
 import driverPatterns from "./driver.js"
 import threadPatterns from "./thread.js"
 import linuxLogMacros from "./log-macros.js"
+import linuxDispatchChains from "./dispatch-chains.js"
 
 const callPatterns: readonly CallPattern[] = [
   ...chrdevPatterns,
@@ -58,6 +59,7 @@ const linuxPack: PatternPack = {
   callPatterns,
   initPatterns,
   logMacros: linuxLogMacros,
+  dispatchChains: linuxDispatchChains,
 
   appliesTo: (workspaceRoot: string) => {
     // Linux kernel checkout signals: top-level Kbuild + Documentation/.

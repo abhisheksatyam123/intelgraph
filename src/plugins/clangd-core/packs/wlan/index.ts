@@ -73,6 +73,7 @@ const wlanPack: PatternPack = {
   ],
 
   logMacros: wlanLogMacros,
+  dispatchChains: [],  // WLAN dispatch chains TBD — add entries here for cmnos_irq → ISR dispatch
 
   appliesTo: (workspaceRoot: string) => {
     // Heuristic: a WLAN firmware checkout always has a `wlan/` or `wmi/`

@@ -62,6 +62,39 @@ export interface LogMacroDef {
   subsystem?: string
 }
 
+// ---------------------------------------------------------------------------
+// Dispatch chain template — pre-built runtime dispatch paths for
+// registration APIs whose kernel/framework dispatch architecture is
+// architecturally fixed and can't be inferred by LSP alone.
+// ---------------------------------------------------------------------------
+
+export interface DispatchChainTemplate {
+  /**
+   * The registration API this template applies to. For function-call
+   * registrations this is the API name (e.g. "request_irq"). For
+   * struct-field registrations, use the synthetic key format
+   * `__struct_field:<struct_type>.<field>` (e.g.
+   * `__struct_field:file_operations.read`).
+   */
+  registrationApi: string
+
+  /**
+   * The fixed runtime dispatch chain from trigger to callback. Use
+   * `%CALLBACK%` as a placeholder for the actual callback function name
+   * and `%KEY%` for the dispatch key (e.g. IRQ number).
+   */
+  chain: string[]
+
+  /** What kind of external event triggers this dispatch path. */
+  triggerKind: "hardware_interrupt" | "timer_expiry" | "workqueue" | "signal" | "event"
+
+  /**
+   * Human-readable description template. `%KEY%` is replaced with the
+   * dispatch key extracted from the registration site.
+   */
+  triggerDescription: string
+}
+
 export interface PatternPack {
   /** Unique pack identifier (lowercase, kebab-case). */
   name: string
@@ -83,6 +116,14 @@ export interface PatternPack {
    * level, and subsystem captured in the edge metadata.
    */
   logMacros: readonly LogMacroDef[]
+
+  /**
+   * Pre-built dispatch chain templates for registration APIs whose
+   * runtime dispatch path is architecturally fixed. When the resolver's
+   * LSP-based store/dispatch/trigger stages fail (common for kernel
+   * macros/inlines), it falls back to these templates to fill the chain.
+   */
+  dispatchChains: readonly DispatchChainTemplate[]
 
   /**
    * Optional gate. When supplied, the pack is only activated if this

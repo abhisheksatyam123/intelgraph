@@ -16,7 +16,7 @@
  * never leak into a Linux workspace and vice versa.
  */
 
-import type { CallPattern, InitPattern, PatternPack, LogMacroDef } from "./types.js"
+import type { CallPattern, InitPattern, PatternPack, LogMacroDef, DispatchChainTemplate } from "./types.js"
 import wlanPack from "./wlan/index.js"
 import linuxPack from "./linux/index.js"
 
@@ -84,4 +84,18 @@ export function collectAllLogMacros(workspaceRoot?: string): Map<string, LogMacr
   return map
 }
 
-export type { PatternPack, CallPattern, InitPattern, LogMacroDef }
+/**
+ * Flatten every active pack's dispatch chain templates into a single Map
+ * keyed by registrationApi for O(1) lookup during chain resolution.
+ */
+export function collectAllDispatchChains(workspaceRoot?: string): Map<string, DispatchChainTemplate> {
+  const map = new Map<string, DispatchChainTemplate>()
+  for (const pack of collectAllPacks(workspaceRoot)) {
+    for (const d of pack.dispatchChains) {
+      if (!map.has(d.registrationApi)) map.set(d.registrationApi, d)
+    }
+  }
+  return map
+}
+
+export type { PatternPack, CallPattern, InitPattern, LogMacroDef, DispatchChainTemplate }

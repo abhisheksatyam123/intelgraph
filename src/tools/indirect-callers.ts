@@ -17,6 +17,8 @@ import { initParser } from "./pattern-detector/c-parser.js"
 import type { FunctionCall } from "./pattern-detector/index.js"
 import { resolveChain } from "./pattern-resolver/index.js"
 import type { ResolvedChain } from "./pattern-resolver/types.js"
+import { collectAllDispatchChains } from "../plugins/clangd-core/packs/index.js"
+import type { DispatchChainTemplate } from "../plugins/clangd-core/packs/types.js"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -168,6 +170,22 @@ export async function collectIndirectCallers(
           },
         )
       }
+
+      // ── Dispatch chain template fallback ───────────────────────────
+      // When classification matched but chain resolution failed (no
+      // store → dispatch → trigger), check if the registration API has
+      // a pre-built dispatch chain template from the sub-plugin pack.
+      // Templates encode architecturally-fixed dispatch paths (e.g.
+      // request_irq → do_IRQ → handle_irq_event → handler).
+      if (classified.match && !chain) {
+        chain = tryDispatchChainTemplate(
+          classified.match.registrationApi,
+          classified.match.dispatchKey,
+          seedName,
+          classified.match.connectionKind,
+        )
+      }
+
       nodes.push({
         name:       from.name ?? "(unknown)",
         file:       fromFile,
@@ -227,6 +245,15 @@ export async function collectIndirectCallers(
             lspClient: client as any,
             readFile: readFileSafe,
           },
+        )
+      }
+      // Dispatch chain template fallback (same as above)
+      if (classified.match && !chain) {
+        chain = tryDispatchChainTemplate(
+          classified.match.registrationApi,
+          classified.match.dispatchKey,
+          seedName,
+          classified.match.connectionKind,
         )
       }
       nodes.push({
@@ -509,6 +536,118 @@ export function formatIndirectCallerTree(
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Dispatch chain template fallback
+// ---------------------------------------------------------------------------
+
+/** Lazily loaded dispatch chain template map (populated on first use). */
+let _dispatchTemplateMap: Map<string, DispatchChainTemplate> | null = null
+
+function getDispatchTemplateMap(): Map<string, DispatchChainTemplate> {
+  if (!_dispatchTemplateMap) {
+    _dispatchTemplateMap = collectAllDispatchChains()
+  }
+  return _dispatchTemplateMap
+}
+
+/**
+ * Try to build a ResolvedChain from a pre-built dispatch chain template.
+ *
+ * When the LSP-based resolver (resolveChain) fails to find the
+ * store/dispatch/trigger stages — common for kernel macros/inlines —
+ * this function checks if the registration API has a known dispatch
+ * chain template contributed by a sub-plugin pack.
+ *
+ * Two lookup strategies:
+ *   1. Exact match on registrationApi (e.g. "request_irq")
+ *   2. Struct-field match: if the registrationApi came from the generic
+ *      struct-field classifier (e.g. "mem_fops"), try
+ *      `__struct_field:<connectionKind>.<dispatchKey>` to find
+ *      VFS/net_device_ops dispatch templates
+ */
+function tryDispatchChainTemplate(
+  registrationApi: string,
+  dispatchKey: string,
+  callbackName: string,
+  connectionKind: string,
+): ResolvedChain | null {
+  const map = getDispatchTemplateMap()
+
+  // Strategy 1: exact match on registration API name
+  let tmpl = map.get(registrationApi)
+
+  // Strategy 2: struct-field match using the synthetic key format
+  // The generic classifier produces registrationApi = container variable
+  // (e.g. "mem_fops") and dispatchKey = field name (e.g. "read").
+  // The template uses `__struct_field:file_operations.read`.
+  // We try common struct types when connectionKind = "interface_registration".
+  if (!tmpl && connectionKind === "interface_registration" && dispatchKey) {
+    const structFieldCandidates = [
+      `__struct_field:file_operations.${dispatchKey}`,
+      `__struct_field:net_device_ops.${dispatchKey}`,
+      `__struct_field:block_device_operations.${dispatchKey}`,
+      `__struct_field:seq_operations.${dispatchKey}`,
+      `__struct_field:inode_operations.${dispatchKey}`,
+    ]
+    for (const key of structFieldCandidates) {
+      tmpl = map.get(key)
+      if (tmpl) break
+    }
+  }
+
+  if (!tmpl) return null
+
+  // Build the chain by replacing %CALLBACK% and %KEY% placeholders
+  const chain = tmpl.chain.map((s) =>
+    s.replace(/%CALLBACK%/g, callbackName).replace(/%KEY%/g, dispatchKey),
+  )
+
+  // Construct a ResolvedChain compatible with the existing formatter.
+  // The chain has at least 2 entries: [... dispatch stages ..., callback].
+  // The second-to-last entry is the immediate dispatch function.
+  const dispatchFn = chain.length >= 3 ? chain[chain.length - 2] : chain[0]
+  const triggerDesc = tmpl.triggerDescription
+    .replace(/%KEY%/g, dispatchKey)
+    .replace(/%CALLBACK%/g, callbackName)
+
+  return {
+    confidenceScore: 4,
+    confidenceLevel: "dispatch_site_found" as const,
+    registration: {
+      apiName: registrationApi,
+      callbackArgIndex: 0,
+      dispatchKey,
+      file: "",
+      line: 0,
+      sourceText: triggerDesc,
+    },
+    store: {
+      containerType: registrationApi,
+      containerFile: null,
+      containerLine: null,
+      confidence: "medium" as const,
+      evidence: `dispatch-chain-template:${tmpl.registrationApi}`,
+      storeFieldName: dispatchKey,
+    },
+    dispatch: {
+      dispatchFunction: dispatchFn,
+      dispatchFile: null,
+      dispatchLine: null,
+      invocationPattern: null,
+      confidence: "medium" as const,
+      evidence: `template-chain:[${chain.join(" → ")}]`,
+    },
+    trigger: {
+      triggerKind: tmpl.triggerKind,
+      triggerKey: dispatchKey,
+      triggerFile: null,
+      triggerLine: null,
+      confidence: "medium" as const,
+      evidence: triggerDesc,
+    },
+  }
+}
 
 function readFileSafe(filePath: string): string {
   try {
