@@ -16,7 +16,7 @@
  * never leak into a Linux workspace and vice versa.
  */
 
-import type { CallPattern, InitPattern, PatternPack, LogMacroDef, DispatchChainTemplate } from "./types.js"
+import type { CallPattern, InitPattern, PatternPack, LogMacroDef, DispatchChainTemplate, HWEntityDef } from "./types.js"
 import wlanPack from "./wlan/index.js"
 import linuxPack from "./linux/index.js"
 
@@ -98,4 +98,27 @@ export function collectAllDispatchChains(workspaceRoot?: string): Map<string, Di
   return map
 }
 
-export type { PatternPack, CallPattern, InitPattern, LogMacroDef, DispatchChainTemplate }
+/**
+ * Flatten every active pack's HW entity definitions into a single Map
+ * keyed by entity name for O(1) lookup. Also builds a reverse map from
+ * dispatch-chain step name → HW entity for matching during chain
+ * materialization.
+ */
+export function collectAllHWEntities(workspaceRoot?: string): {
+  byName: Map<string, HWEntityDef>
+  byChainStep: Map<string, HWEntityDef>
+} {
+  const byName = new Map<string, HWEntityDef>()
+  const byChainStep = new Map<string, HWEntityDef>()
+  for (const pack of collectAllPacks(workspaceRoot)) {
+    for (const hw of pack.hwEntities) {
+      if (!byName.has(hw.name)) byName.set(hw.name, hw)
+      for (const step of hw.matchesChainSteps ?? []) {
+        if (!byChainStep.has(step)) byChainStep.set(step, hw)
+      }
+    }
+  }
+  return { byName, byChainStep }
+}
+
+export type { PatternPack, CallPattern, InitPattern, LogMacroDef, DispatchChainTemplate, HWEntityDef }

@@ -68,6 +68,48 @@ export interface LogMacroDef {
 // architecturally fixed and can't be inferred by LSP alone.
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// HW/Device entity definition — first-class graph nodes representing
+// hardware blocks, IRQ lines, timers, rings, dispatch tables, etc.
+// These become real nodes in the SQLite intelligence graph with edges
+// connecting them to the APIs they invoke.
+// ---------------------------------------------------------------------------
+
+export type HWEntityKind =
+  | "hw_block"          // Physical hardware block (PS/2 controller, NIC, GPU, etc.)
+  | "interrupt"         // IRQ line or interrupt source
+  | "timer"             // Hardware or software timer
+  | "ring"              // Ring buffer or circular queue
+  | "dispatch_table"    // Function pointer table or vtable
+  | "thread"            // Kernel thread or execution context
+  | "signal"            // Software signal or notification
+  | "message"           // IPC message or event
+  | "device"            // Generic device node (/dev/mem, /dev/null, etc.)
+
+export interface HWEntityDef {
+  /** Unique name for this entity (e.g. "PS/2 Controller", "I8042_KBD_IRQ") */
+  name: string
+
+  /** What kind of HW/runtime entity this is */
+  kind: HWEntityKind
+
+  /** Human-readable description */
+  description?: string
+
+  /**
+   * Which dispatch chain step names this entity maps to. When a dispatch
+   * chain template contains one of these names, it gets materialized as
+   * this HW entity node instead of a plain string.
+   *
+   * Example: { name: "IRQ subsystem", kind: "interrupt",
+   *            matchesChainSteps: ["hardware_irq", "do_IRQ"] }
+   */
+  matchesChainSteps?: string[]
+
+  /** Optional metadata (register addresses, capabilities, etc.) */
+  metadata?: Record<string, unknown>
+}
+
 export interface DispatchChainTemplate {
   /**
    * The registration API this template applies to. For function-call
@@ -119,11 +161,21 @@ export interface PatternPack {
 
   /**
    * Pre-built dispatch chain templates for registration APIs whose
-   * runtime dispatch path is architecturally fixed. When the resolver's
-   * LSP-based store/dispatch/trigger stages fail (common for kernel
-   * macros/inlines), it falls back to these templates to fill the chain.
+   * runtime dispatch path is architecturally fixed.
    */
   dispatchChains: readonly DispatchChainTemplate[]
+
+  /**
+   * Hardware/device entity definitions for this project. These become
+   * first-class nodes in the intelligence graph (kind = hw_block,
+   * interrupt, timer, ring, device, etc.) with `dispatches_to` edges
+   * connecting them to the APIs they invoke at runtime.
+   *
+   * Each entity can declare which dispatch chain step names it matches,
+   * so the extractor knows to materialize a real HW entity node instead
+   * of leaving the chain step as a metadata string.
+   */
+  hwEntities: readonly HWEntityDef[]
 
   /**
    * Optional gate. When supplied, the pack is only activated if this

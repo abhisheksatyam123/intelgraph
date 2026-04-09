@@ -39,8 +39,7 @@ import type {
   WorkspaceProbe,
 } from "../../intelligence/extraction/contract.js"
 import type { SymbolRow } from "../../intelligence/contracts/common.js"
-import { collectAllLogMacros, collectAllDispatchChains } from "./packs/index.js"
-import { collectAllCallPatterns } from "./packs/index.js"
+import { collectAllLogMacros, collectAllDispatchChains, collectAllCallPatterns, collectAllHWEntities } from "./packs/index.js"
 import type { LogMacroDef } from "./packs/types.js"
 import {
   initParser,
@@ -479,10 +478,14 @@ const clangdCoreExtractor = defineExtractor({
     // For each detected registration, emits:
     //   - registers_callback edge (src=registrar, dst=callback)
     //   - runtime_calls edge with dispatch chain (if template available)
+    //   - HW entity nodes for each chain step that matches a pack's hwEntities
+    //   - dispatches_to edges between HW entities and the callback
 
     const allCallPatterns = collectAllCallPatterns()
     const registrationApis = new Set(allCallPatterns.map((p) => p.registrationApi))
     const dispatchTemplateMap = collectAllDispatchChains()
+    const hwEntities = collectAllHWEntities()
+    const emittedHWNodes = new Set<string>()  // track to avoid duplicates
 
     // Build a set of all known function names for fast membership test
     const knownFunctions = new Set<string>()
@@ -610,6 +613,57 @@ const clangdCoreExtractor = defineExtractor({
         },
       })
       ctx.metrics.count("edges.runtime_calls")
+
+      // ── Materialize HW entity nodes + dispatches_to edges ────────────
+      // Walk each step in the dispatch chain. If a step matches a known
+      // HW entity from the sub-plugin pack, emit a graph node for that
+      // entity and a dispatches_to edge connecting it to the next step.
+      for (let i = 0; i < chain.length; i++) {
+        const step = chain[i]
+        const hwEntity = hwEntities.byChainStep.get(step)
+        if (!hwEntity) continue
+
+        // Emit the HW entity as a graph node (once per entity name)
+        if (!emittedHWNodes.has(hwEntity.name)) {
+          emittedHWNodes.add(hwEntity.name)
+          yield ctx.symbol({
+            payload: {
+              kind: "function",  // graph_nodes.kind is a string — we use the HW kind in metadata
+              name: hwEntity.name,
+              metadata: {
+                hwEntityKind: hwEntity.kind,
+                isHWEntity: true,
+                description: hwEntity.description,
+              },
+            },
+          })
+          ctx.metrics.count(`hw_entities.${hwEntity.kind}`)
+        }
+
+        // Emit dispatches_to edge from this HW entity to the next chain step
+        const nextStep = chain[i + 1]
+        if (nextStep) {
+          yield ctx.edge({
+            payload: {
+              edgeKind: "dispatches_to",
+              srcSymbolName: hwEntity.name,
+              dstSymbolName: nextStep,
+              confidence: 0.9,
+              derivation: "clangd",
+              metadata: {
+                hwEntityKind: hwEntity.kind,
+                dispatchChainPosition: i,
+                triggerKind: tmpl.triggerKind,
+              },
+              evidence: {
+                sourceKind: "file_line",
+                location: { filePath: file, line },
+              },
+            },
+          })
+          ctx.metrics.count("edges.dispatches_to")
+        }
+      }
     }
 
     for (const [file] of fileSymbols.entries()) {
