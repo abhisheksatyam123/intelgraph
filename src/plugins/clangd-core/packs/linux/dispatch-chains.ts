@@ -173,6 +173,18 @@ const linuxDispatchChains: readonly DispatchChainTemplate[] = [
     triggerDescription: "Userspace reads /proc/%KEY%",
   },
   {
+    registrationApi: "proc_create_single",
+    chain: ["userspace_read_proc", "proc_reg_read", "single_open", "seq_read", "show_fn", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Userspace reads /proc/%KEY% (single-open)",
+  },
+  {
+    registrationApi: "proc_create_single_data",
+    chain: ["userspace_read_proc", "proc_reg_read", "single_open", "seq_read", "show_fn", "%CALLBACK%"],
+    triggerKind: "event",
+    triggerDescription: "Userspace reads /proc/%KEY% (single-open with data)",
+  },
+  {
     registrationApi: "debugfs_create_file",
     chain: ["userspace_read_debugfs", "debugfs_file_read", "f_op_dispatch", "%CALLBACK%"],
     triggerKind: "event",

@@ -39,6 +39,13 @@ const procPatterns: readonly CallPattern[] = [
     keyDescription: "/proc filename",
   },
   {
+    name: "proc_create_single_data",
+    registrationApi: "proc_create_single_data",
+    connectionKind: "interface_registration",
+    keyArgIndex: 0,
+    keyDescription: "/proc filename (single-open with data)",
+  },
+  {
     name: "debugfs_create_file",
     registrationApi: "debugfs_create_file",
     connectionKind: "interface_registration",

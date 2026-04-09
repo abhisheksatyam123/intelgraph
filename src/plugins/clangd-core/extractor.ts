@@ -710,8 +710,37 @@ const clangdCoreExtractor = defineExtractor({
 
       // ── 5c) Function-body assignment registrations ────────────────────
       // e.g. current->restart_block.fn = do_no_restart_syscall
+      //      sis_driver.agp_enable = sis_delayed_enable
       //      timer->function = my_timer_fn
       // Detects assignment_expression where the RHS is a known function.
+      //
+      // To resolve the container's struct type (needed for dispatch chain
+      // template matching), we search the file's AST for the declaration
+      // of the container variable. This handles patterns like:
+      //   struct agp_bridge_driver sis_driver = { ... };
+      //   sis_driver.agp_enable = sis_delayed_enable;  // ← we're here
+      //
+      // We pre-build a map of variable → struct type from all declarations
+      // in the file's AST.
+      const varTypeMap = new Map<string, string>()
+      const declarations = findAllNodes(root, "declaration")
+      for (const decl of declarations) {
+        const typeNode = decl.childForFieldName?.("type")
+        if (!typeNode) continue
+        const typeText = typeNode.text?.trim() ?? ""
+        // Walk init_declarator children to find variable names
+        walkAst(decl, (child: any) => {
+          if (child.type === "init_declarator" || child.type === "identifier") {
+            if (child.type === "init_declarator") {
+              const declr = child.childForFieldName?.("declarator")
+              if (declr?.type === "identifier") {
+                varTypeMap.set(declr.text, typeText)
+              }
+            }
+          }
+        })
+      }
+
       const assignments = findAllNodes(root, "assignment_expression")
       for (const assign of assignments) {
         const right = assign.childForFieldName?.("right")
@@ -732,8 +761,13 @@ const clangdCoreExtractor = defineExtractor({
         const callbackName = right.text
         const assignLine = (assign.startPosition?.row ?? 0) + 1
 
+        // Try to resolve the container variable's struct type
+        // e.g. "sis_driver" → "struct agp_bridge_driver"
+        const containerVarName = containerExpr.replace(/->.*/, "").replace(/\..*/, "").trim()
+        const resolvedType = varTypeMap.get(containerVarName) ?? undefined
+
         yield* emitRegistration(`${containerExpr}.${fieldName}`, callbackName, `fn_body_assign:${containerExpr}.${fieldName}`, fieldName, file, assignLine)
-        yield* emitRuntimeCall(`${containerExpr}.${fieldName}`, callbackName, fieldName, file, assignLine)
+        yield* emitRuntimeCall(`${containerExpr}.${fieldName}`, callbackName, fieldName, file, assignLine, resolvedType)
       }
     }
   },

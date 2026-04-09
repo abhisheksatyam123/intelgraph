@@ -6,19 +6,23 @@
   "relations": {},
   "verification": {
     "has_registration": true,
-    "has_runtime_chain": false,
-    "dispatch_chain": null,
-    "trigger_kind": null,
+    "has_runtime_chain": true,
+    "dispatch_chain": [
+      "agp_backend_initialize",
+      "bridge->driver->agp_enable",
+      "sis_delayed_enable"
+    ],
+    "trigger_kind": "event",
     "direct_callers_in": 1,
     "calls_out": 8,
     "reads_field": 0,
     "writes_field": 0,
     "logs_event": 0,
-    "total_edges": 10
+    "total_edges": 11
   },
   "ground_truth_metadata": {
     "extracted_from": "100api-verification",
     "method": "5-phase extraction + edge walk",
-    "generated_at": "2026-04-09T10:10:02.827Z"
+    "generated_at": "2026-04-09T10:15:08.809Z"
   }
 }
