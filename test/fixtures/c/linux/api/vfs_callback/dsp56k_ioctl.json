@@ -1,0 +1,29 @@
+{
+  "kind": "function",
+  "canonical_name": "dsp56k_ioctl",
+  "category": "vfs_callback",
+  "registration_kind": "struct_field:struct file_operations.unlocked_ioctl",
+  "relations": {},
+  "verification": {
+    "has_registration": true,
+    "has_runtime_chain": true,
+    "dispatch_chain": [
+      "userspace_ioctl_syscall",
+      "do_vfs_ioctl",
+      "f_op->unlocked_ioctl",
+      "dsp56k_ioctl"
+    ],
+    "trigger_kind": "event",
+    "direct_callers_in": 0,
+    "calls_out": 11,
+    "reads_field": 0,
+    "writes_field": 0,
+    "logs_event": 0,
+    "total_edges": 13
+  },
+  "ground_truth_metadata": {
+    "extracted_from": "100api-verification",
+    "method": "5-phase extraction + edge walk",
+    "generated_at": "2026-04-09T10:10:03.005Z"
+  }
+}

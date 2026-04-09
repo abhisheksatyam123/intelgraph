@@ -528,21 +528,57 @@ const clangdCoreExtractor = defineExtractor({
       dispatchKey: string,
       file: string,
       line: number,
+      /** The actual struct type detected from AST (e.g. "struct file_operations") */
+      detectedStructType?: string,
     ) {
-      // Try exact template match, then struct-field patterns
+      // Try exact template match first (for function-call APIs like request_irq)
       let tmpl = dispatchTemplateMap.get(tmplKey)
-      if (!tmpl) {
-        // Try __struct_field:<type>.<field> synthetic keys
-        const structFieldCandidates = [
-          `__struct_field:file_operations.${dispatchKey}`,
-          `__struct_field:net_device_ops.${dispatchKey}`,
-          `__struct_field:block_device_operations.${dispatchKey}`,
-          `__struct_field:inode_operations.${dispatchKey}`,
-          `__struct_field:seq_operations.${dispatchKey}`,
-        ]
-        for (const key of structFieldCandidates) {
-          tmpl = dispatchTemplateMap.get(key)
-          if (tmpl) break
+
+      // For struct-field registrations: construct the synthetic key from
+      // the ACTUAL detected struct type + field name. This way we don't
+      // need to hardcode a list of struct types in the extractor — the
+      // sub-plugin pack's dispatch-chains.ts is the single source of truth.
+      if (!tmpl && detectedStructType && dispatchKey) {
+        // Strip qualifiers (static, const, volatile) and type keywords
+        // (struct, enum, union) to match the template key format.
+        // "static const struct file_operations" → "file_operations"
+        const cleanType = detectedStructType
+          .replace(/\b(static|const|volatile|struct|enum|union)\b/g, "").trim()
+
+        // Strategy 1: exact field match
+        const syntheticKey = `__struct_field:${cleanType}.${dispatchKey}`
+        tmpl = dispatchTemplateMap.get(syntheticKey)
+
+        // Strategy 2: if no exact field match, find ANY template for the
+        // same struct type and adapt its dispatch pattern for this field.
+        // This handles cases like agp_bridge_driver having templates for
+        // .configure but not .cache_flush — both go through the same
+        // AGP dispatch subsystem.
+        if (!tmpl) {
+          const prefix = `__struct_field:${cleanType}.`
+          for (const [key, candidate] of dispatchTemplateMap) {
+            if (key.startsWith(prefix)) {
+              // Adapt the template: replace the known field's dispatch step
+              // with a generic one using the actual field name
+              tmpl = {
+                ...candidate,
+                registrationApi: syntheticKey,
+                chain: candidate.chain.map((s: string) => {
+                  // Replace the specific field dispatch step with the actual field
+                  // e.g. "bridge->driver->configure" → "bridge->driver->cache_flush"
+                  if (s.includes("->") && !s.includes("%")) {
+                    const parts = s.split("->")
+                    parts[parts.length - 1] = dispatchKey
+                    return parts.join("->")
+                  }
+                  return s
+                }),
+                triggerDescription: candidate.triggerDescription
+                  .replace(/\b\w+\b(?= dispatch| handler| callback)/, dispatchKey),
+              }
+              break
+            }
+          }
         }
       }
       if (!tmpl) return
@@ -669,7 +705,7 @@ const clangdCoreExtractor = defineExtractor({
         const pairLine = (pair.startPosition?.row ?? 0) + 1
 
         yield* emitRegistration(registrar, valueName, `struct_field:${containerType ?? "unknown"}.${fieldName}`, fieldName, file, pairLine)
-        yield* emitRuntimeCall(registrar, valueName, fieldName, file, pairLine)
+        yield* emitRuntimeCall(registrar, valueName, fieldName, file, pairLine, containerType ?? undefined)
       }
 
       // ── 5c) Function-body assignment registrations ────────────────────
