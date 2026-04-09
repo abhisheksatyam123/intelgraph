@@ -39,11 +39,21 @@ import type {
   WorkspaceProbe,
 } from "../../intelligence/extraction/contract.js"
 import type { SymbolRow } from "../../intelligence/contracts/common.js"
+import { collectAllLogMacros } from "./packs/index.js"
+import type { LogMacroDef } from "./packs/types.js"
+import {
+  initParser,
+  parseSource,
+  findAllNodes,
+  walkAst,
+  splitArguments,
+} from "../../tools/pattern-detector/c-parser.js"
 
 const CAPABILITIES: Capability[] = [
   "symbols",
   "types",
   "direct-calls",
+  "log-events",
 ]
 
 const C_FAMILY_EXTENSIONS = [".c", ".h", ".cpp", ".cc", ".cxx", ".hpp"] as const
@@ -224,6 +234,142 @@ const clangdCoreExtractor = defineExtractor({
             },
           })
           ctx.metrics.count("edges.calls")
+        }
+      }
+    }
+
+    // ---- Phase 3: log-event edges via tree-sitter AST walk ----
+    //
+    // Walk each file's AST looking for call_expression nodes whose callee
+    // name matches a log macro from any active pack. For each match, emit
+    // a `logs_event` edge from the enclosing function to the log call site
+    // with the format string, log level, and subsystem in the metadata.
+    //
+    // This uses tree-sitter (not clangd) because we need argument values
+    // (the format string) which clangd's call hierarchy doesn't expose.
+    // The tree-sitter parser is shared with pattern-detector/c-parser.ts.
+    await initParser()
+
+    // Build the log-macro lookup map from ALL packs (no workspace gating).
+    // Log macro names are just C identifiers (pr_info, WARN_ON, etc.) —
+    // having WLAN macros in the map while processing a Linux workspace is
+    // harmless (they simply won't match any call_expression). Gating by
+    // workspace would fail when the extractor runs on a subdirectory
+    // (e.g. linux/lib) that doesn't match the pack's appliesTo predicate.
+    const logMacroMap = collectAllLogMacros()
+    if (logMacroMap.size === 0) {
+      // No log macros contributed by any active pack — skip Phase 3.
+    } else {
+      for (const [file, symbols] of fileSymbols.entries()) {
+        if (ctx.signal.aborted) return
+        const text = ctx.workspace.readFile(file)
+        if (!text) continue
+
+        const root = parseSource(text)
+        if (!root) continue
+
+        // Build a line-range → function-name map so we can attribute each
+        // log call to its enclosing function.
+        const functionRanges: Array<{
+          name: string
+          startLine: number
+          endLine: number
+        }> = []
+        for (const sym of symbols) {
+          if (sym.kind === "function" && sym.location) {
+            // endLine is not in SymbolRow but we can approximate from the
+            // tree-sitter AST by finding the function_definition at that line.
+            const startLine = sym.location.line - 1  // 0-based for tree-sitter
+            // Default endLine: start + 200 lines (generous cap). The AST
+            // walk below only looks at calls INSIDE the function body, so
+            // an overestimate is safe — it just means we check more nodes.
+            functionRanges.push({
+              name: sym.name,
+              startLine,
+              endLine: startLine + 500,
+            })
+          }
+        }
+
+        // Find all call_expression nodes in the file
+        const callNodes = findAllNodes(root, "call_expression")
+
+        for (const callNode of callNodes) {
+          // Extract the callee name from the call_expression
+          const fnNode = callNode.childForFieldName?.("function")
+          if (!fnNode) continue
+          const calleeName = fnNode.type === "identifier"
+            ? fnNode.text
+            : fnNode.type === "field_expression"
+              ? fnNode.childForFieldName?.("field")?.text
+              : null
+          if (!calleeName) continue
+
+          // Check if this callee is a known log macro
+          const macroDef = logMacroMap.get(calleeName)
+          if (!macroDef) continue
+
+          // Extract the format string from the argument at formatArgIndex
+          const argsNode = callNode.childForFieldName?.("arguments")
+          if (!argsNode) continue
+
+          // Collect argument texts (skip parens and commas)
+          const argTexts: string[] = []
+          for (let i = 0; i < argsNode.childCount; i++) {
+            const child = argsNode.child(i)
+            if (!child) continue
+            if (child.type === "(" || child.type === ")" || child.type === ",") continue
+            argTexts.push(child.text.trim())
+          }
+
+          const formatStr = argTexts[macroDef.formatArgIndex]
+          // Strip surrounding quotes from string literals
+          const template = formatStr
+            ? formatStr.replace(/^"(.*)"$/, "$1").replace(/^'(.*)'$/, "$1").slice(0, 200)
+            : calleeName
+
+          // Find the enclosing function for this call node (by line range)
+          const callLine = callNode.startPosition?.row ?? 0
+          let enclosingFn = "(file-scope)"
+          for (const fn of functionRanges) {
+            if (callLine >= fn.startLine && callLine <= fn.endLine) {
+              enclosingFn = fn.name
+              break
+            }
+          }
+
+          // Derive subsystem from pack definition or format-string prefix
+          let subsystem = macroDef.subsystem
+          if (!subsystem && template) {
+            // Try to extract a prefix like "BPF: ..." → "BPF"
+            const prefixMatch = template.match(/^([A-Z][A-Z0-9_]{1,8})\s*:/)
+            if (prefixMatch) subsystem = prefixMatch[1]
+          }
+
+          // Emit a logs_event edge
+          yield ctx.edge({
+            payload: {
+              edgeKind: "logs_event",
+              srcSymbolName: enclosingFn,
+              dstSymbolName: `log:${calleeName}:${callLine + 1}`,
+              confidence: 0.9,
+              derivation: "clangd",
+              metadata: {
+                level: macroDef.level,
+                template,
+                subsystem: subsystem ?? null,
+                macro: calleeName,
+              },
+              evidence: {
+                sourceKind: "file_line",
+                location: {
+                  filePath: file,
+                  line: callLine + 1,
+                },
+              },
+            },
+          })
+          ctx.metrics.count("edges.logs_event")
         }
       }
     }

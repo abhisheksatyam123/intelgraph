@@ -24,13 +24,23 @@
  * — pack edges are additive.
  */
 
-import type { EdgeKind } from "../../../intelligence/contracts/common.js"
+import type { EdgeKind, LogLevel } from "../../../intelligence/contracts/common.js"
 
 /**
  * A TS-style pattern pack. Each pack is a project- or framework-specific
  * bundle of detectors that augment the generic ts-core extractor with
  * synthetic edges that the AST walk alone can't infer.
  */
+/** Log-call pattern for TypeScript/JS projects. */
+export interface TsLogPattern {
+  /** Dotted name to match (e.g. "console.log", "logger.info", "log"). */
+  name: string
+  /** Log level this call implies. */
+  level: LogLevel
+  /** 0-based index of the message argument. */
+  messageArgIndex: number
+}
+
 export interface TsPatternPack {
   /** Unique pack identifier (lowercase, kebab-case). */
   name: string
@@ -46,11 +56,15 @@ export interface TsPatternPack {
   contributesEdgeKinds?: readonly EdgeKind[]
 
   /**
+   * Log-call patterns this pack contributes. During the AST walk, any
+   * call whose dotted name matches a TsLogPattern emits a `logs_event`
+   * edge from the enclosing function to the call site.
+   */
+  logPatterns?: readonly TsLogPattern[]
+
+  /**
    * Optional gate. When supplied, the pack is only activated if this
-   * predicate returns true for the given workspace. Use it to keep
-   * project-specific patterns from polluting unrelated workspaces.
-   *
-   * If omitted, the pack is always active.
+   * predicate returns true for the given workspace.
    */
   appliesTo?: (workspaceRoot: string) => boolean
 }

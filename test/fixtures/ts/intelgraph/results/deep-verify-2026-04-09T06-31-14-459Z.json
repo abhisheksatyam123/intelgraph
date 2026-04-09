@@ -1,0 +1,281 @@
+{
+  "language": "ts",
+  "project": "intelgraph",
+  "workspace": "/home/abhi/qprojects/intelgraph",
+  "timestamp": "2026-04-09T06:31:14.459Z",
+  "summary": {
+    "pass": 2,
+    "partial": 6,
+    "failAll": 1,
+    "nodeOnly": 1,
+    "nodeMiss": 1,
+    "total": 11,
+    "allExpected": 69,
+    "allMatched": 54,
+    "relationPct": 78
+  },
+  "results": [
+    {
+      "fixture": "class/ExtractorRunner.json",
+      "canonical_name": "module:src/intelligence/extraction/runner.ts#ExtractorRunner",
+      "status": "partial",
+      "checks": [
+        {
+          "key": "calls_in_direct",
+          "kind": "calls (incoming)",
+          "expected": 2,
+          "found": 2,
+          "matched": 0,
+          "missing": [
+            "module:src/intelligence/init.ts",
+            "module:src/bin/snapshot-stats.ts#buildDashboard"
+          ]
+        },
+        {
+          "key": "contains_methods",
+          "kind": "contains methods",
+          "expected": 2,
+          "found": 3,
+          "matched": 2,
+          "missing": []
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 4,
+      "totalMatched": 2
+    },
+    {
+      "fixture": "class/LspClient.json",
+      "canonical_name": "module:src/lsp/index.ts#LspClient",
+      "status": "pass",
+      "checks": [
+        {
+          "key": "implements",
+          "kind": "implements (outgoing)",
+          "expected": 1,
+          "found": 1,
+          "matched": 1,
+          "missing": []
+        },
+        {
+          "key": "contains_methods",
+          "kind": "contains methods",
+          "expected": 16,
+          "found": 36,
+          "matched": 16,
+          "missing": []
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 17,
+      "totalMatched": 17
+    },
+    {
+      "fixture": "extractor_plugin/clangdCoreExtractor.json",
+      "canonical_name": "module:src/plugins/clangd-core/extractor.ts#CAPABILITIES",
+      "status": "node-only",
+      "checks": [],
+      "unhandledKeys": [],
+      "totalExpected": 0,
+      "totalMatched": 0
+    },
+    {
+      "fixture": "function/computeWorkspaceId.json",
+      "canonical_name": "module:src/daemon/index.ts#computeWorkspaceId",
+      "status": "partial",
+      "checks": [
+        {
+          "key": "calls_in_direct",
+          "kind": "calls (incoming)",
+          "expected": 1,
+          "found": 0,
+          "matched": 0,
+          "missing": [
+            "module:src/index.ts"
+          ]
+        },
+        {
+          "key": "calls_out",
+          "kind": "calls (outgoing)",
+          "expected": 1,
+          "found": 5,
+          "matched": 1,
+          "missing": []
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 2,
+      "totalMatched": 1
+    },
+    {
+      "fixture": "function/normaliseRoot.json",
+      "canonical_name": "module:src/daemon/index.ts#normaliseRoot",
+      "status": "partial",
+      "checks": [
+        {
+          "key": "calls_in_direct",
+          "kind": "calls (incoming)",
+          "expected": 1,
+          "found": 6,
+          "matched": 0,
+          "missing": [
+            "module:src/index.ts"
+          ]
+        },
+        {
+          "key": "calls_out",
+          "kind": "calls (outgoing)",
+          "expected": 3,
+          "found": 8,
+          "matched": 3,
+          "missing": []
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 4,
+      "totalMatched": 3
+    },
+    {
+      "fixture": "function/readConfig.json",
+      "canonical_name": "module:src/config/config.ts#readConfig",
+      "status": "partial",
+      "checks": [
+        {
+          "key": "calls_in_direct",
+          "kind": "calls (incoming)",
+          "expected": 2,
+          "found": 4,
+          "matched": 0,
+          "missing": [
+            "module:src/index.ts",
+            "module:src/daemon/index.ts"
+          ]
+        },
+        {
+          "key": "calls_out",
+          "kind": "calls (outgoing)",
+          "expected": 3,
+          "found": 6,
+          "matched": 3,
+          "missing": []
+        },
+        {
+          "key": "references_type",
+          "kind": "references_type (out)",
+          "expected": 1,
+          "found": 1,
+          "matched": 1,
+          "missing": []
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 6,
+      "totalMatched": 4
+    },
+    {
+      "fixture": "interface/DaemonState.json",
+      "canonical_name": "module:src/daemon/index.ts#DaemonState",
+      "status": "pass",
+      "checks": [
+        {
+          "key": "references_type_in",
+          "kind": "references_type (in)",
+          "expected": 3,
+          "found": 5,
+          "matched": 3,
+          "missing": []
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 3,
+      "totalMatched": 3
+    },
+    {
+      "fixture": "interface/IntelgraphConfig.json",
+      "canonical_name": "module:src/config/config.ts#IntelgraphConfig",
+      "status": "partial",
+      "checks": [
+        {
+          "key": "references_type_in",
+          "kind": "references_type (in)",
+          "expected": 3,
+          "found": 8,
+          "matched": 3,
+          "missing": []
+        },
+        {
+          "key": "field_kinds_present",
+          "kind": "contains fields",
+          "expected": 8,
+          "found": 12,
+          "matched": 7,
+          "missing": [
+            "intelligenceLocal"
+          ]
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 11,
+      "totalMatched": 10
+    },
+    {
+      "fixture": "method/LspClient_documentSymbol.json",
+      "canonical_name": "module:src/lsp/index.ts#LspClient.documentSymbol",
+      "status": "fail-all-relations",
+      "checks": [
+        {
+          "key": "calls_in_direct",
+          "kind": "calls (incoming)",
+          "expected": 1,
+          "found": 0,
+          "matched": 0,
+          "missing": [
+            "module:src/intelligence/extraction/services/lsp-service.ts"
+          ]
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 1,
+      "totalMatched": 0
+    },
+    {
+      "fixture": "module/daemon_index.json",
+      "canonical_name": "module:src/daemon/index.ts",
+      "status": "partial",
+      "checks": [
+        {
+          "key": "imports_out",
+          "kind": "imports (outgoing)",
+          "expected": 7,
+          "found": 7,
+          "matched": 0,
+          "missing": [
+            "node:net",
+            "node:fs",
+            "node:child_process",
+            "node:path",
+            "node:url",
+            "node:crypto",
+            "module:src/logging/logger.ts"
+          ]
+        },
+        {
+          "key": "contains_top_level_exports",
+          "kind": "contains top-level exports",
+          "expected": 14,
+          "found": 26,
+          "matched": 14,
+          "missing": []
+        }
+      ],
+      "unhandledKeys": [],
+      "totalExpected": 21,
+      "totalMatched": 14
+    },
+    {
+      "fixture": "oracle/readConfig.json",
+      "status": "node-missing",
+      "expected": "(oracle-derived from src/config/config.ts:207)"
+    }
+  ]
+}

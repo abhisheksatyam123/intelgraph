@@ -15,6 +15,7 @@
 import { existsSync } from "node:fs"
 import { join } from "node:path"
 import type { PatternPack } from "../types.js"
+import wlanLogMacros from "./log-macros.js"
 
 const wlanPack: PatternPack = {
   name: "wlan",
@@ -70,6 +71,8 @@ const wlanPack: PatternPack = {
       keyDescription: "WMI CMDID constant",
     },
   ],
+
+  logMacros: wlanLogMacros,
 
   appliesTo: (workspaceRoot: string) => {
     // Heuristic: a WLAN firmware checkout always has a `wlan/` or `wmi/`

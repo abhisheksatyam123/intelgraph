@@ -16,7 +16,7 @@
  * never leak into a Linux workspace and vice versa.
  */
 
-import type { CallPattern, InitPattern, PatternPack } from "./types.js"
+import type { CallPattern, InitPattern, PatternPack, LogMacroDef } from "./types.js"
 import wlanPack from "./wlan/index.js"
 import linuxPack from "./linux/index.js"
 
@@ -69,4 +69,19 @@ export function collectAllInitPatterns(workspaceRoot?: string): InitPattern[] {
   return out
 }
 
-export type { PatternPack, CallPattern, InitPattern }
+/**
+ * Flatten every active pack's log macro definitions into a single Map
+ * keyed by macro name for O(1) lookup during the AST walk.
+ * Duplicates (same name from two packs) are dropped on first-wins basis.
+ */
+export function collectAllLogMacros(workspaceRoot?: string): Map<string, LogMacroDef> {
+  const map = new Map<string, LogMacroDef>()
+  for (const pack of collectAllPacks(workspaceRoot)) {
+    for (const m of pack.logMacros) {
+      if (!map.has(m.name)) map.set(m.name, m)
+    }
+  }
+  return map
+}
+
+export type { PatternPack, CallPattern, InitPattern, LogMacroDef }

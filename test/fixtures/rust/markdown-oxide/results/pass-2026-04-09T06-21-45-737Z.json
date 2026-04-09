@@ -1,0 +1,105 @@
+{
+  "language": "rust",
+  "project": "markdown-oxide",
+  "workspace": "/home/abhi/qprojects/markdown-oxide",
+  "timestamp": "2026-04-09T06:21:45.738Z",
+  "totals": {
+    "pass": 10,
+    "wknd": 0,
+    "miss": 0,
+    "total": 10,
+    "pct": 100
+  },
+  "results": [
+    {
+      "fixture": "derive/Settings.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/config.rs#Settings",
+        "kind": "struct",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/markdown-oxide/src/config.rs\",\"line\":11,\"column\":1}"
+      }
+    },
+    {
+      "fixture": "enum/Case.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/config.rs#Case",
+        "kind": "enum",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/markdown-oxide/src/config.rs\",\"line\":42,\"column\":1}"
+      }
+    },
+    {
+      "fixture": "enum/Referenceable.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/vault/referenceable.rs#Referenceable",
+        "kind": "enum",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/markdown-oxide/src/vault/referenceable.rs\",\"line\":130,\"column\":1}"
+      }
+    },
+    {
+      "fixture": "function/goto_definition.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/gotodef.rs#goto_definition",
+        "kind": "function",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/markdown-oxide/src/gotodef.rs\",\"line\":7,\"column\":1}"
+      }
+    },
+    {
+      "fixture": "function/hover.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/hover.rs#hover",
+        "kind": "function",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/markdown-oxide/src/hover.rs\",\"line\":7,\"column\":1}"
+      }
+    },
+    {
+      "fixture": "impl_trait/Backend_LanguageServer.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/backend/handlers.rs#Backend.hover",
+        "kind": "method",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/markdown-oxide/src/backend/handlers.rs\",\"line\":366,\"column\":5}"
+      }
+    },
+    {
+      "fixture": "impl_trait/Vault_Hash.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/vault/core.rs#Vault.hash",
+        "kind": "method",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/markdown-oxide/src/vault/core.rs\",\"line\":34,\"column\":5}"
+      }
+    },
+    {
+      "fixture": "module/lib_rs.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/lib.rs",
+        "kind": "module",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/markdown-oxide/src/lib.rs\",\"line\":1,\"column\":1}"
+      }
+    },
+    {
+      "fixture": "struct/MDHeading.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/vault/types.rs#MDHeading",
+        "kind": "struct",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/markdown-oxide/src/vault/types.rs\",\"line\":117,\"column\":1}"
+      }
+    },
+    {
+      "fixture": "struct/Vault.json",
+      "status": "pass",
+      "got": {
+        "canonical_name": "module:src/vault/core.rs#Vault",
+        "kind": "struct",
+        "location": "{\"filePath\":\"/home/abhi/qprojects/markdown-oxide/src/vault/core.rs\",\"line\":21,\"column\":1}"
+      }
+    }
+  ]
+}

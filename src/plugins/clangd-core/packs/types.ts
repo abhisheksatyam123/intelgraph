@@ -30,8 +30,37 @@ import type {
   CallPattern,
   InitPattern,
 } from "../../../tools/pattern-detector/types.js"
+import type { LogLevel } from "../../../intelligence/contracts/common.js"
 
 export type { CallPattern, InitPattern }
+
+// ---------------------------------------------------------------------------
+// Log macro definition — the fundamental unit of log-emission detection.
+// Lives in the pack so project-specific log APIs (kernel's pr_*, WLAN's
+// AR_DEBUG_PRINTF, etc.) are captured without touching the core extractor.
+// ---------------------------------------------------------------------------
+
+export interface LogMacroDef {
+  /** The function / macro name as it appears in source (e.g. "pr_info"). */
+  name: string
+
+  /** Log level this macro implies (e.g. "INFO" for pr_info). */
+  level: LogLevel
+
+  /**
+   * 0-based index of the format-string argument. Most C log macros put
+   * the format string first (`pr_info("fmt", ...)` → 0). `dev_info` puts
+   * it second (`dev_info(dev, "fmt", ...)` → 1).
+   */
+  formatArgIndex: number
+
+  /**
+   * Optional subsystem tag to attach. When set, every log emitted by this
+   * macro gets this subsystem value. When absent, the extractor may try to
+   * derive it from the format string's prefix (e.g. "BPF: ..." → "BPF").
+   */
+  subsystem?: string
+}
 
 export interface PatternPack {
   /** Unique pack identifier (lowercase, kebab-case). */
@@ -47,15 +76,18 @@ export interface PatternPack {
   initPatterns: readonly InitPattern[]
 
   /**
+   * Log-emission macro definitions this pack contributes. During the
+   * tree-sitter AST walk, any call_expression whose callee matches a
+   * LogMacroDef.name from an active pack emits a `logs_event` edge from
+   * the enclosing function to the log site, with the format string, log
+   * level, and subsystem captured in the edge metadata.
+   */
+  logMacros: readonly LogMacroDef[]
+
+  /**
    * Optional gate. When supplied, the pack is only activated if this
    * predicate returns true for the given workspace. Use it to keep
    * project-specific patterns from polluting other workspaces.
-   *
-   * If omitted, the pack is always active. Generic packs (like the
-   * "core" pack with universal C patterns) should leave this undefined.
-   *
-   * Future iterations may pass a richer probe object — for now we keep
-   * the surface minimal.
    */
   appliesTo?: (workspaceRoot: string) => boolean
 }
